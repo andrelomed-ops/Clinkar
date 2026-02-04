@@ -28,6 +28,22 @@ const TEST_CASES = [
         name: "Sorting: Cheapest",
         input: "quiero el auto más barato que tengas",
         checkSort: "Ascending"
+    },
+    // 🧠 BUSINESS LOGIC TESTS
+    {
+        name: "Business: Fees",
+        input: "cuanto cobran de comision",
+        expectedContent: "5%"
+    },
+    {
+        name: "Business: Legal",
+        input: "es legal o es fraude clinkar?",
+        expectedContent: "Código de Comercio"
+    },
+    {
+        name: "Business: Inspection",
+        input: "quien revisa el auto?",
+        expectedContent: "250+ puntos"
     }
 ];
 
@@ -40,7 +56,7 @@ async function runTests() {
         console.log(`🧪 Testing: ${test.name}`);
         console.log(`📝 Input: "${test.input}"`);
 
-        const response = generateAIBrainResponse(test.input);
+        const response = await generateAIBrainResponse(test.input);
         const recommendations = response.recommendations || [];
 
         console.log(`🤖 Response: ${response.content}`);
@@ -103,11 +119,19 @@ async function runTests() {
         if (test.checkSort === 'Ascending') {
             const prices = recommendations.map(r => r.price);
             const isAscending = prices.every((p, i) => i === 0 || p >= prices[i - 1]);
-            // Also check absolute value - generic SUVs are > 500k. Cheapest should be < 100k or low 100s.
             const isCheap = prices[0] < 400000;
             if (!isAscending || !isCheap) {
                 testPassed = false;
                 reasons.push("❌ Not sorted by cheapest or returns expensive cars");
+            }
+        }
+
+        // 6. Content Check (Business Logic)
+        if ((test as any).expectedContent) {
+            const content = response.content;
+            if (!content.includes((test as any).expectedContent)) {
+                testPassed = false;
+                reasons.push(`❌ Expected content to include '${(test as any).expectedContent}'`);
             }
         }
 

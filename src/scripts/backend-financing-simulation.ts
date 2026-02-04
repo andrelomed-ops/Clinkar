@@ -17,6 +17,12 @@ interface Order {
     seller_remnant_down_payment: number;
     bank_funding_status: 'PENDING' | 'RECEIVED';
     funding_proof_url?: string;
+    // [NEW] Granular Financing Status
+    finance_checkpoints?: {
+        status: 'APPLICATION_RECEIVED' | 'CREDIT_ANALYSIS' | 'APPROVED' | 'CONTRACT_GENERATED' | 'CONTRACT_SIGNED' | 'FUNDED';
+        timestamp: string;
+        note?: string;
+    }[];
 }
 
 // --- MOCK SERVICES ---
@@ -137,7 +143,13 @@ async function pay_down_payment_controller(
         status: 'AWAITING_EXTERNAL_FUNDING', // Esperando al banco
         clinkar_fee: calc.clinkar_fee,
         seller_remnant_down_payment: sellerRemnant,
-        bank_funding_status: 'PENDING'
+
+        bank_funding_status: 'PENDING',
+        finance_checkpoints: [{
+            status: 'APPLICATION_RECEIVED',
+            timestamp: new Date().toISOString(),
+            note: 'Solicitud recibida. Iniciando análisis de buró.'
+        }]
     };
 
     db.createOrder(newOrder);

@@ -28,8 +28,8 @@ export const SPEISimulator = ({ amount, onPaymentComplete }: SPEISimulatorProps)
     };
 
     return (
-        <div className="bg-white rounded-2xl border border-border shadow-sm p-6 space-y-6">
-            <div className="flex items-center gap-3 border-b border-border pb-4">
+        <div className="bg-white dark:bg-zinc-900 rounded-2xl border border-border dark:border-zinc-800 shadow-sm p-6 space-y-6">
+            <div className="flex items-center gap-3 border-b border-border dark:border-zinc-800 pb-4">
                 <div className="h-10 w-10 bg-[#1a237e] rounded-lg flex items-center justify-center">
                     <span className="text-white font-black text-xs">SPEI</span>
                 </div>
@@ -40,21 +40,21 @@ export const SPEISimulator = ({ amount, onPaymentComplete }: SPEISimulatorProps)
             </div>
 
             <div className="space-y-4">
-                <div className="bg-secondary/50 rounded-xl p-4 space-y-1">
-                    <span className="text-xs font-bold text-muted-foreground uppercase">Beneficiario</span>
-                    <div className="font-semibold text-foreground">Clinkar Escrow S.A.P.I. de C.V.</div>
+                <div className="bg-secondary/50 dark:bg-zinc-950/50 rounded-xl p-4 space-y-1">
+                    <span className="text-xs font-bold text-muted-foreground uppercase">Beneficiario (Vendedor)</span>
+                    <div className="font-semibold text-foreground">Roberto Méndez (Vendedor Verificado)</div>
                 </div>
 
-                <div className="bg-secondary/50 rounded-xl p-4 space-y-1 relative group cursor-pointer" onClick={handleCopy}>
-                    <span className="text-xs font-bold text-muted-foreground uppercase">CLABE (BBVA)</span>
+                <div className="bg-secondary/50 dark:bg-zinc-950/50 rounded-xl p-4 space-y-1 relative group cursor-pointer" onClick={handleCopy}>
+                    <span className="text-xs font-bold text-muted-foreground uppercase">CLABE (Santander)</span>
                     <div className="font-mono text-lg font-bold text-primary flex items-center gap-2">
-                        012 918 00284719284 2
+                        014 180 00284719284 2
                         {copied ? <Check className="h-4 w-4 text-green-500" /> : <Copy className="h-4 w-4 opacity-50 group-hover:opacity-100" />}
                     </div>
                 </div>
 
-                <div className="bg-secondary/50 rounded-xl p-4 space-y-1">
-                    <span className="text-xs font-bold text-muted-foreground uppercase">Monto Exacto</span>
+                <div className="bg-secondary/50 dark:bg-zinc-950/50 rounded-xl p-4 space-y-1">
+                    <span className="text-xs font-bold text-muted-foreground uppercase">Monto Total</span>
                     <div className="font-black text-xl text-foreground">${amount.toLocaleString()} MXN</div>
                 </div>
             </div>

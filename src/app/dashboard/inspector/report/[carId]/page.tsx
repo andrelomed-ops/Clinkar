@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { createClient } from "@/lib/supabase/client";
+import { createBrowserClient } from "@/lib/supabase/client";
 import { useRouter, useParams } from "next/navigation";
 import { Shield, CheckCircle2, AlertTriangle, ArrowRight, Loader2, Star } from "lucide-react";
 import Link from "next/link";
@@ -21,7 +21,7 @@ export default function InspectionReportPage() {
         tires: "good",
     });
 
-    const supabase = createClient();
+    const supabase = createBrowserClient();
     const router = useRouter();
 
     const handleSubmit = async (e: React.FormEvent) => {

@@ -16,13 +16,16 @@ const TEST_CASES = [
 
 console.log("--------------- INICIO DE SIMULACIÓN IA ---------------");
 
-TEST_CASES.forEach(query => {
-    console.log(`\n🗣️ USUARIO: "${query}"`);
-    const response = generateAIBrainResponse(query);
-    console.log(`🤖 IA: ${response.content}`);
-    response.recommendations?.forEach(r => {
-        console.log(`   - 🚗 ${r.make} ${r.model} (${r.reason})`);
-    });
-});
+// Need to wrap in async IIFE or loop
+(async () => {
+    for (const query of TEST_CASES) {
+        console.log(`\n🗣️ USUARIO: "${query}"`);
+        const response = await generateAIBrainResponse(query);
+        console.log(`🤖 IA: ${response.content}`);
+        response.recommendations?.forEach(r => {
+            console.log(`   - 🚗 ${r.make} ${r.model} (${r.reason})`);
+        });
+    }
+})();
 
 console.log("\n--------------- FIN DE SIMULACIÓN ---------------");

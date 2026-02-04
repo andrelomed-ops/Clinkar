@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { stripe } from '@/lib/stripe';
 import { createClient } from '@/lib/supabase/server';
+import { VerificationService } from '@/services/VerificationService';
 
 export async function POST(request: Request) {
     try {
@@ -36,36 +37,22 @@ export async function POST(request: Request) {
             return NextResponse.json({ error: 'Funds are not in the vault or already released' }, { status: 400 });
         }
 
-        // 2. Split Logic Calculation
-        const SELLER_SUCCESS_FEE = 2149.13;
-        const amountToSeller = Number(transaction.car_price) - SELLER_SUCCESS_FEE;
-        const clinkarCommissionTotal = Number(transaction.buyer_commission) + SELLER_SUCCESS_FEE;
+        // 2. Fees and Splits
+        const sellerSuccessFee = Number(transaction.seller_success_fee || 2149.13);
+        const amountToSeller = Number(transaction.car_price) - sellerSuccessFee;
+        const clinkarCommissionTotal = Number(transaction.buyer_commission || 0) + sellerSuccessFee;
 
-        // 3. Trigger Stripe Transfer (Logic representation)
-        // To Seller: amountToSeller
-        // Remaining in platform: clinkarCommissionTotal
+        // 3. Trigger Stripe Transfer Logic
+        // console.log(`[Escrow] Releasing $${amountToSeller} to Seller, Platform keeping $${clinkarCommissionTotal}`);
 
-        // 4. Update transaction status
-        const { error: updateError } = await supabase
-            .from('transactions')
-            .update({
-                status: 'RELEASED',
-                updated_at: new Date().toISOString()
-            })
-            .eq('id', transactionId);
+        // 4. Use VerificationService to complete the handover
+        const result = await VerificationService.confirmHandover(supabase, transactionId);
 
-        if (updateError) {
-            return NextResponse.json({ error: 'Failed to update transaction status' }, { status: 500 });
+        if (!result.success) {
+            return NextResponse.json({ error: result.error || 'Failed to confirm handover' }, { status: 500 });
         }
 
-        // 5. Update car status
-        await supabase
-            .from('cars')
-            .update({ status: 'sold' })
-            .eq('id', transaction.car_id);
-
         return NextResponse.json({ success: true, message: 'Funds released successfully' });
-
     } catch (error: any) {
         console.error('Release error:', error);
         return NextResponse.json({ error: error.message }, { status: 500 });

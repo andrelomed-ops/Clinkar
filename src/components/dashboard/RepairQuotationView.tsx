@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { createClient } from "@/lib/supabase/client";
+import { createBrowserClient } from "@/lib/supabase/client";
 import { Wrench, ShieldAlert, CheckCircle, XCircle, AlertTriangle, ArrowRight, Loader2, Info } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -16,11 +16,7 @@ export function RepairQuotationView({ carId, role = "buyer" }: RepairQuotationVi
     const [actionLoading, setActionLoading] = useState(false);
     const [showDisclaimer, setShowDisclaimer] = useState(false);
     const [agreedToDisclaimer, setAgreedToDisclaimer] = useState(false);
-    const supabase = createClient();
-
-    useEffect(() => {
-        fetchQuotation();
-    }, [carId]);
+    const supabase = createBrowserClient();
 
     const fetchQuotation = async () => {
         try {
@@ -52,6 +48,11 @@ export function RepairQuotationView({ carId, role = "buyer" }: RepairQuotationVi
         }
         setLoading(false);
     };
+
+    useEffect(() => {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
+        fetchQuotation();
+    }, [carId]);
 
     const handleAction = async (newStatus: string) => {
         if (!quotation) return;

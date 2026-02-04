@@ -1,8 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import { Lock, AlertCircle, Info, Calculator, CheckCircle2, Shield, Clock } from "lucide-react";
+import { Lock, AlertCircle, Info, Calculator, CheckCircle2, Shield, Clock, BadgeAlert } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { SellerReliabilityBadge } from "../dashboard/SellerReliabilityBadge";
+import { BUSINESS_RULES } from "@/lib/fiscal-utils";
 
 import { useRouter } from "next/navigation";
 
@@ -27,7 +29,7 @@ export function OfferModal({ id, carPrice, repairCost, carName, hasSeal }: Offer
         // In a real app, we would make an API call to create the transaction record here
         // For now, satisfy the mock requirement by redirecting
         setIsOpen(false);
-        router.push(`/transaction/${id}`);
+        router.push(`/transaction/${id}?offer=${offerAmount}`);
     };
 
     return (
@@ -72,6 +74,14 @@ export function OfferModal({ id, carPrice, repairCost, carName, hasSeal }: Offer
                             <p className="text-muted-foreground font-medium">Estás ofertando por el <span className="text-foreground">{carName}</span></p>
                         </div>
 
+                        {/* Reliability Score */}
+                        <SellerReliabilityBadge
+                            score={92}
+                            acceptanceRate={85}
+                            responseTime="< 12h"
+                            isVerified={hasSeal}
+                        />
+
                         <div className="bg-secondary/30 rounded-3xl p-6 space-y-4">
                             <div className="flex justify-between items-center text-sm font-bold">
                                 <span className="text-muted-foreground">Precio Base</span>
@@ -113,30 +123,42 @@ export function OfferModal({ id, carPrice, repairCost, carName, hasSeal }: Offer
                         </div>
 
                         {/* Cost Breakdown & Fee */}
-                        <div className="bg-secondary/20 rounded-2xl p-4 space-y-3 border border-border">
+                        <div className="bg-emerald-500/5 rounded-2xl p-4 space-y-3 border border-emerald-500/10">
                             <div className="flex justify-between items-center text-sm">
                                 <span className="text-muted-foreground">Tu Oferta al Vendedor</span>
                                 <span className="font-bold">${offerAmount.toLocaleString()}</span>
                             </div>
                             <div className="flex justify-between items-center text-sm">
-                                <span className="flex items-center gap-1.5 text-primary font-bold">
+                                <span className="flex items-center gap-1.5 text-emerald-600 font-bold">
                                     <Shield className="h-3 w-3" />
-                                    Comisión de Operación (Tarifa Fija)
+                                    Protección Comprador (IVA incluido)
                                 </span>
-                                <span className="font-bold text-primary">+ $3,448.00</span>
+                                <span className="font-bold text-emerald-600">$0.00</span>
                             </div>
-                            <div className="pt-3 border-t border-border flex justify-between items-center">
+                            <div className="pt-3 border-t border-emerald-500/10 flex justify-between items-center">
                                 <span className="text-lg font-black text-foreground">Total a Pagar</span>
-                                <span className="text-xl font-black text-foreground">${(offerAmount + 3448).toLocaleString()}</span>
+                                <span className="text-xl font-black text-foreground">${offerAmount.toLocaleString()}</span>
                             </div>
                             <p className="text-[10px] text-center text-muted-foreground font-medium">
-                                * Operación segura mediante Bóveda Digital (SPEI/STP) para eliminar costos bancarios.
+                                * Operación segura mediante Bóveda Digital (SPEI/STP).
+                                <br />
+                                ** El costo total de inspección ($1,500.00 MXN) es acreditable a la comisión en autos {`<`} $120k.
                             </p>
                         </div>
 
                         <div className="flex items-center justify-center gap-2 text-amber-600 bg-amber-50 rounded-lg py-2">
                             <Clock className="h-4 w-4" />
                             <span className="text-xs font-bold uppercase tracking-wide">Oferta válida por 24 horas</span>
+                        </div>
+
+                        <div className="p-4 bg-zinc-900 border border-zinc-800 rounded-2xl">
+                            <div className="flex items-center gap-2 text-indigo-400 mb-2">
+                                <BadgeAlert className="h-4 w-4" />
+                                <span className="text-[10px] font-black uppercase tracking-widest">Aviso de Exclusividad Clinkar</span>
+                            </div>
+                            <p className="text-[10px] text-zinc-400 leading-relaxed italic">
+                                El Certificado de Inspección (Vigencia 30 días) y el acceso a Garantía Mecánica de 90 días **solo cobran validez** si la transacción se liquida vía Clinkar.
+                            </p>
                         </div>
 
                         <div className="bg-blue-500/5 border border-blue-500/10 rounded-2xl p-6 space-y-2">

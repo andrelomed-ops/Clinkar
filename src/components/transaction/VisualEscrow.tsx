@@ -30,7 +30,7 @@ export const VisualEscrow = ({ amount, isSecured }: VisualEscrowProps) => {
 
                 <div>
                     <h3 className="text-slate-200 font-bold uppercase tracking-widest text-sm mb-1">
-                        {isSecured ? "Fondos Asegurados" : "Bóveda en Espera"}
+                        {isSecured ? "Pago Verificado" : "Esperando Transferencia"}
                     </h3>
                     <div className="text-3xl font-black text-white tracking-tight">
                         ${amount.toLocaleString()} <span className="text-sm font-medium text-slate-400">MXN</span>
@@ -41,15 +41,15 @@ export const VisualEscrow = ({ amount, isSecured }: VisualEscrowProps) => {
                     <div className="bg-emerald-500/10 border border-emerald-500/30 rounded-lg px-4 py-2 flex items-center gap-2">
                         <CheckCircle2 className="h-4 w-4 text-emerald-400" />
                         <span className="text-xs font-semibold text-emerald-300">
-                            Dinero protegido por Clinkar
+                            Transacción Supervisada por Clinkar
                         </span>
                     </div>
                 )}
 
                 <p className="text-xs text-slate-500 max-w-xs leading-relaxed">
                     {isSecured
-                        ? "El vendedor NO recibirá el dinero hasta que confirmes la recepción y satisfacción del vehículo."
-                        : "Tu dinero se mantendrá en nuestra cuenta concentradora (Escrow) hasta el momento de la entrega."
+                        ? "Hemos validado que la transferencia llegó a la cuenta del vendedor. El proceso de entrega puede comenzar."
+                        : "Realiza el pago directo al vendedor. Nosotros monitoreamos la operación para asegurar el cumplimiento del contrato."
                     }
                 </p>
             </div>

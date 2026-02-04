@@ -1,130 +1,270 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { processPaymentAction } from "../actions_demo";
 import SmartPaymentSelector from "@/components/checkout/SmartPaymentSelector";
 import TrustSeal from "@/components/checkout/TrustSeal";
 import SellerDashboardView from "@/components/dashboard/SellerDashboardView";
-import { ArrowLeft, Loader2 } from "lucide-react";
+import { ArrowLeft, X, Loader2, ShieldCheck, MapPin, Truck } from "lucide-react";
 import Link from "next/link";
 import LEGAL_TEXTS from "@/data/legal_texts.json";
 
+const SIMULATION_CONFIG = {
+    CAR_PRICE: 200000,
+    DELIVERY_COST: 3500,
+    DEFAULT_VEHICLE: "Tesla Model 3",
+    DEFAULT_YEAR: "2022",
+    DEFAULT_KM: "25,000 km"
+};
+
 export default function CheckoutSimulationPage() {
+    // Single step flow now: DETAILS -> PROCESSING -> SUCCESS
     const [step, setStep] = useState<'DETAILS' | 'PAYMENT' | 'PROCESSING' | 'SUCCESS'>('DETAILS');
     const [selectedMethod, setSelectedMethod] = useState<'STP' | 'STRIPE'>('STP');
-    const [finalAmount, setFinalAmount] = useState(200000); // 200k base
+    const [deliveryMethod, setDeliveryMethod] = useState<'PICKUP' | 'HOME'>('PICKUP');
     const [isMounted, setIsMounted] = useState(false);
+    const [agreedToTerms, setAgreedToTerms] = useState(false);
+    const [agreedToPrivacy, setAgreedToPrivacy] = useState(false);
 
     useEffect(() => {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setIsMounted(true);
     }, []);
 
     const formatCurrency = (val: number) => isMounted ? val.toLocaleString() : "...";
 
-    const handleProcessPayment = () => {
+    // Dynamic Total Calculation
+    const totalAmount = deliveryMethod === 'HOME' ? SIMULATION_CONFIG.CAR_PRICE + SIMULATION_CONFIG.DELIVERY_COST : SIMULATION_CONFIG.CAR_PRICE;
+
+    const handleProcessPayment = async () => {
         setStep('PROCESSING');
-        // Mock API Latency
-        setTimeout(() => {
+
+        // In a real app, we would pass the delivery method and total amount to the backend here
+        // For simulation, we assume the backend handles the total amount logic or we pass it
+        const result = await processPaymentAction("00000000-0000-0000-0000-000000000003", totalAmount);
+
+        if (!result.error) {
             setStep('SUCCESS');
-        }, 2000);
+        } else {
+            console.error("Payment failed", result.error);
+            if (result.error?.includes("violates foreign key")) {
+                alert("Error: Demo Ticket not found in DB. Please run setup.");
+            } else {
+                alert("Payment Error: " + result.error);
+            }
+            setStep('DETAILS'); // Reset
+        }
     };
 
     return (
-        <div className="min-h-screen bg-slate-50 flex flex-col items-center py-10 px-4">
+        <div className="min-h-screen bg-black text-zinc-100 font-sans selection:bg-blue-500/30">
 
-            <header className="w-full max-w-4xl flex items-center gap-4 mb-8">
-                <Link href="/dashboard" className="h-10 w-10 bg-white rounded-full flex items-center justify-center shadow-sm text-slate-400 hover:text-slate-900 transition-colors">
+            {/* UNIFIED HEADER */}
+            <header className="fixed top-0 left-0 right-0 h-16 bg-black/80 backdrop-blur-md border-b border-zinc-800 z-50 flex items-center justify-between px-6">
+                <Link href="/buy" className="flex items-center gap-2 text-zinc-400 hover:text-white transition-colors">
                     <ArrowLeft className="h-5 w-5" />
+                    <span className="text-sm font-medium">Volver al Mercado</span>
                 </Link>
-                <div>
-                    <h1 className="text-xl font-bold text-slate-900">Checkout Seguro</h1>
-                    <p className="text-xs text-slate-500">Transacción ID: #CLK-MOCK-99</p>
+
+                <div className="flex items-center gap-2">
+                    <ShieldCheck className="h-4 w-4 text-emerald-500" />
+                    <span className="text-xs font-bold tracking-widest uppercase text-emerald-500">Checkout Seguro</span>
                 </div>
+
+                <Link href="/buy" className="flex items-center gap-2 text-red-500/80 hover:text-red-400 transition-colors">
+                    <span className="text-sm font-medium">Cancelar Operación</span>
+                    <X className="h-5 w-5" />
+                </Link>
             </header>
 
-            <main className="w-full max-w-4xl grid grid-cols-1 lg:grid-cols-12 gap-8">
+            <div className="pt-24 pb-12 px-6 max-w-7xl mx-auto">
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
 
-                {/* LEFT COLUMN: Payment Block */}
-                <div className="lg:col-span-7 space-y-6">
-                    {step === 'SUCCESS' ? (
-                        <div className="bg-white rounded-[2rem] p-10 text-center shadow-sm space-y-6 animate-in zoom-in duration-500">
-                            <div className="h-24 w-24 bg-green-100 text-green-600 rounded-full mx-auto flex items-center justify-center">
-                                <span className="text-4xl">🎉</span>
-                            </div>
-                            <div>
-                                <h2 className="text-2xl font-black text-slate-900">¡Pago Exitoso!</h2>
-                                <p className="text-slate-500 mt-2">
-                                    Hemos recibido tu {selectedMethod === 'STP' ? 'transferencia' : 'pago con tarjeta'}.
+                    {/* COLUMNA IZQUIERDA: PERFIL COMPRADOR */}
+                    <div className="lg:col-span-7 space-y-6">
+                        <div className="flex items-center justify-between mb-2">
+                            <h2 className="text-xl font-bold text-white">Tu Compra</h2>
+                            <span className="px-3 py-1 rounded-full bg-blue-500/10 text-blue-400 text-xs font-bold border border-blue-500/20">
+                                VISTA COMPRADOR
+                            </span>
+                        </div>
+
+                        {step === 'SUCCESS' ? (
+                            <div className="bg-zinc-900 rounded-[2rem] p-10 text-center border border-zinc-800 shadow-2xl space-y-6 animate-in zoom-in duration-500">
+                                <div className="h-24 w-24 bg-emerald-500/10 text-emerald-500 rounded-full mx-auto flex items-center justify-center border border-emerald-500/20">
+                                    <span className="text-4xl">🎉</span>
+                                </div>
+                                <div>
+                                    <h2 className="text-2xl font-black text-white">¡Todo Listo!</h2>
+                                    <p className="text-zinc-400 mt-2">
+                                        Pago recibido y tu auto está en camino.
+                                    </p>
+                                </div>
+                                <div className="bg-zinc-950 p-6 rounded-2xl text-left text-sm space-y-3 border border-zinc-800">
+                                    <div className="flex justify-between">
+                                        <span className="text-zinc-500">Método de Entrega</span>
+                                        <span className="font-medium text-white">
+                                            {deliveryMethod === 'HOME' ? 'Envío a Domicilio' : 'Pick-up en Hub'}
+                                        </span>
+                                    </div>
+                                    <div className="flex justify-between border-t border-zinc-800 pt-3 mt-3">
+                                        <span className="text-zinc-500">Monto Total Pagado</span>
+                                        <span className="font-bold text-white">${formatCurrency(totalAmount)} MXN</span>
+                                    </div>
+                                    <div className="flex justify-between">
+                                        <span className="text-zinc-500">Referencia</span>
+                                        <span className="font-mono text-zinc-300">#CLK-SUCCESS-001</span>
+                                    </div>
+                                </div>
+                                <p className="text-xs text-zinc-600 px-4">
+                                    {LEGAL_TEXTS.FINANCING_DISCLAIMER}
                                 </p>
                             </div>
-                            <div className="bg-slate-50 p-6 rounded-2xl text-left text-sm space-y-2">
-                                <div className="flex justify-between">
-                                    <span className="text-slate-500">Monto Total</span>
-                                    <span className="font-bold text-slate-900">${formatCurrency(finalAmount)} MXN</span>
+                        ) : (
+                            // PAYMENT FORM (Details, Payment, Processing)
+                            (step === 'DETAILS' || step === 'PAYMENT' || step === 'PROCESSING') && (
+                                <div className="bg-zinc-900 rounded-[2rem] p-8 border border-zinc-800 shadow-2xl space-y-8">
+                                    {/* Header del Auto */}
+                                    <div className="flex items-start justify-between pb-6 border-b border-zinc-800">
+                                        <div>
+                                            <h1 className="text-2xl font-black text-white">Tesla Model 3</h1>
+                                            <p className="text-zinc-400">2022 • 25,000 km</p>
+                                        </div>
+                                        <div className="text-right">
+                                            <p className="text-sm text-zinc-500 uppercase tracking-widest">Total a Pagar</p>
+                                            <p className="text-3xl font-black text-emerald-400 tracking-tight transition-all duration-300">
+                                                ${formatCurrency(totalAmount)}
+                                            </p>
+                                            {deliveryMethod === 'HOME' && (
+                                                <p className="text-xs text-emerald-500 mt-1 animate-in fade-in font-medium">
+                                                    + Envío (${formatCurrency(SIMULATION_CONFIG.DELIVERY_COST)}) incluido
+                                                </p>
+                                            )}
+                                        </div>
+                                    </div>
+                                    {/* Legal Consent Checkboxes */}
+                                    <div className="bg-zinc-950 p-6 rounded-2xl border border-zinc-800 space-y-4">
+                                        <div className="flex items-start gap-3">
+                                            <input
+                                                type="checkbox"
+                                                id="terms-check"
+                                                className="mt-1 h-5 w-5 rounded border-zinc-700 text-emerald-500 focus:ring-emerald-500 bg-zinc-800 transition-all cursor-pointer"
+                                                checked={agreedToTerms}
+                                                onChange={(e) => setAgreedToTerms(e.target.checked)}
+                                                aria-label="Aceptar términos y condiciones"
+                                                required
+                                            />
+                                            <label htmlFor="terms-check" className="text-xs text-zinc-300 leading-relaxed cursor-pointer select-none">
+                                                He leído y acepto los <Link href="/terms" className="text-emerald-500 hover:text-emerald-400 font-bold transition-colors underline decoration-emerald-500/30 underline-offset-4">Términos y Condiciones de Uso</Link>, incluyendo la validez de la Firma Electrónica mediante Código QR.
+                                            </label>
+                                        </div>
+                                        <div className="flex items-start gap-3">
+                                            <input
+                                                type="checkbox"
+                                                id="privacy-check"
+                                                className="mt-1 h-5 w-5 rounded border-zinc-700 text-emerald-500 focus:ring-emerald-500 bg-zinc-800 transition-all cursor-pointer"
+                                                checked={agreedToPrivacy}
+                                                onChange={(e) => setAgreedToPrivacy(e.target.checked)}
+                                                aria-label="Aceptar aviso de privacidad"
+                                                required
+                                            />
+                                            <label htmlFor="privacy-check" className="text-xs text-zinc-300 leading-relaxed cursor-pointer select-none">
+                                                Consiento el tratamiento de mis datos personales conforme al <Link href="/privacy" className="text-emerald-500 hover:text-emerald-400 font-bold transition-colors underline decoration-emerald-500/30 underline-offset-4">Aviso de Privacidad Integral</Link> (LFPDPPP).
+                                            </label>
+                                        </div>
+                                    </div>
+
+                                    {/* DELIVERY SELECTION SECTION */}
+                                    <div className="space-y-4">
+                                        <h3 className="text-sm font-bold text-zinc-400 uppercase tracking-widest">Método de Entrega</h3>
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                            <button
+                                                onClick={() => setDeliveryMethod('PICKUP')}
+                                                className={`group relative p-4 rounded-xl border-2 text-left transition-all ${deliveryMethod === 'PICKUP'
+                                                    ? 'border-emerald-500 bg-emerald-500/5'
+                                                    : 'border-zinc-800 bg-zinc-950 hover:border-zinc-700'
+                                                    }`}
+                                            >
+                                                <div className="flex items-start gap-3">
+                                                    <div className={`p-2 rounded-lg ${deliveryMethod === 'PICKUP' ? 'bg-emerald-500 text-black' : 'bg-zinc-800 text-zinc-400'}`}>
+                                                        <MapPin className="h-5 w-5" />
+                                                    </div>
+                                                    <div>
+                                                        <p className={`font-bold ${deliveryMethod === 'PICKUP' ? 'text-white' : 'text-zinc-300'}`}>Pick-up en Hub</p>
+                                                        <p className="text-xs text-emerald-500 font-bold mt-0.5">Gratis</p>
+                                                    </div>
+                                                </div>
+                                            </button>
+
+                                            <button
+                                                onClick={() => setDeliveryMethod('HOME')}
+                                                className={`group relative p-4 rounded-xl border-2 text-left transition-all ${deliveryMethod === 'HOME'
+                                                    ? 'border-emerald-500 bg-emerald-500/5'
+                                                    : 'border-zinc-800 bg-zinc-950 hover:border-zinc-700'
+                                                    }`}
+                                            >
+                                                <div className="flex items-start gap-3">
+                                                    <div className={`p-2 rounded-lg ${deliveryMethod === 'HOME' ? 'bg-emerald-500 text-black' : 'bg-zinc-800 text-zinc-400'}`}>
+                                                        <Truck className="h-5 w-5" />
+                                                    </div>
+                                                    <div>
+                                                        <p className={`font-bold ${deliveryMethod === 'HOME' ? 'text-white' : 'text-zinc-300'}`}>Envío a Domicilio</p>
+                                                        <p className="text-xs text-emerald-500 font-bold mt-0.5">+${formatCurrency(SIMULATION_CONFIG.DELIVERY_COST)}</p>
+                                                    </div>
+                                                </div>
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <div className="border-t border-zinc-800 my-6"></div>
+
+                                    <SmartPaymentSelector
+                                        amount={totalAmount}
+                                        onPaymentMethodSelect={(m) => {
+                                            setSelectedMethod(m);
+                                        }}
+                                    />
+
+                                    <TrustSeal />
+
+                                    <button
+                                        onClick={handleProcessPayment}
+                                        disabled={step === 'PROCESSING' || !agreedToTerms || !agreedToPrivacy}
+                                        className="w-full h-16 bg-white text-black rounded-2xl font-bold text-lg hover:scale-[1.02] active:scale-[0.98] transition-all shadow-[0_0_20px_rgba(255,255,255,0.1)] hover:shadow-[0_0_30px_rgba(255,255,255,0.2)] flex items-center justify-center gap-3 disabled:opacity-50 disabled:pointer-events-none"
+                                    >
+                                        {step === 'PROCESSING' ? (
+                                            <>
+                                                <Loader2 className="h-6 w-6 animate-spin" />
+                                                Procesando Pago Total...
+                                            </>
+                                        ) : (
+                                            `Pagar $${formatCurrency(totalAmount)}`
+                                        )}
+                                    </button>
+
+                                    <p className="text-center text-[10px] text-zinc-600 uppercase tracking-widest">
+                                        Encriptación SSL de 256-bits • Transacción Segura
+                                    </p>
                                 </div>
-                                <div className="flex justify-between">
-                                    <span className="text-slate-500">Referencia</span>
-                                    <span className="font-mono text-slate-900">#CLK-SUCCESS-001</span>
-                                </div>
-                            </div>
-                            <p className="text-xs text-slate-400">
-                                {LEGAL_TEXTS.FINANCING_DISCLAIMER}
-                            </p>
-                        </div>
-                    ) : (
-                        // PAYMENT FORM
-                        <div className="bg-white rounded-[2rem] p-8 shadow-sm space-y-8">
-                            <SmartPaymentSelector
-                                amount={200000}
-                                onPaymentMethodSelect={(m, total) => {
-                                    setSelectedMethod(m);
-                                    setFinalAmount(total);
-                                }}
-                            />
-
-                            <TrustSeal />
-
-                            <button
-                                onClick={handleProcessPayment}
-                                disabled={step === 'PROCESSING'}
-                                className="w-full h-16 bg-slate-900 text-white rounded-2xl font-bold text-lg hover:scale-[1.02] active:scale-[0.98] transition-all shadow-xl shadow-slate-900/20 flex items-center justify-center gap-3 disabled:opacity-50 disabled:pointer-events-none"
-                            >
-                                {step === 'PROCESSING' ? (
-                                    <>
-                                        <Loader2 className="h-6 w-6 animate-spin" />
-                                        Procesando...
-                                    </>
-                                ) : (
-                                    `Pagar $${formatCurrency(finalAmount)}`
-                                )}
-                            </button>
-
-                            <p className="text-center text-[10px] text-slate-400 uppercase tracking-widest">
-                                Encriptación SSL de 256-bits
-                            </p>
-                        </div>
-                    )}
-                </div>
-
-                {/* RIGHT COLUMN: Sidebar Summary / Dashboard Preview */}
-                <div className="lg:col-span-5 space-y-6">
-                    {/* Car Summary */}
-                    <div className="bg-slate-900 text-slate-300 rounded-[2rem] p-8">
-                        <img src="https://images.unsplash.com/photo-1541443131876-44b03de101c5?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80"
-                            alt="Car"
-                            className="w-full h-40 object-cover rounded-xl mb-4 opacity-80"
-                        />
-                        <h3 className="text-xl font-bold text-white">Tesla Model 3 (2022)</h3>
-                        <p className="text-sm">Dual Motor • 15,000 km</p>
+                            )
+                        )}
                     </div>
 
-                    {/* Simulating what the SELLER sees */}
-                    <div className="opacity-80 hover:opacity-100 transition-opacity">
-                        <p className="text-xs font-bold text-slate-400 uppercase mb-2 pl-4">Vista del Vendedor (Simulación)</p>
-                        <SellerDashboardView />
+                    {/* COLUMNA DERECHA: PERFIL VENDEDOR */}
+                    <div className="lg:col-span-5 space-y-6">
+                        <div className="flex items-center justify-between mb-2">
+                            <h2 className="text-sm font-bold text-zinc-500 uppercase tracking-widest">Monitor en Tiempo Real</h2>
+                            <span className="px-3 py-1 rounded-full bg-zinc-800 text-zinc-400 text-xs font-bold border border-zinc-700">
+                                VISTA VENDEDOR
+                            </span>
+                        </div>
+                        <div className="sticky top-24 opacity-80 hover:opacity-100 transition-opacity">
+                            <SellerDashboardView />
+                        </div>
                     </div>
-                </div>
 
-            </main>
+                </div>
+            </div>
         </div>
     );
 }

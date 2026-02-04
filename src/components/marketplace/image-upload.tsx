@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { createClient } from "@/lib/supabase/client";
+import { createBrowserClient } from "@/lib/supabase/client";
 import { Upload, X, Loader2, Image as ImageIcon } from "lucide-react";
 
 interface ImageUploadProps {
@@ -12,7 +12,7 @@ interface ImageUploadProps {
 export function ImageUpload({ onUpload }: ImageUploadProps) {
     const [uploading, setUploading] = useState(false);
     const [previews, setPreviews] = useState<string[]>([]);
-    const supabase = createClient();
+    const supabase = createBrowserClient();
 
     const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
         if (!e.target.files || e.target.files.length === 0) return;

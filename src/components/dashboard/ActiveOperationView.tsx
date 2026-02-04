@@ -1,7 +1,9 @@
 import { useState } from "react";
+import { Shield } from "lucide-react";
 import { VaultStatus } from "@/components/dashboard/VaultStatus";
 import { UnifiedVehicleStatusView } from "@/components/dashboard/UnifiedVehicleStatusView";
 import { LogisticsSelector } from "@/components/dashboard/LogisticsSelector";
+import Link from "next/link";
 
 interface ActiveOperationViewProps {
     transaction: any; // Using any for simplicity in prototype, should be typed
@@ -10,6 +12,8 @@ interface ActiveOperationViewProps {
 
 export function ActiveOperationView({ transaction, role }: ActiveOperationViewProps) {
     const [logisticsCost, setLogisticsCost] = useState(0);
+
+    if (!transaction) return <div className="p-8 text-center text-slate-400">Selecciona una operación</div>;
 
     const totalOperationValue = transaction.price + logisticsCost;
 
@@ -51,8 +55,37 @@ export function ActiveOperationView({ transaction, role }: ActiveOperationViewPr
             <div className="pt-2 grid grid-cols-1 gap-8">
                 <UnifiedVehicleStatusView carId={transaction.id} role={role} location={transaction.location || "CDMX"} />
 
+                {/* Handover Action Button - Show when funds are secured */}
+                {(transaction.status === 'FUNDS_HELD' || transaction.status === 'PENDING') && (
+                    <div className="flex justify-end animate-in fade-in slide-in-from-bottom-4 duration-700 delay-300">
+                        <Link
+                            href={`/dashboard/handover/${transaction.id}`}
+                            className="bg-primary text-primary-foreground px-8 py-4 rounded-2xl font-black text-lg shadow-xl shadow-primary/20 hover:scale-[1.02] transition-transform flex items-center gap-2"
+                        >
+                            <span className="relative flex h-3 w-3 mr-2">
+                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
+                                <span className="relative inline-flex rounded-full h-3 w-3 bg-white"></span>
+                            </span>
+                            Ir a Entrega y Liberación
+                        </Link>
+                    </div>
+                )}
+
+                {/* Digital Passport Access - Show when released */}
+                {(transaction.status === 'RELEASED' || transaction.status === 'DELIVERED') && (
+                    <div className="flex justify-end animate-in fade-in slide-in-from-bottom-4 duration-700 delay-300">
+                        <Link
+                            href={`/dashboard/contract/${transaction.id}`}
+                            className="bg-emerald-600 text-white px-8 py-4 rounded-2xl font-black text-lg shadow-xl shadow-emerald-500/20 hover:scale-[1.02] transition-transform flex items-center gap-2"
+                        >
+                            <Shield className="h-5 w-5" />
+                            Ver Pasaporte Digital
+                        </Link>
+                    </div>
+                )}
+
                 {/* Logistics Selector - Only for Buyers and if status allows (e.g., not yet delivered) */}
-                {role === 'buyer' && transaction.status !== 'RELEASED' && (
+                {role === 'buyer' && transaction.status !== 'RELEASED' && transaction.status !== 'DELIVERED' && (
                     <LogisticsSelector
                         carValue={transaction.price}
                         origin={transaction.location || "CDMX"}

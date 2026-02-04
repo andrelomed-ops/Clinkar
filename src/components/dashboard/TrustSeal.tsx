@@ -1,14 +1,20 @@
 "use client";
 
-import { ShieldCheck, Calendar, Hash, Award } from "lucide-react";
+import { ShieldCheck, Calendar, FileText, Award, CheckCircle } from "lucide-react";
+import { Vehicle } from "@/data/cars";
+import { getInspectionBadge, getInspectionLabel } from "@/lib/inspection-utils";
 
 interface TrustSealProps {
     folio: string;
     date: string;
     score: number;
+    category?: Vehicle['category'];
 }
 
-export function TrustSeal({ folio, date, score }: TrustSealProps) {
+export function TrustSeal({ folio, date, score, category = 'Car' }: TrustSealProps) {
+    const badge = getInspectionBadge(category);
+    const label = getInspectionLabel(category);
+
     return (
         <div className="relative group overflow-hidden bg-gradient-to-br from-primary via-primary to-[#1a3a5f] rounded-[3rem] p-10 text-white shadow-2xl shadow-primary/20 animate-in fade-in zoom-in duration-700">
             {/* Background Decorative Elements */}
@@ -30,21 +36,21 @@ export function TrustSeal({ folio, date, score }: TrustSealProps) {
                 <div className="flex-1 space-y-6 text-center md:text-left">
                     <div className="space-y-1">
                         <h4 className="text-xs font-black uppercase tracking-[0.3em] text-white/60 flex items-center justify-center md:justify-start gap-2">
-                            [ SELLO DE VALIDACIÓN TÉCNICA - INSPECTOR PRO ]
+                            {badge}
                         </h4>
                         <h3 className="text-2xl font-black">Certificación Clinkar Elite</h3>
                     </div>
 
                     <p className="text-sm leading-relaxed text-white/80 font-medium max-w-2xl">
-                        Este vehículo ha sido sometido a una inspección rigurosa de 150 puntos técnicos y legales.
-                        La transparencia de este reporte garantiza que el valor de oferta es coherente con el estado real del automóvil,
+                        Este activo ha sido sometido a una {label.toLowerCase()} técnica y legal rigurosa.
+                        La transparencia de este reporte garantiza que el valor de oferta es coherente con el estado real de la unidad,
                         protegiendo la inversión del comprador y la integridad del vendedor.
                     </p>
 
                     <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 pt-4">
                         <div className="space-y-1.5">
                             <span className="flex items-center gap-2 text-[9px] font-black uppercase tracking-widest text-white/40">
-                                <Hash className="h-3 w-3" /> Folio
+                                <FileText className="h-3 w-3" /> Folio
                             </span>
                             <p className="font-mono text-sm font-bold tracking-tight">{folio}</p>
                         </div>
@@ -66,5 +72,3 @@ export function TrustSeal({ folio, date, score }: TrustSealProps) {
         </div>
     );
 }
-
-import { CheckCircle } from "lucide-react";

@@ -1,11 +1,13 @@
 "use client";
 
 import { useState } from "react";
-import { createClient } from "@/lib/supabase/client";
+import { createBrowserClient } from "@/lib/supabase/client";
 import { Shield, User, Car, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 
 export default function RegisterPage() {
     const [email, setEmail] = useState("");
@@ -14,7 +16,7 @@ export default function RegisterPage() {
     const [role, setRole] = useState<"buyer" | "seller">("buyer");
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
-    const supabase = createClient();
+    const supabase = createBrowserClient();
     const router = useRouter();
 
     const handleRegister = async (e: React.FormEvent) => {
@@ -90,11 +92,11 @@ export default function RegisterPage() {
 
                         <div className="space-y-2">
                             <label className="text-sm font-medium leading-none" htmlFor="fullName">Nombre completo</label>
-                            <input
+                            <Input
                                 id="fullName"
                                 type="text"
                                 placeholder="Juan Pérez"
-                                className="flex h-12 w-full rounded-xl border border-input bg-background px-4 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                                className="h-12 rounded-xl"
                                 value={fullName}
                                 onChange={(e) => setFullName(e.target.value)}
                                 required
@@ -103,11 +105,11 @@ export default function RegisterPage() {
 
                         <div className="space-y-2">
                             <label className="text-sm font-medium leading-none" htmlFor="email">Correo electrónico</label>
-                            <input
+                            <Input
                                 id="email"
                                 type="email"
                                 placeholder="tu@email.com"
-                                className="flex h-12 w-full rounded-xl border border-input bg-background px-4 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                                className="h-12 rounded-xl"
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
                                 required
@@ -116,11 +118,11 @@ export default function RegisterPage() {
 
                         <div className="space-y-2">
                             <label className="text-sm font-medium leading-none" htmlFor="password">Contraseña</label>
-                            <input
+                            <Input
                                 id="password"
                                 type="password"
                                 placeholder="••••••••"
-                                className="flex h-12 w-full rounded-xl border border-input bg-background px-4 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                                className="h-12 rounded-xl"
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
                                 required
@@ -130,13 +132,33 @@ export default function RegisterPage() {
 
                     {error && <p className="text-sm font-medium text-destructive">{error}</p>}
 
-                    <button
+                    <div className="flex items-center space-x-2">
+                        <input
+                            type="checkbox"
+                            id="terms"
+                            required
+                            className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary"
+                        />
+                        <label htmlFor="terms" className="text-sm text-muted-foreground">
+                            Acepto los{" "}
+                            <Link href="/terms" className="text-primary hover:underline">
+                                Términos y Condiciones
+                            </Link>{" "}
+                            y el{" "}
+                            <Link href="/privacy" className="text-primary hover:underline">
+                                Aviso de Privacidad
+                            </Link>
+                        </label>
+                    </div>
+
+
+                    <Button
                         type="submit"
                         disabled={loading}
-                        className="flex h-12 w-full items-center justify-center rounded-xl bg-primary px-4 py-2 text-base font-semibold text-primary-foreground transition-all hover:bg-primary/90 disabled:opacity-50"
+                        className="h-12 w-full rounded-xl text-base font-semibold"
                     >
                         {loading ? <Loader2 className="h-5 w-5 animate-spin" /> : "Crear cuenta"}
-                    </button>
+                    </Button>
 
                     <p className="text-center text-sm text-muted-foreground">
                         ¿Ya tienes una cuenta?{" "}
@@ -145,7 +167,7 @@ export default function RegisterPage() {
                         </Link>
                     </p>
                 </form>
-            </div>
-        </div>
+            </div >
+        </div >
     );
 }

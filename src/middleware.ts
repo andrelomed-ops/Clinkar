@@ -8,11 +8,17 @@ export async function middleware(request: NextRequest) {
         },
     })
 
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+    const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
+    if (!supabaseUrl || !supabaseAnonKey) {
+        // console.warn("⚠️ SUPABASE ENVS MISSING (Middleware): Skipping Auth Check.");
+        return response;
+    }
 
     const supabase = createServerClient(
-        process.env.NEXT_PUBLIC_SUPABASE_URL!,
-        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+        supabaseUrl,
+        supabaseAnonKey,
         {
             cookies: {
                 get(name: string) {
@@ -56,14 +62,32 @@ export async function middleware(request: NextRequest) {
         }
     )
 
-    // Temporarily disabled for visual design review
-    // const { data: { user } } = await supabase.auth.getUser()
-    const user = { id: 'dummy-user' }; // Mock user
+    // Only call getUser if we are on a protected route or if we need to check auth status
+    const isDashboardRoute = request.nextUrl.pathname.startsWith('/dashboard');
+    const isAuthRoute = request.nextUrl.pathname.startsWith('/login') || request.nextUrl.pathname.startsWith('/signup');
 
-    // Protect dashboard routes
-    // if (!user && request.nextUrl.pathname.startsWith('/dashboard')) {
-    //     return NextResponse.redirect(new URL('/login', request.url))
-    // }
+    if (isDashboardRoute) {
+        const { data: { user } } = await supabase.auth.getUser()
+        const demoRole = request.cookies.get('clinkar_role')?.value
+
+        // 1. Basic Auth Check
+        if (!user && !demoRole) {
+            return NextResponse.redirect(new URL('/login', request.url))
+        }
+
+        // 2. Admin Route Protection
+        const isAdminRoute = request.nextUrl.pathname.startsWith('/dashboard/admin');
+        if (isAdminRoute) {
+            // Check metadata (secure) or cookie (demo/fallback)
+            const role = user?.user_metadata?.role || demoRole;
+
+            if (role !== 'ADMIN') {
+                // Determine destination based on role (or just 403/dashboard)
+                console.warn(`Unauthorized access attempt to Admin by: ${user?.email || 'Guest'}`);
+                return NextResponse.redirect(new URL('/dashboard', request.url));
+            }
+        }
+    }
 
     return response;
 }

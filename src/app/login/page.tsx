@@ -1,10 +1,13 @@
 "use client";
 
 import { useState, Suspense } from "react";
-import { createClient } from "@/lib/supabase/client";
+import { createBrowserClient } from "@/lib/supabase/client";
 import { Shield, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 
 export default function LoginPage() {
     return (
@@ -23,7 +26,7 @@ function LoginForm() {
     const [password, setPassword] = useState("");
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
-    const supabase = createClient();
+    const supabase = createBrowserClient();
     const router = useRouter();
     const searchParams = useSearchParams();
     const message = searchParams.get("message");
@@ -42,7 +45,8 @@ function LoginForm() {
             setError(error.message);
             setLoading(false);
         } else {
-            router.push("/dashboard");
+            const next = searchParams.get("next");
+            router.push(next || "/dashboard");
             router.refresh();
         }
     };
@@ -71,11 +75,11 @@ function LoginForm() {
                     <div className="space-y-4">
                         <div className="space-y-2">
                             <label className="text-sm font-medium leading-none" htmlFor="email">Correo electrónico</label>
-                            <input
+                            <Input
                                 id="email"
                                 type="email"
                                 placeholder="tu@email.com"
-                                className="flex h-12 w-full rounded-xl border border-input bg-background px-4 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                                className="h-12 rounded-xl"
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
                                 required
@@ -89,11 +93,12 @@ function LoginForm() {
                                     ¿Olvidaste tu contraseña?
                                 </Link>
                             </div>
-                            <input
+
+                            <Input
                                 id="password"
                                 type="password"
                                 placeholder="••••••••"
-                                className="flex h-12 w-full rounded-xl border border-input bg-background px-4 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                                className="h-12 rounded-xl"
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
                                 required
@@ -101,15 +106,24 @@ function LoginForm() {
                         </div>
                     </div>
 
-                    {error && <p className="text-sm font-medium text-destructive">{error}</p>}
+                    {error && (
+                        <div className="space-y-2">
+                            <p className="text-sm font-medium text-destructive">{error}</p>
+                            {error.includes("Invalid login credentials") && (
+                                <p className="text-xs text-muted-foreground bg-secondary/30 p-3 rounded-lg border border-border">
+                                    <span className="font-bold text-primary">Tip:</span> Si estás probando la plataforma, usa los botones de <span className="font-bold text-zinc-900 dark:text-white">Modo Demo</span> abajo para acceder sin credenciales.
+                                </p>
+                            )}
+                        </div>
+                    )}
 
-                    <button
+                    <Button
                         type="submit"
                         disabled={loading}
-                        className="flex h-12 w-full items-center justify-center rounded-xl bg-primary px-4 py-2 text-base font-semibold text-primary-foreground transition-all hover:bg-primary/90 disabled:opacity-50"
+                        className="h-12 w-full rounded-xl text-base font-semibold"
                     >
                         {loading ? <Loader2 className="h-5 w-5 animate-spin" /> : "Iniciar sesión"}
-                    </button>
+                    </Button>
 
                     <p className="text-center text-sm text-muted-foreground">
                         ¿No tienes una cuenta?{" "}
@@ -118,27 +132,28 @@ function LoginForm() {
                         </Link>
                     </p>
 
-                    <div className="relative my-8">
-                        <div className="absolute inset-0 flex items-center"><span className="w-full border-t" /></div>
-                        <div className="relative flex justify-center text-xs uppercase"><span className="bg-background px-2 text-muted-foreground">Modo Demo: Acceso Rápido</span></div>
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-3">
-                        <button type="button" onClick={() => { document.cookie = "clinkar_role=buyer; path=/"; window.location.href = "/dashboard"; }} className="h-10 rounded-lg bg-blue-50 text-blue-700 text-xs font-bold hover:bg-blue-100 border border-blue-200">
-                            🛍️ Comprador
-                        </button>
-                        <button type="button" onClick={() => { document.cookie = "clinkar_role=seller; path=/"; window.location.href = "/dashboard"; }} className="h-10 rounded-lg bg-green-50 text-green-700 text-xs font-bold hover:bg-green-100 border border-green-200">
-                            🚗 Vendedor
-                        </button>
-                        <button type="button" onClick={() => { document.cookie = "clinkar_role=inspector; path=/"; window.location.href = "/dashboard"; }} className="h-10 rounded-lg bg-amber-50 text-amber-700 text-xs font-bold hover:bg-amber-100 border border-amber-200">
-                            🔧 Mecánico
-                        </button>
-                        <button type="button" onClick={() => { document.cookie = "clinkar_role=legal; path=/"; window.location.href = "/dashboard"; }} className="h-10 rounded-lg bg-purple-50 text-purple-700 text-xs font-bold hover:bg-purple-100 border border-purple-200">
-                            ⚖️ Legal
-                        </button>
-                    </div>
                 </form>
-            </div>
-        </div>
+
+                <div className="relative my-8">
+                    <div className="absolute inset-0 flex items-center"><span className="w-full border-t" /></div>
+                    <div className="relative flex justify-center text-xs uppercase"><span className="bg-background px-2 text-muted-foreground">Modo Demo: Acceso Rápido</span></div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-3">
+                    <button type="button" onClick={() => { document.cookie = "clinkar_role=buyer; path=/"; window.location.href = "/dashboard"; }} className="h-10 rounded-lg bg-blue-50 text-blue-700 text-xs font-bold hover:bg-blue-100 border border-blue-200">
+                        🛍️ Comprador
+                    </button>
+                    <button type="button" onClick={() => { document.cookie = "clinkar_role=seller; path=/"; window.location.href = "/dashboard"; }} className="h-10 rounded-lg bg-green-50 text-green-700 text-xs font-bold hover:bg-green-100 border border-green-200">
+                        🚗 Vendedor
+                    </button>
+                    <button type="button" onClick={() => { document.cookie = "clinkar_role=inspector; path=/"; window.location.href = "/dashboard/inspector"; }} className="h-10 rounded-lg bg-amber-50 text-amber-700 text-xs font-bold hover:bg-amber-100 border border-amber-200">
+                        🔧 Mecánico
+                    </button>
+                    <button type="button" onClick={() => { document.cookie = "clinkar_role=legal; path=/"; window.location.href = "/dashboard/inspector"; }} className="h-10 rounded-lg bg-purple-50 text-purple-700 text-xs font-bold hover:bg-purple-100 border border-purple-200">
+                        ⚖️ Legal
+                    </button>
+                </div>
+            </div >
+        </div >
     );
 }

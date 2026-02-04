@@ -13,9 +13,9 @@ console.log("--------------- INICIO DE SIMULACIÓN MASIVA (STRESS TEST) --------
 let passed = 0;
 let total = 0;
 
-function runTest(query: string, expectedCategory: string | string[]) {
+async function runTest(query: string, expectedCategory: string | string[]) {
     total++;
-    const res = generateAIBrainResponse(query);
+    const res = await generateAIBrainResponse(query);
     const recs = res.recommendations || [];
 
     // Check if ALL recommendations match the expected category
@@ -58,29 +58,31 @@ function runTest(query: string, expectedCategory: string | string[]) {
     passed++;
 }
 
-// 1. ASIA TESTS
-CONTINENTS.ASIA.forEach(dest => runTest(`Quiero ir a ${dest}`, ['Air', 'Marine']));
+(async () => {
+    // 1. ASIA TESTS
+    for (const dest of CONTINENTS.ASIA) await runTest(`Quiero ir a ${dest}`, ['Air', 'Marine']);
 
-// 2. EUROPE TESTS
-CONTINENTS.EUROPE.forEach(dest => runTest(`Viaje a ${dest}`, ['Air', 'Marine']));
+    // 2. EUROPE TESTS
+    for (const dest of CONTINENTS.EUROPE) await runTest(`Viaje a ${dest}`, ['Air', 'Marine']);
 
-// 3. ISLAND TESTS
-CONTINENTS.ISLANDS.forEach(dest => runTest(`Ir a ${dest}`, ['Air', 'Marine']));
+    // 3. ISLAND TESTS
+    for (const dest of CONTINENTS.ISLANDS) await runTest(`Ir a ${dest}`, ['Air', 'Marine']);
 
-// 4. JUNGLE TESTS
-CONTINENTS.JUNGLE.forEach(dest => runTest(`Recorrer la ${dest}`, ['Jungle']));
+    // 4. JUNGLE TESTS
+    for (const dest of CONTINENTS.JUNGLE) await runTest(`Recorrer la ${dest}`, ['Jungle']);
 
-// 5. ROAD TRIP CHECKS
-runTest("Ir a Panamá", ['Car']);
+    // 5. ROAD TRIP CHECKS
+    await runTest("Ir a Panamá", ['Car']);
 
-// 6. MARKET & TYPE CHECKS
-runTest("Quiero un vehiculo nuevo de la categoria de sedan, el mejor valorado del mercado en mexico", ['Car']);
+    // 6. MARKET & TYPE CHECKS
+    await runTest("Quiero un vehiculo nuevo de la categoria de sedan, el mejor valorado del mercado en mexico", ['Car']);
 
-// 7. WINTER EXTREME CHECK
-runTest("quiero un vehiculo para ir de mexico a Toronto en epoca de nieve", ['Car']);
+    // 7. WINTER EXTREME CHECK
+    await runTest("quiero un vehiculo para ir de mexico a Toronto en epoca de nieve", ['Car']);
 
-// 8. FAMILY SIZE CHECK (3 People)
-runTest("quiero un vehiculo para llevar a mi familia de paseo somos 3 personas", ['Car']);
+    // 8. FAMILY SIZE CHECK (3 People)
+    await runTest("quiero un vehiculo para llevar a mi familia de paseo somos 3 personas", ['Car']);
 
-console.log(`\n\n📢 RESULTADOS FINALES: ${passed}/${total} pruebas pasadas.`);
-console.log("-------------------------------------------------------------------");
+    console.log(`\n\n📢 RESULTADOS FINALES: ${passed}/${total} pruebas pasadas.`);
+    console.log("-------------------------------------------------------------------");
+})();

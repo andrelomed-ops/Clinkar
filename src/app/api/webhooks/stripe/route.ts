@@ -1,52 +1,65 @@
 import { NextResponse } from 'next/server';
-import { stripe } from '@/lib/stripe';
+import { StripeService } from '@/services/StripeService';
+import { TransactionService } from '@/services/TransactionService';
 import { createClient } from '@/lib/supabase/server';
-import { headers } from 'next/headers';
 
-export async function POST(request: Request) {
-    const body = await request.text();
-    const signature = (await headers()).get('stripe-signature') as string;
+export async function POST(req: Request) {
+    const supabase = await createClient();
+    const body = await req.text();
+    const sig = req.headers.get('stripe-signature') as string;
+    const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
+
+    if (!webhookSecret) {
+        return NextResponse.json({ error: 'Missing Webhook Secret' }, { status: 500 });
+    }
 
     let event;
 
     try {
-        event = stripe.webhooks.constructEvent(
-            body,
-            signature,
-            process.env.STRIPE_WEBHOOK_SECRET!
-        );
+        event = StripeService.constructEvent(body, sig, webhookSecret);
     } catch (err: any) {
+        console.error(`Webhook signature verification failed.`, err.message);
         return NextResponse.json({ error: `Webhook Error: ${err.message}` }, { status: 400 });
     }
 
-    const supabase = await createClient();
+    // Handle the event
+    try {
+        switch (event.type) {
+            case 'checkout.session.completed':
+                const session = event.data.object;
+                // Fulfill the purchase...
+                console.log(`Checkout Session was completed! Session ID: ${session.id}`);
+                if (session.id) {
+                    await TransactionService.updateTransactionStatusBySessionId(supabase, session.id, 'IN_VAULT');
+                }
+                break;
 
-    if (event.type === 'payment_intent.succeeded') {
-        const paymentIntent = event.data.object as any;
+            case 'payment_intent.succeeded':
+                // NOTE: checkout.session.completed is usually sufficient for Checkout flows, 
+                // but this is requested as a failsafe or for other flows.
+                const paymentIntent = event.data.object;
+                console.log(`PaymentIntent was successful! ID: ${paymentIntent.id}`);
+                // Logic to link PI to Transaction might differ if we only stored Session ID.
+                // Usually Checkout Session has the PI ID. 
+                // We will stick to Session ID for now as it's the primary key we stored.
+                break;
 
-        // 1. Update transaction and fetch data for notification
-        const { data: transaction, error: updateError } = await supabase
-            .from('transactions')
-            .update({ status: 'IN_VAULT' })
-            .eq('stripe_payment_intent_id', paymentIntent.id)
-            .select('seller_id, car_id, car_price')
-            .single();
+            case 'payment_intent.payment_failed':
+                const paymentIntentFailed = event.data.object;
+                console.log(`PaymentIntent failed. ID: ${paymentIntentFailed.id}`);
+                //  await TransactionService.updateTransactionStatusBySessionId(..., 'FAILED');
+                // Need to potentially map PI to Session if possible, or just log.
+                break;
 
-        if (updateError) {
-            console.error('Webhook DB update error:', updateError);
-        } else if (transaction) {
-            // 2. Create notification for Seller
-            await supabase
-                .from('notifications')
-                .insert({
-                    user_id: transaction.seller_id,
-                    title: '💰 ¡Bóveda Fondeada!',
-                    message: `El pago por tu auto de $${Number(transaction.car_price).toLocaleString()} ya está en la Bóveda Digital.`,
-                    type: 'FINANCIAL',
-                    link: '/dashboard'
-                });
+            default:
+                console.log(`Unhandled event type ${event.type}`);
         }
+    } catch (err: any) {
+        console.error(`Error handling event: ${err.message}`);
+        return NextResponse.json({ error: 'Error handling event' }, { status: 500 });
     }
 
     return NextResponse.json({ received: true });
 }
+
+export const dynamic = 'force-dynamic'; // Ensure it's not cached

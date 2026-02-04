@@ -47,11 +47,20 @@ export function TransactionList({ transactions, selectedId, onSelect }: Transact
                     >
                         <div className="flex items-start gap-3">
                             {/* Car Icon / Image Placeholder */}
+                            {/* Car Icon / Image Placeholder */}
                             <div className={cn(
-                                "h-10 w-10 rounded-lg flex items-center justify-center shrink-0 mt-0.5",
+                                "h-10 w-10 rounded-lg flex items-center justify-center shrink-0 mt-0.5 overflow-hidden",
                                 selectedId === tx.id ? "bg-slate-800 text-white" : "bg-slate-100 text-slate-500"
                             )}>
-                                <Car className="h-5 w-5" />
+                                {tx.image ? (
+                                    <img
+                                        src={tx.image}
+                                        alt={tx.carName}
+                                        className="h-full w-full object-cover"
+                                    />
+                                ) : (
+                                    <Car className="h-5 w-5" />
+                                )}
                             </div>
 
                             <div className="flex-1 min-w-0">

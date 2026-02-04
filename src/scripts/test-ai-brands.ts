@@ -29,7 +29,7 @@ async function runTests() {
         console.log(`🧪 Testing: ${test.name}`);
         console.log(`📝 Input: "${test.input}"`);
 
-        const response = generateAIBrainResponse(test.input);
+        const response = await generateAIBrainResponse(test.input);
 
         const recommendations = response.recommendations || [];
         console.log(`🚗 Recommendations: ${recommendations.map(r => `${r.make} ${r.model}`).join(', ')}`);

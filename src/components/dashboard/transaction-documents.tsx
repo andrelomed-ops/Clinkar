@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { createClient } from "@/lib/supabase/client";
+import { createBrowserClient } from "@/lib/supabase/client";
 import { FileText, Upload, Check, Loader2, Link as LinkIcon } from "lucide-react";
 
 interface DocUploadProps {
@@ -11,7 +11,7 @@ interface DocUploadProps {
 export function TransactionDocuments({ transactionId }: DocUploadProps) {
     const [uploading, setUploading] = useState(false);
     const [docs, setDocs] = useState<any[]>([]);
-    const supabase = createClient();
+    const supabase = createBrowserClient();
 
     const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>, name: string) => {
         if (!e.target.files?.[0]) return;

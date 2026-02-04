@@ -1,15 +1,32 @@
 "use client";
 
-import { Shield, FileText, AlertTriangle, CheckCircle2, ArrowRight } from "lucide-react";
-import { useState } from "react";
+import { Shield, FileText, AlertTriangle, CheckCircle2, ArrowRight, Loader2 } from "lucide-react";
+import { useState, useEffect } from "react";
+import { PldMonitor } from "./PldMonitor";
+import { createBrowserClient } from "@/lib/supabase/client";
 
 export function LegalServicesView() {
-    // Mock Debt State
-    const [debts] = useState([
-        { id: 1, concept: "Tenencia 2025", amount: 1500, status: "PENDING" },
-        { id: 2, concept: "Verificación Vehicular", amount: 650, status: "PENDING" },
-        { id: 3, concept: "Multa CDMX - Exceso Velocidad", amount: 0, status: "PAID" },
-    ]);
+    const [debts, setDebts] = useState<any[]>([]);
+    const [loading, setLoading] = useState(true);
+    const supabase = createBrowserClient();
+
+    useEffect(() => {
+        async function loadDebts() {
+            try {
+                const { data } = await supabase
+                    .from('car_debts')
+                    .select('*')
+                    .order('created_at', { ascending: false });
+
+                if (data) setDebts(data);
+            } catch (e) {
+                console.error("Error loading debts", e);
+            } finally {
+                setLoading(false);
+            }
+        }
+        loadDebts();
+    }, []);
 
     const totalDebt = debts.reduce((acc, curr) => curr.status === "PENDING" ? acc + curr.amount : acc, 0);
 
@@ -17,8 +34,8 @@ export function LegalServicesView() {
         <section className="bg-background rounded-[2.5rem] border border-border shadow-sm overflow-hidden">
             <div className="p-8 border-b border-border/50">
                 <div className="flex items-center justify-between mb-2">
-                    <h2 className="text-2xl font-black tracking-tight flex items-center gap-3">
-                        <FileText className="h-6 w-6 text-primary" />
+                    <h2 className="text-2xl font-black tracking-tight flex items-center gap-3 text-zinc-900 dark:text-zinc-100">
+                        <FileText className="h-6 w-6 text-indigo-600" />
                         Estatus Legal y Gestoría
                     </h2>
                     {totalDebt > 0 ? (
@@ -33,13 +50,13 @@ export function LegalServicesView() {
                         </div>
                     )}
                 </div>
-                <p className="text-muted-foreground">Monitor de obligaciones vehiculares y multas.</p>
+                <p className="text-zinc-500 dark:text-zinc-400">Monitor de obligaciones vehiculares y multas.</p>
             </div>
 
             <div className="p-8 grid md:grid-cols-2 gap-8">
                 {/* Debt List */}
                 <div className="space-y-4">
-                    <h3 className="font-bold text-sm text-muted-foreground uppercase tracking-widest">Detalle de Adeudos</h3>
+                    <h3 className="font-bold text-sm text-zinc-500 uppercase tracking-widest">Detalle de Adeudos</h3>
                     <div className="space-y-3">
                         {debts.map((debt) => (
                             <div key={debt.id} className="flex items-center justify-between p-4 rounded-2xl bg-secondary/30">
@@ -51,11 +68,11 @@ export function LegalServicesView() {
                                             <div className="h-2.5 w-2.5 rounded-full bg-red-500" />
                                         </div>
                                     )}
-                                    <span className={`font-medium ${debt.status === "PAID" ? "text-muted-foreground line-through" : "text-foreground"}`}>
+                                    <span className={`font-medium ${debt.status === "PAID" ? "text-zinc-400 line-through" : "text-zinc-900 dark:text-zinc-100"}`}>
                                         {debt.concept}
                                     </span>
                                 </div>
-                                <span className="font-bold font-mono">
+                                <span className="font-bold font-mono text-zinc-900 dark:text-zinc-100">
                                     ${debt.amount.toLocaleString()}
                                 </span>
                             </div>
@@ -70,25 +87,30 @@ export function LegalServicesView() {
                             <Shield className="h-4 w-4" />
                             Servicio Clinkar
                         </div>
-                        <h3 className="text-xl font-bold">¿Quieres entregar "Sin Adeudos"?</h3>
-                        <p className="text-sm text-muted-foreground leading-relaxed">
+                        <h3 className="text-xl font-bold text-zinc-900 dark:text-zinc-100">¿Quieres entregar &quot;Sin Adeudos&quot;?</h3>
+                        <p className="text-sm text-zinc-600 dark:text-zinc-300 leading-relaxed">
                             No pierdas tiempo en filas. Clinkar puede realizar la gestión y pago de estos trámites por ti. El pago de estos servicios se realiza de forma adicional e independiente al precio de venta.
                         </p>
                     </div>
 
                     <div className="mt-8 pt-6 border-t border-border/50 flex items-center justify-between">
                         <div>
-                            <span className="block text-[10px] font-bold text-muted-foreground uppercase">Total a pagar</span>
-                            <span className="text-2xl font-black text-foreground">${totalDebt.toLocaleString()}</span>
+                            <span className="block text-[10px] font-bold text-zinc-500 uppercase">Total a pagar</span>
+                            <span className="text-2xl font-black text-zinc-900 dark:text-white">${totalDebt.toLocaleString()}</span>
                             <span className="text-[10px] text-muted-foreground ml-1">(+ Comisión)</span>
                         </div>
-                        <button className="h-12 px-6 bg-primary text-primary-foreground font-bold rounded-xl shadow-lg shadow-primary/20 hover:scale-105 active:scale-95 transition-all flex items-center gap-2">
+                        <button className="h-12 px-6 bg-indigo-600 text-white font-bold rounded-xl shadow-lg shadow-primary/20 hover:scale-105 active:scale-95 transition-all flex items-center gap-2">
                             Solicitar Gestoría
                             <ArrowRight className="h-4 w-4" />
                         </button>
                     </div>
                 </div>
             </div>
-        </section>
+
+            {/* PLD Screening Module Integration */}
+            <div className="p-8 border-t border-border/50 bg-secondary/10">
+                <PldMonitor />
+            </div>
+        </section >
     );
 }

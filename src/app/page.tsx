@@ -1,230 +1,179 @@
-import { Shield, Car, CheckCircle2, Smartphone, ArrowRight, Lock, Search } from "lucide-react";
+import { ShieldCheck, ArrowRight, Lock, FileCheck, Wrench, CheckCircle2 } from "lucide-react";
+import { ClinkarSeal } from "@/components/market/ClinkarSeal";
 import Link from "next/link";
+import { HeroTrackerDemo } from "@/components/landing/HeroTrackerDemo";
+import { Navbar } from "@/components/ui/navbar";
+import { JsonLd } from "@/components/seo/JsonLd";
 
 export default function Home() {
   return (
-    <div className="flex min-h-screen flex-col bg-background selection:bg-primary/20">
-      {/* Navigation */}
-      <nav className="fixed top-0 z-50 w-full border-b border-border/40 bg-background/80 backdrop-blur-md">
-        <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-6">
-          <div className="flex items-center gap-2">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary">
-              <Shield className="h-5 w-5 text-primary-foreground" />
-            </div>
-            <span className="text-xl font-bold tracking-tight text-foreground">Clinkar</span>
-          </div>
-          <div className="hidden items-center gap-8 md:flex">
-            <Link href="#how-it-works" className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground">Cómo funciona</Link>
-            <Link href="#roles" className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground">Servicios</Link>
-            <Link href="/login" className="text-sm font-bold text-foreground transition-colors hover:text-primary">Iniciar sesión</Link>
-            <Link href="/register" className="inline-flex h-9 items-center justify-center rounded-full bg-primary px-5 text-sm font-bold text-primary-foreground transition-colors hover:bg-primary/90">
-              Crear Cuenta
-            </Link>
-          </div>
-        </div>
-      </nav>
+    <div className="flex min-h-screen flex-col bg-background text-foreground transition-colors duration-500">
+      <JsonLd data={{
+        "@context": "https://schema.org",
+        "@type": "Organization",
+        "name": "Clinkar",
+        "url": "https://clinkar.com",
+        "logo": "https://clinkar.com/icon-512.png",
+        "contactPoint": {
+          "@type": "ContactPoint",
+          "telephone": "+52-55-0000-0000",
+          "contactType": "customer service",
+          "areaServed": "MX",
+          "availableLanguage": "Spanish"
+        },
+        "sameAs": [
+          "https://facebook.com/clinkar",
+          "https://twitter.com/clinkar",
+          "https://instagram.com/clinkar"
+        ]
+      }} />
+      <JsonLd data={{
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        "name": "Clinkar",
+        "url": "https://clinkar.com",
+        "potentialAction": {
+          "@type": "SearchAction",
+          "target": "https://clinkar.com/buy?q={search_term_string}",
+          "query-input": "required name=search_term_string"
+        }
+      }} />
 
-      <main className="flex-1">
-        {/* Hero Section */}
-        <section className="relative overflow-hidden pt-32 pb-20 md:pt-48 md:pb-32">
-          <div className="mx-auto max-w-7xl px-6">
-            <div className="max-w-4xl mx-auto text-center">
-              <div className="inline-flex items-center rounded-full border border-primary/20 bg-primary/5 px-3 py-1 text-sm font-medium text-primary mb-8 backdrop-blur-sm">
-                <span className="flex h-2 w-2 rounded-full bg-primary mr-2 animate-pulse"></span>
-                El estandar de seguridad automotriz
+      <Navbar variant="home" />
+
+      <main className="flex-1 pt-32">
+
+        {/* --- HERO SECTION: Pure & Trust-Based --- */}
+        <section className="px-6 pb-24 md:pb-32 border-b border-border">
+          <div className="mx-auto max-w-7xl grid lg:grid-cols-2 gap-20 items-center">
+
+            {/* Left: Manifesto Copy */}
+            <div className="space-y-8">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-border bg-secondary">
+                <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Bóveda Digital Activa</span>
               </div>
 
-              {/* BRAND FIRST HERO */}
-              <h1 className="text-6xl font-black tracking-tighter text-foreground md:text-8xl mb-6">
-                Haz <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600 italic">"Clink Clink"</span> <br />
-                con Clinkar.
-              </h1>
+              <div className="relative">
+                <div className="absolute -inset-10 bg-gradient-to-r from-indigo-500/20 to-purple-500/20 blur-[60px] opacity-50 animate-pulse pointer-events-none" />
+                <h1 className="text-6xl md:text-8xl font-black font-heading tracking-tighter leading-[0.95] text-foreground animate-reveal relative z-10">
+                  Confianza <br />
+                  <span className="text-gradient">Transparente.</span>
+                </h1>
+              </div>
 
-              <p className="mt-10 text-xl md:text-2xl font-medium text-muted-foreground max-w-3xl mx-auto leading-relaxed">
-                Tu dinero no se mueve hasta que tienes las llaves y el contrato.
-                <br className="hidden md:block" />
-                <span className="text-sm md:text-base text-slate-500 font-normal mt-2 block">
-                  La única plataforma que blinda tu compra con Bóveda Digital y Sellos de Certificación.
-                </span>
+              <p className="text-xl text-muted-foreground max-w-lg leading-relaxed font-medium animate-reveal stagger-1">
+                La plataforma de compra-venta automotriz diseñada para la seguridad total. <strong>0% Comisión para el comprador</strong> y revisión mecánica certificada por expertos.
               </p>
 
-              <div className="mt-10 flex flex-col sm:flex-row justify-center gap-4">
-                <Link href="/register" className="inline-flex h-14 items-center justify-center rounded-full bg-slate-900 px-8 text-lg font-bold text-white transition-all hover:scale-105 hover:bg-slate-800 shadow-xl shadow-primary/20">
-                  <Car className="mr-2 h-5 w-5" />
-                  Quiero Vender
+              <div className="flex flex-col sm:flex-row gap-4 pt-4 animate-reveal stagger-2">
+                <Link href="/buy" className="h-14 px-8 rounded-full bg-primary text-primary-foreground font-bold text-lg flex items-center justify-center gap-2 hover:opacity-90 transition-all active:scale-95 shadow-xl shadow-primary/10 glow-on-hover px-10">
+                  Explorar Inventario
                 </Link>
-                <Link href="/market" className="inline-flex h-14 items-center justify-center rounded-full border-2 border-slate-200 bg-white px-8 text-lg font-bold text-slate-900 transition-all hover:bg-slate-50 hover:border-slate-300">
-                  Quiero Comprar
+                <Link href="/sell" className="h-14 px-8 rounded-full border border-border bg-background text-foreground font-bold text-lg flex items-center justify-center gap-2 hover:bg-muted transition-all active:scale-95">
+                  Vender Auto
                 </Link>
               </div>
             </div>
-          </div>
 
-          {/* Abstract Background */}
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 -z-10 h-[600px] w-[600px] rounded-full bg-gradient-to-tr from-blue-500/10 to-purple-500/10 blur-[100px]" />
+            {/* Right: The Demo (Minimalist) */}
+            <div className="relative animate-reveal animate-float stagger-3">
+              <HeroTrackerDemo />
+            </div>
+
+          </div>
         </section>
 
-        {/* Value Props / How it works simplified */}
-        <section id="how-it-works" className="py-24 bg-slate-50 relative overflow-hidden">
-          <div className="mx-auto max-w-7xl px-6 relative z-10">
-            <div className="text-center mb-16">
-              <h2 className="text-3xl font-black tracking-tight md:text-5xl mb-4">Así de simple. Así de seguro.</h2>
-              <p className="text-lg text-slate-600">El ecosistema Clinkar en 3 pasos.</p>
+        {/* --- THE 3 PILLARS (Security First) --- */}
+        <section id="security" className="py-24 bg-background border-t border-border">
+          <div id="how-it-works" className="scroll-mt-32" />
+          <div className="mx-auto max-w-7xl px-6">
+            <div className="mb-16 max-w-2xl">
+              <h2 className="text-3xl md:text-4xl font-bold font-heading mb-4 tracking-tight text-foreground">El Estándar de Seguridad Clinkar.</h2>
+              <p className="text-muted-foreground text-lg">
+                No somos solo un marketplace. Somos el árbitro imparcial que garantiza la integridad de cada transacción a través de 3 pilares inquebrantables.
+              </p>
             </div>
 
             <div className="grid md:grid-cols-3 gap-8">
-              {/* Step 1 */}
-              <div className="bg-white p-8 rounded-[2.5rem] shadow-sm border border-slate-100 hover:shadow-xl transition-all duration-300 group">
-                <div className="h-14 w-14 bg-amber-100 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
-                  <Lock className="h-7 w-7 text-amber-600" />
+
+              {/* Pillar 1: Mechanical */}
+              <div className="glass-card p-8 rounded-3xl animate-reveal stagger-1">
+                <div className="h-12 w-12 bg-indigo-500/10 rounded-2xl flex items-center justify-center mb-6 text-indigo-500">
+                  <Wrench className="h-6 w-6" />
                 </div>
-                <h3 className="text-2xl font-bold mb-3 text-slate-900">1. Tu Dinero Protegido</h3>
-                <p className="text-slate-500 leading-relaxed">
-                  Transfieres el monto a una <strong>Cuenta Segura</strong>. El vendedor ve que el dinero está ahí, pero <strong>NO</strong> puede tocarlo todavía.
+                <h3 className="text-xl font-bold font-heading mb-3 text-foreground">1. Revisión Mecánica</h3>
+                <p className="text-muted-foreground leading-relaxed text-sm">
+                  150 puntos de inspección certificados por expertos. Si el auto no pasa la revisión física, no se publica. Tú ves exactamente lo que compras, sin filtros.
                 </p>
               </div>
 
-              {/* Step 2 */}
-              <div className="bg-white p-8 rounded-[2.5rem] shadow-sm border border-slate-100 hover:shadow-xl transition-all duration-300 group relative">
-                {/* Connector Line for Desktop */}
-                <div className="hidden md:block absolute top-1/2 -left-6 w-12 h-0.5 bg-slate-200 -z-10" />
-
-                <div className="h-14 w-14 bg-blue-100 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
-                  <Shield className="h-7 w-7 text-blue-600" />
+              {/* Pillar 2: Legal */}
+              <div className="glass-card p-8 rounded-3xl animate-reveal stagger-2">
+                <div className="h-12 w-12 bg-emerald-500/10 rounded-2xl flex items-center justify-center mb-6 text-emerald-500">
+                  <ShieldCheck className="h-6 w-6" />
                 </div>
-                <h3 className="text-2xl font-bold mb-3 text-slate-900">2. Triple Validación</h3>
-                <p className="text-slate-500 leading-relaxed text-sm">
-                  Clinkar certifica antes de entregar:
-                  <br />
-                  <span className="text-blue-600 font-bold block mt-1">✓ Mecánica (Sin fallas)</span>
-                  <span className="text-purple-600 font-bold block">✓ Legal (Sin adeudos)</span>
-                  <span className="text-slate-900 font-bold block">✓ Contrato (Firma Digital)</span>
+                <h3 className="text-xl font-bold font-heading mb-3 text-foreground">2. Validación Legal</h3>
+                <p className="text-muted-foreground leading-relaxed text-sm">
+                  Conexión directa con bases de datos gubernamentales (REPUVE, Fiscalía). Garantizamos &quot;0 Adeudos&quot; y &quot;0 Reportes de Robo&quot; antes de firmar.
                 </p>
               </div>
 
-              {/* Step 3 */}
-              <div className="bg-slate-900 p-8 rounded-[2.5rem] shadow-xl hover:shadow-2xl hover:shadow-purple-500/20 transition-all duration-300 group text-white relative overflow-hidden">
-                <div className="absolute top-0 right-0 p-32 bg-purple-500/20 blur-[80px] rounded-full -translate-y-1/2 translate-x-1/2 pointer-events-none" />
-
-                {/* Connector Line for Desktop */}
-                <div className="hidden md:block absolute top-1/2 -left-6 w-12 h-0.5 bg-slate-200 -z-10" />
-
-                <div className="h-14 w-14 bg-white/10 rounded-2xl flex items-center justify-center mb-6 backdrop-blur-md group-hover:rotate-12 transition-transform duration-300">
-                  <Smartphone className="h-7 w-7 text-white" />
+              {/* Pillar 3: Contract */}
+              <div className="glass-card p-8 rounded-3xl animate-reveal stagger-3">
+                <div className="h-12 w-12 bg-blue-500/10 rounded-2xl flex items-center justify-center mb-6 text-blue-500">
+                  <FileCheck className="h-6 w-6" />
                 </div>
-                <h3 className="text-2xl font-bold mb-3">3. ¡Haz Clink Clink!</h3>
-                <p className="text-slate-300 leading-relaxed">
-                  Si todo está en orden, autorizas la liberación con un clic. El vendedor cobra al instante y tú te llevas las llaves.
+                <h3 className="text-xl font-bold font-heading mb-3 text-foreground">3. Contrato Blindado</h3>
+                <p className="text-muted-foreground leading-relaxed text-sm">
+                  Nuestra tecnología genera contratos con validez jurídica oficial. Firmas digitales con sellos de tiempo que protegen a ambas partes Legalmente.
                 </p>
               </div>
+
             </div>
           </div>
         </section>
 
-        {/* Roles / Features */}
-        <section id="roles" className="py-24">
-          <div className="mx-auto max-w-7xl px-6">
-            <div className="grid md:grid-cols-2 gap-16 items-center">
-              <div className="space-y-8">
-                <h2 className="text-4xl font-black text-slate-900">
-                  Tu copiloto transaccional.<br />
-                  <span className="text-primary">Olvídate de la burocracia.</span>
-                </h2>
-                <p className="text-lg text-slate-600">
-                  Clinkar es la única app que integra la parte legal, financiera y mecánica en un solo flujo.
-                </p>
-
-                <div className="space-y-6">
-                  <div className="flex gap-4">
-                    <div className="h-12 w-12 rounded-full bg-green-100 flex items-center justify-center shrink-0">
-                      <CheckCircle2 className="h-6 w-6 text-green-600" />
-                    </div>
-                    <div>
-                      <h4 className="font-bold text-xl text-slate-900">100% Sin Sorpresas</h4>
-                      <p className="text-slate-500">Si el auto tiene multas o fallas, te lo decimos ANTES de que pagues. Tú decides si negocias o cancelas.</p>
-                    </div>
+        {/* --- SECONDARY VALUES & CTA --- */}
+        <section className="py-24 px-6 border-t border-border">
+          <div className="mx-auto max-w-7xl grid md:grid-cols-2 gap-16 items-center">
+            <div>
+              <h2 className="text-3xl font-bold font-heading mb-6">Más allá de la seguridad.</h2>
+              <ul className="space-y-6">
+                <li className="flex gap-4 items-start">
+                  <span className="h-6 w-6 rounded-full bg-secondary flex items-center justify-center text-xs font-bold shrink-0">AI</span>
+                  <div>
+                    <h4 className="font-bold text-foreground">Inteligencia de Datos</h4>
+                    <p className="text-sm text-muted-foreground">Precios justos calculados algorítmicamente.</p>
                   </div>
-
-                  <div className="flex gap-4">
-                    <div className="h-12 w-12 rounded-full bg-purple-100 flex items-center justify-center shrink-0">
-                      <Shield className="h-6 w-6 text-purple-600" />
-                    </div>
-                    <div>
-                      <h4 className="font-bold text-xl text-slate-900">Contrato Digital Blindado</h4>
-                      <p className="text-slate-500">Generamos un contrato con validez legal firmado digitalmente por ambas partes. Cero papeleo.</p>
-                    </div>
+                </li>
+                <li className="flex gap-4 items-start">
+                  <div className="h-6 w-6 rounded-full bg-emerald-100 flex items-center justify-center shrink-0">
+                    <CheckCircle2 className="h-3 w-3 text-emerald-600" />
                   </div>
-                </div>
-              </div>
-
-              {/* Right side visual - Abstract Dashboard Representation */}
-              <div className="relative">
-                <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-purple-500 rounded-[3rem] blur-2xl opacity-20 transform rotate-3" />
-                <div className="relative bg-white border border-slate-200 rounded-[2.5rem] p-8 shadow-2xl space-y-6">
-                  {/* Fake Dashboard UI Snippet */}
-                  <div className="flex items-center justify-between border-b border-slate-100 pb-4">
-                    <div className="flex items-center gap-2">
-                      <div className="h-3 w-3 rounded-full bg-red-400" />
-                      <div className="h-3 w-3 rounded-full bg-amber-400" />
-                      <div className="h-3 w-3 rounded-full bg-green-400" />
-                    </div>
-                    <div className="text-xs font-bold text-slate-300">CLINKAR SAFE MONITOR</div>
+                  <div>
+                    <h4 className="font-bold text-foreground">0% Comisión Comprador</h4>
+                    <p className="text-sm text-muted-foreground">En Clinkar, el comprador no paga comisiones de gestión. Directo y transparente.</p>
                   </div>
+                </li>
+              </ul>
+            </div>
 
-                  <div className="space-y-4">
-                    <div className="p-4 bg-green-50 rounded-xl border border-green-100 flex items-center justify-between">
-                      <div className="flex items-center gap-3">
-                        <Shield className="h-5 w-5 text-green-600" />
-                        <span className="font-bold text-slate-900 text-sm">Certificado Mecánico</span>
-                      </div>
-                      <CheckCircle2 className="h-5 w-5 text-green-500" />
-                    </div>
-                    <div className="p-4 bg-green-50 rounded-xl border border-green-100 flex items-center justify-between">
-                      <div className="flex items-center gap-3">
-                        <Shield className="h-5 w-5 text-green-600" />
-                        <span className="font-bold text-slate-900 text-sm">Certificado Legal</span>
-                      </div>
-                      <CheckCircle2 className="h-5 w-5 text-green-500" />
-                    </div>
-                    {/* NEW: Contract Line */}
-                    <div className="p-4 bg-green-50 rounded-xl border border-green-100 flex items-center justify-between">
-                      <div className="flex items-center gap-3">
-                        <Shield className="h-5 w-5 text-green-600" />
-                        <span className="font-bold text-slate-900 text-sm">Contrato Digital</span>
-                      </div>
-                      <CheckCircle2 className="h-5 w-5 text-green-500" />
-                    </div>
-                  </div>
-
-                  <div className="pt-4">
-                    <div className="w-full h-12 bg-slate-900 rounded-xl flex items-center justify-center text-white font-bold gap-2">
-                      <Lock className="h-4 w-4" /> Liberar Fondos - "Clink Clink"
-                    </div>
-                  </div>
-                </div>
-              </div>
+            <div className="bg-secondary rounded-[2rem] p-12 text-center">
+              <h3 className="text-2xl font-bold font-heading mb-4 text-foreground">Experiencia Premium</h3>
+              <p className="text-muted-foreground mb-8">
+                Únete a la plataforma que prioriza la paz mental sobre la velocidad.
+              </p>
+              <Link href="/buy" className="inline-flex h-12 px-8 rounded-full bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 font-bold items-center hover:scale-105 transition-transform">
+                Ver Autos Certificados <ArrowRight className="ml-2 h-4 w-4" />
+              </Link>
             </div>
           </div>
         </section>
+
       </main>
 
-      <footer className="border-t border-border py-12 bg-white">
-        <div className="mx-auto max-w-7xl px-6 flex flex-col md:flex-row justify-between items-center gap-8">
-          <div className="flex items-center gap-2">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary">
-              <Shield className="h-5 w-5 text-primary-foreground" />
-            </div>
-            <span className="text-lg font-bold text-slate-900">Clinkar</span>
-          </div>
-          <p className="text-sm text-slate-500">
-            &copy; 2026 Clinkar. La plataforma más segura de LATAM.
-          </p>
-          <div className="flex gap-6">
-            <Link href="/privacy" className="text-sm font-bold text-slate-600 hover:text-primary">Privacidad</Link>
-            <Link href="/terms" className="text-sm font-bold text-slate-600 hover:text-primary">Términos</Link>
-          </div>
-        </div>
-      </footer>
+
     </div>
   );
 }
