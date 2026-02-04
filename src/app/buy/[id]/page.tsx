@@ -128,7 +128,7 @@ export default async function CarDetailsPage({ params }: { params: Promise<{ id:
                 </div>
             </nav>
 
-            <main className="pt-24 pb-32 max-w-7xl mx-auto px-4 sm:px-6">
+            <main className="pt-24 pb-32 max-w-7xl mx-auto px-4 sm:px-8">
                 <div className="grid lg:grid-cols-3 gap-12">
                     {/* Left Column: Visuals & Tech Info */}
                     <div className="lg:col-span-2 space-y-8">
@@ -333,7 +333,7 @@ export default async function CarDetailsPage({ params }: { params: Promise<{ id:
 
             {/* FLOATING ACTION BAR (Mobile Only) */}
             <div className="fixed bottom-0 left-0 right-0 pt-4 pb-[calc(1rem+env(safe-area-inset-bottom))] bg-white/80 dark:bg-zinc-900/90 backdrop-blur-lg border-t border-zinc-200 dark:border-zinc-800 lg:hidden z-40 animate-in slide-in-from-bottom-full duration-500">
-                <div className="flex items-center gap-4 max-w-7xl mx-auto pr-16">
+                <div className="flex items-center gap-4 max-w-7xl mx-auto">
                     <div className="flex-1">
                         <p className="text-xs text-zinc-500 dark:text-zinc-400 font-bold uppercase tracking-wide">Precio Total</p>
                         <p className="text-2xl font-black text-zinc-900 dark:text-white">${car.price.toLocaleString()}</p>

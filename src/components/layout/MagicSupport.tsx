@@ -85,7 +85,7 @@ export function MagicSupport() {
             "fixed right-8 z-[100] flex flex-col items-end gap-4 transition-all duration-500",
             // If on inspection page OR buy page (mobile), lift it up
             (isInspectionPage || (pathname.includes("/buy/") && !pathname.endsWith("/buy")))
-                ? "bottom-32 md:bottom-8"
+                ? "bottom-24 md:bottom-8"
                 : "bottom-8"
         )}>
             <AnimatePresence>

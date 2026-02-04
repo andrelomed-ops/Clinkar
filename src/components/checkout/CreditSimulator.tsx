@@ -106,16 +106,7 @@ export function CreditSimulator({ carPrice, carName, carId }: CreditSimulatorPro
                                 <h4 className="text-5xl font-black tracking-tighter text-indigo-600">{formatCurrency(monthlyPayment)}</h4>
                             </div>
 
-                            <div className="grid grid-cols-2 gap-4 pt-6 border-t border-zinc-200 dark:border-zinc-800">
-                                <div>
-                                    <p className="text-[10px] font-bold text-zinc-400 uppercase">Tasa Anual (CAT)</p>
-                                    <p className="font-bold text-lg">12.99%</p>
-                                </div>
-                                <div>
-                                    <p className="text-[10px] font-bold text-zinc-400 uppercase">Total Intereses</p>
-                                    <p className="font-bold text-lg text-emerald-600">{formatCurrency(totalInterest)}</p>
-                                </div>
-                            </div>
+                            <div className="pt-6 border-t border-zinc-200 dark:border-zinc-800 w-full" />
 
                             <Button
                                 asChild
