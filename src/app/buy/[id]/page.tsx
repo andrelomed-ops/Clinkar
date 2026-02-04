@@ -127,7 +127,7 @@ export default async function CarDetailsPage({ params }: { params: Promise<{ id:
                 </div>
             </nav>
 
-            <main className="pt-24 pb-20 max-w-7xl mx-auto px-6">
+            <main className="pt-24 pb-32 max-w-7xl mx-auto px-4 sm:px-6">
                 <div className="grid lg:grid-cols-3 gap-12">
                     {/* Left Column: Visuals & Tech Info */}
                     <div className="lg:col-span-2 space-y-8">
@@ -175,7 +175,7 @@ export default async function CarDetailsPage({ params }: { params: Promise<{ id:
                         </div>
 
                         {/* TRUST & SECURITY SECTION (Holographic) */}
-                        <div className="relative overflow-hidden rounded-3xl bg-zinc-900 border border-zinc-800 p-8 text-white isolate shadow-2xl">
+                        <div className="relative overflow-hidden rounded-3xl bg-zinc-900 border border-zinc-800 p-6 sm:p-8 text-white isolate shadow-2xl">
                             {/* Background Effects */}
                             <div className="absolute top-0 right-0 -mr-16 -mt-16 h-64 w-64 rounded-full bg-indigo-600/20 blur-3xl" />
                             <div className="absolute bottom-0 left-0 -ml-16 -mb-16 h-64 w-64 rounded-full bg-blue-600/20 blur-3xl" />
@@ -332,7 +332,7 @@ export default async function CarDetailsPage({ params }: { params: Promise<{ id:
 
             {/* FLOATING ACTION BAR (Mobile Only) */}
             <div className="fixed bottom-0 left-0 right-0 p-4 bg-white/80 dark:bg-zinc-900/90 backdrop-blur-lg border-t border-zinc-200 dark:border-zinc-800 lg:hidden z-40 animate-in slide-in-from-bottom-full duration-500">
-                <div className="flex items-center gap-4 max-w-7xl mx-auto">
+                <div className="flex items-center gap-4 max-w-7xl mx-auto pr-16">
                     <div className="flex-1">
                         <p className="text-xs text-zinc-500 dark:text-zinc-400 font-bold uppercase tracking-wide">Precio Total</p>
                         <p className="text-2xl font-black text-zinc-900 dark:text-white">${car.price.toLocaleString()}</p>
@@ -340,7 +340,7 @@ export default async function CarDetailsPage({ params }: { params: Promise<{ id:
                     <div className="flex-1">
                         <Link
                             href="#checkout-widget"
-                            className="flex items-center justify-center w-full py-3.5 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl shadow-lg shadow-blue-600/20 transition-all active:scale-95"
+                            className="flex items-center justify-center w-full py-3.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold rounded-xl shadow-lg shadow-blue-600/20 transition-all active:scale-95"
                         >
                             Comprar Ahora
                         </Link>
