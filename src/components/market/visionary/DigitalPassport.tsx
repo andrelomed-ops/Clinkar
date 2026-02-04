@@ -28,7 +28,7 @@ interface PassportData {
 
 export const DigitalPassport = ({ data }: { data: PassportData }) => {
     return (
-        <div className="relative group overflow-hidden rounded-[2.5rem] border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 p-8 md:p-12 shadow-2xl transition-all hover:border-indigo-500/30">
+        <div className="relative group overflow-hidden rounded-[2.5rem] border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 p-5 md:p-12 shadow-2xl transition-all hover:border-indigo-500/30 max-w-[100vw]">
             {/* Holographic Background Effect */}
             <div className="absolute -top-24 -right-24 h-64 w-64 bg-indigo-500/10 rounded-full blur-[80px] pointer-events-none group-hover:bg-indigo-500/20 transition-all duration-700" />
 
@@ -48,7 +48,7 @@ export const DigitalPassport = ({ data }: { data: PassportData }) => {
                         <ClinkarSeal variant="holographic" score={data.score} className="!p-3 border-none shadow-none" />
                     </div>
 
-                    <div className="flex items-center gap-3 px-4 py-2 bg-zinc-100 dark:bg-zinc-900 rounded-2xl border border-zinc-200 dark:border-zinc-800 md:max-w-md">
+                    <div className="flex items-center gap-3 px-4 py-2 bg-zinc-100 dark:bg-zinc-900 rounded-2xl border border-zinc-200 dark:border-zinc-800 md:max-w-md min-w-0 max-w-full">
                         <Hexagon className="h-4 w-4 text-indigo-500 shrink-0" />
                         <span className="text-[10px] font-mono text-zinc-500 truncate uppercase">Hash: {data.blockchainHash}</span>
                     </div>

@@ -76,7 +76,7 @@ export function InspectionSummary({ carId, compact = false }: InspectionSummaryP
 
     return (
         <div className={cn(
-            "glass-card p-6 md:p-8 rounded-[2.5rem] border-indigo-500/20 bg-indigo-500/[0.02] animate-reveal",
+            "glass-card p-5 md:p-8 rounded-[2.5rem] border-indigo-500/20 bg-indigo-500/[0.02] animate-reveal max-w-full overflow-hidden",
             compact ? "p-4 rounded-2xl" : ""
         )}>
             <div className="flex items-center justify-between mb-8">

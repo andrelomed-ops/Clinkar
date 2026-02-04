@@ -95,7 +95,7 @@ export default async function CarDetailsPage({ params }: { params: Promise<{ id:
     };
 
     return (
-        <div className="min-h-screen bg-white dark:bg-zinc-950 text-zinc-900 dark:text-zinc-50 transition-colors duration-500">
+        <div className="min-h-screen bg-white dark:bg-zinc-950 text-zinc-900 dark:text-zinc-50 transition-colors duration-500 overflow-x-hidden">
             <JsonLd data={{
                 "@context": "https://schema.org/",
                 "@type": "Product",
@@ -175,7 +175,7 @@ export default async function CarDetailsPage({ params }: { params: Promise<{ id:
                         </div>
 
                         {/* TRUST & SECURITY SECTION (Holographic) */}
-                        <div className="relative overflow-hidden rounded-3xl bg-zinc-900 border border-zinc-800 p-6 sm:p-8 text-white isolate shadow-2xl">
+                        <div className="relative overflow-hidden rounded-3xl bg-zinc-900 border border-zinc-800 p-5 sm:p-8 text-white isolate shadow-2xl">
                             {/* Background Effects */}
                             <div className="absolute top-0 right-0 -mr-16 -mt-16 h-64 w-64 rounded-full bg-indigo-600/20 blur-3xl" />
                             <div className="absolute bottom-0 left-0 -ml-16 -mb-16 h-64 w-64 rounded-full bg-blue-600/20 blur-3xl" />
