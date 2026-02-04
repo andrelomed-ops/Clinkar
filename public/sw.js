@@ -1,8 +1,10 @@
-const CACHE_NAME = 'clinkar-inspector-v1';
+const CACHE_NAME = 'clinkar-inspector-v3-shield';
 const ASSETS_TO_CACHE = [
     '/',
     '/manifest.json',
-    '/favicon.ico'
+    '/favicon.ico',
+    '/shield-icon-192.png',
+    '/shield-icon-512.png'
 ];
 
 self.addEventListener('install', (event) => {

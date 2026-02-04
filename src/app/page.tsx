@@ -48,7 +48,7 @@ export default function Home() {
           <div className="mx-auto max-w-7xl grid lg:grid-cols-2 gap-20 items-center">
 
             {/* Left: Manifesto Copy */}
-            <div className="space-y-8">
+            <div className="space-y-8 flex flex-col items-center lg:items-start text-center lg:text-left">
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-border bg-secondary">
                 <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse"></span>
                 <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Bóveda Digital Activa</span>
@@ -66,7 +66,7 @@ export default function Home() {
                 La plataforma de compra-venta automotriz diseñada para la seguridad total. <strong>0% Comisión para el comprador</strong> y revisión mecánica certificada por expertos.
               </p>
 
-              <div className="flex flex-col sm:flex-row gap-4 pt-4 animate-reveal stagger-2">
+              <div className="flex flex-col sm:flex-row gap-4 pt-4 animate-reveal stagger-2 w-full sm:w-auto justify-center lg:justify-start">
                 <Link href="/buy" className="h-14 px-8 rounded-full bg-primary text-primary-foreground font-bold text-lg flex items-center justify-center gap-2 hover:opacity-90 transition-all active:scale-95 shadow-xl shadow-primary/10 glow-on-hover px-10">
                   Explorar Inventario
                 </Link>

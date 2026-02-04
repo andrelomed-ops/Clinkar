@@ -44,8 +44,8 @@ export const metadata: Metadata = {
     title: "Clinkar",
   },
   icons: {
-    icon: "/icon-192.png",
-    apple: "/icon-192.png",
+    icon: "/shield-icon-192.png",
+    apple: "/shield-icon-192.png",
   },
   openGraph: {
     title: "Clinkar | Compraventa Segura de Autos",

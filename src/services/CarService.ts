@@ -19,7 +19,7 @@ export class CarService {
             .from('cars')
             .select('*')
             .eq('id', id)
-            .single();
+            .maybeSingle();
 
         const result = await BaseService.validateAndHandle(query as any, CarSchema);
 
