@@ -83,7 +83,10 @@ export function MagicSupport() {
     return (
         <div className={cn(
             "fixed right-8 z-[100] flex flex-col items-end gap-4 transition-all duration-500",
-            isInspectionPage ? "bottom-32 md:bottom-8" : "bottom-8"
+            // If on inspection page OR buy page (mobile), lift it up
+            (isInspectionPage || (pathname.includes("/buy/") && !pathname.endsWith("/buy")))
+                ? "bottom-32 md:bottom-8"
+                : "bottom-8"
         )}>
             <AnimatePresence>
                 {isOpen && (
@@ -196,6 +199,6 @@ export function MagicSupport() {
                 <div className="absolute inset-0 rounded-full bg-indigo-600 animate-ping opacity-20 group-hover:opacity-0" />
                 {isOpen ? <X className="h-6 w-6" /> : <Sparkles className="h-6 w-6" />}
             </motion.button>
-        </div>
+        </div >
     );
 }

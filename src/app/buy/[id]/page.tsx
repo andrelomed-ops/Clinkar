@@ -116,7 +116,8 @@ export default async function CarDetailsPage({ params }: { params: Promise<{ id:
                 }
             }} />
             {/* Navbar Placeholder - Just for back navigation mainly */}
-            <nav className="fixed top-0 z-50 w-full bg-white/80 dark:bg-zinc-950/80 backdrop-blur-md border-b border-zinc-200 dark:border-zinc-800">
+            {/* Navbar Placeholder - Just for back navigation mainly */}
+            <nav className="fixed top-0 z-50 w-full bg-white/80 dark:bg-zinc-950/80 backdrop-blur-md border-b border-zinc-200 dark:border-zinc-800 pt-[env(safe-area-inset-top)]">
                 <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
                     <Link href="/buy" className="flex items-center gap-2 text-sm font-medium text-zinc-500 hover:text-zinc-900 dark:hover:text-white transition-colors group">
                         <ArrowLeft className="h-4 w-4 group-hover:-translate-x-1 transition-transform" />
@@ -331,7 +332,7 @@ export default async function CarDetailsPage({ params }: { params: Promise<{ id:
             </main>
 
             {/* FLOATING ACTION BAR (Mobile Only) */}
-            <div className="fixed bottom-0 left-0 right-0 p-4 bg-white/80 dark:bg-zinc-900/90 backdrop-blur-lg border-t border-zinc-200 dark:border-zinc-800 lg:hidden z-40 animate-in slide-in-from-bottom-full duration-500">
+            <div className="fixed bottom-0 left-0 right-0 pt-4 pb-[calc(1rem+env(safe-area-inset-bottom))] bg-white/80 dark:bg-zinc-900/90 backdrop-blur-lg border-t border-zinc-200 dark:border-zinc-800 lg:hidden z-40 animate-in slide-in-from-bottom-full duration-500">
                 <div className="flex items-center gap-4 max-w-7xl mx-auto pr-16">
                     <div className="flex-1">
                         <p className="text-xs text-zinc-500 dark:text-zinc-400 font-bold uppercase tracking-wide">Precio Total</p>
