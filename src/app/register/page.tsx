@@ -32,7 +32,7 @@ export default function RegisterPage() {
                     full_name: fullName,
                     role: role,
                 },
-                emailRedirectTo: `${window.location.origin}/auth/callback`,
+                emailRedirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent("/dashboard?verified=true")}`,
             },
         });
 

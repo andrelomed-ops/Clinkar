@@ -2,8 +2,10 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Shield, CreditCard, Clock, CheckCircle2, QrCode, ArrowRight, MapPin, Wrench, Car, Sparkles, Smartphone, Heart } from "lucide-react";
+import confetti from "canvas-confetti";
+import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { VaultStatus } from "@/components/dashboard/VaultStatus";
@@ -25,6 +27,7 @@ import { createBrowserClient } from "@/lib/supabase/client";
 
 export default function DashboardPage() {
     const router = useRouter();
+    const searchParams = useSearchParams();
     const [transactions, setTransactions] = useState<any[]>([]);
     const [selectedId, setSelectedId] = useState<string | null>(null);
     const [mounted, setMounted] = useState(false);
@@ -35,6 +38,42 @@ export default function DashboardPage() {
     const [activeTab, setActiveTab] = useState<"buying" | "selling">("buying");
 
     const supabase = createBrowserClient();
+
+    useEffect(() => {
+        if (searchParams.get("verified") === "true") {
+            const end = Date.now() + 3 * 1000;
+            const colors = ["#4F46E5", "#10B981", "#F59E0B"];
+
+            (function frame() {
+                confetti({
+                    particleCount: 3,
+                    angle: 60,
+                    spread: 55,
+                    origin: { x: 0 },
+                    colors: colors
+                });
+                confetti({
+                    particleCount: 3,
+                    angle: 120,
+                    spread: 55,
+                    origin: { x: 1 },
+                    colors: colors
+                });
+
+                if (Date.now() < end) {
+                    requestAnimationFrame(frame);
+                }
+            }());
+
+            toast.success("¡Cuenta Verificada!", {
+                description: "Tu correo ha sido confirmado exitosamente. Bienvenido a Clinkar.",
+                duration: 5000,
+            });
+
+            // Clean URL
+            router.replace("/dashboard");
+        }
+    }, [searchParams, router]);
 
     useEffect(() => {
         async function loadDashboard() {

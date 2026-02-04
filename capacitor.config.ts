@@ -5,7 +5,7 @@ const config: CapacitorConfig = {
   appName: 'Clinkar',
   webDir: 'public',
   server: {
-    url: 'https://clinkar-enterprise.vercel.app', // Placeholder URL
+    url: 'https://clinkar.vercel.app',
     cleartext: true
   }
 };
