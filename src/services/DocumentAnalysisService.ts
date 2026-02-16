@@ -1,3 +1,5 @@
+import { IOcrProvider } from './ocr/OcrProvider';
+import { OpenAiOcrProvider } from './ocr/OpenAiOcrProvider';
 
 export interface AnalysedData {
     vin?: string;
@@ -22,31 +24,58 @@ export interface DocumentAnalysisResult {
 }
 
 export class DocumentAnalysisService {
+    private static provider: IOcrProvider | null = null;
 
-    // Simulate AI processing time and result
-    static async analyzeDocument(imageUrl: string, expectedType?: 'INE' | 'CIRCULATION_CARD' | 'INVOICE'): Promise<DocumentAnalysisResult> {
-        console.log(`[AI Brain] Analyzing image: ${imageUrl}`);
+    private static getProvider(): IOcrProvider | null {
+        if (this.provider) return this.provider;
 
-        // Simulate network latency (Thinking...)
-        await new Promise(resolve => setTimeout(resolve, 2500));
+        const apiKey = process.env.OPENAI_API_KEY || process.env.NEXT_PUBLIC_OPENAI_API_KEY;
+        if (apiKey && apiKey !== 'sk-placeholder') {
+            this.provider = new OpenAiOcrProvider(apiKey);
+            return this.provider;
+        }
+        return null;
+    }
 
-        // Return Mock Data based on expected type
+    // Process image using real provider or static mock
+    static async analyzeDocument(
+        imageUrl: string,
+        expectedType?: 'INE' | 'CIRCULATION_CARD' | 'INVOICE',
+        options: { useAi?: boolean, forceDemo?: boolean } = { useAi: true, forceDemo: false }
+    ): Promise<DocumentAnalysisResult> {
+        const realProvider = this.getProvider();
+
+        // [COST-ZERO OPTIMIZATION]
+        // Use real AI only if requested AND provider is available AND not forced to demo
+        if (realProvider && expectedType && options.useAi && !options.forceDemo) {
+            return await realProvider.analyzeDocument(imageUrl, expectedType);
+        }
+
+        // FALLBACK: Demo / Mock Logic (Costo 0)
+        console.log(`[AI Brain - DEMO MODE] Analyzing image: ${imageUrl}`);
+
+        // Simple heuristic to differentiate demo data based on URL
+        const isAlternate = imageUrl.length % 2 === 0;
+
+        await new Promise(resolve => setTimeout(resolve, 1500));
+
         if (expectedType === 'CIRCULATION_CARD') {
             return {
                 type: 'CIRCULATION_CARD',
                 confidence: 0.98,
                 data: {
-                    vin: '5YJ3E1EBXKFP8XXXX', // Tesla VIN example
-                    plate: 'ABC-123-CDMX',
-                    owner: 'Juan Pérez',
-                    model: 'Tesla Model 3',
-                    year: '2022'
+                    vin: isAlternate ? 'VIN-123456' : 'VIN-987654',
+                    plate: isAlternate ? 'PLACA-MX' : 'PLATE-USA',
+                    owner: isAlternate ? 'USUARIO PRUEBA' : 'CLIENTE EJEMPLO',
+                    model: isAlternate ? 'AUTO PRUEBA' : 'VEHICULO EJEMPLO',
+                    year: '2024'
                 },
                 isValid: true,
                 extractedData: {
-                    vin: '5YJ3E1EBXKFP8XXXX',
-                    plate: 'ABC-123-CDMX'
-                }
+                    vin: isAlternate ? 'VIN-123456' : 'VIN-987654',
+                    plate: isAlternate ? 'PLACA-MX' : 'PLATE-USA'
+                },
+                issues: ['Modo de demostración activo']
             };
         }
 
@@ -55,15 +84,13 @@ export class DocumentAnalysisService {
                 type: 'INE',
                 confidence: 0.99,
                 data: {
-                    name: 'JUAN PÉREZ LÓPEZ',
-                    curp: 'PELJ800101HDFRXX01',
-                    address: 'AV REFORMA 222, CDMX',
-                    birth_year: '1980'
+                    name: 'USUARIO PRUEBA INE',
+                    curp: 'CURP-001',
+                    address: 'DIRECCION EJEMPLO 123'
                 },
                 isValid: true,
-                extractedData: {
-                    name: 'JUAN PÉREZ LÓPEZ'
-                }
+                extractedData: { name: 'USUARIO PRUEBA INE' },
+                issues: ['Modo de demostración activo']
             };
         }
 
@@ -72,7 +99,7 @@ export class DocumentAnalysisService {
             confidence: 0.2,
             data: {},
             isValid: false,
-            issues: ['Documento no reconocido', 'Baja calidad de imagen']
+            issues: ['Por favor, contacte a soporte para activar el análisis automático.', 'Modo de verificación manual activo']
         };
     }
 }

@@ -159,7 +159,7 @@ export function VerificationWizard() {
                                 ) : (
                                     <div className="text-center">
                                         <Camera className="h-12 w-12 text-zinc-300 mx-auto mb-2" />
-                                        <p className="text-sm text-zinc-400">Cámara Inactiva (Demo)</p>
+                                        <p className="text-sm text-zinc-400">Cámara pendiente de activación</p>
                                     </div>
                                 )}
                                 <input type="file" onChange={(e) => handleFileUpload('selfie', e)} className="absolute inset-0 opacity-0 cursor-pointer" accept="image/*" />
