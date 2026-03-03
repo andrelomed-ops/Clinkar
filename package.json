@@ -1,0 +1,10 @@
+{
+  "dependencies": {
+    "@stripe/react-stripe-js": "^5.5.0",
+    "@stripe/stripe-js": "^8.6.4",
+    "@supabase/supabase-js": "^2.93.2",
+    "micro": "^10.0.1",
+    "qrcode.react": "^4.2.0",
+    "stripe": "^20.2.0"
+  }
+}
