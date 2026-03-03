@@ -8,11 +8,8 @@ export async function POST(request: Request) {
         const supabase = await createClient();
         const { data: { user } } = await supabase.auth.getUser();
 
-        // NOTE: In a real protected app, we would enforce this. 
-        // For specific test flows where auth might be bypassed or mocked, strictly handled here.
         if (!user) {
-            // Allow for dev mode testing if needed, but normally 401. 
-            // return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
         }
 
         const body = await request.json();
@@ -50,10 +47,6 @@ export async function POST(request: Request) {
         );
 
         // 3. Create Transaction in Supabase
-        // Use user.id if logged in, otherwise fail if auth is required
-        if (!user) {
-            return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
-        }
         const buyerId = user.id;
 
         await TransactionService.createTransaction(supabase, {

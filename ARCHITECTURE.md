@@ -139,9 +139,27 @@ La carpeta `src/scripts/` contiene scripts de prueba/development. No ejecutar en
   - transaction: Stripe Elements inline
   - checkout: Redirección a Stripe
 
+### Logging
+- Usar `src/lib/logger.ts` en lugar de `console.log`
+- En producción solo muestra errores
+- En desarrollo muestra todos los logs con colores
+
 ---
 
-## 8. Variables de Entorno Requeridas
+## 9. Comandos de Desarrollo
+
+```bash
+npm run dev          # Desarrollo
+npm run build       # Build producción
+npm run lint        # Verificar errores
+npm test            # Unit tests
+npm run test:e2e   # E2E tests
+npm run test -- --coverage  # Coverage
+```
+
+---
+
+## 10. Variables de Entorno Requeridas
 
 ```env
 # Supabase
