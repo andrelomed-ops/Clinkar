@@ -6,6 +6,7 @@ import { TransactionSchema } from './schemas';
 import { PldService } from './PldService';
 import { VehicleCheckService } from './VehicleCheckService';
 import { SpeiService } from './SpeiService';
+import { Logger } from '@/lib/logger';
 
 export type Transaction = Database['public']['Tables']['transactions']['Row'];
 
@@ -20,7 +21,7 @@ export class TransactionService extends BaseService {
         logisticsQuote?: { cost: number; distance: number; origin: string; dest: string };
         warrantyQuote?: { cost: number; type: 'STANDARD' | 'EXTENDED' };
     }): Promise<Transaction | null> {
-        console.log(`[GATEKEEPER] Iniciando creación de transacción para ${data.sellerId} (Monto: $${data.amount})`);
+        Logger.info(`[GATEKEEPER] Iniciando creación de transacción para ${data.sellerId} (Monto: $${data.amount})`);
 
         // 1. PLD / AML Screening (PRE-TRANSACTION)
         // ... (Existing PLD logic) ...
@@ -52,7 +53,7 @@ export class TransactionService extends BaseService {
         const UMBRAL_AVISO = 720000;
 
         if (data.amount > UMBRAL_IDENTIFICACION) {
-            console.log(`[AML-ALERT] Operación supera umbral de identificación ($${UMBRAL_IDENTIFICACION}). Verificando estatus KYC...`);
+            Logger.info(`[AML-ALERT] Operación supera umbral de identificación ($${UMBRAL_IDENTIFICACION}). Verificando estatus KYC...`);
 
             // Check KYC Status in DB
             const { data: profile } = await supabase
@@ -70,7 +71,7 @@ export class TransactionService extends BaseService {
         }
 
         if (data.amount > UMBRAL_AVISO) {
-            console.warn(`[AML-CRITICAL] Operación supera umbral de AVISO ($${UMBRAL_AVISO}). Se requiere reporte a UIF.`);
+            Logger.warn(`[AML-CRITICAL] Operación supera umbral de AVISO ($${UMBRAL_AVISO}). Se requiere reporte a UIF.`);
         }
 
         // 3. Create Transaction (Including Services)
@@ -99,7 +100,7 @@ export class TransactionService extends BaseService {
         const typedTransaction = transaction as any;
 
         if (error) {
-            console.error('Error creating transaction:', error);
+            Logger.error('Error creating transaction:', error);
             throw new Error(error.message);
         }
 
@@ -179,7 +180,7 @@ export class TransactionService extends BaseService {
             .eq('stripe_session_id', sessionId);
 
         if (error) {
-            console.error(`Error updating transaction for session ${sessionId}:`, error);
+            Logger.error(`Error updating transaction for session ${sessionId}:`, error);
             throw new Error(error.message);
         }
 
@@ -212,7 +213,7 @@ export class TransactionService extends BaseService {
             .single();
 
         if (error) {
-            console.error(`Error getting transaction for session ${sessionId}:`, error);
+            Logger.error(`Error getting transaction for session ${sessionId}:`, error);
             return null;
         }
         return data as any;
@@ -231,7 +232,7 @@ export class TransactionService extends BaseService {
         const result = await this.validateAndHandle(query as any, TransactionSchema);
 
         if (!result.success) {
-            console.error(`[Fail-Safe] Error getting transaction ${id}:`, result.error);
+            Logger.error(`[Fail-Safe] Error getting transaction ${id}:`, result.error);
             return null;
         }
 
@@ -303,7 +304,7 @@ export class TransactionService extends BaseService {
             .order('created_at', { ascending: false });
 
         if (error) {
-            console.error('Error fetching all transactions:', error);
+            Logger.error('Error fetching all transactions:', error);
             return [];
         }
 
@@ -334,7 +335,7 @@ export class TransactionService extends BaseService {
             .eq('id', id);
 
         if (error) {
-            console.error(`Error saving services for transaction ${id}:`, error);
+            Logger.error(`Error saving services for transaction ${id}:`, error);
             return { success: false, error };
         }
 
@@ -357,7 +358,7 @@ export class TransactionService extends BaseService {
             .eq('id', id);
 
         if (error) {
-            console.error(`Error overriding status for transaction ${id}:`, error);
+            Logger.error(`Error overriding status for transaction ${id}:`, error);
             return { success: false, error };
         }
 
@@ -392,7 +393,7 @@ export class TransactionService extends BaseService {
             .single();
 
         if (fetchError || !transaction) {
-            console.error('Error fetching transaction for simulation:', fetchError);
+            Logger.error('Error fetching transaction for simulation:', fetchError);
             return false;
         }
 
@@ -405,7 +406,7 @@ export class TransactionService extends BaseService {
 
             // 2. Enforce Hard Block
             if (theftData.status === 'STOLEN') {
-                console.error(`[FRAUD-BLOCK] Vehículo reportado como ROBADO: ${vin}. Folio: ${theftData.folio}`);
+                Logger.error(`[FRAUD-BLOCK] Vehículo reportado como ROBADO: ${vin}. Folio: ${theftData.folio}`);
 
                 // Log Audit
                 await supabase.from('audit_logs' as any).insert({
@@ -432,7 +433,7 @@ export class TransactionService extends BaseService {
             await VehicleCheckService.generateCertificate(supabase, transactionId, theftData);
 
         } catch (checkError) {
-            console.error("Error en validación automática vehicular:", checkError);
+            Logger.error("Error en validación automática vehicular:", checkError);
             // Decide: Fail safe? Block if check fails? For now, we log and proceed but in production we might pause.
         }
         // ---------------------------------------------------
@@ -446,7 +447,7 @@ export class TransactionService extends BaseService {
             .eq('id', transactionId);
 
         if (updateError) {
-            console.error('Error updating transaction status:', updateError);
+            Logger.error('Error updating transaction status:', updateError);
             return false;
         }
 

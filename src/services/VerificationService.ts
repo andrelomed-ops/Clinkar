@@ -1,6 +1,7 @@
 import { Database } from '@/lib/database.types';
 import { SupabaseClient } from '@supabase/supabase-js';
 import { NotificationService } from './NotificationService';
+import { Logger } from '@/lib/logger';
 
 
 export interface PublicAuditData {
@@ -42,7 +43,7 @@ export class VerificationService {
             .single();
 
         if (carError || !car) {
-            console.error("Verification failed: Car not found", carId);
+            Logger.error("Verification failed: Car not found", new Error(carId));
             return null;
         }
 
@@ -112,7 +113,7 @@ export class VerificationService {
             .eq('id', transactionId);
 
         if (error) {
-            console.error('Error generating handover token:', error);
+            Logger.error('Error generating handover token:', error);
             return null;
         }
 
@@ -165,10 +166,10 @@ export class VerificationService {
             .single();
 
         if (fetchError || !transaction) {
-            console.error('Error fetching transaction for handover:', fetchError);
+            Logger.error('Error fetching transaction for handover:', fetchError);
             // FAILSAFE: If real DB fails (e.g. mock mode), simulate success for demo
             if (!transaction && process.env.NEXT_PUBLIC_SUPABASE_URL === 'https://placeholder.supabase.co') {
-                console.warn("⚠️ Using Mock Handover Confirmation (No DB Connection)");
+                Logger.warn("⚠️ Using Mock Handover Confirmation (No DB Connection)");
                 return { success: true };
             }
             return { success: false, error: fetchError };
@@ -184,7 +185,7 @@ export class VerificationService {
             .eq('id', transactionId);
 
         if (transError) {
-            console.error('Error updating transaction status:', transError);
+            Logger.error('Error updating transaction status:', transError);
             // FAILSAFE: If write permission fails in demo
             if (process.env.NEXT_PUBLIC_SUPABASE_URL?.includes('placeholder')) {
                 return { success: true };
@@ -199,7 +200,7 @@ export class VerificationService {
             .eq('id', (transaction as any).car_id);
 
         if (carError) {
-            console.error('Error updating car status:', carError);
+            Logger.error('Error updating car status:', carError);
         }
 
         // 4. Send Notifications

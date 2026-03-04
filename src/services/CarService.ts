@@ -2,6 +2,7 @@ import { Database } from '@/lib/database.types';
 import { SupabaseClient } from '@supabase/supabase-js';
 import { BaseService } from './BaseService';
 import { CarSchema } from './schemas';
+import { Logger } from '@/lib/logger';
 
 export type Car = Database['public']['Tables']['cars']['Row'];
 
@@ -11,7 +12,7 @@ export class CarService {
         const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id);
 
         if (!isUUID) {
-            console.log(`[CarService] ID '${id}' is not a UUID. Skipping DB fetch.`);
+            Logger.info(`[CarService] ID '${id}' is not a UUID. Skipping DB fetch.`);
             return null; // Fallback to mock data in Page
         }
 
@@ -49,7 +50,7 @@ export class CarService {
             .eq('status', 'PUBLISHED'); // Only show published cars
 
         if (error) {
-            console.error('Error fetching cars:', error);
+            Logger.error('Error fetching cars:', error);
             return [];
         }
 
@@ -64,11 +65,11 @@ export class CarService {
             .eq('id', id);
 
         if (error) {
-            console.error(`[CarService] Failed to update car ${id} status to ${status}:`, error);
+            Logger.error(`[CarService] Failed to update car ${id} status to ${status}:`, error);
             return false;
         }
 
-        console.log(`[CarService] Car ${id} locked with status: ${status}`);
+        Logger.info(`[CarService] Car ${id} locked with status: ${status}`);
         return true;
     }
 }
