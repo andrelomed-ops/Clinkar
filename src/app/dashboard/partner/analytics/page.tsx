@@ -15,7 +15,7 @@ import {
 import Link from "next/link";
 
 const PerformanceCharts = dynamic(
-    () => import("@/components/dashboard/partner/PerformanceCharts"),
+    () => import("@/components/dashboard/partner/PerformanceCharts").then((mod) => mod.PerformanceCharts),
     { 
         loading: () => <div className="h-80 animate-pulse bg-muted rounded-xl" />,
         ssr: false 

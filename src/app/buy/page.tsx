@@ -16,7 +16,7 @@ import { Navbar } from "@/components/ui/navbar";
 import { Skeleton } from "@/components/ui/skeleton";
 
 const ClinkarAIAdvisor = dynamic(
-    () => import("@/components/market/ClinkarAIAdvisor"),
+    () => import("@/components/market/ClinkarAIAdvisor").then((mod) => mod.ClinkarAIAdvisor),
     { 
         loading: () => <div className="h-96 animate-pulse bg-muted rounded-xl" />,
         ssr: false 
