@@ -1,5 +1,6 @@
 import { IOcrProvider } from './ocr/OcrProvider';
 import { OpenAiOcrProvider } from './ocr/OpenAiOcrProvider';
+import { Logger } from '@/lib/logger';
 
 export interface AnalysedData {
     vin?: string;
@@ -52,7 +53,7 @@ export class DocumentAnalysisService {
         }
 
         // FALLBACK: Demo / Mock Logic (Costo 0)
-        console.log(`[AI Brain - DEMO MODE] Analyzing image: ${imageUrl}`);
+        Logger.info(`[AI Brain - DEMO MODE] Analyzing image: ${imageUrl}`);
 
         // Simple heuristic to differentiate demo data based on URL
         const isAlternate = imageUrl.length % 2 === 0;

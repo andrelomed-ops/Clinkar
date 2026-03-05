@@ -1,10 +1,11 @@
 import { ShippingQuote } from '../LogisticsService';
 import { ILogisticsProvider } from './LogisticsProvider';
+import { Logger } from '@/lib/logger';
 
 export class DefaultLogisticsProvider implements ILogisticsProvider {
     async calculateQuote(origin: string, destination: string): Promise<ShippingQuote> {
         // In the future, this would call Google Maps Distance Matrix API if an API key exists
-        console.log(`[Logistics] Calculating real distance (Mock fallback) for: ${origin} -> ${destination}`);
+        Logger.info(`[Logistics] Calculating real distance (Mock fallback) for: ${origin} -> ${destination}`);
 
         // Using current mathematical model as fallback
         const combined = origin + destination;

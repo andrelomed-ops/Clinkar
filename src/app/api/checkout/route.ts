@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { StripeService } from '@/services/StripeService';
 import { TransactionService } from '@/services/TransactionService';
+import { Logger } from '@/lib/logger';
 
 export async function POST(request: Request) {
     try {
@@ -59,7 +60,7 @@ export async function POST(request: Request) {
 
         return NextResponse.json({ url });
     } catch (error: any) {
-        console.error('Checkout error:', error);
+        Logger.error('Checkout error:', error);
         return NextResponse.json({ error: error.message }, { status: 500 });
     }
 }

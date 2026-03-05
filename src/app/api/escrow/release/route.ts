@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { stripe } from '@/lib/stripe';
 import { createClient } from '@/lib/supabase/server';
 import { VerificationService } from '@/services/VerificationService';
+import { Logger } from '@/lib/logger';
 
 export async function POST(request: Request) {
     try {
@@ -54,7 +55,7 @@ export async function POST(request: Request) {
 
         return NextResponse.json({ success: true, message: 'Funds released successfully' });
     } catch (error: any) {
-        console.error('Release error:', error);
+        Logger.error('Release error:', error);
         return NextResponse.json({ error: error.message }, { status: 500 });
     }
 }

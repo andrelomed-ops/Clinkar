@@ -1,5 +1,6 @@
 import { DocumentAnalysisResult, AnalysedData } from '../DocumentAnalysisService';
 import { IOcrProvider } from './OcrProvider';
+import { Logger } from '@/lib/logger';
 
 export class OpenAiOcrProvider implements IOcrProvider {
     private apiKey: string;
@@ -9,7 +10,7 @@ export class OpenAiOcrProvider implements IOcrProvider {
     }
 
     async analyzeDocument(imageUrl: string, expectedType: 'INE' | 'CIRCULATION_CARD' | 'INVOICE'): Promise<DocumentAnalysisResult> {
-        console.log(`[OpenAI OCR] Analizando ${expectedType} vía Vision API...`);
+        Logger.info(`[OpenAI OCR] Analizando ${expectedType} vía Vision API...`);
 
         try {
             const response = await fetch('https://api.openai.com/v1/chat/completions', {
@@ -50,7 +51,7 @@ export class OpenAiOcrProvider implements IOcrProvider {
             };
 
         } catch (error) {
-            console.error("[OpenAI OCR Error]", error);
+            Logger.error("[OpenAI OCR Error]", error);
             throw new Error("Falló el análisis de documentos por IA.");
         }
     }

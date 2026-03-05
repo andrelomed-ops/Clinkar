@@ -1,5 +1,6 @@
 import { VehicleCheckResult } from '../VehicleCheckService';
 import { IVehicleCheckProvider } from './VehicleCheckProvider';
+import { Logger } from '@/lib/logger';
 
 export class RepuveVehicleCheckProvider implements IVehicleCheckProvider {
     private apiKey: string;
@@ -9,7 +10,7 @@ export class RepuveVehicleCheckProvider implements IVehicleCheckProvider {
     }
 
     async checkTheftStatus(vin: string): Promise<VehicleCheckResult> {
-        console.log(`[REPUVE-API] Consultando estatus legal real para VIN: ${vin}...`);
+        Logger.info(`[REPUVE-API] Consultando estatus legal real para VIN: ${vin}...`);
 
         try {
             // Simulación de respuesta de API Real (CheckAuto / REPUVE Wrapper)
@@ -39,7 +40,7 @@ export class RepuveVehicleCheckProvider implements IVehicleCheckProvider {
                 source: 'REPUVE'
             };
         } catch (error) {
-            console.error("[REPUVE Error]", error);
+            Logger.error("[REPUVE Error]", error);
             throw new Error("No se pudo conectar con el servicio de REPUVE.");
         }
     }

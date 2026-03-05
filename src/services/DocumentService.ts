@@ -2,6 +2,7 @@ import { SupabaseClient } from '@supabase/supabase-js';
 import { Database } from '@/lib/database.types';
 import { BaseService } from './BaseService';
 import { z } from 'zod';
+import { Logger } from '@/lib/logger';
 
 const DocumentSchema = z.object({
     id: z.string(),
@@ -38,7 +39,7 @@ export class DocumentService extends BaseService {
             .upload(path, file);
 
         if (uploadError) {
-            console.error("Storage upload error:", uploadError);
+            Logger.error("Storage upload error:", uploadError);
             throw uploadError;
         }
 
@@ -60,7 +61,7 @@ export class DocumentService extends BaseService {
             .single();
 
         if (dbError) {
-            console.error("Database record error:", dbError);
+            Logger.error("Database record error:", dbError);
             throw dbError;
         }
 

@@ -2,8 +2,8 @@ import { SupabaseClient } from '@supabase/supabase-js';
 import { Database } from '@/lib/database.types';
 import { IVehicleCheckProvider } from './vehicle-check/VehicleCheckProvider';
 import { DefaultVehicleCheckProvider } from './vehicle-check/DefaultVehicleCheckProvider';
-
 import { RepuveVehicleCheckProvider } from './vehicle-check/RepuveVehicleCheckProvider';
+import { Logger } from '@/lib/logger';
 
 export interface VehicleCheckResult {
     vin: string;
@@ -63,7 +63,7 @@ export class VehicleCheckService {
             created_at: new Date().toISOString()
         } as any);
 
-        console.log(`[OCRA-BOT] Certificado de No Robo generado: ${result.folio}`);
+        Logger.info(`[OCRA-BOT] Certificado de No Robo generado: ${result.folio}`);
         return true;
     }
 }

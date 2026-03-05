@@ -1,5 +1,6 @@
 import { ShippingQuote } from '../LogisticsService';
 import { ILogisticsProvider } from './LogisticsProvider';
+import { Logger } from '@/lib/logger';
 
 export class GoogleMapsLogisticsProvider implements ILogisticsProvider {
     private apiKey: string;
@@ -9,7 +10,7 @@ export class GoogleMapsLogisticsProvider implements ILogisticsProvider {
     }
 
     async calculateQuote(origin: string, destination: string): Promise<ShippingQuote> {
-        console.log(`[GoogleMaps] Calculando distancia real: ${origin} -> ${destination}`);
+        Logger.info(`[GoogleMaps] Calculando distancia real: ${origin} -> ${destination}`);
 
         try {
             // En producción, esto sería:
@@ -33,7 +34,7 @@ export class GoogleMapsLogisticsProvider implements ILogisticsProvider {
                 provider: 'Google Maps + Clinkar Fleet'
             };
         } catch (error) {
-            console.error("[GoogleMaps Error]", error);
+            Logger.error("[GoogleMaps Error]", error);
             throw new Error("Falló el cálculo de distancia vía Google Maps.");
         }
     }

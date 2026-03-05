@@ -1,6 +1,7 @@
 import { Database } from '@/lib/database.types';
 import { NotificationService } from './NotificationService';
 import { SupabaseClient } from '@supabase/supabase-js';
+import { Logger } from '@/lib/logger';
 
 export type ServiceTicket = Database['public']['Tables']['service_tickets']['Row'];
 
@@ -24,7 +25,7 @@ export class PartnerService {
             .order('created_at', { ascending: false });
 
         if (error) {
-            console.error('Error fetching partner tickets:', error);
+            Logger.error('Error fetching partner tickets:', error);
             return [];
         }
 
@@ -51,7 +52,7 @@ export class PartnerService {
             .eq('id', ticketId);
 
         if (error) {
-            console.error('Error updating ticket status:', error);
+            Logger.error('Error updating ticket status:', error);
             return { success: false, error };
         }
 

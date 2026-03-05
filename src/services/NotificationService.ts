@@ -1,4 +1,5 @@
 import { SupabaseClient } from '@supabase/supabase-js';
+import { Logger } from '@/lib/logger';
 
 export interface Notification {
     id: string;
@@ -31,7 +32,7 @@ export class NotificationService {
             });
 
         if (error) {
-            console.error('Error creating notification:', error);
+            Logger.error('Error creating notification:', error);
             return false;
         }
         return true;
@@ -58,7 +59,7 @@ export class NotificationService {
             .insert(payload);
 
         if (error) {
-            console.error('Error creating multiple notifications:', error);
+            Logger.error('Error creating multiple notifications:', error);
             return false;
         }
         return true;
@@ -74,7 +75,7 @@ export class NotificationService {
             .order('created_at', { ascending: false });
 
         if (error) {
-            console.error('Error fetching notifications:', error);
+            Logger.error('Error fetching notifications:', error);
             return [];
         }
 
@@ -88,7 +89,7 @@ export class NotificationService {
             .eq('id', notificationId);
 
         if (error) {
-            console.error('Error marking notification as read:', error);
+            Logger.error('Error marking notification as read:', error);
             return false;
         }
 
@@ -106,7 +107,7 @@ export class NotificationService {
             .eq('is_read', false);
 
         if (error) {
-            console.error('Error marking all notifications as read:', error);
+            Logger.error('Error marking all notifications as read:', error);
             return false;
         }
 

@@ -1,6 +1,7 @@
 
 import { SupabaseClient } from '@supabase/supabase-js';
 import { Database } from '@/lib/database.types';
+import { Logger } from '@/lib/logger';
 
 export type InspectionData = Record<string, { pass: boolean; note?: string; photos?: string[] }>;
 
@@ -17,7 +18,7 @@ export class InspectorService {
     ) {
         // DEMO BYPASS: If carId is a mock ID, simulate success
         if (carId.startsWith('mock-')) {
-            console.log("Demo Mode: Simulating report save for", carId);
+            Logger.info("Demo Mode: Simulating report save for", carId);
             return { id: `mock-report-${Date.now()}`, created_at: new Date().toISOString() };
         }
 

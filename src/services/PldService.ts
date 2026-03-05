@@ -1,5 +1,6 @@
 import { SupabaseClient } from '@supabase/supabase-js';
 import { Database } from '@/lib/database.types';
+import { Logger } from '@/lib/logger';
 
 export type PldRiskLevel = 'CLEAN' | 'WARNING' | 'BLOCKED';
 
@@ -34,7 +35,7 @@ export class PldService {
         rfc: string = "XAXX010101000",
         context: 'ONBOARDING' | 'TRANSACTION' = 'TRANSACTION'
     ): Promise<PldScreeningResult> {
-        console.log(`[PLD-AUDIT] Ejecutando screening para: ${name} (User: ${userId})...`);
+        Logger.info(`[PLD-AUDIT] Ejecutando screening para: ${name} (User: ${userId})...`);
 
         // 0. SMART CACHING (Optimización Operativa)
         // Verificar si ya existe un perfil de riesgo vigente (< 24 horas)
@@ -52,7 +53,7 @@ export class PldService {
                 const hoursDiff = (now.getTime() - lastCheck.getTime()) / (1000 * 60 * 60);
 
                 if (hoursDiff < 24) {
-                    console.log(`[PLD-CACHE] Perfil vigente encontrado (Hace ${hoursDiff.toFixed(1)}h). Saltando scan externo.`);
+                    Logger.info(`[PLD-CACHE] Perfil vigente encontrado (Hace ${hoursDiff.toFixed(1)}h). Saltando scan externo.`);
                     return {
                         name,
                         rfc,
@@ -65,7 +66,7 @@ export class PldService {
                 }
             }
         } catch (e) {
-            console.warn("Error leyendo cache PLD, procediendo a scan completo:", e);
+            Logger.warn("Error leyendo cache PLD, procediendo a scan completo:", e);
         }
 
         // Simular latencia de red (Simulación de API externa - Solo si no hubo Cache Hit)
@@ -144,7 +145,7 @@ export class PldService {
                 } as any);
             }
         } catch (e) {
-            console.error("Error persistiendo log PLD:", e);
+            Logger.error("Error persistiendo log PLD:", e);
             // No detenemos el flujo aquí, pero en producción esto debería ser crítico.
         }
 

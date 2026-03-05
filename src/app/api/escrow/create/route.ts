@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { stripe } from '@/lib/stripe';
 import { createClient } from '@/lib/supabase/server';
 import crypto from 'crypto';
+import { Logger } from '@/lib/logger';
 
 export async function POST(request: Request) {
     try {
@@ -54,7 +55,7 @@ export async function POST(request: Request) {
             .single();
 
         if (dbError) {
-            console.error('Database error:', dbError);
+            Logger.error('Database error:', dbError);
             return NextResponse.json({ error: 'Failed to create transaction record' }, { status: 500 });
         }
 
@@ -64,7 +65,7 @@ export async function POST(request: Request) {
         });
 
     } catch (error: any) {
-        console.error('Stripe error:', error);
+        Logger.error('Stripe error:', error);
         return NextResponse.json({ error: error.message }, { status: 500 });
     }
 }

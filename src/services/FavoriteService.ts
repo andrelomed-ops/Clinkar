@@ -1,5 +1,6 @@
 
 import { SupabaseClient } from '@supabase/supabase-js';
+import { Logger } from '@/lib/logger';
 
 const LOCAL_STORAGE_KEY = 'clinkar_favorites';
 
@@ -25,7 +26,7 @@ export class FavoriteService {
             .eq('user_id', user.id);
 
         if (error) {
-            console.error('Error fetching favorites from DB:', error);
+            Logger.error('Error fetching favorites from DB:', error);
             return localFavorites;
         }
 
@@ -112,6 +113,6 @@ export class FavoriteService {
             .from('user_favorites')
             .upsert(payload, { onConflict: 'user_id,car_id' }); // Ignorar duplicados
 
-        if (error) console.error('Error syncing favorites:', error);
+        if (error) Logger.error('Error syncing favorites:', error);
     }
 }

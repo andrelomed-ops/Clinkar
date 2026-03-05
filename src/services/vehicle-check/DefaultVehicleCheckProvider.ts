@@ -1,9 +1,10 @@
 import { VehicleCheckResult } from '../VehicleCheckService';
 import { IVehicleCheckProvider } from './VehicleCheckProvider';
+import { Logger } from '@/lib/logger';
 
 export class DefaultVehicleCheckProvider implements IVehicleCheckProvider {
     async checkTheftStatus(vin: string): Promise<VehicleCheckResult> {
-        console.log(`[VehicleCheck] Consultando estatus legal para VIN: ${vin}...`);
+        Logger.info(`[VehicleCheck] Consultando estatus legal para VIN: ${vin}...`);
 
         // Simulación de latencia de red
         await new Promise(resolve => setTimeout(resolve, 1500));

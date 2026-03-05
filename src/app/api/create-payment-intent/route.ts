@@ -1,6 +1,7 @@
 
 import { NextResponse } from 'next/server';
 import Stripe from 'stripe';
+import { Logger } from '@/lib/logger';
 
 const stripe = process.env.STRIPE_SECRET_KEY
     ? new Stripe(process.env.STRIPE_SECRET_KEY, { apiVersion: '2025-01-27.acacia' as any })
@@ -12,7 +13,7 @@ export async function POST(request: Request) {
 
         // SIMULATION MODE (If no Stripe key is present)
         if (!stripe) {
-            console.log("⚠️ Simulation Mode: No Stripe Key found.");
+            Logger.warn("⚠️ Simulation Mode: No Stripe Key found.");
             // Simulate network delay
             await new Promise(resolve => setTimeout(resolve, 1500));
 
@@ -33,7 +34,7 @@ export async function POST(request: Request) {
         return NextResponse.json({ clientSecret: paymentIntent.client_secret });
 
     } catch (error) {
-        console.error('Payment Intent Error:', error);
+        Logger.error('Payment Intent Error:', error);
         return NextResponse.json(
             { error: 'Error creating payment intent' },
             { status: 500 }

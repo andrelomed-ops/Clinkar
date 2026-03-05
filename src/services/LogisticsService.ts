@@ -4,6 +4,7 @@ import { BaseService } from './BaseService';
 import { ILogisticsProvider } from './logistics/LogisticsProvider';
 import { DefaultLogisticsProvider } from './logistics/DefaultLogisticsProvider';
 import { GoogleMapsLogisticsProvider } from './logistics/GoogleMapsLogisticsProvider';
+import { Logger } from '@/lib/logger';
 
 export interface ShippingQuote {
     distanceKm: number;
@@ -43,7 +44,7 @@ export class LogisticsService extends BaseService {
             .maybeSingle() as { data: { distance_km: number, cost: number, provider: string } | null };
 
         if (exactMatch) {
-            console.log(`[Logistics Cache] Exact match for: ${origin} -> ${destination}`);
+            Logger.info(`[Logistics Cache] Exact match for: ${origin} -> ${destination}`);
             return {
                 distanceKm: exactMatch.distance_km,
                 cost: exactMatch.cost,
@@ -70,7 +71,7 @@ export class LogisticsService extends BaseService {
                 .maybeSingle() as { data: { distance_km: number, cost: number, provider: string } | null };
 
             if (cityMatch) {
-                console.log(`[Logistics Cache] Fuzzy city match for: ${originCity} -> ${destCity}`);
+                Logger.info(`[Logistics Cache] Fuzzy city match for: ${originCity} -> ${destCity}`);
                 return {
                     distanceKm: cityMatch.distance_km,
                     cost: cityMatch.cost,

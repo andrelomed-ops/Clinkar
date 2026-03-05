@@ -1,5 +1,6 @@
 import { SupabaseClient } from '@supabase/supabase-js';
 import { Database } from '@/lib/database.types';
+import { Logger } from '@/lib/logger';
 
 /**
  * Servicio de Dispersión SPEI (Simulación STP)
@@ -35,7 +36,7 @@ export class SpeiService {
         transactionId: string,
         amount: number
     ) {
-        console.log(`[STP-WEBHOOK] Recibido depósito SPEI de $${amount} para Tx: ${transactionId}`);
+        Logger.info(`[STP-WEBHOOK] Recibido depósito SPEI de $${amount} para Tx: ${transactionId}`);
 
         // 1. Validar Monto
         // En producción, si depositan de menos, se queda en saldo pendiente.
@@ -44,9 +45,9 @@ export class SpeiService {
         const clinkarFee = amount * 0.04;
         const sellerPayout = amount - clinkarFee;
 
-        console.log(`[STP-DISPERSION] Ejecutando Split:`);
-        console.log(` -> $${sellerPayout.toLocaleString()} al Vendedor (Cuenta Enlazada)`);
-        console.log(` -> $${clinkarFee.toLocaleString()} a Clinkar Revenue`);
+        Logger.info(`[STP-DISPERSION] Ejecutando Split:`);
+        Logger.info(` -> $${sellerPayout.toLocaleString()} al Vendedor (Cuenta Enlazada)`);
+        Logger.info(` -> $${clinkarFee.toLocaleString()} a Clinkar Revenue`);
 
         // 3. Registrar en BD (Audit Trail)
         await supabase.from('audit_logs' as any).insert({
