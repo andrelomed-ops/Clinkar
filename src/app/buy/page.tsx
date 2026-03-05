@@ -3,17 +3,25 @@
 import { useState, useMemo, useEffect } from "react";
 import { Shield, Search, Filter, MapPin, Tag, Menu, Sparkles, SlidersHorizontal, ArrowDownWideNarrow, Heart, ChevronLeft, ChevronRight } from "lucide-react";
 import Link from "next/link";
+import dynamic from "next/dynamic";
 import { MarketFilters } from "@/components/market/MarketFilters";
 import { ThemeToggle } from "@/components/layout/ThemeToggle";
 import { cn } from "@/lib/utils";
 import { ALL_CARS } from "@/data/cars";
-import { supabase } from "@/lib/supabase"; // Import Client
+import { supabase } from "@/lib/supabase";
 import { FavoriteService } from "@/services/FavoriteService";
 import { CarCard } from "@/components/market/CarCard";
 
 import { Navbar } from "@/components/ui/navbar";
-import { ClinkarAIAdvisor } from "@/components/market/ClinkarAIAdvisor";
 import { Skeleton } from "@/components/ui/skeleton";
+
+const ClinkarAIAdvisor = dynamic(
+    () => import("@/components/market/ClinkarAIAdvisor"),
+    { 
+        loading: () => <div className="h-96 animate-pulse bg-muted rounded-xl" />,
+        ssr: false 
+    }
+);
 
 const ITEMS_PER_PAGE = 24;
 

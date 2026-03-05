@@ -1,8 +1,8 @@
 "use client";
 
 import { motion } from "framer-motion";
+import dynamic from "next/dynamic";
 import { StatsOverview } from "@/components/dashboard/partner/StatsOverview";
-import { PerformanceCharts } from "@/components/dashboard/partner/PerformanceCharts";
 import {
     LayoutDashboard,
     ArrowLeft,
@@ -13,6 +13,14 @@ import {
     Search
 } from "lucide-react";
 import Link from "next/link";
+
+const PerformanceCharts = dynamic(
+    () => import("@/components/dashboard/partner/PerformanceCharts"),
+    { 
+        loading: () => <div className="h-80 animate-pulse bg-muted rounded-xl" />,
+        ssr: false 
+    }
+);
 
 export default function PartnerAnalyticsPage() {
     return (
