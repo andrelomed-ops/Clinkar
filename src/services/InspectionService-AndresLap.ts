@@ -11,7 +11,7 @@ interface InspectionReport {
 
 export class InspectionService {
     static async submitReport(supabase: SupabaseClient<Database>, ticketId: string, report: InspectionReport, inspectorId: string) {
-        console.log(`[📝 INSPECTION] Submitting report for Ticket ${ticketId}`);
+        Logger.info(`[📝 INSPECTION] Submitting report for Ticket ${ticketId}`);
 
         // 1. Get Ticket to verify logic
         const { data: ticket, error: ticketError } = await supabase
