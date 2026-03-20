@@ -38,15 +38,15 @@ export const viewport = {
 export const metadata: Metadata = {
   title: "Clinkar | Bóveda Digital & Transacciones Seguras de Autos",
   description: "Protección legal y fiscal 360° para la compraventa de autos entre particulares. Escrow, Inspección 180 puntos y Mediación certificada.",
-  manifest: "/manifest.json?v=3-android-fix",
+  manifest: "/manifest.json",
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
     title: "Clinkar",
   },
   icons: {
-    icon: "/shield-icon-192.png",
-    apple: "/shield-icon-192.png",
+    icon: "/icons/icon-192.webp",
+    apple: "/icons/icon-192.webp",
   },
   openGraph: {
     title: "Clinkar | Compraventa Segura de Autos",

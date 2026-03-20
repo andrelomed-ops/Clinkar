@@ -49,7 +49,7 @@ export function InstallPrompt() {
                         <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent -translate-x-full animate-[shimmer_2s_infinite]" />
 
                         <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center shrink-0">
-                            <img src="/icon-192.png" alt="App Icon" className="w-10 h-10 object-contain" />
+                            <img src="/icons/icon-192.webp" alt="App Icon" className="w-10 h-10 object-contain" />
                         </div>
 
                         <div className="flex-1 min-w-0">
