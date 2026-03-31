@@ -34,7 +34,7 @@ export function LogisticsWidget({ carLocation, onQuote }: { carLocation: string,
             distanceKm: distance,
             cost: finalCost,
             estimatedDays: Math.ceil(distance / 400) + 1,
-            provider: 'Clinkar Logistics Network',
+            provider: 'Clinkargo',
             origin: carLocation,
             dest: `CP ${zipCode}`
         };

@@ -45,7 +45,7 @@ export function TowingServiceCard({ carLocation, carName, isBusinessProfile = fa
                         <p className="text-zinc-600 dark:text-zinc-400 text-sm leading-relaxed">
                             {isBusinessProfile
                                 ? "Optimiza el traslado de este vehículo a tu patio de autopartes. Solicita una grúa aliada con tarifa preferencial Business."
-                                : `¿Necesitas trasladar tu ${carName}? Conéctate con grúas verificadas por Clinkar desde ${carLocation}.`
+                                : `¿Necesitas trasladar tu ${carName}? Conéctate con grúas verificadas por Clinkargo desde ${carLocation}.`
                             }
                         </p>
 
@@ -81,7 +81,7 @@ export function TowingServiceCard({ carLocation, carName, isBusinessProfile = fa
                     <div className="animate-reveal space-y-6">
                         <div className="bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-500/20 p-6 rounded-3xl">
                             <div className="flex justify-between items-center mb-4">
-                                <span className="text-xs font-black text-emerald-600 dark:text-emerald-400 uppercase tracking-wider">Tarifa Clinkar Express</span>
+                                <span className="text-xs font-black text-emerald-600 dark:text-emerald-400 uppercase tracking-wider">Tarifa Clinkargo Express</span>
                                 <span className="flex items-center gap-1 text-[10px] font-bold text-emerald-600 italic"><Clock className="h-3 w-3" /> Disponible ahora</span>
                             </div>
                             <div className="flex items-baseline gap-2">

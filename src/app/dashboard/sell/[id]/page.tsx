@@ -305,7 +305,7 @@ export default function SellerCarDetailPage({ params }: { params: Promise<{ id: 
                                     AI Matrix Insight
                                 </h3>
                                 <p className="text-sm text-zinc-400 leading-relaxed font-bold italic mb-8">
-                                    "Basado en micro-tendencias de mercado, tu {car.make} {car.model} está posicionado en el top 5% de autos similares en CDMX. Mantener tus documentos al día incrementa la velocidad de cierre en un 40%."
+                                    &quot;Basado en micro-tendencias de mercado, tu {car.make} {car.model} está posicionado en el top 5% de autos similares en CDMX. Mantener tus documentos al día incrementa la velocidad de cierre en un 40%.&quot;
                                 </p>
                                 <Button className="w-full h-12 rounded-xl bg-white text-zinc-950 font-black uppercase text-[10px] tracking-widest">
                                     Ver Análisis Completo

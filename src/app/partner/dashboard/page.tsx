@@ -93,11 +93,9 @@ const generateTickets = (role: string) => {
 export default function PartnerDashboardPage() {
     const [tickets, setTickets] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
-    const [role, setRole] = useState<string | null>(null);
     const router = useRouter();
 
     useEffect(() => {
-        // Read cookie
         const match = document.cookie.match(new RegExp('(^| )clinkar_partner_role=([^;]+)'));
         const roleValue = match ? match[2] : null;
 
@@ -106,14 +104,13 @@ export default function PartnerDashboardPage() {
             return;
         }
 
-        setRole(roleValue);
-
-        // Simulate API delay
+        const generatedTickets = generateTickets(roleValue);
+        
         setTimeout(() => {
-            setTickets(generateTickets(roleValue));
+            setTickets(generatedTickets);
             setLoading(false);
         }, 800);
-    }, []);
+    }, [router]);
 
     if (loading) {
         return (
@@ -128,7 +125,7 @@ export default function PartnerDashboardPage() {
             <PartnersView
                 initialTickets={tickets}
                 feeConfig={{}} // Not used in demo
-                currentRole={role || 'INSPECTION'}
+                currentRole={'INSPECTION'}
             />
         </div>
     );

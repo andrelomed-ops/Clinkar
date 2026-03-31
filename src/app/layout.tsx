@@ -36,23 +36,24 @@ export const viewport = {
 };
 
 export const metadata: Metadata = {
-  title: "Clinkar | Bóveda Digital & Transacciones Seguras de Autos",
+  metadataBase: new URL("https://starterkar.vercel.app"),
+  title: "StarterKar | Bóveda Digital & Transacciones Seguras de Autos",
   description: "Protección legal y fiscal 360° para la compraventa de autos entre particulares. Escrow, Inspección 180 puntos y Mediación certificada.",
   manifest: "/manifest.json",
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
-    title: "Clinkar",
+    title: "StarterKar",
   },
   icons: {
-    icon: "/icons/icon-192.webp",
-    apple: "/icons/icon-192.webp",
+    icon: "/shield-icon-192.png",
+    apple: "/shield-icon-192.png",
   },
   openGraph: {
-    title: "Clinkar | Compraventa Segura de Autos",
+    title: "StarterKar | Compraventa Segura de Autos",
     description: "Tu dinero seguro en la Bóveda Digital hasta que recibes el auto. Inspección de 150 puntos y trámites verificados.",
-    url: "https://clinkar.com",
-    siteName: "Clinkar",
+    url: "https://starterkar.com",
+    siteName: "StarterKar",
     locale: "es_MX",
     type: "website",
     images: [
@@ -60,15 +61,15 @@ export const metadata: Metadata = {
         url: "/og-image.jpg",
         width: 1200,
         height: 630,
-        alt: "Clinkar - Compraventa Segura"
+        alt: "StarterKar - Compraventa Segura"
       }
     ]
   },
   twitter: {
     card: "summary_large_image",
-    title: "Clinkar | Bóveda Digital",
+    title: "StarterKar | Bóveda Digital",
     description: "Tu dinero seguro hasta que tienes las llaves.",
-    creator: "@clinkar_mx",
+    creator: "@starterkar_mx",
     images: ["/og-image.jpg"]
   },
   robots: {

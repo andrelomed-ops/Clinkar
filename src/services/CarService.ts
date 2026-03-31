@@ -60,7 +60,7 @@ export class CarService {
     static async updateCarStatus(supabase: SupabaseClient<Database>, id: string, status: string): Promise<boolean> {
         const { error } = await supabase
             .from('cars')
-            // @ts-ignore
+            // @ts-expect-error - Status es string válido
             .update({ status: status })
             .eq('id', id);
 

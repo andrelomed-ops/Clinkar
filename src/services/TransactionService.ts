@@ -108,7 +108,7 @@ export class TransactionService extends BaseService {
         if (data.logisticsQuote) {
             // We would import LogisticsService here to avoid circular dep issues if possible
             // or just insert raw for now since we are in TransactionService
-            // @ts-ignore
+            // @ts-expect-error - Tabla no definida en tipos
             await supabase.from('logistics_orders' as any).insert({
                 transaction_id: typedTransaction.id,
                 origin_address: data.logisticsQuote.origin,
@@ -125,7 +125,7 @@ export class TransactionService extends BaseService {
             const endDate = new Date(now);
             endDate.setMonth(now.getMonth() + durationMonths);
 
-            // @ts-ignore
+            // @ts-expect-error - Tabla no definida en tipos
             await supabase.from('warranty_policies' as any).insert({
                 car_id: data.carId,
                 transaction_id: typedTransaction.id,

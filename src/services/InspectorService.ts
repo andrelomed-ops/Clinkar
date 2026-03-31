@@ -24,7 +24,7 @@ export class InspectorService {
 
         const { data: report, error } = await supabase
             .from('inspection_reports_150' as any)
-            // @ts-ignore
+            // @ts-expect-error - Tabla no definida en tipos
             .insert({
                 car_id: carId,
                 inspector_id: inspectorId,
@@ -41,7 +41,7 @@ export class InspectorService {
         if (overallResult === 'APROBADO') {
             await supabase
                 .from('cars')
-                // @ts-ignore
+                // @ts-expect-error - Tabla no definida en tipos
                 .update({ has_clinkar_seal: true } as any)
                 .eq('id', carId);
         }
@@ -61,7 +61,7 @@ export class InspectorService {
 
         const { data: quote, error } = await supabase
             .from('repair_quotations' as any)
-            // @ts-ignore
+            // @ts-expect-error - Tabla no definida en tipos
             .insert({
                 car_id: carId,
                 inspector_id: inspectorId,

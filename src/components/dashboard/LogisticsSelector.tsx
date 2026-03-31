@@ -26,8 +26,8 @@ export function LogisticsSelector({ origin, onSelectOption }: LogisticsSelectorP
 
     const quotes: LogisticsQuote[] = [
         {
-            id: 'clinkar-standard',
-            provider: 'Clinkar Logistics',
+            id: 'clinkargo-standard',
+            provider: 'Clinkargo',
             type: 'platform',
             price: 2500,
             eta: '2-3 días hábiles',

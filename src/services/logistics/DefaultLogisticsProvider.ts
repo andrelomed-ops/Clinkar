@@ -22,7 +22,7 @@ export class DefaultLogisticsProvider implements ILogisticsProvider {
             distanceKm,
             cost,
             estimatedDays: Math.ceil(distanceKm / 400) + 1,
-            provider: 'Clinkar Logistics Network (Default)'
+            provider: 'Clinkargo'
         };
     }
 }

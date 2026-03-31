@@ -330,7 +330,7 @@ export default function SellerDashboardPage() {
                                     Clinkar Matrix Insight
                                 </h3>
                                 <p className="text-sm text-indigo-100 leading-relaxed font-bold italic mb-8">
-                                    "Tu vehículo tiene un puntaje de mercado de 9.2. Los compradores están buscando activamente {car.make} {car.year} en CDMX. Completa tu verificación hoy para cerrar la venta en menos de 72 horas."
+                                    &quot;Tu vehículo tiene un puntaje de mercado de 9.2. Los compradores están buscando activamente {car.make} {car.year} en CDMX. Completa tu verificación hoy para cerrar la venta en menos de 72 horas.&quot;
                                 </p>
                                 <div className="space-y-2">
                                     <div className="flex justify-between text-[10px] font-black uppercase tracking-widest text-indigo-300">

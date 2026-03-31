@@ -1,8 +1,8 @@
 import type { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
-  appId: 'com.clinkar.app',
-  appName: 'Clinkar',
+  appId: 'com.starterkar.app',
+  appName: 'StarterKar',
   webDir: 'public',
   server: {
     url: 'https://clinkar.vercel.app',

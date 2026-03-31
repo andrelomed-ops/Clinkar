@@ -66,10 +66,34 @@ export function ClinkarAIAdvisor({ isOpen, onClose, onSelectCar, inventory = [],
 
         // Final Response
         setTimeout(async () => {
-            const { createBrowserClient } = await import("@/lib/supabase/client");
-            const supabase = createBrowserClient();
-            const response = await generateAIBrainResponse(messageText, inventory, supabase);
-            setMessages(prev => [...prev, response]);
+            try {
+                const { createBrowserClient } = await import("@/lib/supabase/client");
+                const supabase = createBrowserClient();
+                
+                const chatMessages = [
+                    ...messages.slice(-5).map(m => ({ role: m.role, content: m.content })),
+                    { role: 'user', content: messageText }
+                ];
+
+                const response = await fetch('/api/ai-chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ messages: chatMessages, context: inventory })
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    setMessages(prev => [...prev, { id: Date.now().toString(), role: 'assistant', content: data.response }]);
+                } else {
+                    const response = await generateAIBrainResponse(messageText, inventory, supabase);
+                    setMessages(prev => [...prev, response]);
+                }
+            } catch {
+                const { createBrowserClient } = await import("@/lib/supabase/client");
+                const supabase = createBrowserClient();
+                const response = await generateAIBrainResponse(messageText, inventory, supabase);
+                setMessages(prev => [...prev, response]);
+            }
             setIsTyping(false);
             setSearchStep(null);
         }, 4000); // 4 seconds total "search" time

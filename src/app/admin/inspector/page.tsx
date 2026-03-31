@@ -137,7 +137,7 @@ export default function InspectorTool() {
                         <div className="p-4 rounded-2xl bg-yellow-500/10 border border-yellow-500/20 flex items-start gap-3">
                             <AlertTriangle className="h-5 w-5 text-yellow-500 shrink-0" />
                             <p className="text-xs font-bold text-yellow-700 dark:text-yellow-400">
-                                Todas las categorías deben estar marcadas como "Aprobado" o "Con Observaciones" para proceder.
+                                Todas las categorías deben estar marcadas como &quot;Aprobado&quot; o &quot;Con Observaciones&quot; para proceder.
                             </p>
                         </div>
 

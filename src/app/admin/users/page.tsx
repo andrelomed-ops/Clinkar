@@ -86,7 +86,7 @@ function BadgeRole({ role }: { role: string }) {
         buyer: "bg-slate-100 text-slate-600 border-slate-200"
     };
 
-    // @ts-ignore
+    // @ts-expect-error - Role styles indexed dynamically
     const classes = styles[role] || styles.buyer;
 
     return (

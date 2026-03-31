@@ -74,30 +74,35 @@ const clinkcargoClient = createClient(CLINKCARGO_SUPABASE_URL, CLINKCARGO_ANON_K
 
 export class ClinkargoTransportService {
     static async getQuote(
-        pickupCoordinates: { lat: number; lng: number },
-        dropoffCoordinates: { lat: number; lng: number }
+        pickupCoordinates?: { lat: number; lng: number },
+        dropoffCoordinates?: { lat: number; lng: number }
     ): Promise<VehicleTransportQuote[]> {
-        const distance = calculateDistance(
-            pickupCoordinates.lat, pickupCoordinates.lng,
-            dropoffCoordinates.lat, dropoffCoordinates.lng
-        );
+        try {
+            const { data, error } = await clinkcargoClient.functions.invoke('get-clinckargo-quotes', {
+                body: {
+                    pickup_coordinates: pickupCoordinates,
+                    dropoff_coordinates: dropoffCoordinates,
+                    service_type: 'vehiculos'
+                }
+            });
 
-        return Object.entries(VEHICLE_TRANSPORT_VEHICLES).map(([type, config]) => {
-            const basePrice = config.basePrice;
-            const distancePrice = distance * config.pricePerKm;
-            const subtotal = basePrice + distancePrice;
-            const iva = subtotal * 0.16;
-            const total = subtotal + iva;
+            if (error || !data?.quotes) {
+                console.error('Quote error:', error);
+                return [];
+            }
 
-            return {
-                vehicleType: type as VehicleTransportType,
-                vehicleName: config.nameEs,
-                distance,
-                price: Math.round(total * 100) / 100,
-                breakdown: { basePrice, distancePrice, subtotal, iva, total: Math.round(total * 100) / 100 },
-                estimatedTimeMinutes: Math.round(distance / 40 * 60)
-            };
-        });
+            return data.quotes.map((q: any) => ({
+                vehicleType: q.vehicleType as VehicleTransportType,
+                vehicleName: q.vehicleName,
+                distance: q.distance,
+                price: q.price,
+                breakdown: q.breakdown,
+                estimatedTimeMinutes: q.estimatedTimeMinutes
+            }));
+        } catch (err) {
+            console.error('Quote error:', err);
+            return [];
+        }
     }
 
     static async createOrder(params: CreateVehicleTransportOrderParams): Promise<VehicleTransportOrderResponse> {

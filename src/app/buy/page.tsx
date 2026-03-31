@@ -145,7 +145,7 @@ export default function BuyPage() {
     }, [filters, showFavoritesOnly, sortBy, searchTerm]);
 
     useEffect(() => {
-        // eslint-disable-next-line react-hooks/set-state-in-effect
+         
         setIsMounted(true);
     }, []);
 

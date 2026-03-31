@@ -31,7 +31,7 @@ export class GoogleMapsLogisticsProvider implements ILogisticsProvider {
                 distanceKm: dummyDistance,
                 cost: roundedCost,
                 estimatedDays: Math.ceil(dummyDistance / 400) + 1,
-                provider: 'Google Maps + Clinkar Fleet'
+                provider: 'Clinkargo (Google Maps)'
             };
         } catch (error) {
             Logger.error("[GoogleMaps Error]", error);

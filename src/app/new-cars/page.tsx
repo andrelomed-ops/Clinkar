@@ -111,7 +111,7 @@ export default function NewCarsPage() {
                                 <div className="bg-indigo-500/5 p-4 rounded-2xl border border-indigo-500/10">
                                     <p className="text-[10px] font-black text-indigo-600 dark:text-indigo-400 uppercase tracking-widest mb-1">Potencial Trade-in</p>
                                     <p className="text-xs font-medium text-muted-foreground leading-snug italic">
-                                        "Vende tu usado por hasta <span className="font-bold">20% más</span> que en agencia y abona a este auto."
+                                        &quot;Vende tu usado por hasta <span className="font-bold">20% más</span> que en agencia y abona a este auto.&quot;
                                     </p>
                                 </div>
 

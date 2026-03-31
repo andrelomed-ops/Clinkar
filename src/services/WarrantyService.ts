@@ -47,7 +47,7 @@ export class WarrantyService extends BaseService {
 
         const { data: policy, error } = await supabase
             .from('warranty_policies' as any)
-            // @ts-ignore
+            // @ts-expect-error - Tabla no definida en tipos
             .insert({
                 car_id: data.carId,
                 transaction_id: data.transactionId,
@@ -70,7 +70,7 @@ export class WarrantyService extends BaseService {
     static async upgradeToCertified(supabase: SupabaseClient<Database>, carId: string, repairCost: number) {
         // 1. Mark car as having seal (Software update, assuming physical repair happened)
         const { error } = await supabase.from('cars')
-            // @ts-ignore
+            // @ts-expect-error - Tabla no definida en tipos
             .update({ has_clinkar_seal: true } as any)
             .eq('id', carId);
 
