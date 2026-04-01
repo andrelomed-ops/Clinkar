@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { Truck, MapPin, Package, CheckCircle2, ArrowRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { LogisticsService } from '@/services/LogisticsService';
+import { RequestTransportButton } from '@/components/transport/VehicleTransportModal';
 
 export default async function TrackingPage({ params }: { params: Promise<{ transactionId: string }> }) {
     const { transactionId } = await params;
@@ -38,7 +39,30 @@ export default async function TrackingPage({ params }: { params: Promise<{ trans
                 <Truck className="h-12 w-12 text-zinc-300 mb-4" />
                 <h1 className="text-xl font-bold mb-2">No hay envío asociado</h1>
                 <p className="text-zinc-500 mb-6">Esta transacción no incluye servicio de logística gestionado por Clinkar.</p>
-                <Link href={`/dashboard/transaction/${transactionId}`} className="text-blue-600 font-bold hover:underline">
+                
+                {/* Transport Request Button */}
+                {(transaction as any).car && (
+                    <div className="mt-4 p-6 bg-blue-50 dark:bg-blue-900/20 rounded-2xl max-w-md">
+                        <h3 className="font-bold text-blue-700 dark:text-blue-300 mb-2">🚗 ¿Necesitas transportar este vehículo?</h3>
+                        <p className="text-sm text-blue-600 dark:text-blue-400 mb-4">
+                            Solicita transporte especializado para vehículos a través de Clinkargo.
+                        </p>
+                        <RequestTransportButton 
+                            transactionId={transactionId}
+                            vehicle={{
+                                brand: (transaction as any).car.make,
+                                model: (transaction as any).car.model,
+                                year: (transaction as any).car.year,
+                                licensePlate: (transaction as any).car.license_plate
+                            }}
+                            pickupAddress={transaction.pickup_location || 'CDMX'}
+                            dropoffAddress={transaction.dropoff_location || 'Mexico'}
+                            customerName={user.email || undefined}
+                        />
+                    </div>
+                )}
+                
+                <Link href={`/dashboard/transaction/${transactionId}`} className="text-blue-600 font-bold hover:underline mt-4 block">
                     Volver a la Transacción
                 </Link>
             </div>

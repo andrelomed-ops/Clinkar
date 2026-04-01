@@ -205,7 +205,7 @@ export default function AdminLogisticsHubPage() {
                 </div>
 
                 <footer className="pt-10 border-t border-dashed border-border text-center">
-                    <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest italic">Clinkar Global Logistics Master Panel • Secure Access Only</p>
+                    <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest italic">Clinkargo Logistics Master Panel • Secure Access Only</p>
                 </footer>
             </div>
         </div>

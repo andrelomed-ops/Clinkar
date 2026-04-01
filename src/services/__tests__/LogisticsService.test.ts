@@ -12,7 +12,7 @@ describe('LogisticsService', () => {
 
         expect(quote.distanceKm).toBeGreaterThan(0);
         expect(quote.cost).toBeGreaterThan(1500); // Base price
-        expect(quote.provider).toContain('Clinkar Logistics Network');
+        expect(quote.provider).toContain('Clinkargo');
     });
 
     it('should use FUZZY city cache if an exact address is not found', async () => {

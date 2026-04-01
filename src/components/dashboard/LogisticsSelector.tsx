@@ -133,7 +133,7 @@ export function LogisticsSelector({ origin, onSelectOption }: LogisticsSelectorP
                                     <div className="text-xl font-black text-foreground">
                                         ${quote.price.toLocaleString()}
                                     </div>
-                                    <div className="text-[10px] text-muted-foreground font-medium">Cotización Clinkar</div>
+                                    <div className="text-[10px] text-muted-foreground font-medium">Cotización Clinkargo</div>
                                     {isSelected && (
                                         <div className="mt-2 text-indigo-600 flex items-center justify-end gap-1 animate-in zoom-in duration-300">
                                             <CheckCircle2 className="h-4 w-4" />
