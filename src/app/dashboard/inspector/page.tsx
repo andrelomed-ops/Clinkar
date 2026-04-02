@@ -13,13 +13,13 @@ export default async function InspectorDashboard() {
     if (!user) {
         const { cookies } = await import("next/headers");
         const cookieStore = await cookies();
-        const roleFn = cookieStore.get("clinkar_role");
+        const roleFn = cookieStore.get("starterkar_role");
 
         if (roleFn?.value === "inspector" || roleFn?.value === "legal") {
             // Mock a demo user for the dashboard
             user = {
                 id: "demo-inspector-id",
-                email: "demo@clinkar.com",
+                email: "demo@starterkar.com",
             } as any;
         } else {
             redirect("/login");

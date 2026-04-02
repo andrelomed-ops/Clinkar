@@ -142,7 +142,7 @@ export function MarketFilters({ filters, setFilters }: MarketFiltersProps) {
                             <ShieldCheck className="h-5 w-5" />
                         </div>
                         <div>
-                            <span className="font-black text-indigo-950 dark:text-indigo-50 block text-sm tracking-tight">Clinkar</span>
+                            <span className="font-black text-indigo-950 dark:text-indigo-50 block text-sm tracking-tight">StarterKar</span>
                             <span className="text-[10px] text-indigo-700 dark:text-indigo-300 font-bold uppercase tracking-wide">Certificación Multivehículo</span>
                         </div>
                     </div>
@@ -177,7 +177,7 @@ export function MarketFilters({ filters, setFilters }: MarketFiltersProps) {
                     <div className="flex items-center gap-3">
                         <div className="h-10 w-10 rounded-full bg-gradient-to-br from-amber-100 to-orange-200 dark:from-amber-500 dark:to-orange-500 flex items-center justify-center text-xl shadow-inner group-hover/card:scale-110 transition-transform duration-300 ring-2 ring-white dark:ring-zinc-900">🔥</div>
                         <div>
-                            <span className="font-black text-amber-950 dark:text-amber-50 block text-sm tracking-tight">Clinkar Venta Flash</span>
+                            <span className="font-black text-amber-950 dark:text-amber-50 block text-sm tracking-tight">StarterKar Venta Flash</span>
                             <span className="text-[10px] text-amber-700 dark:text-amber-400 font-bold uppercase tracking-wide">Oportunidades Exclusivas</span>
                         </div>
                     </div>
@@ -209,7 +209,7 @@ export function MarketFilters({ filters, setFilters }: MarketFiltersProps) {
                     <div className="flex items-center gap-3">
                         <div className="h-10 w-10 rounded-full bg-gradient-to-br from-blue-100 to-indigo-200 dark:from-blue-500 dark:to-indigo-500 flex items-center justify-center text-xl shadow-inner group-hover/card:scale-110 transition-transform duration-300 ring-2 ring-white dark:ring-zinc-900">🌎</div>
                         <div>
-                            <span className="font-black text-indigo-950 dark:text-indigo-50 block text-sm tracking-tight">Clinkar Autos Fronterizos</span>
+                            <span className="font-black text-indigo-950 dark:text-indigo-50 block text-sm tracking-tight">StarterKar Autos Fronterizos</span>
                             <span className="text-[10px] text-indigo-700 dark:text-indigo-400 font-bold uppercase tracking-wide">Importados / Legalizados</span>
                         </div>
                     </div>
@@ -241,7 +241,7 @@ export function MarketFilters({ filters, setFilters }: MarketFiltersProps) {
                     <div className="flex items-center gap-3">
                         <div className="h-10 w-10 rounded-full bg-gradient-to-br from-emerald-100 to-teal-200 dark:from-emerald-500 dark:to-teal-500 flex items-center justify-center text-xl shadow-inner group-hover/card:scale-110 transition-transform duration-300 ring-2 ring-white dark:ring-zinc-900">💎</div>
                         <div>
-                            <span className="font-black text-emerald-950 dark:text-emerald-50 block text-sm tracking-tight">Clinkar Solo Inversionistas</span>
+                            <span className="font-black text-emerald-950 dark:text-emerald-50 block text-sm tracking-tight">StarterKar Solo Inversionistas</span>
                             <span className="text-[10px] text-emerald-700 dark:text-emerald-400 font-bold uppercase tracking-wide">Ahorro &gt; 15% vs Mercado</span>
                         </div>
                     </div>
@@ -263,7 +263,7 @@ export function MarketFilters({ filters, setFilters }: MarketFiltersProps) {
                 </label>
             </div>
 
-            {/* CATEGORY FILTER (The 4 Pillars of Clinkar) */}
+            {/* CATEGORY FILTER (The 4 Pillars of StarterKar) */}
             <div className="border-b border-border/50 pb-6">
                 <button onClick={() => toggleSection('category')} className="flex items-center justify-between w-full mb-4">
                     <span className="font-bold text-sm">Tipo de Vehículo</span>
@@ -273,7 +273,7 @@ export function MarketFilters({ filters, setFilters }: MarketFiltersProps) {
                     <div className="space-y-2 animate-in slide-in-from-top-2">
                         {[
                             { id: 'Car', label: 'Autos y Camionetas', icon: '🚗', desc: 'Certificación 150 Puntos' },
-                            { id: 'Motorcycle', label: 'Motos y Razers', icon: '🏍️', desc: 'Protocolo Especial Clinkar' },
+                            { id: 'Motorcycle', label: 'Motos y Razers', icon: '🏍️', desc: 'Protocolo Especial StarterKar' },
                             { id: 'Heavy', label: 'Maquinaria y Pesados', icon: '🚜', desc: 'Tractos, Volcos, Agrícola' },
                             { id: 'Exotic', label: 'Marítimo y Aéreo', icon: '✈️', desc: 'Lanchas, Yates, Jets, Avionetas' },
                         ].map(type => (

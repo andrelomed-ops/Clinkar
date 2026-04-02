@@ -14,6 +14,6 @@ export default function robots(): MetadataRoute.Robots {
                 '/stress-test/',
             ],
         },
-        sitemap: 'https://clinkar.com/sitemap.xml',
+        sitemap: 'https://starterkar.com/sitemap.xml',
     };
 }

@@ -4,7 +4,7 @@ import { createClient } from '@/lib/supabase/server';
 import { ALL_CARS } from '@/data/cars';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-    const baseUrl = 'https://clinkar.com';
+    const baseUrl = 'https://starterkar.com';
 
     // Base routes
     const routes = [

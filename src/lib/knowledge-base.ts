@@ -24,7 +24,7 @@ export const LIFESTYLE_CONTEXTS: Record<string, { intent: string; prompt: string
         prompt: "🎓 Para la universidad, lo más inteligente es un auto que 'no pida nada'. Priorizo bajo consumo, facilidad de estacionamiento y un historial de mantenimiento impecable.",
         filters: (c: Vehicle) => (c.type === 'Sedan' || c.type === 'Hatchback') && c.price < 400000
     },
-    // 🛠️ SUPPORT CONTEXTS (Clinkar Business Logic)
+    // 🛠️ SUPPORT CONTEXTS (StarterKar Business Logic)
     "boveda": {
         intent: "SUPPORT_VAULT",
         prompt: "🛡️ La Bóveda Digital es nuestro sistema de garantía. Tu dinero no se entrega al vendedor hasta que tú confirmas la recepción del auto mediante el código QR. Está respaldado por instituciones financieras reguladas.",
@@ -32,17 +32,17 @@ export const LIFESTYLE_CONTEXTS: Record<string, { intent: string; prompt: string
     },
     "seguro": {
         intent: "SUPPORT_VAULT",
-        prompt: "🔐 La seguridad es nuestra prioridad. Todas las transacciones en Clinkar están protegidas por un sistema Escrow. Si el auto no coincide con el reporte técnico, te devolvemos tu dinero al 100%.",
+        prompt: "🔐 La seguridad es nuestra prioridad. Todas las transacciones en StarterKar están protegidas por un sistema Escrow. Si el auto no coincide con el reporte técnico, te devolvemos tu dinero al 100%.",
         filters: (c: Vehicle) => true
     },
     "telefono": {
         intent: "SUPPORT_ANONYMITY",
-        prompt: "🕵️ Por seguridad y para evitar fraudes fuera de la plataforma, mantenemos el anonimato de ambas partes hasta la entrega. Clinkar actúa como el único intermediario certificado para proteger tu información personal.",
+        prompt: "🕵️ Por seguridad y para evitar fraudes fuera de la plataforma, mantenemos el anonimato de ambas partes hasta la entrega. StarterKar actúa como el único intermediario certificado para proteger tu información personal.",
         filters: (c: Vehicle) => true
     },
     "vendedor": {
         intent: "SUPPORT_ANONYMITY",
-        prompt: "👤 Para garantizar una experiencia segura, Clinkar gestiona toda la comunicación. No compartimos datos de contacto directos para protegerte de posibles estafas o tratos fuera de protocolo.",
+        prompt: "👤 Para garantizar una experiencia segura, StarterKar gestiona toda la comunicación. No compartimos datos de contacto directos para protegerte de posibles estafas o tratos fuera de protocolo.",
         filters: (c: Vehicle) => true
     },
     "envio": {
@@ -172,16 +172,16 @@ export const createIntents = (lower: string, userBudget: number | null, requeste
     },
     {
         id: 'BUSINESS_FEES',
-        keywords: ['comision', 'cuanto cobran', 'costo servicio', 'tarifa', 'fee', 'precio clinkar'],
+        keywords: ['comision', 'cuanto cobran', 'costo servicio', 'tarifa', 'fee', 'precio starterkar'],
         condition: (l) => l.includes('comision') || l.includes('cuanto cobran') || l.includes('cuanto cuesta el servicio'),
-        response: "💰 **Modelo de Transparencia Total**: Clinkar cobra una tarifa plana del **5%** sobre el valor final de la transacción. Este monto solo se cobra cuando tú, como comprador, liberas los fondos desde la Bóveda Digital. No hay costos ocultos.",
+        response: "💰 **Modelo de Transparencia Total**: StarterKar cobra una tarifa plana del **5%** sobre el valor final de la transacción. Este monto solo se cobra cuando tú, como comprador, liberas los fondos desde la Bóveda Digital. No hay costos ocultos.",
         filter: (c: Vehicle) => true
     },
     {
         id: 'BUSINESS_LEGAL',
         keywords: ['es legal', 'fraude', 'seguro', 'contrato', 'profeco'],
         condition: (l) => l.includes('legal') || l.includes('fraude') || l.includes('seguro') || l.includes('contrato'),
-        response: "⚖️ **Seguridad Jurídica**: Todas las operaciones en Clinkar están respaldadas por el Código de Comercio (Arts. 89-114). El escaneo del QR al momento de la entrega constituye una **Firma Electrónica Simple** con plena validez legal. Además, los fondos están custodiados por una institución financiera regulada (STP) hasta el cierre del trato.",
+        response: "⚖️ **Seguridad Jurídica**: Todas las operaciones en StarterKar están respaldadas por el Código de Comercio (Arts. 89-114). El escaneo del QR al momento de la entrega constituye una **Firma Electrónica Simple** con plena validez legal. Además, los fondos están custodiados por una institución financiera regulada (STP) hasta el cierre del trato.",
         filter: (c: Vehicle) => true
     },
     {

@@ -53,7 +53,7 @@ export function SellerReliabilityBadge({
 
             <div className="pt-4 border-t border-zinc-100 dark:border-zinc-800">
                 <p className="text-[10px] text-zinc-500 leading-tight">
-                    * Este vendedor ha completado su **Inspección Clinkar** y tiene fondos comprometidos en la plataforma.
+                    * Este vendedor ha completado su **Inspección StarterKar** y tiene fondos comprometidos en la plataforma.
                 </p>
             </div>
         </div>

@@ -133,7 +133,7 @@ export function LiabilityReleaseLetter({ transactionId, contract }: LiabilityRel
                         </p>
                         Este documento es un anexo al Contrato de Compraventa. Se recomienda conservar el original para cualquier aclaración ante las autoridades correspondientes.
                         <br />
-                        Generado digitalmente por Clinkar - {transactionId}
+                        Generado digitalmente por StarterKar - {transactionId}
                     </div>
                 </div>
             </main>

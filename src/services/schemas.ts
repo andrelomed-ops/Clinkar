@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 /**
- * Zod Schemas for Clinkar Data Models
+ * Zod Schemas for StarterKar Data Models
  * These schemas provide runtime validation and static type safety.
  */
 

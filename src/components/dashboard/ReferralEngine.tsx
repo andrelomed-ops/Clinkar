@@ -10,7 +10,7 @@ export function ReferralEngine() {
     const referralCode = "CLINK-PRO-99";
 
     const handleCopy = () => {
-        navigator.clipboard.writeText(`https://clinkar.com/invite/${referralCode}`);
+        navigator.clipboard.writeText(`https://starterkar.com/invite/${referralCode}`);
         setCopied(true);
         setTimeout(() => setCopied(false), 2000);
     };
@@ -28,7 +28,7 @@ export function ReferralEngine() {
                         <Gift className="h-6 w-6 text-indigo-100" />
                     </div>
                     <div>
-                        <h3 className="text-2xl font-black tracking-tight">Crecimiento Clinkar PRO</h3>
+                        <h3 className="text-2xl font-black tracking-tight">Crecimiento StarterKar PRO</h3>
                         <p className="text-indigo-200 text-xs font-bold uppercase tracking-widest">Gana por expandir nuestra red</p>
                     </div>
                 </div>
@@ -59,7 +59,7 @@ export function ReferralEngine() {
                             <label className="text-[10px] font-black uppercase tracking-widest text-indigo-200 ml-1">Tu Enlace Único</label>
                             <div className="flex gap-2">
                                 <div className="flex-1 bg-black/20 rounded-xl h-12 flex items-center px-4 font-mono text-xs overflow-hidden text-indigo-200 border border-white/10 uppercase tracking-tighter">
-                                    clinkar.com/invite/{referralCode}
+                                    starterkar.com/invite/{referralCode}
                                 </div>
                                 <Button
                                     onClick={handleCopy}

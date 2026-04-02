@@ -20,7 +20,7 @@ export function AdminDashboardView({ stats }: AdminDashboardViewProps) {
             <header className="flex flex-col md:flex-row justify-between items-start md:items-end gap-4">
                 <div>
                     <h1 className="text-3xl font-black tracking-tight">Centro de Mando Administrativo</h1>
-                    <p className="text-muted-foreground italic">Visión global del ecosistema Clinkar en tiempo real.</p>
+                    <p className="text-muted-foreground italic">Visión global del ecosistema StarterKar en tiempo real.</p>
                 </div>
                 <div className="text-xs font-mono text-muted-foreground bg-secondary px-3 py-1 rounded-lg">
                     Última actualización: {new Date(stats.lastUpdated).toLocaleTimeString()}
@@ -49,7 +49,7 @@ export function AdminDashboardView({ stats }: AdminDashboardViewProps) {
                     icon={<Wrench className="h-6 w-6 text-indigo-600" />}
                 />
                 <MetricCard
-                    title="Comisiones Clinkar"
+                    title="Comisiones StarterKar"
                     value={`$${stats.commissionRevenue.toLocaleString()}`}
                     subvalue="Buyer Fee + Seller Fee"
                     icon={<CheckCircle2 className="h-6 w-6 text-emerald-600" />}
@@ -57,7 +57,7 @@ export function AdminDashboardView({ stats }: AdminDashboardViewProps) {
                 <MetricCard
                     title="Operaciones Totales"
                     value={stats.totalTransactions.toString()}
-                    subvalue="Histórico clinkar"
+                    subvalue="Histórico starterkar"
                     icon={<BarChart3 className="h-6 w-6 text-purple-600" />}
                 />
                 <MetricCard

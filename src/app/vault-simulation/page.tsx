@@ -36,7 +36,7 @@ export default function VaultSimulationPage() {
         setTimeout(() => {
             setStatus('FUNDS_HELD');
             addLog(`✅ Fondos asegurados en Pasarela. Split Virtual calculado.`);
-            addLog(`   -> Clinkar Fee: $${FEE_AMOUNT.toLocaleString()}`);
+            addLog(`   -> StarterKar Fee: $${FEE_AMOUNT.toLocaleString()}`);
             addLog(`   -> Vendedor (Pendiente): $${SELLER_AMOUNT.toLocaleString()}`);
         }, 800);
     };
@@ -257,7 +257,7 @@ export default function VaultSimulationPage() {
                                     "text-right transition-opacity duration-700",
                                     (status === 'FUNDS_HELD' || status === 'COMPLETED') ? "opacity-100" : "opacity-30"
                                 )}>
-                                    <p className="text-xs font-bold text-slate-400 uppercase">Clinkar Fee</p>
+                                    <p className="text-xs font-bold text-slate-400 uppercase">StarterKar Fee</p>
                                     <p className="text-xl font-black text-blue-600">${formatCurrency(FEE_AMOUNT)}</p>
                                 </span>
                                 <div className={cn("h-12 w-12 rounded-full flex items-center justify-center transition-colors", (status === 'FUNDS_HELD' || status === 'COMPLETED') ? "bg-blue-100 text-blue-600" : "bg-slate-100")}>

@@ -36,7 +36,7 @@ export function PerformanceCharts() {
             <div className="lg:col-span-2 p-6 md:p-8 rounded-[2.5rem] bg-white border border-zinc-100 shadow-sm relative overflow-hidden">
                 <div className="mb-8">
                     <h3 className="text-lg font-black tracking-tight">Tendencia de Certificación</h3>
-                    <p className="text-sm text-muted-foreground">Volumen mensual de inspecciones y Sellos Clinkar otorgados.</p>
+                    <p className="text-sm text-muted-foreground">Volumen mensual de inspecciones y Sellos StarterKar otorgados.</p>
                 </div>
 
                 <div className="h-[300px] w-full">

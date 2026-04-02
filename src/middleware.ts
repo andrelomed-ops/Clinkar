@@ -8,6 +8,16 @@ export async function middleware(request: NextRequest) {
         },
     })
 
+    // Capture referral code from ANY page hit
+    const refCode = request.nextUrl.searchParams.get('ref')
+    if (refCode) {
+        response.cookies.set('starterkar_ref', refCode, { 
+            path: '/', 
+            maxAge: 60 * 60 * 24 * 30, // 30 days
+            sameSite: 'lax'
+        })
+    }
+
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
     const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
@@ -68,7 +78,7 @@ export async function middleware(request: NextRequest) {
 
     if (isDashboardRoute) {
         const { data: { user } } = await supabase.auth.getUser()
-        const demoRole = request.cookies.get('clinkar_role')?.value
+        const demoRole = request.cookies.get('starterkar_role')?.value
 
         // 1. Basic Auth Check
         if (!user && !demoRole) {

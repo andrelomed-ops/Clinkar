@@ -31,7 +31,7 @@ const STATS = [
     {
         label: "Satisfacción Cliente",
         value: "4.9/5",
-        change: "Métrica Clinkar",
+        change: "Métrica StarterKar",
         icon: TrendingUp,
         color: "text-indigo-500",
         bg: "bg-indigo-500/10"

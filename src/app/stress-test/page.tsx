@@ -14,24 +14,24 @@ export default function VaultStressTest() {
     const runSimulation = () => {
         setStatus('FUNDS_LOCKED');
         addLog("SIMULACIÓN: Comprador depositó $450,000 MXN en cuenta concentradora del procesador (Stripe).");
-        addLog("ESTADO: Fondos bloqueados en Escrow por Mandato No-Custodio de Clinkar.");
+        addLog("ESTADO: Fondos bloqueados en Escrow por Mandato No-Custodio de StarterKar.");
 
         setTimeout(() => {
             setStatus('TRIGGERING_CANCELLATION');
             addLog("ALERTA: Inspección de 150 puntos detecta daño estructural oculto.");
-            addLog("ACCIÓN: Clinkar AI detecta riesgo crítico. Activando protocolo de protección al comprador.");
+            addLog("ACCIÓN: StarterKar AI detecta riesgo crítico. Activando protocolo de protección al comprador.");
         }, 2000);
 
         setTimeout(() => {
             setStatus('REFUND_IN_PROGRESS');
             addLog("SIMULACIÓN: Instruyendo mandato de reversión a la entidad financiera.");
-            addLog("SEGURIDAD: Verificando que Clinkar NO retenga comisiones operativas (Protección total).");
+            addLog("SEGURIDAD: Verificando que StarterKar NO retenga comisiones operativas (Protección total).");
         }, 4000);
 
         setTimeout(() => {
             setStatus('REFUNDED');
             addLog("ÉXITO: Fondos regresados a la cuenta origen del comprador.");
-            addLog("SOPORTE: Clinkar Hub AI envía notificación y opciones de autos similares.");
+            addLog("SOPORTE: StarterKar Hub AI envía notificación y opciones de autos similares.");
         }, 6000);
     };
 
@@ -40,7 +40,7 @@ export default function VaultStressTest() {
             <header className="max-w-4xl space-y-4">
                 <Badge className="bg-red-500/20 text-red-400 border-red-500/30 uppercase font-black px-3 py-1">Stress Test: Protocolo de Seguridad</Badge>
                 <h1 className="text-5xl font-black tracking-tighter">Vault Resilience Test</h1>
-                <p className="text-zinc-500 text-xl max-w-2xl">Simulación de fallo crítico para validar que Clinkar protege el capital del usuario en un entorno no-custodio.</p>
+                <p className="text-zinc-500 text-xl max-w-2xl">Simulación de fallo crítico para validar que StarterKar protege el capital del usuario en un entorno no-custodio.</p>
             </header>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
@@ -107,7 +107,7 @@ export default function VaultStressTest() {
                 </div>
                 <div>
                     <h5 className="font-black text-indigo-400">Veredicto de Auditoría</h5>
-                    <p className="text-zinc-400 text-sm">Este test valida que Clinkar cumple con la ley Fintech (MX) y garantiza que el capital del cliente nunca es comprometido por fallos operativos.</p>
+                    <p className="text-zinc-400 text-sm">Este test valida que StarterKar cumple con la ley Fintech (MX) y garantiza que el capital del cliente nunca es comprometido por fallos operativos.</p>
                 </div>
             </footer>
         </div>

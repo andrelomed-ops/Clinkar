@@ -12,7 +12,7 @@ import {
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { createBrowserClient } from '@supabase/ssr';
-import { ClinkarSeal } from './ClinkarSeal';
+import { StarterKarSeal } from './StarterKarSeal';
 
 interface InspectionSummaryProps {
     carId: string;
@@ -81,7 +81,7 @@ export function InspectionSummary({ carId, compact = false }: InspectionSummaryP
         )}>
             <div className="flex items-center justify-between mb-8">
                 <div className="flex items-center gap-4">
-                    <ClinkarSeal variant="full" />
+                    <StarterKarSeal variant="full" />
                 </div>
                 {!compact && (
                     <div className="hidden sm:flex flex-col items-end">
@@ -121,7 +121,7 @@ export function InspectionSummary({ carId, compact = false }: InspectionSummaryP
                 <ChevronRight className="h-5 w-5" />
             </button>
             <p className="text-center mt-4 text-[10px] font-bold text-muted-foreground uppercase tracking-[0.2em]">
-                Validado por mecánico certificado Clinkar
+                Validado por mecánico certificado StarterKar
             </p>
         </div>
     );

@@ -48,14 +48,14 @@ export function LeadCaptureModal({ carName, agency, isOpen, onClose }: LeadCaptu
                             </div>
                             <h2 className="text-3xl font-black tracking-tight italic">Tu usado es tu enganche</h2>
                             <p className="text-muted-foreground font-medium">
-                                En Clinkar, monetizamos tu auto actual al mejor precio para que estrenes tu <span className="text-foreground font-bold">{carName}</span> sin complicaciones.
+                                En StarterKar, monetizamos tu auto actual al mejor precio para que estrenes tu <span className="text-foreground font-bold">{carName}</span> sin complicaciones.
                             </p>
                         </div>
 
                         <div className="bg-indigo-500/5 p-6 rounded-3xl border border-indigo-500/10 space-y-4">
                             <div className="flex items-center gap-2 text-indigo-600">
                                 <Info className="h-4 w-4" />
-                                <span className="text-[10px] font-black uppercase tracking-widest italic">Puente Financiero Clinkar</span>
+                                <span className="text-[10px] font-black uppercase tracking-widest italic">Puente Financiero StarterKar</span>
                             </div>
                             <p className="text-xs font-medium text-indigo-900/70 dark:text-indigo-300/70 leading-relaxed">
                                 Nosotros gestionamos la venta de tu seminuevo. Mientras tanto, te vinculamos con <strong>{agency}</strong> como cliente VIP para que asegures el inventario de tu auto nuevo.
@@ -73,7 +73,7 @@ export function LeadCaptureModal({ carName, agency, isOpen, onClose }: LeadCaptu
                                     </div>
                                     <div className="text-left">
                                         <span className="block font-black text-sm uppercase leading-tight">Liquidar seminuevo para enganche</span>
-                                        <span className="text-[10px] text-muted-foreground font-bold">Gestión de venta flash Clinkar</span>
+                                        <span className="text-[10px] text-muted-foreground font-bold">Gestión de venta flash StarterKar</span>
                                     </div>
                                 </button>
                                 <button
@@ -96,7 +96,7 @@ export function LeadCaptureModal({ carName, agency, isOpen, onClose }: LeadCaptu
                 {step === 2 && (
                     <div className="space-y-8">
                         <div className="space-y-2">
-                            <h2 className="text-3xl font-black tracking-tight italic">Referido VIP Clinkar</h2>
+                            <h2 className="text-3xl font-black tracking-tight italic">Referido VIP StarterKar</h2>
                             <p className="text-muted-foreground font-medium">
                                 Generaremos un folio único para que <strong>{agency}</strong> te identifique como cliente de nuestra plataforma.
                             </p>
@@ -109,7 +109,7 @@ export function LeadCaptureModal({ carName, agency, isOpen, onClose }: LeadCaptu
                             </div>
                             <div className="pt-4 border-t border-border">
                                 <p className="text-[10px] text-muted-foreground leading-relaxed italic">
-                                    Al solicitar tu contacto VIP, Clinkar notificará a la agencia que eres un usuario verificado. Esto te da acceso a bonos exclusivos y atención prioritaria. Nosotros nos encargamos de vender tu auto actual sin que tengas que compartir reportes fuera de nuestra plataforma.
+                                    Al solicitar tu contacto VIP, StarterKar notificará a la agencia que eres un usuario verificado. Esto te da acceso a bonos exclusivos y atención prioritaria. Nosotros nos encargamos de vender tu auto actual sin que tengas que compartir reportes fuera de nuestra plataforma.
                                 </p>
                             </div>
                         </div>
@@ -164,7 +164,7 @@ export function LeadCaptureModal({ carName, agency, isOpen, onClose }: LeadCaptu
 
                         <div className="p-5 bg-indigo-500/5 rounded-2xl border border-indigo-500/10 text-left">
                             <p className="text-xs text-indigo-800 dark:text-indigo-300 leading-relaxed font-medium italic">
-                                * Un asesor de Clinkar te llamará en breve para iniciar la valuación y venta flash de tu unidad actual, asegurando tu enganche.
+                                * Un asesor de StarterKar te llamará en breve para iniciar la valuación y venta flash de tu unidad actual, asegurando tu enganche.
                             </p>
                         </div>
 

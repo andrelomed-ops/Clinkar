@@ -26,12 +26,12 @@ export function ImportBadge({ type, className }: ImportBadgeProps) {
                 <div className="flex items-center gap-2">
                     <span className="text-xs font-black uppercase tracking-widest text-zinc-500">Auto {type}</span>
                     <div className="px-1.5 py-0.5 rounded bg-emerald-100 dark:bg-emerald-900/30 text-[8px] font-black text-emerald-600 uppercase tracking-tighter flex items-center gap-0.5">
-                        <ShieldCheck className="h-2 w-2" /> Protección Clinkar
+                        <ShieldCheck className="h-2 w-2" /> Protección StarterKar
                     </div>
                 </div>
                 <p className="text-[10px] font-bold text-zinc-400 leading-tight mt-0.5">
                     {type === 'FRONTERIZO'
-                        ? "Este vehículo se encuentra en zona fronteriza. Clinkar asegura el pago hasta que el auto llegue a tu ciudad."
+                        ? "Este vehículo se encuentra en zona fronteriza. StarterKar asegura el pago hasta que el auto llegue a tu ciudad."
                         : "Vehículo importado legalmente. Verificado por nuestra red de gestoría certificada."
                     }
                 </p>

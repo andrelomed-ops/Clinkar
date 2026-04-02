@@ -29,7 +29,7 @@ export default function InspectorTool() {
                     <Smartphone className="h-8 w-8 text-primary" />
                 </div>
                 <h1 className="text-3xl font-black tracking-tight mb-2">Inspector App</h1>
-                <p className="text-muted-foreground">Protocolo de Certificación Clinkar v2.4</p>
+                <p className="text-muted-foreground">Protocolo de Certificación StarterKar v2.4</p>
             </header>
 
             {/* Stepper */}

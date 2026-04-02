@@ -229,7 +229,7 @@ export function NotificationCenter() {
                         Configurar Canales
                     </button>
                     <p className="text-[10px] text-center text-zinc-400 font-bold uppercase tracking-widest">
-                        Seguridad Clinkar Protegida
+                        Seguridad StarterKar Protegida
                     </p>
                 </div>
             </div>

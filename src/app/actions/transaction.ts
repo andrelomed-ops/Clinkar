@@ -24,7 +24,7 @@ export async function startTransaction(carId: string, addOns?: {
         // Fallback: Check for Demo Cookie
         const { cookies } = await import('next/headers');
         const cookieStore = await cookies();
-        const demoRole = cookieStore.get('clinkar_role')?.value;
+        const demoRole = cookieStore.get('starterkar_role')?.value;
 
         if (demoRole === 'buyer' || demoRole === 'seller') {
             buyerId = 'demo-user-123'; // Mock ID for demo

@@ -40,7 +40,7 @@ export default function AdminLogisticsHubPage() {
                             id: "LOG-101",
                             car: "BMW X1 2024",
                             origin: "Santa Fe, CDMX",
-                            destination: "Bóveda Clinkar Norte",
+                            destination: "Bóveda StarterKar Norte",
                             status: "IN_TRANSIT",
                             type: "PICKUP",
                             priority: "HIGH",
@@ -50,7 +50,7 @@ export default function AdminLogisticsHubPage() {
                         {
                             id: "LOG-102",
                             car: "Mazda CX-30 2022",
-                            origin: "Bóveda Clinkar Sur",
+                            origin: "Bóveda StarterKar Sur",
                             destination: "Polanco, CDMX",
                             status: "SCHEDULED",
                             type: "DELIVERY",
@@ -104,7 +104,7 @@ export default function AdminLogisticsHubPage() {
                 <header className="flex flex-col md:flex-row md:items-center justify-between gap-6">
                     <div className="space-y-1">
                         <div className="flex items-center gap-2 text-primary font-black uppercase tracking-widest text-[10px]">
-                            <Truck className="h-4 w-4" /> Gestión de Movilidad Clinkar
+                            <Truck className="h-4 w-4" /> Gestión de Movilidad StarterKar
                         </div>
                         <h1 className="text-4xl font-black tracking-tight italic uppercase italic">
                             Logística & <span className="text-primary italic">Entregas</span>

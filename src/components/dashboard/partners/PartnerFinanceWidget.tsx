@@ -7,7 +7,7 @@ import { Progress } from "@/components/ui/progress";
 export function PartnerFinanceWidget() {
     const creditUsed = 5000;
     const creditLimit = 25000;
-    const clinkarScore = 840;
+    const starterkarScore = 840;
 
     return (
         <div className="bg-gradient-to-br from-zinc-900 to-black rounded-[2rem] p-8 border border-white/10 shadow-2xl relative overflow-hidden">
@@ -24,8 +24,8 @@ export function PartnerFinanceWidget() {
                         <h2 className="text-3xl font-black text-white">$ {(creditLimit - creditUsed).toLocaleString()} <span className="text-xs text-zinc-500">Disponible</span></h2>
                     </div>
                     <div className="bg-indigo-500/10 border border-indigo-500/30 rounded-2xl p-3 text-center min-w-[100px]">
-                        <span className="text-[10px] font-black uppercase tracking-widest text-indigo-400 block mb-1">Clinkar Score</span>
-                        <span className="text-2xl font-black text-white">{clinkarScore}</span>
+                        <span className="text-[10px] font-black uppercase tracking-widest text-indigo-400 block mb-1">StarterKar Score</span>
+                        <span className="text-2xl font-black text-white">{starterkarScore}</span>
                     </div>
                 </div>
 

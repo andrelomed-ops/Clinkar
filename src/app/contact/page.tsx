@@ -68,7 +68,7 @@ function ContactContent() {
                                 </div>
                                 <div>
                                     <h3 className="font-bold text-lg">Correo Electrónico</h3>
-                                    <p className="text-muted-foreground font-medium">soporte@clinkar.com</p>
+                                    <p className="text-muted-foreground font-medium">soporte@starterkar.com</p>
                                     <p className="text-xs text-indigo-500 font-bold mt-1 uppercase tracking-tighter">Respuesta rápida</p>
                                 </div>
                             </div>
@@ -179,7 +179,7 @@ function ContactContent() {
                                 </div>
                                 <div className="space-y-2">
                                     <h2 className="text-3xl font-black tracking-tight">¡Mensaje Enviado!</h2>
-                                    <p className="text-muted-foreground font-medium">Gracias por contactarnos. Un experto de Clinkar revisará tu solicitud y te contactará a la brevedad.</p>
+                                    <p className="text-muted-foreground font-medium">Gracias por contactarnos. Un experto de StarterKar revisará tu solicitud y te contactará a la brevedad.</p>
                                 </div>
                                 <button
                                     onClick={() => setSent(false)}

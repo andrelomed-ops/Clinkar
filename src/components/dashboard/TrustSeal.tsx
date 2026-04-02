@@ -38,7 +38,7 @@ export function TrustSeal({ folio, date, score, category = 'Car' }: TrustSealPro
                         <h4 className="text-xs font-black uppercase tracking-[0.3em] text-white/60 flex items-center justify-center md:justify-start gap-2">
                             {badge}
                         </h4>
-                        <h3 className="text-2xl font-black">Certificación Clinkar Elite</h3>
+                        <h3 className="text-2xl font-black">Certificación StarterKar Elite</h3>
                     </div>
 
                     <p className="text-sm leading-relaxed text-white/80 font-medium max-w-2xl">

@@ -11,7 +11,7 @@ export default function VerificationPage() {
             <VerificationWizard />
 
             <footer className="mt-12 text-center text-xs text-muted-foreground max-w-lg mx-auto leading-relaxed">
-                Clinkar cumple con todas las disposiciones de la Ley Federal para la Prevención e Identificación de Operaciones con Recursos de Procedencia Ilícita (LFPIORPI). Tu privacidad es nuestra prioridad #1.
+                StarterKar cumple con todas las disposiciones de la Ley Federal para la Prevención e Identificación de Operaciones con Recursos de Procedencia Ilícita (LFPIORPI). Tu privacidad es nuestra prioridad #1.
             </footer>
         </div>
     );

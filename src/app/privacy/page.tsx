@@ -11,7 +11,7 @@ export default function PrivacyPage() {
                     <h1 className="text-4xl font-black tracking-tight mb-4">Aviso de Privacidad Integral</h1>
                     <p className="text-muted-foreground text-lg italic">Última actualización: 29 de Enero de 2026</p>
                     <p className="mt-4 text-sm text-muted-foreground">
-                        Clinkar S.A. de C.V. (en lo sucesivo &quot;CLINKAR&quot;), con domicilio en la Ciudad de México, es el responsable del uso y protección de sus datos personales, y al respecto le informamos lo siguiente:
+                        StarterKar S.A. de C.V. (en lo sucesivo &quot;CLINKAR&quot;), con domicilio en la Ciudad de México, es el responsable del uso y protección de sus datos personales, y al respecto le informamos lo siguiente:
                     </p>
                 </header>
 
@@ -104,7 +104,7 @@ export default function PrivacyPage() {
                             Usted tiene derecho a conocer qué datos personales tenemos de usted (Acceso), solicitar la corrección de su información personal (Rectificación), oponerse al uso de sus datos para fines específicos (Oposición), o solicitar la eliminación de sus datos (Cancelación).
                         </p>
                         <p className="text-sm font-bold bg-primary/5 p-4 rounded-lg border border-primary/10">
-                            Para el ejercicio de cualquiera de los derechos ARCO, usted deberá presentar la solicitud respectiva a través del correo electrónico: <a href="mailto:privacidad@clinkar.com" className="text-primary underline">privacidad@clinkar.com</a>
+                            Para el ejercicio de cualquiera de los derechos ARCO, usted deberá presentar la solicitud respectiva a través del correo electrónico: <a href="mailto:privacidad@starterkar.com" className="text-primary underline">privacidad@starterkar.com</a>
                         </p>
                     </div>
 

@@ -21,7 +21,7 @@ export function ShareButton({ title, text, url }: ShareButtonProps) {
             try {
                 await navigator.share({
                     title,
-                    text: `${text} | Vía Clinkar`,
+                    text: `${text} | Vía StarterKar`,
                     url: shareUrl,
                 });
             } catch (err) {

@@ -62,7 +62,7 @@ export function PartnerVettingStatus() {
                     <div className="bg-slate-800/40 rounded-xl p-3 border border-white/5 space-y-1">
                         <div className="flex items-center gap-2">
                             <CheckCircle2 className="h-3 w-3 text-blue-400" />
-                            <span className="text-[10px] font-black uppercase text-blue-400">Protocolo Clinkar</span>
+                            <span className="text-[10px] font-black uppercase text-blue-400">Protocolo StarterKar</span>
                         </div>
                         <p className="text-[10px] text-slate-500 text-emerald-400 font-bold">Acreditado ✓</p>
                     </div>

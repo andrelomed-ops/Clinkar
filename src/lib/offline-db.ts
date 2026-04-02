@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 
 // Simple IndexedDB wrapper for inspection drafts
-const DB_NAME = 'clinkar_offline_v1';
+const DB_NAME = 'starterkar_offline_v1';
 const STORE_NAME = 'drafts';
 
 export const useInspectionDraft = (carId: string) => {

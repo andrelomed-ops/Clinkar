@@ -18,7 +18,7 @@ export function WarrantyExplanation() {
                     <ShieldCheck className="h-6 w-6" />
                 </div>
                 <div>
-                    <h3 className="font-black text-lg">Garantía y Protección Clinkar</h3>
+                    <h3 className="font-black text-lg">Garantía y Protección StarterKar</h3>
                     <p className="text-xs text-muted-foreground uppercase tracking-widest font-bold">Transparencia y Seguridad P2P</p>
                 </div>
             </div>
@@ -31,7 +31,7 @@ export function WarrantyExplanation() {
                     icon="📋"
                     title="Nivel 1: Transparencia (Incluido)"
                 >
-                    Clinkar garantiza la **veracidad del reporte de inspección**. Si el reporte declara un fallo, tú compras sabiendo la condición exacta ("As-Is"). Nuestra responsabilidad es que no haya sorpresas omitidas por negligencia del inspector.
+                    StarterKar garantiza la **veracidad del reporte de inspección**. Si el reporte declara un fallo, tú compras sabiendo la condición exacta ("As-Is"). Nuestra responsabilidad es que no haya sorpresas omitidas por negligencia del inspector.
                 </AccordionItem>
 
                 <AccordionItem
@@ -41,7 +41,7 @@ export function WarrantyExplanation() {
                     icon="🛡️"
                     title="Nivel 2: Seguro de Protección (Opcional)"
                 >
-                    Puedes contratar planes de **30, 60 o 90 días** de cobertura mecánica. Este es un seguro que Clinkar gestiona con terceros para cubrir averías imprevistas en motor y transmisión que NO estaban presentes el día de la venta. Es una excelente forma de monetizar y dar paz mental.
+                    Puedes contratar planes de **30, 60 o 90 días** de cobertura mecánica. Este es un seguro que StarterKar gestiona con terceros para cubrir averías imprevistas en motor y transmisión que NO estaban presentes el día de la venta. Es una excelente forma de monetizar y dar paz mental.
                 </AccordionItem>
 
                 <AccordionItem
@@ -51,7 +51,7 @@ export function WarrantyExplanation() {
                     icon={<ShieldAlert className="h-4 w-4 text-amber-500" />}
                     title="Limitaciones y Fallos Conocidos"
                 >
-                    **IMPORTANTE:** Ningún seguro o garantía de Clinkar cubre fallos ya reportados en la inspección inicial que el comprador aceptó al firmar. Si el auto tiene un fallo declarado, el costo de reparación corre por cuenta del comprador.
+                    **IMPORTANTE:** Ningún seguro o garantía de StarterKar cubre fallos ya reportados en la inspección inicial que el comprador aceptó al firmar. Si el auto tiene un fallo declarado, el costo de reparación corre por cuenta del comprador.
                 </AccordionItem>
 
                 <AccordionItem
@@ -61,7 +61,7 @@ export function WarrantyExplanation() {
                     icon={<HelpCircle className="h-4 w-4 text-indigo-500" />}
                     title="¿Quién responde ante la ley?"
                 >
-                    En ventas P2P, la responsabilidad por vicios ocultos (mala fe) recae en el **Vendedor Particular**. Clinkar actúa como mediador tecnológico y garantiza únicamente la precisión de su diagnóstico técnico profesional realizado por expertos.
+                    En ventas P2P, la responsabilidad por vicios ocultos (mala fe) recae en el **Vendedor Particular**. StarterKar actúa como mediador tecnológico y garantiza únicamente la precisión de su diagnóstico técnico profesional realizado por expertos.
                 </AccordionItem>
             </div>
 

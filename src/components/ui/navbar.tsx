@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { Menu, Heart, ArrowLeft, ArrowDownWideNarrow } from 'lucide-react';
-import { ClinkarSeal } from '@/components/market/ClinkarSeal';
+import { StarterKarSeal } from '@/components/market/StarterKarSeal';
 import { ThemeToggle } from '@/components/layout/ThemeToggle';
 import { cn } from '@/lib/utils';
 import { useState, useEffect } from 'react';
@@ -66,11 +66,11 @@ export function Navbar({
                             </Link>
                         ) : variant === 'home' ? (
                             <Link href="/" className="flex items-center gap-3 group">
-                                <ClinkarSeal variant="compact" className="!bg-transparent !border-none !shadow-none !p-0" />
+                                <StarterKarSeal variant="compact" className="!bg-transparent !border-none !shadow-none !p-0" />
                             </Link>
                         ) : (
                             <Link href="/" className="flex items-center gap-2 group">
-                                <ClinkarSeal variant="compact" className="scale-110" />
+                                <StarterKarSeal variant="compact" className="scale-110" />
                             </Link>
                         )}
                     </div>

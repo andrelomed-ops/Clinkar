@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { Vehicle } from "@/data/cars";
 import { MapPin, Gauge, Fuel, Heart, TrendingDown, BadgeCheck, Zap } from "lucide-react";
-import { ClinkarSeal } from "./ClinkarSeal";
+import { StarterKarSeal } from "./StarterKarSeal";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
 
@@ -48,8 +48,8 @@ export function CarCard({ car, isFavorite = false, onToggleFavorite }: CarCardPr
 
                     {/* Status Badge */}
                     <div className="absolute top-3 left-3 flex flex-wrap gap-2 max-w-[calc(100%-60px)] z-20">
-                        {(car.status === 'CERTIFIED' || car.has_clinkar_seal) && (
-                            <ClinkarSeal variant="compact" />
+                        {(car.status === 'CERTIFIED' || car.has_starterkar_seal) && (
+                            <StarterKarSeal variant="compact" />
                         )}
                         {car.flashSale && (
                             <div className="px-2.5 py-1 bg-amber-400 dark:bg-amber-500 text-black text-[10px] font-extrabold rounded-lg uppercase tracking-wide whitespace-nowrap shadow-sm shadow-amber-400/20 animate-pulse">

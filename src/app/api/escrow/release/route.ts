@@ -41,10 +41,10 @@ export async function POST(request: Request) {
         // 2. Fees and Splits
         const sellerSuccessFee = Number(transaction.seller_success_fee || 2149.13);
         const amountToSeller = Number(transaction.car_price) - sellerSuccessFee;
-        const clinkarCommissionTotal = Number(transaction.buyer_commission || 0) + sellerSuccessFee;
+        const starterkarCommissionTotal = Number(transaction.buyer_commission || 0) + sellerSuccessFee;
 
         // 3. Trigger Stripe Transfer Logic
-        // console.log(`[Escrow] Releasing $${amountToSeller} to Seller, Platform keeping $${clinkarCommissionTotal}`);
+        // console.log(`[Escrow] Releasing $${amountToSeller} to Seller, Platform keeping $${starterkarCommissionTotal}`);
 
         // 4. Use VerificationService to complete the handover
         const result = await VerificationService.confirmHandover(supabase, transactionId);

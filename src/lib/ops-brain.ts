@@ -8,15 +8,15 @@ export interface OpsResponse {
 
 const PROCESS_KNOWLEDGE: Record<string, string> = {
     "boveda": "🛡️ La Bóveda Digital es nuestro sistema de garantía Escrow. Tu pago se retiene de forma segura y solo se libera al vendedor cuando tú confirmas (vía QR) que has recibido el coche y todo está en orden.",
-    "inspeccion": "📋 Nuestra inspección de 150 puntos es la más rigurosa del mercado. Revisamos motor, transmisión, electrónica, estructura y legalidad del vehículo para otorgar el Sello Clinkar.",
-    "seguridad": "🔐 En Clinkar, la seguridad es total. Validamos la identidad de compradores y vendedores, y verificamos que todos los documentos legales estén en regla antes de cualquier transacción.",
+    "inspeccion": "📋 Nuestra inspección de 150 puntos es la más rigurosa del mercado. Revisamos motor, transmisión, electrónica, estructura y legalidad del vehículo para otorgar el Sello StarterKar.",
+    "seguridad": "🔐 En StarterKar, la seguridad es total. Validamos la identidad de compradores y vendedores, y verificamos que todos los documentos legales estén en regla antes de cualquier transacción.",
     "pago": "💰 Puedes pagar mediante transferencia bancaria protegida o financiamiento. La Bóveda Digital asegura que tu dinero esté resguardado hasta que el auto sea tuyo.",
-    "entrega": "🚚 La entrega se realiza en un punto seguro certificado por Clinkar o a domicilio si contrataste logística. El vendedor debe entregarte el auto y tú liberar el pago mediante nuestra app.",
+    "entrega": "🚚 La entrega se realiza en un punto seguro certificado por StarterKar o a domicilio si contrataste logística. El vendedor debe entregarte el auto y tú liberar el pago mediante nuestra app.",
     "devolucion": "🔙 Si el auto no coincide con el reporte técnico al momento de la entrega, puedes cancelar la operación y la Bóveda Digital te reembolsa tu dinero íntegramente.",
     "financiamiento": "📈 Contamos con aliados financieros para ofrecerte crédito. Puedes simular tu crédito en la pestaña de 'Crédito' de cualquier vehículo certificado.",
     "papeles": "📜 Nosotros validamos facturas, tenencias y reportes de robo (REPUVE/RAPI). Si un auto no tiene los papeles en orden, no puede entrar a la plataforma.",
     "cita": "📅 Para agendar una cita o test drive, primero debes seleccionar el vehículo de tu interés y solicitar la pre-aprobación del crédito o demostrar fondos para asegurar el compromiso.",
-    "yate": "🚤 Para activos náuticos, el Sello Clinkar verifica la integridad estructural del casco, el estado de los motores marinos y la documentación de propiedad marítima en la Bóveda Digital.",
+    "yate": "🚤 Para activos náuticos, el Sello StarterKar verifica la integridad estructural del casco, el estado de los motores marinos y la documentación de propiedad marítima en la Bóveda Digital.",
     "avion": "🛩️ En aviación, validamos bitácoras de mantenimiento, ciclos de motor y fuselaje, y certificaciones de aviónica para asegurar una transacción transparente a través de Escrow.",
     "maquinaria": "🚜 Para activos industriales, inspeccionamos sistemas hidráulicos, estructurales y horas de uso, garantizando que el activo esté listo para operar antes de liberar el pago."
 };

@@ -138,7 +138,7 @@ export default function SellerDashboardPage() {
                 return {
                     label: "Inspección Programada",
                     color: "bg-amber-500/10 text-amber-500",
-                    desc: "Un inspector de Clinkar visitará tu domicilio pronto.",
+                    desc: "Un inspector de StarterKar visitará tu domicilio pronto.",
                     icon: <Clock className="h-5 w-5" />
                 };
             case "CERTIFIED":
@@ -184,7 +184,7 @@ export default function SellerDashboardPage() {
                             <CarIcon className="h-8 w-8 text-primary" />
                             Mi Bóveda de Venta
                         </h1>
-                        <p className="text-muted-foreground font-medium uppercase tracking-tight text-xs">Gestión Segura de Activos Clinkar Certified</p>
+                        <p className="text-muted-foreground font-medium uppercase tracking-tight text-xs">Gestión Segura de Activos StarterKar Certified</p>
                     </div>
                     <div className="flex gap-3">
                         {activeTransaction?.status === 'IN_VAULT' && (
@@ -256,13 +256,13 @@ export default function SellerDashboardPage() {
                         <div className="bg-card rounded-[2.5rem] border border-border p-10 shadow-sm hover:shadow-md transition-shadow">
                             <div className="mb-8 border-b border-border/50 pb-6">
                                 <h3 className="text-2xl font-black italic uppercase tracking-tighter italic mb-1">Centro Documental</h3>
-                                <p className="text-xs text-muted-foreground font-medium">Sube tus archivos para la certificación legal de Clinkar.</p>
+                                <p className="text-xs text-muted-foreground font-medium">Sube tus archivos para la certificación legal de StarterKar.</p>
                             </div>
                             <AdminDocumentManager initialDocuments={car.documents as any} />
                             <div className="mt-10 p-6 bg-blue-500/5 border border-blue-500/10 rounded-[2rem] flex items-start gap-4">
                                 <AlertCircle className="h-6 w-6 text-blue-500 shrink-0 mt-0.5" />
                                 <div className="space-y-1">
-                                    <p className="text-[10px] text-blue-600 dark:text-blue-400 font-black uppercase tracking-widest">Protocolo de Privacidad Clinkar</p>
+                                    <p className="text-[10px] text-blue-600 dark:text-blue-400 font-black uppercase tracking-widest">Protocolo de Privacidad StarterKar</p>
                                     <p className="text-xs text-blue-600/80 dark:text-blue-400/80 font-medium leading-relaxed">
                                         Tus documentos son revisados por nuestra IA y un experto legal humano. Esto garantiza que el vehículo sea 100% legal y acelera tu venta.
                                     </p>
@@ -319,7 +319,7 @@ export default function SellerDashboardPage() {
                             </CardContent>
                         </Card>
 
-                        {/* Clinkar AI Insight */}
+                        {/* StarterKar AI Insight */}
                         <div className="p-10 rounded-[3rem] bg-gradient-to-br from-indigo-600 to-purple-800 text-white shadow-2xl shadow-indigo-500/30 relative overflow-hidden group border border-white/10">
                             <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:scale-150 transition-transform duration-1000">
                                 <ShieldCheck className="h-32 w-32" />
@@ -327,7 +327,7 @@ export default function SellerDashboardPage() {
                             <div className="relative z-10">
                                 <h3 className="text-xl font-black mb-6 flex items-center gap-2 italic uppercase italic tracking-tighter">
                                     <Sparkles className="h-5 w-5 text-indigo-300" />
-                                    Clinkar Matrix Insight
+                                    StarterKar Matrix Insight
                                 </h3>
                                 <p className="text-sm text-indigo-100 leading-relaxed font-bold italic mb-8">
                                     &quot;Tu vehículo tiene un puntaje de mercado de 9.2. Los compradores están buscando activamente {car.make} {car.year} en CDMX. Completa tu verificación hoy para cerrar la venta en menos de 72 horas.&quot;

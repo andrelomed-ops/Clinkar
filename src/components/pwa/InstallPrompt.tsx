@@ -53,7 +53,7 @@ export function InstallPrompt() {
                         </div>
 
                         <div className="flex-1 min-w-0">
-                            <h3 className="font-bold text-sm">Instalar Clinkar Enterprise</h3>
+                            <h3 className="font-bold text-sm">Instalar StarterKar Enterprise</h3>
                             <p className="text-xs text-zinc-400 truncate">Acceso rápido y modo offline.</p>
                         </div>
 

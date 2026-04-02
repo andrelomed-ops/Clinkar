@@ -209,7 +209,7 @@ export function ContractView({ contract, id }: ContractViewProps) {
                         {/* Security Seal */}
                         <div className="absolute -top-12 left-1/2 -translate-x-1/2 bg-white px-6 py-2 border-2 border-black rounded-full flex items-center gap-2">
                             <CheckCircle2 className="h-4 w-4 text-indigo-600" />
-                            <span className="text-[10px] font-black uppercase tracking-widest">Sello Digital de Seguridad Clinkar</span>
+                            <span className="text-[10px] font-black uppercase tracking-widest">Sello Digital de Seguridad StarterKar</span>
                         </div>
 
                         <div className="flex-1 text-center space-y-6">
@@ -258,7 +258,7 @@ export function ContractView({ contract, id }: ContractViewProps) {
                     <div className="pt-12 text-center space-y-4">
                         <div className="border-t pt-4">
                             <p className="text-[10px] text-muted-foreground uppercase tracking-widest font-bold">
-                                Operación Orquestada por Clinkar S.A. de C.V. conforme a la Ley Federal de Protección al Consumidor.
+                                Operación Orquestada por StarterKar S.A. de C.V. conforme a la Ley Federal de Protección al Consumidor.
                             </p>
                             <p className="text-[10px] text-muted-foreground font-mono mt-1">
                                 Folio de Seguridad: {id.toUpperCase()} • {legalProfile.state}

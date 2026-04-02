@@ -13,11 +13,11 @@ const FAQS = [
         icon: <HelpCircle className="h-5 w-5" />,
         items: [
             {
-                q: "¿Qué es Clinkar?",
-                a: "Clinkar es la primera bóveda digital para la compraventa de autos seminuevos en México. Actuamos como un intermediario de confianza que protege tu dinero y garantiza que el vehículo esté en las condiciones prometidas mediante una certificación de 150 puntos."
+                q: "¿Qué es StarterKar?",
+                a: "StarterKar es la primera bóveda digital para la compraventa de autos seminuevos en México. Actuamos como un intermediario de confianza que protege tu dinero y garantiza que el vehículo esté en las condiciones prometidas mediante una certificación de 150 puntos."
             },
             {
-                q: "¿Es seguro usar Clinkar?",
+                q: "¿Es seguro usar StarterKar?",
                 a: "Absolutamente. Utilizamos tecnología de vanguardia para proteger las transacciones. El dinero del comprador se mantiene resguardado en nuestra bóveda digital y solo se libera al vendedor cuando ambas partes han confirmado la entrega satisfactoria."
             }
         ]
@@ -28,11 +28,11 @@ const FAQS = [
         items: [
             {
                 q: "¿Cómo sé que el auto está en buen estado?",
-                a: "Todos los autos con el 'Sello Clinkar' han pasado por una rigurosa inspección mecánica y legal de 150 puntos realizada por expertos certificados."
+                a: "Todos los autos con el 'Sello StarterKar' han pasado por una rigurosa inspección mecánica y legal de 150 puntos realizada por expertos certificados."
             },
             {
                 q: "¿Puedo ver el auto antes de comprar?",
-                a: "Clinkar facilita la inspección técnica. Una vez que demuestras interés serio a través de la plataforma, coordinamos la revisión para que compres con total transparencia."
+                a: "StarterKar facilita la inspección técnica. Una vez que demuestras interés serio a través de la plataforma, coordinamos la revisión para que compres con total transparencia."
             }
         ]
     },
@@ -46,7 +46,7 @@ const FAQS = [
             },
             {
                 q: "¿Qué pasa si el auto no coincide con la descripción?",
-                a: "Si durante la entrega detectas una discrepancia grave no reportada, puedes cancelar la transacción antes de liberar los fondos. Clinkar protege tu inversión en todo momento."
+                a: "Si durante la entrega detectas una discrepancia grave no reportada, puedes cancelar la transacción antes de liberar los fondos. StarterKar protege tu inversión en todo momento."
             }
         ]
     }

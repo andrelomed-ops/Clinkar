@@ -21,7 +21,7 @@ function testCommissions() {
         console.log(`Price: $${c.price}`);
         console.log(`Total Original: $${totalOrig.toFixed(2)}`);
         console.log(`Bonus Aplicado: $${bonus}`);
-        console.log(`Comisión Final Clinkar: $${fee.toFixed(2)}`);
+        console.log(`Comisión Final StarterKar: $${fee.toFixed(2)}`);
         console.log(`Ahorro Porcentaje: ${(((totalOrig - fee) / totalOrig) * 100).toFixed(1)}%`);
     });
 }

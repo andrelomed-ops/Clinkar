@@ -16,7 +16,7 @@ export function MediationHub({ transactionId }: { transactionId: string }) {
                         <ShieldAlert className="h-6 w-6" />
                     </div>
                     <div>
-                        <h3 className="font-black text-lg text-rose-950 dark:text-rose-100 italic tracking-tight">Centro de Salvaguardia Clinkar</h3>
+                        <h3 className="font-black text-lg text-rose-950 dark:text-rose-100 italic tracking-tight">Centro de Salvaguardia StarterKar</h3>
                         <p className="text-xs text-rose-700/70 dark:text-rose-400 font-medium">¿Algo no coincide con el reporte de inspección? Activa la mediación.</p>
                     </div>
                 </div>
@@ -44,7 +44,7 @@ export function MediationHub({ transactionId }: { transactionId: string }) {
                         )}>
                             <span className="text-[10px] font-black uppercase text-rose-500 mb-2 block">Paso 01</span>
                             <h4 className="font-bold text-sm mb-2">Bloqueo de Escrow</h4>
-                            <p className="text-[10px] text-muted-foreground leading-relaxed">Los fondos quedan congelados. Clinkar no liberará el pago al vendedor hasta aclarar la discrepancia detectada en el taller.</p>
+                            <p className="text-[10px] text-muted-foreground leading-relaxed">Los fondos quedan congelados. StarterKar no liberará el pago al vendedor hasta aclarar la discrepancia detectada en el taller.</p>
                         </div>
 
                         <div className={cn(
@@ -61,8 +61,8 @@ export function MediationHub({ transactionId }: { transactionId: string }) {
                             step === 3 ? "border-rose-500 bg-white shadow-xl" : "border-zinc-100 bg-zinc-50 opacity-50"
                         )}>
                             <span className="text-[10px] font-black uppercase text-rose-500 mb-2 block">Paso 03</span>
-                            <h4 className="font-bold text-sm mb-2">Resolución Clinkar</h4>
-                            <p className="text-[10px] text-muted-foreground leading-relaxed">Clinkar habilita una renegociación de precio (ajuste de Escrow) o la cancelación total con devolución inmediata al comprador.</p>
+                            <h4 className="font-bold text-sm mb-2">Resolución StarterKar</h4>
+                            <p className="text-[10px] text-muted-foreground leading-relaxed">StarterKar habilita una renegociación de precio (ajuste de Escrow) o la cancelación total con devolución inmediata al comprador.</p>
                         </div>
                     </div>
 

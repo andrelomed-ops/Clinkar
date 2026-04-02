@@ -45,7 +45,7 @@ export const NOM_122_BOILERPLATE = {
     RECA_NUMBER: "RECA-CLK-001/2026", // Mock registry
     REPORT_VALIDITY_DAYS: 30,
     INSPECTION_COST: 900,
-    WARRANTY_DISCLOSURE: "La operación se realiza 'Ad-Corpus' y en las condiciones reportadas en el certificado de inspección Clinkar (Vigencia 30 días). La garantía mecánica de 90 días es un servicio externo opcional gestionado por Clinkar pero prestado por terceros seguros.",
+    WARRANTY_DISCLOSURE: "La operación se realiza 'Ad-Corpus' y en las condiciones reportadas en el certificado de inspección StarterKar (Vigencia 30 días). La garantía mecánica de 90 días es un servicio externo opcional gestionado por StarterKar pero prestado por terceros seguros.",
     NON_REFUNDABLE_NOTICE: "El costo de inspección inicial ($900.00 MXN) no es reembolsable ni bonificable bajo ninguna circunstancia, ya que cubre el servicio técnico profesional devengado.",
     DOCUMENTATION_LIST: [
         "Factura original o Re-facturación válida",
@@ -59,5 +59,5 @@ export const NOM_122_BOILERPLATE = {
 export const CUSTODIAL_DISCLOSURE = {
     PARTNER_TYPE: "Institución de Tecnología Financiera (ITF)",
     REGULATION: "Autorizada y Supervisada por la CNBV y CONDUSEF",
-    DISCLAIMER_TEXT: "Clinkar no es una entidad financiera. Los fondos de esta operación son custodiados en Escrow por una Institución de Tecnología Financiera regulada, conforme a la Ley Fintech. Clinkar actúa únicamente como orquestador tecnológico de la transacción."
+    DISCLAIMER_TEXT: "StarterKar no es una entidad financiera. Los fondos de esta operación son custodiados en Escrow por una Institución de Tecnología Financiera regulada, conforme a la Ley Fintech. StarterKar actúa únicamente como orquestador tecnológico de la transacción."
 };

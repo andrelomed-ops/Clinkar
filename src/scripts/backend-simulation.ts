@@ -23,7 +23,7 @@ class MockPaymentGateway {
 class MockDatabase {
     private cars: Vehicle[];
     private tickets: ServiceTicket[];
-    private clinkarBalance: number = 0;
+    private starterkarBalance: number = 0;
 
     constructor() {
         // Inicializar con copias para no mutar los imports originales permanentemente
@@ -53,8 +53,8 @@ class MockDatabase {
     }
 
     addRevenue(amount: number, reason: string) {
-        this.clinkarBalance += amount;
-        console.log(`[💰 CLINKAR] Ingreso registrado: +$${amount} (${reason}). Balance Total: $${this.clinkarBalance}`);
+        this.starterkarBalance += amount;
+        console.log(`[💰 CLINKAR] Ingreso registrado: +$${amount} (${reason}). Balance Total: $${this.starterkarBalance}`);
     }
 
     // Campo simulado extra para la demo legal

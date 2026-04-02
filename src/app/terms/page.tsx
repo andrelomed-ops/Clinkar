@@ -19,7 +19,7 @@ export default function TermsPage() {
                             1. Naturaleza del Servicio y Orquestación
                         </h2>
                         <p className="text-muted-foreground leading-relaxed text-justify">
-                            Clinkar S.A. de C.V. (&quot;CLINKAR&quot;) opera como un <strong>Intermediario Tecnológico y Facilitador de Pagos</strong> que orquesta la compraventa de activos motorizados. CLINKAR cobra una <strong>Tarifa por Servicio (Success Fee)</strong> por el uso de su infraestructura de seguridad, inspección y dispersión financiera, sin que esto lo constituya como propietario o revendedor del activo. CLINKAR no capta recursos del público, actuando únicamente bajo mandato de pago irrevocable (Split Payment).
+                            StarterKar S.A. de C.V. (&quot;CLINKAR&quot;) opera como un <strong>Intermediario Tecnológico y Facilitador de Pagos</strong> que orquesta la compraventa de activos motorizados. CLINKAR cobra una <strong>Tarifa por Servicio (Success Fee)</strong> por el uso de su infraestructura de seguridad, inspección y dispersión financiera, sin que esto lo constituya como propietario o revendedor del activo. CLINKAR no capta recursos del público, actuando únicamente bajo mandato de pago irrevocable (Split Payment).
                         </p>
                     </div>
 
@@ -29,7 +29,7 @@ export default function TermsPage() {
                             1.1. Cumplimiento Normativo (PLD/AML)
                         </h2>
                         <p className="text-muted-foreground leading-relaxed text-justify">
-                            En cumplimiento con la <strong>Ley Federal para la Prevención e Identificación de Operaciones con Recursos de Procedencia Ilícita (LFPIORPI)</strong>, Clinkar se reserva el derecho de:
+                            En cumplimiento con la <strong>Ley Federal para la Prevención e Identificación de Operaciones con Recursos de Procedencia Ilícita (LFPIORPI)</strong>, StarterKar se reserva el derecho de:
 
                         </p>
                         <ul className="list-disc pl-6 text-muted-foreground space-y-2">
@@ -80,7 +80,7 @@ export default function TermsPage() {
                             3.1. Modelo de Dispersión Automática (STP)
                         </h2>
                         <p className="text-muted-foreground leading-relaxed text-justify">
-                            El usuario acepta que los fondos recibidos en la cuenta CLABE virtual asignada a la transacción serán dispersados de manera automática e irrevocable conforme a las instrucciones de pago preacordadas (Precio al Vendedor, Comisiones y Servicios). Clinkar actúa bajo mandato de pago sin tocar los fondos directamente.
+                            El usuario acepta que los fondos recibidos en la cuenta CLABE virtual asignada a la transacción serán dispersados de manera automática e irrevocable conforme a las instrucciones de pago preacordadas (Precio al Vendedor, Comisiones y Servicios). StarterKar actúa bajo mandato de pago sin tocar los fondos directamente.
                         </p>
                     </div>
 
@@ -101,7 +101,7 @@ export default function TermsPage() {
                             4.1. Verificación de Activos (OCRA/REPUVE)
                         </h2>
                         <p className="text-muted-foreground leading-relaxed text-justify">
-                            Clinkar ejecuta validaciones automatizadas ante el Registro Público Vehicular (REPUVE) y la Oficina Coordinadora de Riesgos Asegurados (OCRA). Si bien la plataforma bloquea intentos de venta de vehículos con reporte de robo vigente en estas bases, <strong>no garantiza</strong> la inexistencia de reportes en bases de datos estatales no conectadas o procesos judiciales en curso no reflejados digitalmente.
+                            StarterKar ejecuta validaciones automatizadas ante el Registro Público Vehicular (REPUVE) y la Oficina Coordinadora de Riesgos Asegurados (OCRA). Si bien la plataforma bloquea intentos de venta de vehículos con reporte de robo vigente en estas bases, <strong>no garantiza</strong> la inexistencia de reportes en bases de datos estatales no conectadas o procesos judiciales en curso no reflejados digitalmente.
                         </p>
                     </div>
 
@@ -118,7 +118,7 @@ export default function TermsPage() {
 
                 <footer className="pt-12 border-t border-border">
                     <p className="text-xs text-muted-foreground text-center">
-                        © 2026 Clinkar S.A. de C.V. Todos los derechos reservados. El uso de la plataforma implica la aceptación de estos términos.
+                        © 2026 StarterKar S.A. de C.V. Todos los derechos reservados. El uso de la plataforma implica la aceptación de estos términos.
                     </p>
                 </footer>
             </main>

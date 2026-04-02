@@ -58,7 +58,7 @@ export default function AdminLeadsPage() {
             <header className="flex justify-between items-end">
                 <div>
                     <div className="flex items-center gap-2 text-indigo-600 font-black uppercase tracking-widest text-[10px] mb-2">
-                        <BadgeAlert className="h-3 w-3" /> Clinkar CRM Lead Management
+                        <BadgeAlert className="h-3 w-3" /> StarterKar CRM Lead Management
                     </div>
                     <h1 className="text-4xl font-black tracking-tighter italic uppercase">Gestión de Leads Trade-in</h1>
                 </div>
@@ -145,7 +145,7 @@ export default function AdminLeadsPage() {
                 <SummaryCard
                     title="Enganches Gestionados"
                     value="$2.4M"
-                    subtext="Capital Puente Clinkar"
+                    subtext="Capital Puente StarterKar"
                     color="text-blue-600"
                 />
             </div>

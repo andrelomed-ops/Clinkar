@@ -55,7 +55,7 @@ export default function Error({
 
                 <div className="pt-8 border-t border-zinc-100 dark:border-zinc-900">
                     <p className="text-[10px] font-black uppercase tracking-widest text-zinc-400">
-                        Protocolo de Estabilidad Clinkar v1.0
+                        Protocolo de Estabilidad StarterKar v1.0
                     </p>
                 </div>
             </div>

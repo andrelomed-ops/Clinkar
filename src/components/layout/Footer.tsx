@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { Facebook, Twitter, Instagram, Linkedin } from "lucide-react";
-import { ClinkarSeal } from "../market/ClinkarSeal";
+import { StarterKarSeal } from "../market/StarterKarSeal";
 
 export function Footer() {
     return (
@@ -10,8 +10,8 @@ export function Footer() {
                     {/* Brand Column */}
                     <div className="md:col-span-1 space-y-6">
                         <Link href="/" className="flex items-center gap-2 group">
-                            <ClinkarSeal variant="compact" className="scale-125 mr-1" />
-                            <span className="text-2xl font-black tracking-tighter">Clinkar</span>
+                            <StarterKarSeal variant="compact" className="scale-125 mr-1" />
+                            <span className="text-2xl font-black tracking-tighter">StarterKar</span>
                         </Link>
                         <p className="text-sm text-muted-foreground leading-relaxed max-w-xs">
                             La bóveda digital más segura para la compraventa de autos seminuevos. Tu dinero protegido hasta la entrega.
@@ -54,7 +54,7 @@ export function Footer() {
                 </div>
                 <div className="mt-16 border-t border-border pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
                     <p className="text-[10px] font-bold text-muted-foreground/60 uppercase tracking-widest">
-                        &copy; {new Date().getFullYear()} Clinkar Inc. • Tecnología para la Confianza.
+                        &copy; {new Date().getFullYear()} StarterKar Inc. • Tecnología para la Confianza.
                     </p>
                     <div className="flex gap-6 text-[10px] font-bold text-muted-foreground/40 uppercase tracking-widest">
                         <span>Hecho con ❤️ en México</span>

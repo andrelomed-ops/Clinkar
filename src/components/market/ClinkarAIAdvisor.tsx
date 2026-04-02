@@ -13,20 +13,20 @@ interface Message {
     recommendations?: any[];
 }
 
-interface ClinkarAIAdvisorProps {
+interface StarterKarAIAdvisorProps {
     isOpen: boolean;
     onClose: () => void;
     onSelectCar?: (carId: string) => void;
     inventory?: Vehicle[];
 }
 
-export function ClinkarAIAdvisor({ isOpen, onClose, onSelectCar, inventory = [], mode = 'modal' }: ClinkarAIAdvisorProps & { mode?: 'modal' | 'embedded' }) {
+export function StarterKarAIAdvisor({ isOpen, onClose, onSelectCar, inventory = [], mode = 'modal' }: StarterKarAIAdvisorProps & { mode?: 'modal' | 'embedded' }) {
     const [input, setInput] = useState("");
     const [messages, setMessages] = useState<Message[]>([
         {
             id: 'welcome',
             role: 'assistant',
-            content: 'Hola 👋 Soy tu asesor inteligente Clinkar. Cuéntame qué necesitas. Por ejemplo: "Busco un auto seguro para mi hija universitaria" o "Necesito una SUV familiar".'
+            content: 'Hola 👋 Soy tu asesor inteligente StarterKar. Cuéntame qué necesitas. Por ejemplo: "Busco un auto seguro para mi hija universitaria" o "Necesito una SUV familiar".'
         }
     ]);
     const [isTyping, setIsTyping] = useState(false);
@@ -159,7 +159,7 @@ function Content({ onClose, messages, input, setInput, handleSend, isTyping, sea
                         <Sparkles className="h-5 w-5 text-yellow-300" />
                     </div>
                     <div>
-                        <h3 className="font-bold">Clinkar AI</h3>
+                        <h3 className="font-bold">StarterKar AI</h3>
                         <p className="text-xs text-primary-foreground/80">Asesor Predictivo</p>
                     </div>
                 </div>

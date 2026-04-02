@@ -25,8 +25,8 @@ export function MagicSupport() {
     const getInitialAdvice = (path: string) => {
         if (path.includes("/transaction")) return "Hola 👋 Estoy aquí para resolver tus dudas técnicas sobre la Bóveda Digital o el proceso de pago. ¿En qué puedo ayudarte?";
         if (path.includes("/buy")) return "¡Hola! Si tienes dudas sobre cómo funciona nuestra revisión de 150 puntos o la seguridad de tu compra, pregúntame.";
-        if (path.includes("/sell")) return "Resolveré tus dudas sobre la certificación y cómo Clinkar protege tu venta. ¿Qué quieres saber?";
-        return "¡Hola! Soy tu Asistente de Procesos de Clinkar. ¿Tienes dudas sobre la Bóveda Digital, Seguridad o Pagos?";
+        if (path.includes("/sell")) return "Resolveré tus dudas sobre la certificación y cómo StarterKar protege tu venta. ¿Qué quieres saber?";
+        return "¡Hola! Soy tu Asistente de Procesos de StarterKar. ¿Tienes dudas sobre la Bóveda Digital, Seguridad o Pagos?";
     };
 
     useEffect(() => {
@@ -104,7 +104,7 @@ export function MagicSupport() {
                                     <Sparkles className="h-5 w-5 text-white" />
                                 </div>
                                 <div>
-                                    <p className="text-white font-bold text-sm tracking-tight">Asistente Clinkar</p>
+                                    <p className="text-white font-bold text-sm tracking-tight">Asistente StarterKar</p>
                                     <div className="flex items-center gap-1.5">
                                         <div className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse" />
                                         <span className="text-[10px] text-white/70 font-bold uppercase tracking-widest">En línea</span>

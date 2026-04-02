@@ -19,7 +19,7 @@ export function WarrantySelector({ carPrice, onSelect }: { carPrice: number, onS
     const options: WarrantyOption[] = [
         {
             type: 'STANDARD',
-            title: "Clinkar Estándar",
+            title: "StarterKar Estándar",
             price: 2500,
             duration: "90 Días",
             features: ["Motor y Transmisión", "Cobertura Nacional", "Grúa incluida"]

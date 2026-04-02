@@ -11,7 +11,7 @@ const HELP_CATEGORIES = [
         title: "Para Compradores",
         icon: <UserCheck className="h-6 w-6 text-indigo-600" />,
         articles: [
-            "Cómo comprar tu primer auto en Clinkar",
+            "Cómo comprar tu primer auto en StarterKar",
             "Entendiendo el reporte de 150 puntos",
             "El proceso de pago y resguardo en Bóveda",
             "Trámites legales y cambio de propietario"
@@ -115,7 +115,7 @@ export default function HelpCenterPage() {
                                 La Bóveda <br /> <span className="text-indigo-200">Explicada</span>
                             </h2>
                             <p className="text-lg text-indigo-500 text-indigo-100 font-medium leading-relaxed">
-                                Descubre por qué Clinkar es el método más seguro para transferir la propiedad de un vehículo en Latinoamérica.
+                                Descubre por qué StarterKar es el método más seguro para transferir la propiedad de un vehículo en Latinoamérica.
                             </p>
                             <button className="h-16 px-10 rounded-2xl bg-white text-indigo-600 font-black text-lg hover:scale-105 active:scale-95 shadow-xl shadow-black/20 transition-all">
                                 Leer Guía Completa

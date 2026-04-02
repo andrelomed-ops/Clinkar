@@ -5,10 +5,10 @@ import { useState } from "react";
 import { PartnerService, ServiceTicket } from "@/services/PartnerService";
 import { useRouter } from "next/navigation";
 import { ReferralEngine } from "../ReferralEngine";
-import { ClinkarPartsMarketplace } from "./ClinkarPartsMarketplace";
+import { StarterKarPartsMarketplace } from "./StarterKarPartsMarketplace";
 import { PartnerVettingStatus } from "./PartnerVettingStatus";
 import { PartnerFinanceWidget } from "./PartnerFinanceWidget";
-import { ClinkarEvolutionHub } from "../ClinkarEvolutionHub";
+import { StarterKarEvolutionHub } from "../StarterKarEvolutionHub";
 import { createBrowserClient } from "@/lib/supabase/client";
 
 interface PartnersViewProps {
@@ -59,7 +59,7 @@ export function PartnersView({ initialTickets, feeConfig, currentRole = 'INSPECT
                     <p className="text-muted-foreground">Gestiona tus citas de {currentRole === 'LOGISTICS' ? 'traslado' : currentRole === 'LEGAL' ? 'trámite' : 'inspección'} y pagos en tiempo real.</p>
                 </div>
                 <div className="bg-primary/10 text-primary px-4 py-2 rounded-xl font-bold text-sm border border-primary/20">
-                    Socio Verificado: {getRoleTitle()} Clinkar
+                    Socio Verificado: {getRoleTitle()} StarterKar
                 </div>
             </header>
 
@@ -67,7 +67,7 @@ export function PartnersView({ initialTickets, feeConfig, currentRole = 'INSPECT
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div className="bg-white dark:bg-zinc-900 p-6 rounded-2xl border border-border shadow-sm space-y-2 group hover:border-indigo-500/50 transition-colors">
                     <span className="text-xs font-bold text-muted-foreground uppercase flex items-center gap-2">
-                        <TrendingUp className="h-3 w-3 text-indigo-500" /> Revenue Clinkar (Est.)
+                        <TrendingUp className="h-3 w-3 text-indigo-500" /> Revenue StarterKar (Est.)
                     </span>
                     <div className="text-2xl font-black text-indigo-600 flex items-center gap-2">
                         <Shield className="h-5 w-5" />
@@ -196,7 +196,7 @@ export function PartnersView({ initialTickets, feeConfig, currentRole = 'INSPECT
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 <div className="lg:col-span-2 space-y-8">
                     {/* Role Specific Modules */}
-                    {currentRole === 'INSPECTION' && <ClinkarPartsMarketplace />}
+                    {currentRole === 'INSPECTION' && <StarterKarPartsMarketplace />}
 
                     {currentRole === 'LOGISTICS' && (
                         <div className="bg-zinc-900 border border-zinc-800 rounded-[2rem] p-8">
@@ -220,7 +220,7 @@ export function PartnersView({ initialTickets, feeConfig, currentRole = 'INSPECT
 
                     {currentRole === 'INSPECTION' && (
                         <div className="mt-8 shadow-2xl">
-                            <ClinkarEvolutionHub />
+                            <StarterKarEvolutionHub />
                         </div>
                     )}
                 </div>
@@ -233,7 +233,7 @@ export function PartnersView({ initialTickets, feeConfig, currentRole = 'INSPECT
                             <Info className="h-4 w-4 text-indigo-500" /> Protocolos de Seguridad
                         </h3>
                         <p className="text-xs text-muted-foreground leading-relaxed">
-                            Recuerda que todos los servicios deben seguir el **Protocolo Clinkar Standard**. La omisión de puntos críticos afecta tu Quality Score.
+                            Recuerda que todos los servicios deben seguir el **Protocolo StarterKar Standard**. La omisión de puntos críticos afecta tu Quality Score.
                         </p>
                         <button className="w-full py-3 bg-secondary rounded-xl text-xs font-bold hover:bg-secondary/80 transition-all">
                             Ver Manual de Protocolo

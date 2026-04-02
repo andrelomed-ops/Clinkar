@@ -9,7 +9,7 @@ export default function PartnerLandingPage() {
 
     const selectRole = (role: string) => {
         // Set cookie for demo purposes
-        document.cookie = `clinkar_partner_role=${role}; path=/`;
+        document.cookie = `starterkar_partner_role=${role}; path=/`;
         router.push("/partner/dashboard");
     };
 
@@ -19,7 +19,7 @@ export default function PartnerLandingPage() {
             <nav className="border-b border-white/10 p-6 flex justify-between items-center bg-black/50 backdrop-blur-xl sticky top-0 z-50">
                 <div className="flex items-center gap-2">
                     <Shield className="h-6 w-6 text-indigo-500" />
-                    <span className="font-bold text-xl tracking-tight">Clinkar <span className="text-indigo-400">Partners</span></span>
+                    <span className="font-bold text-xl tracking-tight">StarterKar <span className="text-indigo-400">Partners</span></span>
                 </div>
                 <Link href="/login" className="text-sm font-medium text-zinc-400 hover:text-white transition-colors">
                     Portal Corporativo
@@ -103,7 +103,7 @@ export default function PartnerLandingPage() {
 
                 <footer className="mt-32 text-center border-t border-white/5 pt-8">
                     <p className="text-zinc-600 text-xs font-medium uppercase tracking-widest">
-                        © 2024 Clinkar Network. Access Restricted to Authorized Partners.
+                        © 2024 StarterKar Network. Access Restricted to Authorized Partners.
                     </p>
                 </footer>
             </main>

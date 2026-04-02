@@ -9,14 +9,14 @@
 
 export type UserFiscalRegime = 'RESICO' | 'PFF' | 'PM' | 'EXTRANJERO';
 
-// Configuración de comisiones Clinkar 2026 (CEO Plan)
+// Configuración de comisiones StarterKar 2026 (CEO Plan)
 export const BUSINESS_RULES = {
     INSPECTION_TOTAL: 1500,
     INSPECTION_PHASE_1: 900,
     INSPECTION_PHASE_2: 600,
     PLATFORM_BASE_FEE: 1999, // Fijo operativo (IVA incluido)
     PLATFORM_VARIABLE_RATE: 0.015, // 1.5% del valor de venta (IVA incluido)
-    BUYER_FEE: 0, // Clinkar es gratis para el comprador (atracción de mercado)
+    BUYER_FEE: 0, // StarterKar es gratis para el comprador (atracción de mercado)
     IVA_RATE: 0.16,
     INCENTIVE_THRESHOLD: 120000, // Autos económicos bonificables
     MAX_TOTAL_FEE: 9999 + 1600 // Tope máximo sugerido en estrategia ($9,999 + IVA aprox, ajustaremos a neto)
@@ -31,7 +31,7 @@ export const calculatePlatformFee = (carPrice: number) => {
     let base = BUSINESS_RULES.PLATFORM_BASE_FEE;
 
     // Lógica de incentivo para autos menores a $120k
-    // El costo de inspección ($1,500) se bonifica de la comisión total de Clinkar
+    // El costo de inspección ($1,500) se bonifica de la comisión total de StarterKar
     if (carPrice < BUSINESS_RULES.INCENTIVE_THRESHOLD) {
         const credit = BUSINESS_RULES.INSPECTION_TOTAL;
 
@@ -137,7 +137,7 @@ export const calculateFiscalImpact = (
 };
 
 /**
- * Genera el concepto para el CFDI de la comisión de Clinkar.
+ * Genera el concepto para el CFDI de la comisión de StarterKar.
  */
 export const getInvoiceConcept = (carDetails: string) => {
     return `Servicios de intermediación tecnológica y gestión de transacción para activo: ${carDetails}`;
@@ -156,6 +156,6 @@ export const generateAssetGainReport = (sellPrice: number, purchasePrice: number
         taxableAmount: gain * 0.8, // Simplificación: deducción ciega del 20% permitida en algunos supuestos
         type: 'Ganancia Patrimonial',
         satForm: 'Declaración Anual - Enajenación de Bienes',
-        disclaimer: 'Este reporte es informativo y automatizado por Clinkar. El cálculo exacto requiere aplicar factores de actualización por inflación del INPC.'
+        disclaimer: 'Este reporte es informativo y automatizado por StarterKar. El cálculo exacto requiere aplicar factores de actualización por inflación del INPC.'
     };
 };

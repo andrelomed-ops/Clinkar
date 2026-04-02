@@ -85,11 +85,11 @@ export function LegalServicesView() {
                     <div className="space-y-4">
                         <div className="flex items-center gap-2 text-primary font-bold text-xs uppercase tracking-widest">
                             <Shield className="h-4 w-4" />
-                            Servicio Clinkar
+                            Servicio StarterKar
                         </div>
                         <h3 className="text-xl font-bold text-zinc-900 dark:text-zinc-100">¿Quieres entregar &quot;Sin Adeudos&quot;?</h3>
                         <p className="text-sm text-zinc-600 dark:text-zinc-300 leading-relaxed">
-                            No pierdas tiempo en filas. Clinkar puede realizar la gestión y pago de estos trámites por ti. El pago de estos servicios se realiza de forma adicional e independiente al precio de venta.
+                            No pierdas tiempo en filas. StarterKar puede realizar la gestión y pago de estos trámites por ti. El pago de estos servicios se realiza de forma adicional e independiente al precio de venta.
                         </p>
                     </div>
 

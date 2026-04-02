@@ -1,5 +1,5 @@
 import { ShieldCheck, ArrowRight, Lock, FileCheck, Wrench, CheckCircle2 } from "lucide-react";
-import { ClinkarSeal } from "@/components/market/ClinkarSeal";
+import { StarterKarSeal } from "@/components/market/StarterKarSeal";
 import Link from "next/link";
 import { HeroTrackerDemo } from "@/components/landing/HeroTrackerDemo";
 import { Navbar } from "@/components/ui/navbar";
@@ -11,9 +11,9 @@ export default function Home() {
       <JsonLd data={{
         "@context": "https://schema.org",
         "@type": "Organization",
-        "name": "Clinkar",
-        "url": "https://clinkar.com",
-        "logo": "https://clinkar.com/icon-512.png",
+        "name": "StarterKar",
+        "url": "https://starterkar.com",
+        "logo": "https://starterkar.com/icon-512.png",
         "contactPoint": {
           "@type": "ContactPoint",
           "telephone": "+52-55-0000-0000",
@@ -22,19 +22,19 @@ export default function Home() {
           "availableLanguage": "Spanish"
         },
         "sameAs": [
-          "https://facebook.com/clinkar",
-          "https://twitter.com/clinkar",
-          "https://instagram.com/clinkar"
+          "https://facebook.com/starterkar",
+          "https://twitter.com/starterkar",
+          "https://instagram.com/starterkar"
         ]
       }} />
       <JsonLd data={{
         "@context": "https://schema.org",
         "@type": "WebSite",
-        "name": "Clinkar",
-        "url": "https://clinkar.com",
+        "name": "StarterKar",
+        "url": "https://starterkar.com",
         "potentialAction": {
           "@type": "SearchAction",
-          "target": "https://clinkar.com/buy?q={search_term_string}",
+          "target": "https://starterkar.com/buy?q={search_term_string}",
           "query-input": "required name=search_term_string"
         }
       }} />
@@ -89,7 +89,7 @@ export default function Home() {
           <div id="how-it-works" className="scroll-mt-32" />
           <div className="mx-auto max-w-7xl px-6">
             <div className="mb-16 max-w-2xl">
-              <h2 className="text-3xl md:text-4xl font-bold font-heading mb-4 tracking-tight text-foreground">El Estándar de Seguridad Clinkar.</h2>
+              <h2 className="text-3xl md:text-4xl font-bold font-heading mb-4 tracking-tight text-foreground">El Estándar de Seguridad StarterKar.</h2>
               <p className="text-muted-foreground text-lg">
                 No somos solo un marketplace. Somos el árbitro imparcial que garantiza la integridad de cada transacción a través de 3 pilares inquebrantables.
               </p>
@@ -153,7 +153,7 @@ export default function Home() {
                   </div>
                   <div>
                     <h4 className="font-bold text-foreground">0% Comisión Comprador</h4>
-                    <p className="text-sm text-muted-foreground">En Clinkar, el comprador no paga comisiones de gestión. Directo y transparente.</p>
+                    <p className="text-sm text-muted-foreground">En StarterKar, el comprador no paga comisiones de gestión. Directo y transparente.</p>
                   </div>
                 </li>
               </ul>

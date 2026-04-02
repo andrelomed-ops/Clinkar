@@ -1,6 +1,7 @@
 import { Database } from '@/lib/database.types';
 import { SupabaseClient } from '@supabase/supabase-js';
 import { NotificationService } from './NotificationService';
+import { ReferralService } from './ReferralService';
 import { Logger } from '@/lib/logger';
 
 
@@ -13,7 +14,7 @@ export interface PublicAuditData {
         model: string;
         year: number;
         vin_masked: string;
-        has_clinkar_seal: boolean;
+        has_starterkar_seal: boolean;
         image: string | null;
     };
     transaction: {
@@ -37,7 +38,7 @@ export class VerificationService {
         const { data: car, error: carError } = await supabase
             .from('cars')
             .select(`
-                id, make, model, year, vin, has_clinkar_seal, images, status
+                id, make, model, year, vin, has_starterkar_seal, images, status
             `)
             .eq('id', carId)
             .single();
@@ -83,7 +84,7 @@ export class VerificationService {
                 model: c.model,
                 year: c.year,
                 vin_masked: vinMasked,
-                has_clinkar_seal: c.has_clinkar_seal || false,
+                has_starterkar_seal: c.has_starterkar_seal || false,
                 image: (c.images as string[])?.[0] || null
             },
             transaction: transaction ? {
@@ -221,6 +222,9 @@ export class VerificationService {
                 link: `/dashboard/sell`
             }
         ]);
+
+        // 5. Trigger Referral Program Reward
+        await ReferralService.markOperationAsClosed(supabase, transactionId);
 
         return { success: true };
     }

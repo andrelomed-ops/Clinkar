@@ -42,12 +42,12 @@ export class SpeiService {
         // En producción, si depositan de menos, se queda en saldo pendiente.
 
         // 2. Dispersión Automática (Split)
-        const clinkarFee = amount * 0.04;
-        const sellerPayout = amount - clinkarFee;
+        const starterkarFee = amount * 0.04;
+        const sellerPayout = amount - starterkarFee;
 
         Logger.info(`[STP-DISPERSION] Ejecutando Split:`);
         Logger.info(` -> $${sellerPayout.toLocaleString()} al Vendedor (Cuenta Enlazada)`);
-        Logger.info(` -> $${clinkarFee.toLocaleString()} a Clinkar Revenue`);
+        Logger.info(` -> $${starterkarFee.toLocaleString()} a StarterKar Revenue`);
 
         // 3. Registrar en BD (Audit Trail)
         await supabase.from('audit_logs' as any).insert({
@@ -56,7 +56,7 @@ export class SpeiService {
             entity_id: transactionId,
             metadata: {
                 total_received: amount,
-                clinkar_fee: clinkarFee,
+                starterkar_fee: starterkarFee,
                 seller_payout: sellerPayout,
                 stp_tracking_key: `TR-${Date.now()}`
             },

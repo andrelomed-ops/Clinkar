@@ -451,7 +451,7 @@ export const TransactionDashboard = ({ car, marketValue, repairCosts, initialPri
                     <Gavel className="mb-4 h-8 w-8 opacity-50" />
                     <h4 className="font-bold text-lg mb-2 leading-tight">Garantía de Satisfacción</h4>
                     <p className="text-[11px] text-indigo-100 leading-relaxed italic opacity-80">
-                        &quot;Si el auto no coincide con el reporte técnico al llegar, Clinkar te reembolsa el 100% de tu dinero inmediatamente.&quot;
+                        &quot;Si el auto no coincide con el reporte técnico al llegar, StarterKar te reembolsa el 100% de tu dinero inmediatamente.&quot;
                     </p>
                 </div>
             </div>

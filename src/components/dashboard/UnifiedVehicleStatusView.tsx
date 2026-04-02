@@ -277,7 +277,7 @@ export function UnifiedVehicleStatusView({ carId, role = "buyer", location = "CD
                             </button>
                             {/* LEGEND */}
                             <p className="text-[10px] text-center text-muted-foreground leading-tight">
-                                <strong>Pagar Adeudos:</strong> Clinkar paga por ti y descontamos el monto al vendedor.
+                                <strong>Pagar Adeudos:</strong> StarterKar paga por ti y descontamos el monto al vendedor.
                             </p>
                         </div>
                     </div>

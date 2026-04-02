@@ -23,14 +23,14 @@ export const StatusHeader = ({ step, trxId }: StatusHeaderProps) => {
                 </div>
 
                 <h1 className="text-4xl font-black mb-2 tracking-tighter">
-                    {step === 'NEGOTIATION' && "Precio Justo Clinkar"}
+                    {step === 'NEGOTIATION' && "Precio Justo StarterKar"}
                     {step === 'SERVICES_SELECTION' && "Servicios de Confianza"}
                     {step === 'DOCUMENT_UPLOAD' && "Validación de Identidad"}
                     {step === 'AWAITING_PAYMENT' && "Pago en Bóveda Digital"}
                     {step === 'FUNDS_SECURED' && "Fondos Protegidos"}
                     {step === 'IN_TRANSIT' && "Logística de Entrega"}
                     {step === 'VALIDATION' && "Validación de Entrega"}
-                    {step === 'DELIVERED' && "¡Propietario Clinkar!"}
+                    {step === 'DELIVERED' && "¡Propietario StarterKar!"}
                 </h1>
                 <p className="text-slate-400 max-w-xl text-sm italic">
                     {step === 'NEGOTIATION' && "Analiza los datos técnicos para ofertar un precio basado en la condición real."}

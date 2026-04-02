@@ -11,8 +11,8 @@ export const stripe = new Stripe(stripeKey || 'sk_test_mock_1234567890', {
     apiVersion: '2024-12-18.acacia' as any,
     typescript: true,
     appInfo: {
-        name: 'Clinkar',
+        name: 'StarterKar',
         version: version || '0.1.0',
-        url: 'https://clinkar.com',
+        url: 'https://starterkar.com',
     },
 });

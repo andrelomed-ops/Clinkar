@@ -154,10 +154,10 @@ export function OfferModal({ id, carPrice, repairCost, carName, hasSeal }: Offer
                         <div className="p-4 bg-zinc-900 border border-zinc-800 rounded-2xl">
                             <div className="flex items-center gap-2 text-indigo-400 mb-2">
                                 <BadgeAlert className="h-4 w-4" />
-                                <span className="text-[10px] font-black uppercase tracking-widest">Aviso de Exclusividad Clinkar</span>
+                                <span className="text-[10px] font-black uppercase tracking-widest">Aviso de Exclusividad StarterKar</span>
                             </div>
                             <p className="text-[10px] text-zinc-400 leading-relaxed italic">
-                                El Certificado de Inspección (Vigencia 30 días) y el acceso a Garantía Mecánica de 90 días **solo cobran validez** si la transacción se liquida vía Clinkar.
+                                El Certificado de Inspección (Vigencia 30 días) y el acceso a Garantía Mecánica de 90 días **solo cobran validez** si la transacción se liquida vía StarterKar.
                             </p>
                         </div>
 

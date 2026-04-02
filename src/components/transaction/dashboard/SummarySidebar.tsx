@@ -40,7 +40,7 @@ export const SummarySidebar = ({
         finalPrice,
         sellerFiscalRegime,
         car.category || 'Car',
-        true // Por defecto asumimos activos usados en Clinkar P2P
+        true // Por defecto asumimos activos usados en StarterKar P2P
     );
 
     const hasWithholdings = fiscalImpact.isrWithholding > 0 || fiscalImpact.ivaWithholding > 0;
@@ -167,7 +167,7 @@ export const SummarySidebar = ({
                                     <div>
                                         <p className="text-[10px] uppercase font-bold text-red-700">Umbral de Aviso al SAT</p>
                                         <p className="text-[10px] leading-tight text-red-800/80 mt-1">
-                                            Operación reportable ({'>'}6,420 UMA). Clinkar generará el pre-llenado del aviso para el portal PLD.
+                                            Operación reportable ({'>'}6,420 UMA). StarterKar generará el pre-llenado del aviso para el portal PLD.
                                         </p>
                                     </div>
                                 </div>

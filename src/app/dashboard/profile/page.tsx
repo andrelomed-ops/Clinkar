@@ -62,7 +62,7 @@ export default function ProfilePage() {
 
                 <div className="animate-reveal">
                     <h1 className="text-4xl font-black tracking-tight mb-2">Mi Perfil</h1>
-                    <p className="text-muted-foreground">Configura tu identidad digital en Clinkar.</p>
+                    <p className="text-muted-foreground">Configura tu identidad digital en StarterKar.</p>
                 </div>
 
                 <div className="glass-card rounded-[2rem] p-8 space-y-6">

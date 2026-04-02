@@ -15,8 +15,8 @@ import { CarCard } from "@/components/market/CarCard";
 import { Navbar } from "@/components/ui/navbar";
 import { Skeleton } from "@/components/ui/skeleton";
 
-const ClinkarAIAdvisor = dynamic(
-    () => import("@/components/market/ClinkarAIAdvisor").then((mod) => mod.ClinkarAIAdvisor),
+const StarterKarAIAdvisor = dynamic(
+    () => import("@/components/market/StarterKarAIAdvisor").then((mod) => mod.StarterKarAIAdvisor),
     { 
         loading: () => <div className="h-96 animate-pulse bg-muted rounded-xl" />,
         ssr: false 
@@ -123,7 +123,7 @@ export default function BuyPage() {
                         transmission: 'Automática',
                         fuel: 'Gasolina',
                         condition: 'Seminuevo',
-                        has_clinkar_seal: dbCar.has_clinkar_seal, // Map from DB
+                        has_starterkar_seal: dbCar.has_starterkar_seal, // Map from DB
                     }));
                     setCars(mappedCars);
                 } else {
@@ -209,7 +209,7 @@ export default function BuyPage() {
             }
 
             // Certified Check (The Seal)
-            if (filters.certifiedOnly && !car.has_clinkar_seal) return false;
+            if (filters.certifiedOnly && !car.has_starterkar_seal) return false;
 
             return true;
         }).sort((a, b) => {
@@ -297,7 +297,7 @@ export default function BuyPage() {
                                             Nueva Generación
                                         </span>
                                         <span className="text-sm font-bold text-zinc-800 dark:text-zinc-100 leading-none group-hover:text-indigo-600 dark:group-hover:text-indigo-300 transition-colors">
-                                            Pregúntale a Clinkar AI
+                                            Pregúntale a StarterKar AI
                                         </span>
                                     </div>
                                 </div>
@@ -453,7 +453,7 @@ export default function BuyPage() {
                 </div>
             )}
             {/* AI COMPONENT (Modal Mode) */}
-            <ClinkarAIAdvisor
+            <StarterKarAIAdvisor
                 isOpen={showAI}
                 onClose={() => setShowAI(false)}
                 inventory={cars}

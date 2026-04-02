@@ -49,7 +49,7 @@ export function InsuranceSelector({ carValue, onSelectOption }: InsuranceSelecto
             id: 'gnp-premium',
             provider: 'GNP Seguros',
             logoColor: 'bg-orange-600',
-            planName: 'Premium Clinkar',
+            planName: 'Premium StarterKar',
             price: Math.round(carValue * 0.034), // ~3.4%
             deductible: '5% Material / 5% Robo',
             features: ['Seguro Llantas', 'Responsabilidad Civil USA'],

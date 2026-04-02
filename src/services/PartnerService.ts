@@ -74,7 +74,7 @@ export class PartnerService {
                 await NotificationService.notify(supabase, {
                     userId: trans.buyer_id,
                     title: "Inspección Completada",
-                    message: `Tu ${t.cars.make} ${t.cars.model} ha superado con éxito la inspección de seguridad Clinkar.`,
+                    message: `Tu ${t.cars.make} ${t.cars.model} ha superado con éxito la inspección de seguridad StarterKar.`,
                     type: 'SUCCESS',
                     link: `/dashboard/transactions/${trans.id}`
                 });

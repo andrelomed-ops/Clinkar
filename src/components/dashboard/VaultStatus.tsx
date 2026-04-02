@@ -127,7 +127,7 @@ export function VaultStatus({
                             <div className="flex justify-between items-center">
                                 <div className="flex items-center gap-2">
                                     <div className="h-2 w-2 rounded-full bg-blue-500" />
-                                    <span className="text-sm font-medium text-muted-foreground">Comisión Clinkar</span>
+                                    <span className="text-sm font-medium text-muted-foreground">Comisión StarterKar</span>
                                 </div>
                                 <span className="font-mono font-bold text-foreground/80">${formatCurrency(BUYER_COMMISSION)}</span>
                             </div>
@@ -176,7 +176,7 @@ export function VaultStatus({
                             <div>
                                 <p className="font-bold text-sm text-foreground">Certificado Mecánico</p>
                                 <div className="flex items-center gap-1">
-                                    <p className="text-xs text-muted-foreground">Avalado por Sello Clinkar</p>
+                                    <p className="text-xs text-muted-foreground">Avalado por Sello StarterKar</p>
                                     <Shield className="h-3 w-3 text-blue-500 fill-blue-500/20" />
                                 </div>
                             </div>
@@ -196,7 +196,7 @@ export function VaultStatus({
                             <div>
                                 <p className="font-bold text-sm text-slate-900">Certificado Legal</p>
                                 <div className="flex items-center gap-1">
-                                    <p className="text-xs text-slate-500">Avalado por Sello Clinkar</p>
+                                    <p className="text-xs text-slate-500">Avalado por Sello StarterKar</p>
                                     <Shield className="h-3 w-3 text-purple-600 fill-purple-600/20" />
                                 </div>
                             </div>
@@ -216,7 +216,7 @@ export function VaultStatus({
                             <div>
                                 <p className="font-bold text-sm text-slate-900">Contrato Digital</p>
                                 <div className="flex items-center gap-1">
-                                    <p className="text-xs text-slate-500">Firmas Seguras Clinkar</p>
+                                    <p className="text-xs text-slate-500">Firmas Seguras StarterKar</p>
                                     <Shield className="h-3 w-3 text-slate-600 fill-slate-600/20" />
                                 </div>
                             </div>
@@ -229,7 +229,7 @@ export function VaultStatus({
                         <div className="flex items-start gap-3">
                             <Shield className="h-5 w-5 text-muted-foreground/40 shrink-0 mt-0.5" />
                             <p className="text-xs text-muted-foreground leading-relaxed">
-                                <strong>Tu compra está segura:</strong> Clinkar no autoriza la entrega del vehículo hasta que estos dos puntos estén en verde y el contrato esté firmado.
+                                <strong>Tu compra está segura:</strong> StarterKar no autoriza la entrega del vehículo hasta que estos dos puntos estén en verde y el contrato esté firmado.
                             </p>
                         </div>
                     </div>

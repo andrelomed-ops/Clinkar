@@ -2,7 +2,7 @@
 import { SupabaseClient } from '@supabase/supabase-js';
 import { Logger } from '@/lib/logger';
 
-const LOCAL_STORAGE_KEY = 'clinkar_favorites';
+const LOCAL_STORAGE_KEY = 'starterkar_favorites';
 
 export class FavoriteService {
     /**

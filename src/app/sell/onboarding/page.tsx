@@ -124,9 +124,9 @@ const OnboardingContent = () => {
 
                                 <div className="space-y-6">
                                     <div className="space-y-3">
-                                        <label className="text-xs font-bold text-zinc-500 uppercase">Selecciona un Taller Clinkar</label>
+                                        <label className="text-xs font-bold text-zinc-500 uppercase">Selecciona un Taller StarterKar</label>
                                         <div className="grid gap-3">
-                                            {["Clinkar Center - Polanco", "Clinkar Center - Santa Fe", "Clinkar Center - Del Valle"].map((shop) => (
+                                            {["StarterKar Center - Polanco", "StarterKar Center - Santa Fe", "StarterKar Center - Del Valle"].map((shop) => (
                                                 <div key={shop} className="flex items-center gap-3 p-4 rounded-xl border-2 border-zinc-100 dark:border-zinc-800 hover:border-indigo-500 cursor-pointer transition-colors group">
                                                     <div className="h-4 w-4 rounded-full border-2 border-zinc-300 dark:border-zinc-600 group-hover:border-indigo-500" />
                                                     <span className="font-bold">{shop}</span>
@@ -203,7 +203,7 @@ const OnboardingContent = () => {
                                 <div>
                                     <h2 className="text-4xl font-black mb-4">¡Cita Confirmada!</h2>
                                     <p className="text-lg text-zinc-500 max-w-sm mx-auto leading-relaxed">
-                                        Te esperamos en el Taller Clinkar seleccionado.
+                                        Te esperamos en el Taller StarterKar seleccionado.
                                     </p>
                                 </div>
 
@@ -211,7 +211,7 @@ const OnboardingContent = () => {
                                     <div className="flex items-start gap-4">
                                         <Truck className="h-6 w-6 text-indigo-500 mt-1" />
                                         <div>
-                                            <p className="font-bold text-sm">Clinkar Center - Polanco</p>
+                                            <p className="font-bold text-sm">StarterKar Center - Polanco</p>
                                             <p className="text-zinc-500 text-sm">Av. Horacio 1500, Polanco III Secc</p>
                                         </div>
                                     </div>

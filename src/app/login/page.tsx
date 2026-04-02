@@ -73,7 +73,7 @@ function LoginForm() {
                         <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary">
                             <Shield className="h-6 w-6 text-primary-foreground" />
                         </div>
-                        <span className="text-2xl font-bold tracking-tight">Clinkar</span>
+                        <span className="text-2xl font-bold tracking-tight">StarterKar</span>
                     </Link>
                     <h2 className="text-3xl font-bold tracking-tight">Bienvenido de nuevo</h2>
                     <p className="mt-2 text-muted-foreground">Ingresa tus credenciales para continuar.</p>

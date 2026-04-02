@@ -4,13 +4,13 @@ import React from "react";
 import { Check, Shield } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-interface ClinkarSealProps {
+interface StarterKarSealProps {
     variant?: "compact" | "full" | "holographic";
     className?: string;
     score?: number;
 }
 
-export function ClinkarSeal({ variant = "compact", className, score }: ClinkarSealProps) {
+export function StarterKarSeal({ variant = "compact", className, score }: StarterKarSealProps) {
     // Unique Minimalist Logo: A stylized "C" that forms a Shield/Safety Ring
     const BrandMark = ({ size = "md" }: { size?: "sm" | "md" | "lg" }) => {
         const dims = size === "sm" ? "h-5 w-5" : size === "md" ? "h-8 w-8" : "h-12 w-12";
@@ -37,7 +37,7 @@ export function ClinkarSeal({ variant = "compact", className, score }: ClinkarSe
                 className
             )}>
                 <BrandMark size="sm" />
-                <span className="text-[9px] font-black text-zinc-900 dark:text-zinc-100 tracking-[0.1em] uppercase pr-1">Clinkar</span>
+                <span className="text-[9px] font-black text-zinc-900 dark:text-zinc-100 tracking-[0.1em] uppercase pr-1">StarterKar</span>
             </div>
         );
     }
@@ -79,7 +79,7 @@ export function ClinkarSeal({ variant = "compact", className, score }: ClinkarSe
         )}>
             <BrandMark size="md" />
             <div>
-                <h4 className="text-base font-black uppercase tracking-widest text-zinc-900 dark:text-white">Sello Clinkar</h4>
+                <h4 className="text-base font-black uppercase tracking-widest text-zinc-900 dark:text-white">Sello StarterKar</h4>
                 <p className="text-[10px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-[0.2em]">Sello Único de Confianza Digital</p>
             </div>
         </div>

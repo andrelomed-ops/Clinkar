@@ -17,8 +17,8 @@ const FAQS: FAQItem[] = [
     {
         id: "1",
         category: "Vault",
-        question: "¿Clinkar guarda mi dinero?",
-        answer: "No. Clinkar es un facilitador tecnológico. Los fondos son procesados y resguardados por instituciones financieras reguladas (como Stripe o socios bancarios). Clinkar solo actúa como el 'árbitro' que autoriza la liberación tras el cumplimiento de los protocolos."
+        question: "¿StarterKar guarda mi dinero?",
+        answer: "No. StarterKar es un facilitador tecnológico. Los fondos son procesados y resguardados por instituciones financieras reguladas (como Stripe o socios bancarios). StarterKar solo actúa como el 'árbitro' que autoriza la liberación tras el cumplimiento de los protocolos."
     },
     {
         id: "2",
@@ -30,18 +30,18 @@ const FAQS: FAQItem[] = [
         id: "3",
         category: "Partners",
         question: "¿Cómo sé si el mecánico es confiable?",
-        answer: "Todos los socios comerciales de Clinkar pasan por el Protocolo Quality Seal, que incluye shadow inspections y reputación vinculada."
+        answer: "Todos los socios comerciales de StarterKar pasan por el Protocolo Quality Seal, que incluye shadow inspections y reputación vinculada."
     }
 ];
 
-export function ClinkarSupportHub() {
+export function StarterKarSupportHub() {
     const [isOpen, setIsOpen] = useState(false);
     const [inputValue, setInputValue] = useState("");
     const [messages, setMessages] = useState<any[]>([
         {
             id: 'welcome',
             role: 'assistant',
-            content: '¡Hola! Soy el asistente inteligente de Clinkar. ¿Tienes dudas sobre la Bóveda Digital, el anonimato o cómo gestionar tu envío?'
+            content: '¡Hola! Soy el asistente inteligente de StarterKar. ¿Tienes dudas sobre la Bóveda Digital, el anonimato o cómo gestionar tu envío?'
         }
     ]);
     const [isThinking, setIsThinking] = useState(false);
@@ -90,7 +90,7 @@ export function ClinkarSupportHub() {
                     <div className="bg-gradient-to-br from-indigo-600 to-indigo-800 p-8 text-white">
                         <div className="space-y-2">
                             <Badge className="bg-white/20 text-white border-0 text-[10px] font-black uppercase">Asistencia Digital 24/7</Badge>
-                            <h3 className="text-2xl font-black tracking-tight">Soporte Clinkar</h3>
+                            <h3 className="text-2xl font-black tracking-tight">Soporte StarterKar</h3>
                             <p className="text-indigo-100/70 text-sm leading-tight">Privacidad total y transacciones seguras.</p>
                         </div>
                     </div>
@@ -153,7 +153,7 @@ export function ClinkarSupportHub() {
                             </Button>
                         </div>
                         <p className="text-[10px] text-center text-slate-400 mt-4 font-medium uppercase tracking-widest px-4">
-                            Tus datos personales están protegidos por el Protocolo Clinkar.
+                            Tus datos personales están protegidos por el Protocolo StarterKar.
                         </p>
                     </form>
                 </div>

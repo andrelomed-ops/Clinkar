@@ -12,10 +12,10 @@ interface EmailTemplateProps {
 }
 
 /**
- * Base Shell for all Clinkar Transactional Emails
+ * Base Shell for all StarterKar Transactional Emails
  * Designed with premium aesthetic (Dark/Light compatible logic)
  */
-export const ClinkarEmailShell = ({ title, preheader, children, ctaLabel, ctaLink }: EmailTemplateProps) => {
+export const StarterKarEmailShell = ({ title, preheader, children, ctaLabel, ctaLink }: EmailTemplateProps) => {
     return (
         <div className="max-w-xl mx-auto bg-white border border-zinc-100 rounded-[2rem] overflow-hidden font-sans shadow-2xl shadow-indigo-500/5">
             {/* Header */}
@@ -53,7 +53,7 @@ export const ClinkarEmailShell = ({ title, preheader, children, ctaLabel, ctaLin
                     <Star className="h-4 w-4 text-zinc-300 fill-zinc-300" />
                 </div>
                 <p className="text-xs text-zinc-400 font-medium">
-                    © 2026 Clinkar. Tu Bóveda Digital Segura.
+                    © 2026 StarterKar. Tu Bóveda Digital Segura.
                 </p>
                 <div className="mt-4 flex justify-center gap-4 text-[10px] text-zinc-400 font-bold uppercase tracking-tighter">
                     <a href="/terms">Privacidad</a>

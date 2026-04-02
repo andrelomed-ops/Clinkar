@@ -64,7 +64,7 @@ export function ReviewForm({ transactionId, carId, onSuccess }: ReviewFormProps)
     return (
         <div className="bg-white dark:bg-zinc-900 border border-border rounded-[2.5rem] p-8 shadow-xl">
             <h3 className="text-2xl font-black mb-2 tracking-tight">Califica tu Experiencia</h3>
-            <p className="text-sm text-muted-foreground mb-8">Ayuda a otros usuarios compartiendo cómo fue tu proceso con Clinkar.</p>
+            <p className="text-sm text-muted-foreground mb-8">Ayuda a otros usuarios compartiendo cómo fue tu proceso con StarterKar.</p>
 
             <form onSubmit={handleSubmit} className="space-y-6">
                 <div>

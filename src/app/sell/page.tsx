@@ -36,7 +36,7 @@ export default function SellPage() {
                         </h1>
 
                         <p className="text-xl text-zinc-600 dark:text-zinc-400 max-w-lg leading-relaxed font-medium">
-                            Olvídate de citas en lugares raros y transferencias fantasma. Con Clinkar, el dinero está en la Bóveda antes de que entregues las llaves.
+                            Olvídate de citas en lugares raros y transferencias fantasma. Con StarterKar, el dinero está en la Bóveda antes de que entregues las llaves.
                         </p>
 
                         <div className="space-y-4 pt-4">

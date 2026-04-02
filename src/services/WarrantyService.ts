@@ -23,7 +23,7 @@ export class WarrantyService extends BaseService {
                 type: 'STANDARD',
                 cost: standardCost,
                 durationMonths: 3,
-                description: 'Cobertura Mecánica Básica con Clinkar (90 días).'
+                description: 'Cobertura Mecánica Básica con StarterKar (90 días).'
             },
             {
                 type: 'EXTENDED',
@@ -56,7 +56,7 @@ export class WarrantyService extends BaseService {
                 start_date: now.toISOString(),
                 end_date: endDate.toISOString(),
                 coverage_cap_amount: data.cost * 10, // Mock cap
-                coverage_details: { plan: data.type, provider: 'Clinkar Warranty' }
+                coverage_details: { plan: data.type, provider: 'StarterKar Warranty' }
             })
             .select()
             .single();
@@ -71,7 +71,7 @@ export class WarrantyService extends BaseService {
         // 1. Mark car as having seal (Software update, assuming physical repair happened)
         const { error } = await supabase.from('cars')
             // @ts-expect-error - Tabla no definida en tipos
-            .update({ has_clinkar_seal: true } as any)
+            .update({ has_starterkar_seal: true } as any)
             .eq('id', carId);
 
         if (error) throw new Error(`Failed to re-certify car: ${error.message}`);

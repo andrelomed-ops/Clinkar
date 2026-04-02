@@ -114,7 +114,7 @@ const CheckoutForm = ({ amount, totalWithCommission, commission, carId, onSucces
 
             <div className="flex justify-center items-center gap-2 text-[10px] text-muted-foreground">
                 <ShieldCheck className="h-3 w-3 text-emerald-500" />
-                <span>Transacción encriptada de extremo a extremo. Tus fondos se guardan en la Bóveda Clinkar.</span>
+                <span>Transacción encriptada de extremo a extremo. Tus fondos se guardan en la Bóveda StarterKar.</span>
             </div>
         </form>
     );
@@ -167,7 +167,7 @@ export const SmartPaymentSelector = ({ amount, carId, onPaymentSuccess }: { amou
                 </div>
                 <h2 className="text-2xl font-black tracking-tight">Asegura tu Transacción</h2>
                 <p className="text-muted-foreground max-w-md mx-auto">
-                    El dinero se deposita en una <span className="font-bold text-foreground">Cuenta Concentradora Regulada (STP)</span>. Clinkar solo instruye la dispersión cuando TÚ autorizas la entrega.
+                    El dinero se deposita en una <span className="font-bold text-foreground">Cuenta Concentradora Regulada (STP)</span>. StarterKar solo instruye la dispersión cuando TÚ autorizas la entrega.
                 </p>
             </div>
 

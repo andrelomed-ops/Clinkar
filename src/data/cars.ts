@@ -26,7 +26,7 @@ export interface Vehicle {
     inspection_fee_paid?: boolean;
     success_fee_pending_amount?: number;
     financing_required?: boolean;
-    has_clinkar_seal?: boolean; // Real backend status for 150-point inspection
+    has_starterkar_seal?: boolean; // Real backend status for 150-point inspection
 
     sensory?: {
         engineSound: {
@@ -119,7 +119,7 @@ export const ALL_CARS: Vehicle[] = [
             events: [
                 { date: "2024-01-10", type: "Mantenimiento Mayor (100h)", verifiedBy: "AeroTécnica MTY" },
                 { date: "2023-08-15", type: "Certificación de Aeronavegabilidad", verifiedBy: "DGAC Inspector" },
-                { date: "2020-03-20", type: "Registro de Propiedad (Genesis Block)", verifiedBy: "Clinkar Aviation" }
+                { date: "2020-03-20", type: "Registro de Propiedad (Genesis Block)", verifiedBy: "StarterKar Aviation" }
             ]
         }
     },
@@ -727,7 +727,7 @@ export const ALL_CARS: Vehicle[] = [
             blockchainHash: "0x89abcdef0123456789abcdef0123456789abcdef0123456789abcdef012345",
             events: [
                 { date: "2023-11-05", type: "Servicio Suspensión FOX", verifiedBy: "Ford Performance" },
-                { date: "2022-06-12", type: "Cambio de Propietario", verifiedBy: "Clinkar Secure Title" }
+                { date: "2022-06-12", type: "Cambio de Propietario", verifiedBy: "StarterKar Secure Title" }
             ]
         }
     },

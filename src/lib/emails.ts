@@ -24,7 +24,7 @@ class EmailService {
     async sendWelcome(email: string, name: string) {
         return this.send({
             to: email,
-            subject: "¡Bienvenido a la comunidad Clinkar! 🚗",
+            subject: "¡Bienvenido a la comunidad StarterKar! 🚗",
             templateId: "welcome-v1",
             data: { name }
         });

@@ -199,7 +199,7 @@ export function LegalReviewDashboard({ initialExpedientes }: { initialExpediente
                         <div className="bg-white dark:bg-zinc-900 p-8 rounded-[2.5rem] border border-zinc-200 dark:border-zinc-800 shadow-sm text-center">
                             <h3 className="text-lg font-black uppercase italic italic mb-2 tracking-tight">Acción Final de Certificación</h3>
                             <p className="text-xs text-zinc-500 max-w-md mx-auto mb-6">
-                                Una vez que todos los documentos sean aprobados y el estado PLD sea verde, se podrá emitir el Pasaporte Digital Clinkar.
+                                Una vez que todos los documentos sean aprobados y el estado PLD sea verde, se podrá emitir el Pasaporte Digital StarterKar.
                             </p>
 
                             <button

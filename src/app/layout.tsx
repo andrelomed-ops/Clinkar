@@ -84,7 +84,7 @@ export const metadata: Metadata = {
     },
   },
   alternates: {
-    canonical: 'https://clinkar.com',
+    canonical: 'https://starterkar.com',
   },
 };
 
@@ -105,7 +105,7 @@ export default function RootLayout({
           defaultTheme="system"
           enableSystem
           disableTransitionOnChange
-          storageKey="clinkar-theme"
+          storageKey="starterkar-theme"
         >
           {/* <Navbar /> removed to fix double-nav issue */}
           <GlobalErrorBoundary>

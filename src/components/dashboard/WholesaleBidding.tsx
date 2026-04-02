@@ -147,7 +147,7 @@ export function WholesaleBidding({ car, startingPrice, endTime }: WholesaleBiddi
             <div className="px-8 py-4 bg-white/5 border-t border-white/10 flex items-center justify-between">
                 <div className="flex items-center gap-2">
                     <AlertCircle className="h-3.5 w-3.5 text-zinc-500" />
-                    <span className="text-[9px] font-black text-zinc-500 uppercase tracking-widest">Solo Usuarios Verificados Clinkar PRO</span>
+                    <span className="text-[9px] font-black text-zinc-500 uppercase tracking-widest">Solo Usuarios Verificados StarterKar PRO</span>
                 </div>
                 <div className="flex items-center gap-1">
                     <CheckCircle2 className="h-3.5 w-3.5 text-indigo-500" />

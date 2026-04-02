@@ -34,7 +34,7 @@ export async function POST(request: Request) {
                 carId,
                 buyerId: user.id,
                 sellerId,
-                type: 'clinkar_escrow'
+                type: 'starterkar_escrow'
             },
         });
 

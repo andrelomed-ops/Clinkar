@@ -28,7 +28,7 @@ export function PostSaleEcosystem({ transactionId, state = "CDMX" }: { transacti
             desc: state === "CDMX" ? "Notificación SEMOVI CDMX" : "Notificación Estatal",
             type: "Automatic/PDF",
             icon: <FileText className="h-5 w-5" />,
-            monetization: "Gratis con Clinkar",
+            monetization: "Gratis con StarterKar",
             delivery: "IA"
         },
         {

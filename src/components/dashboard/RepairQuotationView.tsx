@@ -189,7 +189,7 @@ export function RepairQuotationView({ carId, role = "buyer" }: RepairQuotationVi
                             <p className="text-sm text-muted-foreground leading-relaxed px-4">
                                 {isSeller
                                     ? "Al vender en el estado actual, el comprador recibirá el reporte de fallas. Esto afectará significativamente el precio final de venta, ya que el comprador descontará los costos de reparación."
-                                    : "Declaro que **acepto las condiciones en las que se encuentra el auto y soy consciente de ello**, liberando de toda responsabilidad al vendedor y a la plataforma de **Clinkar**, ya que es mi deseo adquirir el auto en estas condiciones actuales."}
+                                    : "Declaro que **acepto las condiciones en las que se encuentra el auto y soy consciente de ello**, liberando de toda responsabilidad al vendedor y a la plataforma de **StarterKar**, ya que es mi deseo adquirir el auto en estas condiciones actuales."}
                             </p>
                         </div>
 

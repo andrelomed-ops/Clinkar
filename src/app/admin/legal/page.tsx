@@ -123,7 +123,7 @@ export default function AdminLegalHubPage() {
                 </div>
 
                 <footer className="pt-10 border-t border-dashed border-zinc-200 dark:border-zinc-800 text-center">
-                    <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest italic">Clinkar Verification System v2.5 • Operaciones Seguras</p>
+                    <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest italic">StarterKar Verification System v2.5 • Operaciones Seguras</p>
                 </footer>
             </div>
         </div>

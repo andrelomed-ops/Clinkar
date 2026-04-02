@@ -28,7 +28,7 @@ export const PriceEquation = ({ data }: PriceEquationProps) => {
                 <div className="group relative">
                     <Info className="h-4 w-4 text-slate-400 cursor-help" />
                     <div className="absolute right-0 w-64 p-3 bg-white dark:bg-black border border-slate-200 dark:border-slate-800 rounded-lg shadow-xl text-xs text-slate-600 dark:text-slate-300 opacity-0 group-hover:opacity-100 transition-opacity z-10 pointer-events-none">
-                        El precio Clinkar se calcula restando las imperfecciones del valor real de mercado.
+                        El precio StarterKar se calcula restando las imperfecciones del valor real de mercado.
                     </div>
                 </div>
             </div>
@@ -63,12 +63,12 @@ export const PriceEquation = ({ data }: PriceEquationProps) => {
                     </div>
                 ))}
 
-                {/* 3. Final Price (The Clinkar Price) */}
+                {/* 3. Final Price (The StarterKar Price) */}
                 <div className="pt-4 border-t border-slate-200 dark:border-slate-800 mt-4">
                     <div className="flex justify-between items-end">
                         <div>
                             <span className="text-xs font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-500 mb-1 block">
-                                Precio Clinkar Certificado
+                                Precio StarterKar Certificado
                             </span>
                             <div className="text-3xl font-black text-slate-900 dark:text-white">
                                 {formatCurrency(data.finalPrice)}

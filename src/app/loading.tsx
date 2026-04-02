@@ -1,6 +1,6 @@
 "use client";
 
-import { ClinkarSeal } from "@/components/market/ClinkarSeal";
+import { StarterKarSeal } from "@/components/market/StarterKarSeal";
 
 export default function Loading() {
     return (
@@ -11,7 +11,7 @@ export default function Loading() {
 
                 {/* Brand Logo with Spin / Pulse */}
                 <div className="relative animate-bounce duration-1000">
-                    <ClinkarSeal variant="compact" className="scale-150 !bg-transparent border-none shadow-none" />
+                    <StarterKarSeal variant="compact" className="scale-150 !bg-transparent border-none shadow-none" />
                 </div>
             </div>
 

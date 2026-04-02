@@ -38,7 +38,7 @@ export default function PartnerAnalyticsPage() {
                                 Analítica <span className="text-indigo-600">Enterprise</span>
                             </h1>
                             <p className="text-muted-foreground text-sm md:text-base font-medium max-w-xl">
-                                Monitorea el rendimiento de tus activos, tasas de certificación y el impacto del Sello Clinkar en tu inventario.
+                                Monitorea el rendimiento de tus activos, tasas de certificación y el impacto del Sello StarterKar en tu inventario.
                             </p>
                         </div>
 
@@ -93,7 +93,7 @@ export default function PartnerAnalyticsPage() {
                                     <th className="pb-4 px-2">Activo</th>
                                     <th className="pb-4 px-2">Categoría</th>
                                     <th className="pb-4 px-2">Estado</th>
-                                    <th className="pb-4 px-2">Sello Clinkar</th>
+                                    <th className="pb-4 px-2">Sello StarterKar</th>
                                     <th className="pb-4 px-2 text-right">Acción</th>
                                 </tr>
                             </thead>

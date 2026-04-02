@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 import { getTicketAction } from "@/app/actions_demo";
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
-import { ClinkarEvolutionHub } from "./ClinkarEvolutionHub";
+import { StarterKarEvolutionHub } from "./StarterKarEvolutionHub";
 import { MediationHub } from "./MediationHub";
 import { PostSaleEcosystem } from "./PostSaleEcosystem";
 import { BadgeCheck, Lock } from "lucide-react";
@@ -20,7 +20,7 @@ export default function SellerDashboardView() {
     // Strategy State - Initialize from localStorage if available (client-side)
     const [allowOpenOffers, setAllowOpenOffers] = useState(() => {
         if (typeof window !== 'undefined') {
-            return localStorage.getItem('clinkar_open_offers') === 'true';
+            return localStorage.getItem('starterkar_open_offers') === 'true';
         }
         return false;
     });
@@ -37,7 +37,7 @@ export default function SellerDashboardView() {
 
         // Check for pending offers from buyer flow
         const checkOffers = setInterval(() => {
-            const offer = localStorage.getItem('clinkar_pending_offer');
+            const offer = localStorage.getItem('starterkar_pending_offer');
             if (offer) {
                 setPendingOffer(JSON.parse(offer));
             }
@@ -48,18 +48,18 @@ export default function SellerDashboardView() {
 
     const toggleOpenOffers = (checked: boolean) => {
         setAllowOpenOffers(checked);
-        localStorage.setItem('clinkar_open_offers', checked.toString());
+        localStorage.setItem('starterkar_open_offers', checked.toString());
     };
 
     const handleAuthorize = () => {
-        localStorage.setItem('clinkar_offer_status', 'ACCEPTED');
-        localStorage.removeItem('clinkar_pending_offer');
+        localStorage.setItem('starterkar_offer_status', 'ACCEPTED');
+        localStorage.removeItem('starterkar_pending_offer');
         setPendingOffer(null);
     };
 
     const handleReject = () => {
-        localStorage.setItem('clinkar_offer_status', 'REJECTED');
-        localStorage.removeItem('clinkar_pending_offer');
+        localStorage.setItem('starterkar_offer_status', 'REJECTED');
+        localStorage.removeItem('starterkar_pending_offer');
         setPendingOffer(null);
     };
 
@@ -192,7 +192,7 @@ export default function SellerDashboardView() {
                     <PostSaleEcosystem transactionId={ticket?.id || "demo-transaction"} />
                 </div>
 
-                <ClinkarEvolutionHub />
+                <StarterKarEvolutionHub />
             </div>
         </div>
     );

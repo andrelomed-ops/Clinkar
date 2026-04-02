@@ -51,7 +51,7 @@ export default async function AdminDashboardPage() {
                 <div className="flex items-center gap-3 text-sm">
                     <Shield className="h-4 w-4 text-primary" />
                     <span className="font-bold text-zinc-100">Sesión de Super Admin Activa</span>
-                    <span className="text-[10px] uppercase font-bold text-zinc-600 border border-zinc-700 px-2 py-0.5 rounded">Clinkar Internal</span>
+                    <span className="text-[10px] uppercase font-bold text-zinc-600 border border-zinc-700 px-2 py-0.5 rounded">StarterKar Internal</span>
                 </div>
                 <div className="text-[10px] font-mono">
                     Node: clk-control-01-mx
@@ -67,7 +67,7 @@ export default async function AdminDashboardPage() {
             </div>
 
             <footer className="pt-12 border-t border-border flex flex-col md:flex-row justify-between gap-4 text-xs text-muted-foreground font-medium italic">
-                <p>© 2026 Clinkar S.A. de C.V. - Plataforma de Control Interno</p>
+                <p>© 2026 StarterKar S.A. de C.V. - Plataforma de Control Interno</p>
                 <p>Las acciones administrativas quedan registradas en el log de auditoría global.</p>
             </footer>
         </div>

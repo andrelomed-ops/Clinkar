@@ -23,7 +23,7 @@ const SAMPLE_PARTS: Part[] = [
     { id: "3", name: "Filtro de Aceite Sintético", brand: "MANN", price: 450, retailPrice: 750, stock: 45, tier: 'OEM', delivery: "1h" },
 ];
 
-export function ClinkarPartsMarketplace() {
+export function StarterKarPartsMarketplace() {
     const [searchTerm, setSearchTerm] = useState("");
 
     return (
@@ -31,7 +31,7 @@ export function ClinkarPartsMarketplace() {
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
                 <div>
                     <h2 className="text-3xl font-black text-white tracking-tighter flex items-center gap-3">
-                        <ShoppingCart className="text-blue-400" /> Clinkar Parts <span className="text-xs bg-blue-500/20 text-blue-400 px-2 py-1 rounded-full border border-blue-500/30 uppercase tracking-widest font-black">B2B Pro</span>
+                        <ShoppingCart className="text-blue-400" /> StarterKar Parts <span className="text-xs bg-blue-500/20 text-blue-400 px-2 py-1 rounded-full border border-blue-500/30 uppercase tracking-widest font-black">B2B Pro</span>
                     </h2>
                     <p className="text-slate-400 font-medium">Suministro certificado con precios preferenciales.</p>
                 </div>
@@ -87,7 +87,7 @@ export function ClinkarPartsMarketplace() {
                                 <Truck className="h-3 w-3 text-blue-400" /> Entrega: {part.delivery}
                             </div>
                             <div className="flex items-center gap-1.5 text-emerald-400">
-                                <ShieldCheck className="h-3 w-3" /> Clinkar Verified
+                                <ShieldCheck className="h-3 w-3" /> StarterKar Verified
                             </div>
                         </div>
 

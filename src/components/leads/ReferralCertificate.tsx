@@ -25,7 +25,7 @@ export function ReferralCertificate({ folio, customerName, targetCar, agency, on
                         <div className="space-y-1">
                             <div className="flex items-center gap-2 text-indigo-600 mb-2">
                                 <Shield className="h-6 w-6 fill-indigo-600/20" />
-                                <span className="font-black uppercase tracking-[0.3em] text-xs">Clinkar Alliance</span>
+                                <span className="font-black uppercase tracking-[0.3em] text-xs">StarterKar Alliance</span>
                             </div>
                             <h1 className="text-4xl font-black italic tracking-tighter uppercase leading-none">Certificado VIP<br />de Referido</h1>
                         </div>
@@ -79,10 +79,10 @@ export function ReferralCertificate({ folio, customerName, targetCar, agency, on
                         <div className="flex-1 space-y-4">
                             <div className="flex items-center gap-2 text-emerald-600">
                                 <CheckCircle2 className="h-5 w-5" />
-                                <span className="text-[10px] font-black uppercase tracking-[0.2em]">Estatus: Verificado Clinkar</span>
+                                <span className="text-[10px] font-black uppercase tracking-[0.2em]">Estatus: Verificado StarterKar</span>
                             </div>
                             <p className="text-xs font-medium text-zinc-500 leading-relaxed italic">
-                                Este certificado garantiza que el titular es beneficiario del programa <strong>Puente de Capital Clinkar</strong>. La agencia recibirá el pago del enganche directamente tras la venta flash de la unidad usada.
+                                Este certificado garantiza que el titular es beneficiario del programa <strong>Puente de Capital StarterKar</strong>. La agencia recibirá el pago del enganche directamente tras la venta flash de la unidad usada.
                             </p>
                         </div>
                     </div>
@@ -90,7 +90,7 @@ export function ReferralCertificate({ folio, customerName, targetCar, agency, on
                     <footer className="pt-6 border-t border-dashed border-zinc-200 flex justify-between items-start bg-zinc-50/50 -mx-12 -mb-12 p-12 gap-8">
                         <div className="space-y-4 max-w-sm">
                             <p className="text-[8px] text-zinc-400 font-medium leading-relaxed italic uppercase tracking-tighter">
-                                * Este folio constituye una intención de compra vinculada al programa "Puente Financiero Clinkar". La validez del incentivo está sujeta a la ratificación de la venta de la unidad seminueva por parte del titular. Clinkar S.A. de C.V. actúa como intermediario certificado y garante del traslado de capital.
+                                * Este folio constituye una intención de compra vinculada al programa "Puente Financiero StarterKar". La validez del incentivo está sujeta a la ratificación de la venta de la unidad seminueva por parte del titular. StarterKar S.A. de C.V. actúa como intermediario certificado y garante del traslado de capital.
                             </p>
                             <div className="flex gap-4 opacity-30 grayscale">
                                 <span className="text-[7px] font-black border border-zinc-400 px-1 rounded">PROFECO A-2026</span>

@@ -13,7 +13,7 @@ import { NotificationCenter } from "@/components/ui/NotificationCenter";
 import { UnifiedVehicleStatusView } from "@/components/dashboard/UnifiedVehicleStatusView";
 import { TransactionList } from "@/components/dashboard/TransactionList";
 import { ActiveOperationView } from "@/components/dashboard/ActiveOperationView";
-import { ClinkarEvolutionHub } from "@/components/dashboard/ClinkarEvolutionHub";
+import { StarterKarEvolutionHub } from "@/components/dashboard/StarterKarEvolutionHub";
 import { SidebarPromo } from "@/components/dashboard/SidebarPromo";
 import { Skeleton } from "@/components/ui/skeleton";
 import { RecommendedSection } from "@/components/dashboard/RecommendedSection";
@@ -22,6 +22,7 @@ import { FavoriteService } from "@/services/FavoriteService";
 import { CarCard } from "@/components/market/CarCard";
 import { ALL_CARS } from "@/data/cars";
 import { CarService } from "@/services/CarService";
+import { ReferralPromoCard } from "@/components/dashboard/ReferralPromoCard";
 
 import { createBrowserClient } from "@/lib/supabase/client";
 
@@ -66,7 +67,7 @@ export default function DashboardPage() {
             }());
 
             toast.success("¡Cuenta Verificada!", {
-                description: "Tu correo ha sido confirmado exitosamente. Bienvenido a Clinkar.",
+                description: "Tu correo ha sido confirmado exitosamente. Bienvenido a StarterKar.",
                 duration: 5000,
             });
 
@@ -79,7 +80,7 @@ export default function DashboardPage() {
         async function loadDashboard() {
             try {
                 const { data: { user } } = await supabase.auth.getUser();
-                const demoRole = document.cookie.split('; ').find(row => row.startsWith('clinkar_role='))?.split('=')[1];
+                const demoRole = document.cookie.split('; ').find(row => row.startsWith('starterkar_role='))?.split('=')[1];
 
                 if (!user && !demoRole) {
                     window.location.href = "/login";
@@ -223,7 +224,7 @@ export default function DashboardPage() {
                     </Link>
                     <div className="flex items-center gap-2">
                         <Shield className="h-6 w-6 text-indigo-600" />
-                        <span className="font-bold text-lg">Mi Clinkar</span>
+                        <span className="font-bold text-lg">Mi StarterKar</span>
                     </div>
                 </div>
                 <div className="flex items-center gap-4">
@@ -253,7 +254,7 @@ export default function DashboardPage() {
                             </div>
 
                             <div className="w-full md:w-auto flex flex-wrap gap-3">
-                                <ClinkarEvolutionHub />
+                                <StarterKarEvolutionHub />
                                 <Link href="/admin/inspector" className="h-14 px-6 bg-secondary rounded-2xl flex items-center gap-3 font-bold text-sm hover:bg-secondary/80 transition-all">
                                     <Smartphone className="h-5 w-5 text-blue-500" />
                                     Inspector
@@ -527,7 +528,7 @@ export default function DashboardPage() {
                                             </div>
                                         </div>
                                         <h3 className="font-black text-2xl mb-1 tracking-tight italic">{insp.car}</h3>
-                                        <p className="text-xs text-muted-foreground mb-6 font-bold uppercase tracking-tight">Reporte Técnico Clinkar</p>
+                                        <p className="text-xs text-muted-foreground mb-6 font-bold uppercase tracking-tight">Reporte Técnico StarterKar</p>
 
                                         <div className="space-y-5 pt-6 border-t border-dashed border-border group-hover:border-indigo-500/20 transition-colors">
                                             <div className="flex items-center gap-4 text-xs">
@@ -552,13 +553,16 @@ export default function DashboardPage() {
                                     </div>
                                 )) : null}
 
+                                {/* Referral Promo Card (NEW) */}
+                                <ReferralPromoCard />
+
                                 {/* Trade-in Promo Card */}
                                 <div className="bg-zinc-950 border border-zinc-800 rounded-[2.5rem] p-8 relative overflow-hidden group shadow-2xl animate-reveal stagger-3 flex flex-col justify-between min-h-[320px]">
                                     <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-500/10 blur-[80px] -translate-y-12 translate-x-12" />
                                     <div className="relative z-10">
                                         <div className="flex items-center gap-3 text-indigo-400 mb-6">
                                             <Sparkles className="h-5 w-5" />
-                                            <span className="text-[10px] font-black uppercase tracking-[0.2em]">Upgrade Clinkar</span>
+                                            <span className="text-[10px] font-black uppercase tracking-[0.2em]">Upgrade StarterKar</span>
                                         </div>
                                         <h3 className="text-2xl font-black text-white mb-2 tracking-tighter italic uppercase">¿Buscas algo nuevo?</h3>
                                         <p className="text-zinc-500 text-sm mb-8 font-medium leading-relaxed">

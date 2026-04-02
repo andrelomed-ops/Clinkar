@@ -42,7 +42,7 @@ export class InspectorService {
             await supabase
                 .from('cars')
                 // @ts-expect-error - Tabla no definida en tipos
-                .update({ has_clinkar_seal: true } as any)
+                .update({ has_starterkar_seal: true } as any)
                 .eq('id', carId);
         }
 

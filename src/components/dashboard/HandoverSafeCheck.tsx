@@ -94,7 +94,7 @@ export function HandoverSafeCheck({ onComplete, onNegotiate, isProcessing }: Han
                             <CheckCircle2 className="h-6 w-6 text-emerald-600 shrink-0" />
                             <div>
                                 <p className="text-xs font-black text-emerald-900 uppercase">Vehículo Validado</p>
-                                <p className="text-[10px] text-emerald-700 font-medium">Puedes proceder con la firma digital. Clinkar ha blindado tu compra.</p>
+                                <p className="text-[10px] text-emerald-700 font-medium">Puedes proceder con la firma digital. StarterKar ha blindado tu compra.</p>
                             </div>
                         </div>
                         {onComplete && (

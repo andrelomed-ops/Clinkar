@@ -7,6 +7,7 @@ import { PldService } from './PldService';
 import { VehicleCheckService } from './VehicleCheckService';
 import { SpeiService } from './SpeiService';
 import { Logger } from '@/lib/logger';
+import { PRICING_CONFIG } from '@/config/pricing';
 
 export type Transaction = Database['public']['Tables']['transactions']['Row'];
 
@@ -23,92 +24,90 @@ export class TransactionService extends BaseService {
     }): Promise<Transaction | null> {
         Logger.info(`[GATEKEEPER] Iniciando creación de transacción para ${data.sellerId} (Monto: $${data.amount})`);
 
-        // 1. PLD / AML Screening (PRE-TRANSACTION)
-        // ... (Existing PLD logic) ...
-        // Se ejecuta el screening antes de tocar el ledger de transacciones.
-        // Simulamos obtener el nombre del vendedor (en producción vendría de la sesión o perfil)
-        const sellerName = "Seller Name Placeholder"; // In a real flow, fetch profile first.
-
+        // 1. PLD / AML Screening
+        const sellerName = "Seller Name Placeholder";
         const pldResult = await PldService.screenPerson(supabase, data.sellerId, sellerName, undefined, 'TRANSACTION');
 
         if (pldResult.riskLevel === 'BLOCKED') {
-            const auditPayload = {
-                action: 'BLOCK_TRANSACTION',
-                reason: 'PLD_RISK_DETECTED',
-                details: pldResult.matches
-            };
-            // Log de Intento Fallido
             await supabase.from('audit_logs' as any).insert({
                 actor_id: data.sellerId,
                 action: 'ATTEMPT_BLOCKED',
                 entity_type: 'TRANSACTION',
-                metadata: auditPayload,
-                ip_address: '127.0.0.1' // Should be passed from request
+                metadata: { reason: 'PLD_RISK_DETECTED', details: pldResult.matches },
+                ip_address: '127.0.0.1'
             } as any);
-            throw new Error("OPERACIÓN BLOQUEADA: Su perfil presenta restricciones de cumplimiento normativo (PLD). Contacte a soporte código #ERR-AML-99.");
+            throw new Error("OPERACIÓN BLOQUEADA: Su perfil presenta restricciones de cumplimiento normativo (PLD).");
         }
 
         // 2. AML Thresholds
         const UMBRAL_IDENTIFICACION = 360000;
-        const UMBRAL_AVISO = 720000;
-
         if (data.amount > UMBRAL_IDENTIFICACION) {
-            Logger.info(`[AML-ALERT] Operación supera umbral de identificación ($${UMBRAL_IDENTIFICACION}). Verificando estatus KYC...`);
-
-            // Check KYC Status in DB
-            const { data: profile } = await supabase
-                .from('risk_profiles' as any)
-                .select('verification_status')
-                .eq('user_id', data.sellerId)
-                .single();
-
-            const status = (profile as any)?.verification_status || 'UNVERIFIED';
-
-            if (status !== 'VERIFIED') {
-                // SOFT BLOCK: Require Identity Verification
-                throw new Error("KYC_REQUIRED: Para operar montos mayores a $360,000 MXN, necesitamos verificar tu identidad. Visita tu Centro de Seguridad.");
+            const { data: profile } = await supabase.from('risk_profiles' as any).select('verification_status').eq('user_id', data.sellerId).single();
+            if ((profile as any)?.verification_status !== 'VERIFIED') {
+                throw new Error("KYC_REQUIRED: Para operar montos mayores a $360,000 MXN, necesitamos verificar tu identidad.");
             }
         }
 
-        if (data.amount > UMBRAL_AVISO) {
-            Logger.warn(`[AML-CRITICAL] Operación supera umbral de AVISO ($${UMBRAL_AVISO}). Se requiere reporte a UIF.`);
+        // 3. Calculate Commissions
+        // 3.1 Buyer Commission (Free on 1st purchase)
+        const { count: previousPurchases } = await supabase
+            .from('transactions')
+            .select('*', { count: 'exact', head: true })
+            .eq('buyer_id', data.buyerId)
+            .eq('status', 'RELEASED');
+        
+        const isFirstPurchase = (previousPurchases || 0) === 0;
+        const buyerCommission = isFirstPurchase ? PRICING_CONFIG.BUYER_FIRST_PURCHASE_FEE : PRICING_CONFIG.BUYER_STANDARD_SERVICE_FEE;
+
+        // 3.2 Seller Fee (3.5% standard, check for discounts)
+        let sellerFeePercent = PRICING_CONFIG.SELLER_SUCCESS_FEE_PERCENT;
+        const { data: discountPerk } = await supabase
+            .from('user_perks' as any)
+            .select('id')
+            .eq('user_id', data.sellerId)
+            .eq('perk_type', 'FEE_DISCOUNT')
+            .eq('status', 'AVAILABLE')
+            .limit(1)
+            .maybeSingle();
+
+        if (discountPerk) {
+            sellerFeePercent = sellerFeePercent * (PRICING_CONFIG.REFERRAL_REWARD_FEE_DISCOUNT_PERCENT / 100);
+            Logger.info(`[PRICING] Applying ${PRICING_CONFIG.REFERRAL_REWARD_FEE_DISCOUNT_PERCENT}% discount to seller ${data.sellerId}`);
         }
 
-        // 3. Create Transaction (Including Services)
+        const sellerSuccessFee = (data.amount * sellerFeePercent) / 100;
         const totalAmount = data.amount + (data.logisticsQuote?.cost || 0) + (data.warrantyQuote?.cost || 0);
 
+        // 4. Create Transaction
         const { data: transaction, error } = await supabase
             .from('transactions')
             .insert({
                 car_id: data.carId,
                 buyer_id: data.buyerId,
                 seller_id: data.sellerId,
-                car_price: data.amount, // Base car price
-
-                // Add-ons
+                car_price: data.amount,
+                buyer_commission: buyerCommission,
+                seller_success_fee: sellerSuccessFee,
                 logistics_cost: data.logisticsQuote?.cost || 0,
                 warranty_cost: data.warrantyQuote?.cost || 0,
-
                 stripe_session_id: data.stripeSessionId,
                 status: 'PENDING',
                 pld_status: pldResult.riskLevel === 'CLEAN' ? 'APPROVED' : 'PENDING',
-                risk_metadata: pldResult
+                risk_metadata: pldResult,
+                metadata: discountPerk ? { used_perk_id: (discountPerk as any).id } : {}
             } as any)
             .select()
             .single();
 
-        const typedTransaction = transaction as any;
-
-        if (error) {
+        if (error || !transaction) {
             Logger.error('Error creating transaction:', error);
-            throw new Error(error.message);
+            throw new Error(error?.message || 'Transaction creation failed');
         }
 
-        // 3.1 Create Side Orders (Async)
+        const typedTransaction = transaction as any;
+
+        // 4.1 Side Orders
         if (data.logisticsQuote) {
-            // We would import LogisticsService here to avoid circular dep issues if possible
-            // or just insert raw for now since we are in TransactionService
-            // @ts-expect-error - Tabla no definida en tipos
             await supabase.from('logistics_orders' as any).insert({
                 transaction_id: typedTransaction.id,
                 origin_address: data.logisticsQuote.origin,
@@ -120,44 +119,35 @@ export class TransactionService extends BaseService {
         }
 
         if (data.warrantyQuote) {
-            const durationMonths = data.warrantyQuote.type === 'STANDARD' ? 3 : 12;
-            const now = new Date();
-            const endDate = new Date(now);
-            endDate.setMonth(now.getMonth() + durationMonths);
-
-            // @ts-expect-error - Tabla no definida en tipos
+            const endDate = new Date();
+            endDate.setMonth(endDate.getMonth() + (data.warrantyQuote.type === 'STANDARD' ? 3 : 12));
             await supabase.from('warranty_policies' as any).insert({
                 car_id: data.carId,
                 transaction_id: typedTransaction.id,
                 type: data.warrantyQuote.type,
-                status: 'PENDING', // Active upon payment
-                start_date: now.toISOString(),
+                status: 'PENDING',
+                start_date: new Date().toISOString(),
                 end_date: endDate.toISOString(),
                 coverage_cap_amount: data.warrantyQuote.cost * 10
             });
         }
 
-        // 4. Audit Log
+        // 5. Audit & Notif
         await supabase.from('audit_logs' as any).insert({
             actor_id: data.sellerId,
             action: 'CREATE_TRANSACTION',
             entity_type: 'TRANSACTION',
             entity_id: typedTransaction.id,
-            metadata: {
-                amount: totalAmount,
-                base_price: data.amount,
-                logistics: data.logisticsQuote?.cost,
-                warranty: data.warrantyQuote?.cost
-            },
+            metadata: { totalAmount, buyerCommission, sellerSuccessFee },
             ip_address: '127.0.0.1'
         } as any);
 
         await NotificationService.notify(supabase, {
             userId: data.sellerId,
             title: "Nueva Oferta Recibida",
-            message: `Un comprador está interesado en tu vehículo por $${data.amount.toLocaleString()} (más servicios).`,
+            message: `Oferta por $${data.amount.toLocaleString()}. Comisión: $${sellerSuccessFee.toLocaleString()}.`,
             type: 'INFO',
-            link: `/dashboard/transactions/${typedTransaction?.id}`
+            link: `/dashboard/transactions/${typedTransaction.id}`
         });
 
         return typedTransaction;
@@ -174,9 +164,8 @@ export class TransactionService extends BaseService {
             .eq('stripe_session_id', sessionId)
             .single();
 
-        const { error } = await (supabase
-            .from('transactions') as any)
-            .update({ status } as Database['public']['Tables']['transactions']['Update'])
+        const { error } = await (supabase.from('transactions') as any)
+            .update({ status })
             .eq('stripe_session_id', sessionId);
 
         if (error) {
@@ -190,14 +179,14 @@ export class TransactionService extends BaseService {
                 {
                     userId: t.buyer_id,
                     title: "Pago Exitoso",
-                    message: "Tus fondos están protegidos en nuestra Bóveda (Escrow).",
+                    message: "Fondos protegidos en Bóveda.",
                     type: 'FINANCIAL',
                     link: `/dashboard/transactions/${t.id}`
                 },
                 {
                     userId: t.seller_id,
                     title: "Fondos en Bóveda",
-                    message: `El comprador ha pagado $${Number(t.car_price).toLocaleString()}. Los fondos están asegurados por Clinkar.`,
+                    message: `El comprador ha pagado $${Number(t.car_price).toLocaleString()}.`,
                     type: 'FINANCIAL',
                     link: `/dashboard/transactions/${t.id}`
                 }
@@ -397,48 +386,19 @@ export class TransactionService extends BaseService {
             return false;
         }
 
-        // --- AUTOMATED VEHICLE THEFT CHECK (OCRA/REPUVE) ---
-        // "Just-in-Time" Validacion para prevenir fraude de ultima milla
         const vin = (transaction as any).cars?.vin || "VIN-NOT-FOUND";
         try {
-            // 1. Run Check
             const theftData = await VehicleCheckService.verifyTheftStatus(supabase, vin);
-
-            // 2. Enforce Hard Block
             if (theftData.status === 'STOLEN') {
-                Logger.error(`[FRAUD-BLOCK] Vehículo reportado como ROBADO: ${vin}. Folio: ${theftData.folio}`);
-
-                // Log Audit
-                await supabase.from('audit_logs' as any).insert({
-                    action: 'BLOCK_TRANSACTION_THEFT',
-                    entity_type: 'TRANSACTION',
-                    entity_id: transactionId,
-                    metadata: theftData,
-                    ip_address: 'SYSTEM_BOT',
-                    created_at: new Date().toISOString()
-                } as any);
-
-                // Update Transaction Metadata with Fraud Alert (don't release funds)
-                await (supabase.from('transactions') as any).update({
-                    pld_status: 'BLOCKED_RISK',
-                    risk_metadata: { ...((transaction as any).risk_metadata || {}), theft_check: theftData }
-                }).eq('id', transactionId);
-
-                // Notify Admins
-                // In production: Send Slack/Email Alert
+                Logger.error(`[FRAUD-BLOCK] Vehículo reportado como ROBADO: ${vin}.`);
+                await (supabase.from('transactions') as any).update({ pld_status: 'BLOCKED_RISK' }).eq('id', transactionId);
                 return false;
             }
-
-            // 3. Generate Evidence (Certificate)
             await VehicleCheckService.generateCertificate(supabase, transactionId, theftData);
-
         } catch (checkError) {
             Logger.error("Error en validación automática vehicular:", checkError);
-            // Decide: Fail safe? Block if check fails? For now, we log and proceed but in production we might pause.
         }
-        // ---------------------------------------------------
 
-        // EXECUTE DISPERSION (STP SIMULATION)
         await SpeiService.simulateIncomingSpei(supabase, transactionId, Number((transaction as any).car_price));
 
         const { error: updateError } = await (supabase
@@ -456,14 +416,14 @@ export class TransactionService extends BaseService {
             {
                 userId: t.buyer_id,
                 title: "Depósito Confirmado (SPEI)",
-                message: "Hemos recibido tu transferencia. Tus fondos están en Bóveda.",
+                message: "Hemos recibido tu transferencia.",
                 type: 'FINANCIAL',
                 link: `/dashboard/transactions/${t.id}`
             },
             {
                 userId: t.seller_id,
                 title: "¡Depósito Detectado!",
-                message: `El comprador ha transferido $${Number(t.car_price).toLocaleString()} MXN. Dispersión programada.`,
+                message: `El comprador ha transferido $${Number(t.car_price).toLocaleString()} MXN.`,
                 type: 'FINANCIAL',
                 link: `/dashboard/sell`
             }

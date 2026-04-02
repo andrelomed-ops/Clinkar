@@ -57,10 +57,10 @@ export default function NewCarsPage() {
                             <span className="text-xs font-black text-indigo-400 uppercase tracking-widest">Alianzas Estratégicas 2026</span>
                         </div>
                         <h1 className="text-5xl font-black tracking-tight text-white mb-6">
-                            Estrena un Auto Nuevo con <span className="bg-gradient-to-r from-blue-400 to-indigo-400 bg-clip-text text-transparent">Clinkar Trade-in</span>
+                            Estrena un Auto Nuevo con <span className="bg-gradient-to-r from-blue-400 to-indigo-400 bg-clip-text text-transparent">StarterKar Trade-in</span>
                         </h1>
                         <p className="text-zinc-400 text-lg mb-8 leading-relaxed">
-                            Maximiza el valor de tu auto actual. Véndelo en Clinkar al <span className="text-white font-bold">precio real de mercado</span> y usa el dinero como depósito para tu próximo 0km en nuestras agencias aliadas.
+                            Maximiza el valor de tu auto actual. Véndelo en StarterKar al <span className="text-white font-bold">precio real de mercado</span> y usa el dinero como depósito para tu próximo 0km en nuestras agencias aliadas.
                         </p>
                         <div className="flex flex-wrap gap-4">
                             <Link href="/sell" className="h-14 px-8 bg-white text-zinc-950 rounded-2xl font-black flex items-center gap-2 hover:bg-zinc-200 transition-all">

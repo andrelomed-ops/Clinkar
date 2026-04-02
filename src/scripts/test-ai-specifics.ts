@@ -37,7 +37,7 @@ const TEST_CASES = [
     },
     {
         name: "Business: Legal",
-        input: "es legal o es fraude clinkar?",
+        input: "es legal o es fraude starterkar?",
         expectedContent: "Código de Comercio"
     },
     {

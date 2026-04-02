@@ -140,7 +140,7 @@ export const DynamicPDFReport = ({ assetData, score, partnerInfo }: PDFReportPro
             {/* Header */}
             <View style={styles.header}>
                 <View style={styles.logoSection}>
-                    <Text style={styles.brandName}>Clinkar</Text>
+                    <Text style={styles.brandName}>StarterKar</Text>
                     {partnerInfo?.name && (
                         <>
                             <Text style={{ fontSize: 18, color: '#cccccc' }}>|</Text>
@@ -187,7 +187,7 @@ export const DynamicPDFReport = ({ assetData, score, partnerInfo }: PDFReportPro
                 <View style={styles.scoreCircle}>
                     <Text style={styles.scoreValue}>{score}%</Text>
                 </View>
-                <Text style={styles.sealText}>Sello de Confianza Clinkar Otorgado</Text>
+                <Text style={styles.sealText}>Sello de Confianza StarterKar Otorgado</Text>
                 <Text style={{ fontSize: 10, color: '#666666', marginTop: 10, textAlign: 'center', width: 250 }}>
                     Este activo ha superado satisfactoriamente los 150 puntos de control técnico y legal.
                 </Text>
@@ -195,7 +195,7 @@ export const DynamicPDFReport = ({ assetData, score, partnerInfo }: PDFReportPro
 
             {/* Footer */}
             <View style={styles.footer}>
-                <Text style={styles.footerText}>Generado de forma segura via Clinkar Enterprise</Text>
+                <Text style={styles.footerText}>Generado de forma segura via StarterKar Enterprise</Text>
                 <Text style={styles.footerText}>Página 1 de 1</Text>
             </View>
         </Page>

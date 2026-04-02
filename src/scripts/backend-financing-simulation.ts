@@ -13,7 +13,7 @@ interface Order {
     down_payment: number;
     financed_amount: number;
     status: OrderStatus;
-    clinkar_fee: number;
+    starterkar_fee: number;
     seller_remnant_down_payment: number;
     bank_funding_status: 'PENDING' | 'RECEIVED';
     funding_proof_url?: string;
@@ -71,7 +71,7 @@ const INSPECTION_COST = 1500;
 // 1. Calculadora de Enganche Inteligente
 function calculate_minimum_down_payment(carPrice: number): {
     min_down_payment: number,
-    clinkar_fee: number,
+    starterkar_fee: number,
     cost_breakdown: any
 } {
     console.log(`\n--- 🧮 CALCULADORA: Auto de $${carPrice.toLocaleString()} ---`);
@@ -84,7 +84,7 @@ function calculate_minimum_down_payment(carPrice: number): {
     const operationalCosts = LEGAL_CHECK_COST + INSPECTION_COST;
 
     // C. El enganche debe cubrir AL MENOS: Comisión + Costos
-    //    Esto asegura que Clinkar nunca "pone dinero" para operar.
+    //    Esto asegura que StarterKar nunca "pone dinero" para operar.
     const revenueRequirement = fee + operationalCosts;
 
     // D. Regla de Negocio del Banco (ej. Mínimo 10%)
@@ -95,13 +95,13 @@ function calculate_minimum_down_payment(carPrice: number): {
 
     console.log(`   - Comisión Calculada: $${fee.toLocaleString()}`);
     console.log(`   - Costos Operativos: $${operationalCosts.toLocaleString()}`);
-    console.log(`   - Requerimiento Clinkar (Revenue Insurance): $${revenueRequirement.toLocaleString()}`);
+    console.log(`   - Requerimiento StarterKar (Revenue Insurance): $${revenueRequirement.toLocaleString()}`);
     console.log(`   - Requerimiento Banco (10%): $${bankRuleMin.toLocaleString()}`);
     console.log(`   => ENGANCHE MÍNIMO FINAL: $${finalMinDownPayment.toLocaleString()}`);
 
     return {
         min_down_payment: finalMinDownPayment,
-        clinkar_fee: fee,
+        starterkar_fee: fee,
         cost_breakdown: { operationalCosts }
     };
 }
@@ -127,9 +127,9 @@ async function pay_down_payment_controller(
 
     console.log(`[✅ PAGO] Enganche cobrado exitosamente. Ref: ${charge.txn_id}`);
 
-    // Split Virtual: ¿Cuánto es para Clinkar y cuánto sobra del enganche para el vendedor?
+    // Split Virtual: ¿Cuánto es para StarterKar y cuánto sobra del enganche para el vendedor?
     // NOTA: El vendedor NO recibe nada todavía. Todo se guarda.
-    const sellerRemnant = offeredDownPayment - calc.clinkar_fee - calc.cost_breakdown.operationalCosts;
+    const sellerRemnant = offeredDownPayment - calc.starterkar_fee - calc.cost_breakdown.operationalCosts;
 
     // Crear Orden
     const orderId = `ORD-${uuidv4().substring(0, 6)}`;
@@ -141,7 +141,7 @@ async function pay_down_payment_controller(
         down_payment: offeredDownPayment,
         financed_amount: carPrice - offeredDownPayment,
         status: 'AWAITING_EXTERNAL_FUNDING', // Esperando al banco
-        clinkar_fee: calc.clinkar_fee,
+        starterkar_fee: calc.starterkar_fee,
         seller_remnant_down_payment: sellerRemnant,
 
         bank_funding_status: 'PENDING',
@@ -155,7 +155,7 @@ async function pay_down_payment_controller(
     db.createOrder(newOrder);
 
     // Generar "Certificado" Mock
-    const certificateUrl = `https://clinkar.com/cert/down-payment/${orderId}.pdf`;
+    const certificateUrl = `https://starterkar.com/cert/down-payment/${orderId}.pdf`;
     console.log(`[📄 DOC] Certificado de Enganche generado: ${certificateUrl}`);
     console.log(`[⏳ STATUS] Orden en espera de fondeo bancario (Financed Amount: $${newOrder.financed_amount.toLocaleString()})`);
 

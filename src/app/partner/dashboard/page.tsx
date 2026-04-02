@@ -96,7 +96,7 @@ export default function PartnerDashboardPage() {
     const router = useRouter();
 
     useEffect(() => {
-        const match = document.cookie.match(new RegExp('(^| )clinkar_partner_role=([^;]+)'));
+        const match = document.cookie.match(new RegExp('(^| )starterkar_partner_role=([^;]+)'));
         const roleValue = match ? match[2] : null;
 
         if (!roleValue) {

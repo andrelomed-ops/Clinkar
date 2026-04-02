@@ -17,7 +17,7 @@ export function TradeInCalculator({ onAppraisalComplete }: TradeInCalculatorProp
 
     const handleCalculate = () => {
         setStep('CALCULATING');
-        // Simulate Clinkar AI Appraisal
+        // Simulate StarterKar AI Appraisal
         setTimeout(() => {
             const baseValue = Math.floor(Math.random() * (450000 - 150000) + 150000);
             setResult(baseValue);
@@ -37,7 +37,7 @@ export function TradeInCalculator({ onAppraisalComplete }: TradeInCalculatorProp
                         <RefreshCcw className="h-5 w-5" />
                     </div>
                     <div>
-                        <h3 className="text-xl font-black tracking-tight">Clinkar Bridge</h3>
+                        <h3 className="text-xl font-black tracking-tight">StarterKar Bridge</h3>
                         <p className="text-[10px] font-bold text-indigo-600 uppercase tracking-widest">Trade-in & Liquidez</p>
                     </div>
                 </div>
@@ -116,7 +116,7 @@ export function TradeInCalculator({ onAppraisalComplete }: TradeInCalculatorProp
                         </div>
                         <div className="space-y-1">
                             <p className="font-black text-lg">Analizando mercado regional...</p>
-                            <p className="text-[10px] text-zinc-400 font-bold uppercase tracking-widest">Consultando Bóveda de Precios Clinkar</p>
+                            <p className="text-[10px] text-zinc-400 font-bold uppercase tracking-widest">Consultando Bóveda de Precios StarterKar</p>
                         </div>
                     </div>
                 )}
@@ -127,7 +127,7 @@ export function TradeInCalculator({ onAppraisalComplete }: TradeInCalculatorProp
                             <span className="text-[10px] font-black text-emerald-600 uppercase tracking-widest mb-1 block">Valor de Toma Estimado</span>
                             <div className="text-4xl font-black text-emerald-600">${result.toLocaleString()}</div>
                             <div className="flex items-center justify-center gap-1.5 mt-2 text-emerald-600/70 text-[10px] font-bold">
-                                <CheckCircle2 className="h-3.5 w-3.5" /> Sujeto a Inspección Técnica Clinkar
+                                <CheckCircle2 className="h-3.5 w-3.5" /> Sujeto a Inspección Técnica StarterKar
                             </div>
                         </div>
                         <div className="flex gap-3">
@@ -152,7 +152,7 @@ export function TradeInCalculator({ onAppraisalComplete }: TradeInCalculatorProp
             <div className="px-8 py-4 bg-zinc-50 dark:bg-zinc-800/50 border-t border-border flex items-center justify-between">
                 <div className="flex items-center gap-2">
                     <Zap className="h-3 w-3 text-amber-500" />
-                    <span className="text-[9px] font-black text-zinc-400 uppercase tracking-tighter">Powered by Clinkar AI Engine</span>
+                    <span className="text-[9px] font-black text-zinc-400 uppercase tracking-tighter">Powered by StarterKar AI Engine</span>
                 </div>
                 <div className="flex -space-x-2">
                     {[1, 2, 3].map(i => (

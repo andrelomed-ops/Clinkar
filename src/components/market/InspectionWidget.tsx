@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { FileCheck, AlertCircle, CheckCircle2, XCircle } from "lucide-react";
 import { supabase } from "@/lib/supabase";
-import { ClinkarSeal } from "./ClinkarSeal";
+import { StarterKarSeal } from "./StarterKarSeal";
 
 interface InspectionWidgetProps {
     carId: string;
@@ -55,7 +55,7 @@ export function InspectionWidget({ carId }: InspectionWidgetProps) {
             <div className="flex items-start justify-between relative z-10">
                 <div>
                     <div className="flex items-center gap-2 mb-2">
-                        <ClinkarSeal variant="compact" />
+                        <StarterKarSeal variant="compact" />
                     </div>
 
                     <p className="text-zinc-500 dark:text-zinc-400 text-sm max-w-sm mb-4">
@@ -118,7 +118,7 @@ export function InspectionWidget({ carId }: InspectionWidgetProps) {
             {/* Disclaimer Footer */}
             <div className="mt-6 pt-4 border-t border-zinc-100 dark:border-zinc-800 flex items-center gap-2 text-[10px] text-zinc-400">
                 <CheckCircle2 className="h-3 w-3 text-emerald-500" />
-                <span>Inspección realizada por <strong>Clinkar Expert Mechanics</strong></span>
+                <span>Inspección realizada por <strong>StarterKar Expert Mechanics</strong></span>
             </div>
         </div>
     );

@@ -72,7 +72,7 @@ export const DigitalPassport = ({ car, purchaseDate, ownerName, serviceHistory }
             // Save
             const safeMake = car.make.replace(/[^a-z0-9]/gi, '_').toLowerCase();
             const safeModel = car.model.replace(/[^a-z0-9]/gi, '_').toLowerCase();
-            pdf.save(`Clinkar_Passport_${safeMake}_${safeModel}.pdf`);
+            pdf.save(`StarterKar_Passport_${safeMake}_${safeModel}.pdf`);
 
         } catch (err) {
             console.error("PDF Generation failed", err);
@@ -141,7 +141,7 @@ export const DigitalPassport = ({ car, purchaseDate, ownerName, serviceHistory }
     // Generate Verification URL
     const verificationUrl = typeof window !== 'undefined'
         ? `${window.location.origin}/verify/asset/${car.id}`
-        : `https://clinkar.com/verify/asset/${car.id}`;
+        : `https://starterkar.com/verify/asset/${car.id}`;
 
     return (
         <div className="max-w-md mx-auto space-y-6">
@@ -153,7 +153,7 @@ export const DigitalPassport = ({ car, purchaseDate, ownerName, serviceHistory }
                     <div style={{ position: 'absolute', inset: 0, opacity: 0.2, backgroundImage: 'radial-gradient(white 1px, transparent 1px)', backgroundSize: '10px 10px' }}></div>
                     <div className="absolute inset-0 flex flex-col items-center justify-center p-6 text-center" style={{ color: '#ffffff' }}>
                         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest mb-3" style={{ backgroundColor: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.2)', backdropFilter: 'blur(12px)', color: '#ffffff' }}>
-                            <BadgeCheck className="h-3 w-3" style={{ color: '#34d399' }} /> Clinkar Verified Asset
+                            <BadgeCheck className="h-3 w-3" style={{ color: '#34d399' }} /> StarterKar Verified Asset
                         </div>
                         <h2 className="text-3xl font-black tracking-tighter" style={{ fontFamily: 'ui-sans-serif, system-ui, sans-serif', color: '#ffffff' }}>PASAPORTE DIGITAL</h2>
                         <p className="text-[10px] font-mono mt-2 uppercase tracking-widest" style={{ color: 'rgba(199, 210, 254, 0.8)' }}>
@@ -243,7 +243,7 @@ export const DigitalPassport = ({ car, purchaseDate, ownerName, serviceHistory }
                 {/* Disclaimer Footer */}
                 <div className="p-4 text-center border-t" style={{ backgroundColor: '#f8fafc', borderColor: '#f1f5f9' }}>
                     <p className="text-[10px] leading-tight" style={{ color: '#94a3b8' }}>
-                        Este documento es un comprobante digital generado por Clinkar Platform. La autenticidad puede verificarse escaneando el código QR superior.
+                        Este documento es un comprobante digital generado por StarterKar Platform. La autenticidad puede verificarse escaneando el código QR superior.
                     </p>
                 </div>
             </div>

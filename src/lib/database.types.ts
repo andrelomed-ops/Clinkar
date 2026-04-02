@@ -13,7 +13,7 @@ export type Database = {
                 Row: {
                     created_at: string | null
                     description: string | null
-                    has_clinkar_seal: boolean | null
+                    has_starterkar_seal: boolean | null
                     id: string
                     images: string[] | null
                     make: string
@@ -27,7 +27,7 @@ export type Database = {
                 Insert: {
                     created_at?: string | null
                     description?: string | null
-                    has_clinkar_seal?: boolean | null
+                    has_starterkar_seal?: boolean | null
                     id?: string
                     images?: string[] | null
                     make: string
@@ -41,7 +41,7 @@ export type Database = {
                 Update: {
                     created_at?: string | null
                     description?: string | null
-                    has_clinkar_seal?: boolean | null
+                    has_starterkar_seal?: boolean | null
                     id?: string
                     images?: string[] | null
                     make?: string

@@ -5,7 +5,7 @@ import { Lightbulb, Rocket, Globe, Building2, Send, CheckCircle2, Sparkles, Tren
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 
-export function ClinkarEvolutionHub() {
+export function StarterKarEvolutionHub() {
     const [suggestion, setSuggestion] = useState("");
     const [submitted, setSubmitted] = useState(false);
     const [category, setCategory] = useState<'Comprador' | 'Aliado' | 'Infraestructura'>('Comprador');

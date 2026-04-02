@@ -47,7 +47,7 @@ export const MOCK_SERVICE_TICKETS: ServiceTicket[] = [
 export const MOCK_FEE_CONFIG = {
     upfrontInspectionPrice: 900.00,
     mechanicPayoutAmount: 750.00,
-    clinkarAdminFee: 150.00,
+    starterkarAdminFee: 150.00,
     successFeeDeferred: 600.00,
     penaltyFee: 2000.00
 };
