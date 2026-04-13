@@ -73,7 +73,7 @@ export async function processReferralPayout(referralId: string, amount: number, 
     }
 
     revalidatePath("/admin");
-    return { success: true, payoutId: result.payoutId };
+    return { success: true, payoutId: result.payoutId, paymentUrl: result.paymentUrl };
 }
 
 export async function getPendingReferralPayouts() {

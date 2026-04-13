@@ -4,6 +4,7 @@ import { SupabaseClient } from '@supabase/supabase-js';
 import { Database } from '@/lib/database.types';
 import { BaseService } from './BaseService';
 import { Logger } from '@/lib/logger';
+import { ConektaService } from './ConektaService';
 
 export class ReferralPayoutService extends BaseService {
     static async createConnectAccount(
@@ -89,7 +90,7 @@ export class ReferralPayoutService extends BaseService {
         referralId: string,
         amount: number,
         description: string
-    ): Promise<{ payoutId: string; transferId: string } | null> {
+    ): Promise<{ payoutId: string; paymentUrl: string } | null> {
         try {
             const { data: referral, error: refError } = await supabase
                 .from('referrals' as any)
@@ -106,34 +107,15 @@ export class ReferralPayoutService extends BaseService {
                 throw new Error('Referral must be OPERATION_CLOSED before payout');
             }
 
-            const { data: perk, error: perkError } = await supabase
-                .from('user_perks' as any)
-                .select('metadata')
-                .eq('user_id', referral.referrer_id)
-                .eq('perk_type', 'STRIPE_CONNECT_ACCOUNT')
-                .order('created_at', { ascending: false })
-                .limit(1)
-                .maybeSingle();
+            const conektaLink = await ConektaService.createPaymentLink(
+                amount,
+                `Pago de referido: ${description}`,
+                referralId
+            );
 
-            if (!perk?.metadata?.stripe_account_id) {
-                throw new Error('Referrer no ha configurado transferencia con Stripe');
+            if (!conektaLink) {
+                throw new Error('No se pudo crear el link de pago');
             }
-
-            const accountId = perk.metadata.stripe_account_id;
-
-            const amountInCentavos = Math.round(amount * 100);
-
-            const transfer = await stripe.transfers.create({
-                amount: amountInCentavos,
-                currency: 'mxn',
-                destination: accountId,
-                metadata: {
-                    referral_id: referralId,
-                    transaction_id: referral.transaction_id || '',
-                    description: description,
-                },
-                description: description,
-            });
 
             await supabase
                 .from('referrals' as any)
@@ -145,17 +127,25 @@ export class ReferralPayoutService extends BaseService {
 
             await supabase.from('user_perks' as any).insert({
                 user_id: referral.referrer_id,
-                perk_type: 'REFERRAL_PAYOUT',
+                perk_type: 'CONEKTA_PAYMENT_LINK',
                 status: 'AVAILABLE',
                 metadata: {
                     referral_id: referralId,
-                    payout_id: transfer.id,
+                    checkout_id: conektaLink.checkoutId,
+                    payment_url: conektaLink.url,
                     amount: amount,
                     transaction_id: referral.transaction_id,
                     description: description,
                     paid_at: new Date().toISOString(),
                 },
             });
+
+            Logger.info(`[CONEKTA] Created payment link for referral ${referralId}: ${conektaLink.url}`);
+
+            return {
+                payoutId: conektaLink.checkoutId,
+                paymentUrl: conektaLink.url,
+            };
 
             Logger.info(`[PAYOUT] Created payout ${transfer.id} for ${amount} MXN to ${accountId}`);
 

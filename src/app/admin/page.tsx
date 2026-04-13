@@ -30,15 +30,19 @@ export default function AdminDashboard() {
     const handlePayout = async (referralId: string, amount: number) => {
         setPayoutLoading(referralId);
         try {
-            await processReferralPayout(
+            const result = await processReferralPayout(
                 referralId,
                 amount,
                 `Pago de referido por operación completada`
             );
-            toast.success("Pago procesado exitosamente");
+            toast.success("Link de pago generado - Envíalo al referidor");
+            if (result?.paymentUrl) {
+                await navigator.clipboard.writeText(result.paymentUrl);
+                toast.info("Link copiado al portapapeles");
+            }
             setReferralPayouts(prev => prev.filter(p => p.id !== referralId));
         } catch (err: any) {
-            toast.error(err.message || "Error al procesar pago");
+            toast.error(err.message || "Error al generar link");
         } finally {
             setPayoutLoading(null);
         }
@@ -229,15 +233,13 @@ export default function AdminDashboard() {
                                         </span>
                                         <button
                                             onClick={() => handlePayout(ref.id, ref.actual_reward || 500)}
-                                            disabled={payoutLoading === ref.id || !ref.has_stripe_account}
+                                            disabled={payoutLoading === ref.id}
                                             className="h-8 px-3 bg-emerald-600 hover:bg-emerald-500 disabled:bg-zinc-700 disabled:text-zinc-500 text-white text-xs font-bold rounded-lg flex items-center gap-1"
                                         >
                                             {payoutLoading === ref.id ? (
                                                 <Loader2 className="h-3 w-3 animate-spin" />
-                                            ) : !ref.has_stripe_account ? (
-                                                "Sin Cuenta"
                                             ) : (
-                                                <><DollarSign className="h-3 w-3" /> Pagar</>
+                                                <><DollarSign className="h-3 w-3" /> Generar Link</>
                                             )}
                                         </button>
                                     </div>
