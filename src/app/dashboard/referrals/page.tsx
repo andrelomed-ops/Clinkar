@@ -1,244 +1,320 @@
-import { createClient } from '@/lib/supabase/server'
-import { ReferralService } from '@/services/ReferralService'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { Share2, Gift, CheckCircle2, Clock, Trophy, Sparkles, ArrowRight, Zap } from 'lucide-react'
-import Link from 'next/link'
-import { PRICING_CONFIG } from '@/config/pricing'
+"use client";
 
-export default async function ReferralsDashboardPage() {
-    const supabase = await createClient()
-    const { data: { user } } = await supabase.auth.getUser()
+import { useState, useEffect, Suspense } from "react";
+import { createBrowserClient } from "@/lib/supabase/client";
+import { Database } from "@/lib/database.types";
+import { Users, Gift, Share2, Copy, Check, ArrowRight, Zap, TrendingUp, DollarSign, UserPlus, Clock, CheckCircle2, XCircle } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
+import { toast } from "sonner";
+import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 
-    if (!user) {
+type ReferralLink = {
+    id: string;
+    user_id: string;
+    code: string;
+    default_reward_amount: number;
+    created_at: string;
+};
+
+type Referral = {
+    id: string;
+    referrer_id: string;
+    referred_user_id: string;
+    transaction_id: string | null;
+    status: "PENDING_OPERATION" | "OPERATION_CLOSED" | "PAID";
+    actual_reward: number | null;
+    created_at: string;
+    updated_at: string;
+    referred_profile?: {
+        email: string;
+        full_name: string;
+    };
+};
+
+export default function ReferralsPage() {
+    return (
+        <Suspense fallback={<div className="p-8"><Skeleton className="h-96" /></div>}>
+            <ReferralsContent />
+        </Suspense>
+    );
+}
+
+function ReferralsContent() {
+    const [supabase] = useState(() => createBrowserClient());
+    const [loading, setLoading] = useState(true);
+    const [user, setUser] = useState<any>(null);
+    const [referralLink, setReferralLink] = useState<ReferralLink | null>(null);
+    const [referrals, setReferrals] = useState<Referral[]>([]);
+    const [copied, setCopied] = useState(false);
+    const searchParams = useSearchParams();
+    const refCode = searchParams.get("ref");
+
+    useEffect(() => {
+        async function loadData() {
+            const { data: { user } } = await supabase.auth.getUser();
+            if (!user) {
+                window.location.href = "/login";
+                return;
+            }
+            setUser(user);
+
+            // Check for ref code in URL
+            if (refCode) {
+                await applyReferralCode(refCode);
+            }
+
+            // Fetch referral link
+            const { data: link } = await supabase
+                .from("referral_links")
+                .select("*")
+                .eq("user_id", user.id)
+                .maybeSingle();
+
+            if (link) {
+                setReferralLink(link);
+            } else {
+                const newCode = `STARTER-${Math.random().toString(36).substring(2, 6).toUpperCase()}`;
+                const { data: newLink } = await supabase
+                    .from("referral_links")
+                    .insert({
+                        user_id: user.id,
+                        code: newCode,
+                        default_reward_amount: 500,
+                    })
+                    .select()
+                    .single();
+                if (newLink) setReferralLink(newLink);
+            }
+
+            // Fetch referrals where user is referrer
+            const { data: refs } = await supabase
+                .from("referrals")
+                .select("*, referred_profile:profiles!referrals_referred_user_id_fkey(email, full_name)")
+                .eq("referrer_id", user.id)
+                .order("created_at", { ascending: false });
+
+            if (refs) setReferrals(refs);
+            setLoading(false);
+        }
+
+        loadData();
+    }, [supabase, refCode]);
+
+    const applyReferralCode = async (code: string) => {
+        if (!user) return;
+
+        try {
+            const { data: codeOwner, error: codeError } = await supabase
+                .from("referral_links")
+                .select("user_id")
+                .eq("code", code.toUpperCase())
+                .single();
+
+            if (codeError || !codeOwner) {
+                toast.error("Código de referido inválido");
+                return;
+            }
+
+            if (codeOwner.user_id === user.id) {
+                toast.error("No puedes referirte a ti mismo");
+                return;
+            }
+
+            const { error: insertError } = await supabase
+                .from("referrals")
+                .insert({
+                    referrer_id: codeOwner.user_id,
+                    referred_user_id: user.id,
+                    status: "PENDING_OPERATION",
+                });
+
+            if (insertError) {
+                if (insertError.code === "23505") {
+                    toast.info("Ya eras parte de este programa de referidos");
+                } else {
+                    toast.error("Error al aplicar el código");
+                }
+            } else {
+                toast.success("¡Código aplicado! Ganaste beneficios.");
+            }
+        } catch (err) {
+            console.error(err);
+        }
+    };
+
+    const handleCopy = () => {
+        if (!referralLink) return;
+        navigator.clipboard.writeText(`${window.location.origin}?ref=${referralLink.code}`);
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+    };
+
+    const totalGenerated = referrals.reduce((sum, r) => sum + (r.actual_reward || 0), 0);
+    const pendingCount = referrals.filter(r => r.status === "PENDING_OPERATION").length;
+    const closedCount = referrals.filter(r => r.status === "OPERATION_CLOSED").length;
+    const paidCount = referrals.filter(r => r.status === "PAID").length;
+
+    if (loading) {
         return (
-            <div className="container py-24 text-center">
-                <h2 className="text-2xl font-black italic uppercase">Inicia sesión</h2>
-                <Link href="/login" className="text-indigo-600 font-bold hover:underline">Ir al login</Link>
+            <div className="p-8 space-y-4">
+                <Skeleton className="h-48" />
+                <Skeleton className="h-96" />
             </div>
         );
     }
 
-    // Ensure they have a code
-    const code = await ReferralService.getOrCreateReferralCode(supabase, user.id)
-    const baseUrl = process.env.NEXT_PUBLIC_SITE_URL ? process.env.NEXT_PUBLIC_SITE_URL.replace(/\/$/, '') : 'https://starterkar.com';
-    const referralLink = `${baseUrl}?ref=${code}`
-
-    // Fetch stats
-    const { data: referrals } = await supabase
-        .from('referrals' as any)
-        .select(`
-            id, status, actual_reward, created_at,
-            referred_user:profiles!referred_user_id ( full_name, email )
-        `)
-        .eq('referrer_id', user.id);
-
-    // Fetch Perks
-    const { data: perks } = await supabase
-        .from('user_perks' as any)
-        .select('*')
-        .eq('user_id', user.id)
-        .order('created_at', { ascending: false });
-
-    const totalEarned = referrals?.filter((r: any) => r.status === 'COMPLETED' || r.status === 'PAID').length || 0;
-    const pendingReferrals = referrals?.filter((r: any) => r.status === 'PENDING').length || 0;
-
     return (
-        <div className="min-h-screen bg-background border-l border-border p-6 md:p-12 overflow-y-auto">
-            <div className="max-w-5xl mx-auto space-y-12">
-                
-                {/* Header Section */}
-                <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
-                    <div className="space-y-2">
-                        <div className="flex items-center gap-2 text-indigo-600 font-black text-[10px] uppercase tracking-[0.3em]">
-                            <Trophy className="h-4 w-4" />
-                            <span>Referidos StarterKar PRO</span>
-                        </div>
-                        <h1 className="text-5xl font-black italic tracking-tighter uppercase leading-[0.9]">
-                            Gana por cada <br /> <span className="text-indigo-600">Recomendación</span>
-                        </h1>
-                    </div>
-                    <div className="bg-secondary/50 rounded-2xl p-4 border border-border flex items-center gap-4">
-                        <div className="h-10 w-10 bg-indigo-600 rounded-xl flex items-center justify-center text-white font-black italic">
-                            {totalEarned}
-                        </div>
-                        <div>
-                            <p className="text-[10px] font-black uppercase text-muted-foreground tracking-widest">Éxitos Totales</p>
-                            <p className="font-bold text-sm">Transferencias logradas</p>
-                        </div>
-                    </div>
+        <div className="p-4 md:p-8 max-w-4xl mx-auto space-y-6">
+            <div className="flex items-center justify-between">
+                <div>
+                    <h1 className="text-2xl md:text-3xl font-black tracking-tight">Programa de Referidos</h1>
+                    <p className="text-muted-foreground">Invita amigos y gana recompensas</p>
+                </div>
+                <Link href="/dashboard">
+                    <Button variant="ghost">Volver</Button>
+                </Link>
+            </div>
+
+            <div className="bg-gradient-to-br from-indigo-600 to-indigo-800 rounded-[2.5rem] p-8 text-white shadow-2xl relative overflow-hidden">
+                <div className="absolute top-0 right-0 p-12 opacity-10 pointer-events-none">
+                    <Users size={180} />
                 </div>
 
-                {/* Main Action Card (Copy Link) */}
-                <div className="bg-zinc-950 rounded-[3rem] p-8 md:p-12 text-white relative overflow-hidden group shadow-2xl">
-                    <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-500/10 blur-[100px] -translate-y-1/2 translate-x-1/2" />
-                    
-                    <div className="relative z-10 grid md:grid-cols-2 gap-12 items-center">
+                <div className="relative z-10 space-y-6">
+                    <div className="flex items-center gap-4">
+                        <div className="h-12 w-12 bg-white/20 rounded-2xl flex items-center justify-center backdrop-blur-md">
+                            <Gift className="h-6 w-6 text-indigo-100" />
+                        </div>
                         <div>
-                            <div className="h-12 w-12 bg-white/10 rounded-2xl flex items-center justify-center mb-6 backdrop-blur-md">
-                                <Share2 className="h-6 w-6 text-indigo-400" />
-                            </div>
-                            <h2 className="text-3xl font-black italic uppercase mb-4 tracking-tight">Tu Enlace de Socio</h2>
-                            <p className="text-zinc-400 font-medium mb-8 leading-relaxed">
-                                Comparte este enlace con amigos. Si compran o venden a través de StarterKar, tú recibes beneficios exclusivos directos en tu cuenta.
+                            <h3 className="text-2xl font-black tracking-tight">Crecimiento StarterKar PRO</h3>
+                            <p className="text-indigo-200 text-xs font-bold uppercase tracking-widest">Gana por expandir nuestra red</p>
+                        </div>
+                    </div>
+
+                    <div className="grid md:grid-cols-2 gap-6 items-center">
+                        <div className="space-y-3">
+                            <h4 className="text-3xl font-black leading-none tracking-tighter">
+                                Invita a un amigo <br />
+                                <span className="text-indigo-300">Gana $500 MXN</span>
+                            </h4>
+                            <p className="text-indigo-100/80 text-sm font-medium">
+                                Por cada amigo que se registre con tu código y complete una operación.
                             </p>
-                            <div className="flex flex-col gap-4">
-                                <code className="bg-white/5 border border-white/10 rounded-2xl px-6 py-4 text-indigo-300 font-mono text-sm break-all">
-                                    {referralLink}
-                                </code>
-                                <Button className="h-14 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white font-black transition-all active:scale-95 shadow-xl shadow-indigo-600/20">
-                                    Copiar Enlace
+                        </div>
+
+                        <div className="bg-white/10 backdrop-blur-xl rounded-3xl p-6 border border-white/20 space-y-4">
+                            <div className="space-y-2">
+                                <label className="text-[10px] font-black uppercase tracking-widest text-indigo-200 ml-1">Tu Enlace Único</label>
+                                <div className="flex gap-2">
+                                    <div className="flex-1 bg-black/20 rounded-xl h-12 flex items-center px-4 font-mono text-xs overflow-hidden text-indigo-200 border border-white/10 uppercase">
+                                        {window.location.origin}?ref={referralLink?.code || "..."}
+                                    </div>
+                                    <Button
+                                        onClick={handleCopy}
+                                        variant="secondary"
+                                        className="h-12 w-12 rounded-xl bg-white text-indigo-600 hover:bg-indigo-50 p-0"
+                                    >
+                                        {copied ? <Check className="h-5 w-5" /> : <Copy className="h-5 w-5" />}
+                                    </Button>
+                                </div>
+                            </div>
+
+                            <div className="grid grid-cols-2 gap-3">
+                                <Button className="h-12 rounded-xl bg-white/20 hover:bg-white/30 text-white font-bold border-0">
+                                    <Share2 className="mr-2 h-4 w-4" /> Compartir
+                                </Button>
+                                <Button className="h-12 rounded-xl bg-indigo-500 hover:bg-indigo-400 text-white font-black shadow-lg">
+                                    Ver Recompensas
                                 </Button>
                             </div>
                         </div>
-                        <div className="hidden md:block">
-                            <div className="bg-indigo-600/20 rounded-[2.5rem] p-8 border border-white/5 backdrop-blur-sm space-y-6">
-                                <h4 className="font-black italic uppercase text-xs tracking-widest text-indigo-400">Próximas Recompensas</h4>
-                                <div className="space-y-4">
-                                    <div className="flex items-center gap-4">
-                                        <div className="h-8 w-8 rounded-lg bg-indigo-600 flex items-center justify-center"><Zap className="h-4 w-4 text-white" /></div>
-                                        <p className="text-sm font-bold">50% de Descuento en Próxima Venta</p>
-                                    </div>
-                                    <div className="flex items-center gap-4">
-                                        <div className="h-8 w-8 rounded-lg bg-emerald-600 flex items-center justify-center"><CheckCircle2 className="h-4 w-4 text-white" /></div>
-                                        <p className="text-sm font-bold italic">Bono de ${PRICING_CONFIG.REFERRAL_REWARD_CASH} MXN</p>
-                                    </div>
-                                    <div className="flex items-center gap-4">
-                                        <div className="h-8 w-8 rounded-lg bg-amber-600 flex items-center justify-center"><Gift className="h-4 w-4 text-white" /></div>
-                                        <p className="text-sm font-bold">Inspección 150 Puntos GRATIS</p>
-                                    </div>
-                                </div>
-                            </div>
+                    </div>
+
+                    <div className="grid grid-cols-3 gap-4 pt-6 border-t border-white/10">
+                        <div className="text-center space-y-1">
+                            <TrendingUp className="h-4 w-4 mx-auto text-indigo-300" />
+                            <div className="text-lg font-black tracking-tighter">${totalGenerated.toLocaleString()}</div>
+                            <div className="text-[8px] font-black uppercase text-indigo-300/70 tracking-widest">Generado Total</div>
+                        </div>
+                        <div className="text-center space-y-1">
+                            <Users className="h-4 w-4 mx-auto text-indigo-300" />
+                            <div className="text-lg font-black tracking-tighter">{referrals.length}</div>
+                            <div className="text-[8px] font-black uppercase text-indigo-300/70 tracking-widest">Referidos</div>
+                        </div>
+                        <div className="text-center space-y-1">
+                            <Zap className="h-4 w-4 mx-auto text-indigo-300" />
+                            <div className="text-lg font-black tracking-tighter">{paidCount > 0 ? "Paid" : "New"}</div>
+                            <div className="text-[8px] font-black uppercase text-indigo-300/70 tracking-widest">Nivel</div>
                         </div>
                     </div>
                 </div>
+            </div>
 
-                {/* Benefits / Perks Section (NEW) */}
-                <div className="space-y-6">
-                    <h2 className="text-2xl font-black italic uppercase tracking-tighter flex items-center gap-3">
-                        <Sparkles className="h-6 w-6 text-indigo-600" />
-                        Tus Beneficios Acumulados
-                    </h2>
-                    
-                    {perks && perks.length > 0 ? (
-                        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                            {perks.map((perk: any) => (
-                                <div key={perk.id} className="bg-card border border-border rounded-3xl p-6 relative group hover:border-indigo-500/50 transition-all shadow-sm">
-                                    <div className="flex items-start justify-between mb-6">
-                                        <div className={cn(
-                                            "h-12 w-12 rounded-2xl flex items-center justify-center",
-                                            perk.status === 'AVAILABLE' ? "bg-emerald-100 text-emerald-600" : "bg-zinc-100 text-zinc-400"
-                                        )}>
-                                            {perk.perk_type === 'FREE_INSPECTION' ? <Wrench className="h-6 w-6" /> : <Gift className="h-6 w-6" />}
+            <Card>
+                <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                        <UserPlus className="h-5 w-5" />
+                        Tus Referidos
+                    </CardTitle>
+                </CardHeader>
+                <CardContent>
+                    {referrals.length === 0 ? (
+                        <div className="text-center py-8 text-muted-foreground">
+                            <UserPlus className="h-12 w-12 mx-auto mb-4 opacity-20" />
+                            <p>No tienes referidos aún</p>
+                            <p className="text-sm">Comparte tu código para invitar amigos</p>
+                        </div>
+                    ) : (
+                        <div className="space-y-3">
+                            {referrals.map((ref) => (
+                                <div
+                                    key={ref.id}
+                                    className="flex items-center justify-between p-4 rounded-xl bg-muted/50"
+                                >
+                                    <div className="flex items-center gap-3">
+                                        <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
+                                            <UserPlus className="h-5 w-5 text-primary" />
                                         </div>
-                                        <div className={cn(
-                                            "px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest border",
-                                            perk.status === 'AVAILABLE' ? "bg-emerald-50 text-emerald-700 border-emerald-100" : "bg-zinc-50 text-zinc-500 border-zinc-100"
-                                        )}>
-                                            {perk.status === 'AVAILABLE' ? 'Disponible' : 'Utilizado'}
+                                        <div>
+                                            <p className="font-medium">
+                                                {ref.referred_profile?.full_name || ref.referred_profile?.email || "Usuario"}
+                                            </p>
+                                            <p className="text-xs text-muted-foreground">
+                                                {new Date(ref.created_at).toLocaleDateString("es-MX")}
+                                            </p>
                                         </div>
                                     </div>
-                                    <h3 className="font-black text-lg italic mb-2">
-                                        {perk.perk_type === 'FREE_INSPECTION' ? 'Inspección 150 Puntos' : 
-                                         perk.perk_type === 'FEE_DISCOUNT' ? '50% Descuento Comisión' : 'Recompensa Especial'}
-                                    </h3>
-                                    <p className="text-xs text-muted-foreground font-medium mb-6">
-                                        {perk.metadata?.description || 'Beneficio obtenido por tu programa de referidos.'}
-                                    </p>
-                                    {perk.status === 'AVAILABLE' && (
-                                        <Button variant="outline" className="w-full rounded-xl font-bold text-xs h-10 border-indigo-200 text-indigo-600 hover:bg-indigo-50">
-                                            Canjear ahora
-                                        </Button>
-                                    )}
+                                    <div className="text-right">
+                                        {ref.status === "PENDING_OPERATION" && (
+                                            <span className="flex items-center gap-1 text-sm text-yellow-600">
+                                                <Clock className="h-4 w-4" /> Pendiente
+                                            </span>
+                                        )}
+                                        {ref.status === "OPERATION_CLOSED" && (
+                                            <span className="flex items-center gap-1 text-sm text-blue-600">
+                                                <CheckCircle2 className="h-4 w-4" /> Cerrado
+                                            </span>
+                                        )}
+                                        {ref.status === "PAID" && (
+                                            <span className="flex items-center gap-1 text-sm text-green-600">
+                                                <DollarSign className="h-4 w-4" /> Pagado
+                                            </span>
+                                        )}
+                                        {ref.actual_reward && (
+                                            <p className="text-xs text-muted-foreground mt-1">
+                                                ${ref.actual_reward} MXN
+                                            </p>
+                                        )}
+                                    </div>
                                 </div>
                             ))}
                         </div>
-                    ) : (
-                        <div className="p-12 text-center rounded-[3rem] bg-secondary/20 border border-dashed border-border">
-                            <p className="text-sm font-bold text-muted-foreground uppercase tracking-widest">Aún no tienes beneficios</p>
-                            <p className="text-xs text-muted-foreground mt-2">Completa tu primer referido exitoso para estrenar tus recompensas.</p>
-                        </div>
                     )}
-                </div>
-
-                {/* Detailed List */}
-                <div className="space-y-6 pt-12 border-t border-border/50">
-                    <h2 className="text-2xl font-black italic uppercase tracking-tighter">Historial de Referidos</h2>
-                    
-                    {referrals && referrals.length > 0 ? (
-                        <div className="bg-card rounded-[2.5rem] border border-border overflow-hidden">
-                            <table className="w-full text-sm">
-                                <thead className="bg-secondary/50 border-b border-border text-[10px] font-black uppercase tracking-widest text-muted-foreground">
-                                    <tr>
-                                        <th className="px-8 py-6 text-left">Aliado Reclutado</th>
-                                        <th className="px-8 py-6 text-center">Estado de Operación</th>
-                                        <th className="px-8 py-6 text-right">Beneficio</th>
-                                    </tr>
-                                </thead>
-                                <tbody className="divide-y divide-border/50">
-                                    {referrals.map((r: any) => (
-                                        <tr key={r.id} className="group hover:bg-secondary/20 transition-colors">
-                                            <td className="px-8 py-6">
-                                                <div className="font-black text-lg italic tracking-tighter truncate max-w-[240px]">
-                                                    {r.referred_user?.full_name || 'Nuevo Miembro'}
-                                                </div>
-                                                <div className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">
-                                                    {r.referred_user?.email || 'Pendiente de registro'}
-                                                </div>
-                                            </td>
-                                            <td className="px-8 py-6 text-center">
-                                                <div className={cn(
-                                                    "inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest",
-                                                    r.status === 'COMPLETED' || r.status === 'PAID' ? "bg-emerald-100 text-emerald-700" : "bg-blue-100 text-blue-700"
-                                                )}>
-                                                    {r.status === 'COMPLETED' || r.status === 'PAID' ? <CheckCircle2 className="h-3 w-3" /> : <Clock className="h-3 w-3" />}
-                                                    {r.status === 'COMPLETED' || r.status === 'PAID' ? 'Ganado' : 'En Progreso'}
-                                                </div>
-                                            </td>
-                                            <td className="px-8 py-6 text-right">
-                                                <div className="font-black text-xl italic text-indigo-600">
-                                                    {r.status === 'COMPLETED' || r.status === 'PAID' ? 'RECOMPENSA' : 'PENDIENTE'}
-                                                </div>
-                                                <div className="text-[10px] text-muted-foreground font-medium">
-                                                    {new Date(r.created_at).toLocaleDateString('es-MX')}
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    ))}
-                                </tbody>
-                            </table>
-                        </div>
-                    ) : (
-                        <div className="text-center py-24 bg-zinc-50 dark:bg-zinc-900 rounded-[3rem] border border-dashed border-zinc-200 dark:border-zinc-800">
-                            <h3 className="text-xl font-black italic uppercase mb-2">Comienza tu Red StarterKar</h3>
-                            <p className="text-muted-foreground font-medium text-sm">Tu red de aliados aparecerá aquí una vez compartas tu enlace.</p>
-                        </div>
-                    )}
-                </div>
-            </div>
+                </CardContent>
+            </Card>
         </div>
-    )
-}
-
-function cn(...classes: any[]) {
-    return classes.filter(Boolean).join(' ');
-}
-
-function Wrench(props: any) {
-    return (
-        <svg
-            {...props}
-            xmlns="http://www.w3.org/2000/svg"
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-        >
-            <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" />
-        </svg>
-    )
+    );
 }

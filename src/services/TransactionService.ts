@@ -8,6 +8,7 @@ import { VehicleCheckService } from './VehicleCheckService';
 import { SpeiService } from './SpeiService';
 import { Logger } from '@/lib/logger';
 import { PRICING_CONFIG } from '@/config/pricing';
+import { ReferralService } from './ReferralService';
 
 export type Transaction = Database['public']['Tables']['transactions']['Row'];
 
@@ -173,7 +174,7 @@ export class TransactionService extends BaseService {
             throw new Error(error.message);
         }
 
-        if (transaction && status === 'IN_VAULT') {
+if (transaction && status === 'IN_VAULT') {
             const t = transaction as any;
             await NotificationService.notifyMultiple(supabase, [
                 {
@@ -185,12 +186,22 @@ export class TransactionService extends BaseService {
                 },
                 {
                     userId: t.seller_id,
-                    title: "Fondos en Bóveda",
+                    title: "Fondos en bóveda",
                     message: `El comprador ha pagado $${Number(t.car_price).toLocaleString()}.`,
                     type: 'FINANCIAL',
                     link: `/dashboard/transactions/${t.id}`
                 }
             ]);
+        }
+
+        // Trigger referral rewards when transaction is RELEASED
+        if (transaction && status === 'RELEASED') {
+            try {
+                await ReferralService.markOperationAsClosed(supabase, transaction.id);
+                Logger.info(`[REFERRAL] Referral rewards processed for transaction ${transaction.id}`);
+            } catch (err) {
+                Logger.error(`[REFERRAL] Error processing referral rewards:`, err);
+            }
         }
     }
 

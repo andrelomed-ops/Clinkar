@@ -1,15 +1,48 @@
 "use client";
 
-import { useState } from "react";
-import { Search, Filter, MoreHorizontal, CheckCircle2, AlertCircle, Clock, Ban, ShieldAlert, ExternalLink } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Search, Filter, MoreHorizontal, CheckCircle2, AlertCircle, Clock, Ban, ShieldAlert, ExternalLink, Users, DollarSign, Loader2 } from "lucide-react";
+import { getPendingReferralPayouts, processReferralPayout } from "@/app/actions/admin";
+import { toast } from "sonner";
 
 export default function AdminDashboard() {
-    // Mock Data mimicking the Supabase structure
     const [transactions, setTransactions] = useState([
         { id: "TX-9982", car: "Mazda CX-5 2022", seller: "Juan Pérez", buyer: "Carlos Demo", status: "PENDING", stage: "Verificación de Fondos", amount: 385000 },
         { id: "TX-9983", car: "Tesla Model 3 2021", seller: "Ana García", buyer: "N/A (Listing)", status: "INSPECTION", stage: "Inspección Programada", amount: 550000 },
         { id: "TX-9984", car: "Toyota RAV4 2020", seller: "Pedro L.", buyer: "Roberto M.", status: "FUNDS_HELD", stage: "Liberación Pendiente", amount: 410000 },
     ]);
+
+    const [referralPayouts, setReferralPayouts] = useState<any[]>([]);
+    const [payoutLoading, setPayoutLoading] = useState<string | null>(null);
+
+    useEffect(() => {
+        async function loadPayouts() {
+            try {
+                const payouts = await getPendingReferralPayouts();
+                setReferralPayouts(payouts || []);
+            } catch (err) {
+                console.error("Error loading payouts:", err);
+            }
+        }
+        loadPayouts();
+    }, []);
+
+    const handlePayout = async (referralId: string, amount: number) => {
+        setPayoutLoading(referralId);
+        try {
+            await processReferralPayout(
+                referralId,
+                amount,
+                `Pago de referido por operación completada`
+            );
+            toast.success("Pago procesado exitosamente");
+            setReferralPayouts(prev => prev.filter(p => p.id !== referralId));
+        } catch (err: any) {
+            toast.error(err.message || "Error al procesar pago");
+        } finally {
+            setPayoutLoading(null);
+        }
+    };
 
     const cycleStatus = (id: string, currentStatus: string) => {
         let nextStatus = currentStatus;
@@ -45,10 +78,11 @@ export default function AdminDashboard() {
     return (
         <div className="max-w-[1600px] mx-auto">
             {/* KPI Header */}
-            <div className="grid grid-cols-4 gap-4 mb-8">
+            <div className="grid grid-cols-5 gap-4 mb-8">
                 <KpiCard label="Volumen Activo" value="$1.2M" trend="+12%" />
                 <KpiCard label="Riesgo PLD" value="2 ALERTAS" trend="CRÍTICO" active={false} alert={true} />
                 <KpiCard label="Gestoría Pendiente" value="3 Tickets" trend="En Cola" />
+                <KpiCard label="Referidos Pendientes" value="5" trend="Por Pagar" />
                 <KpiCard label="Tiempo Promedio" value="48h" trend="Cierre" />
             </div>
 
@@ -149,6 +183,70 @@ export default function AdminDashboard() {
                     </div>
                     <div className="p-4 bg-zinc-950 border-t border-zinc-800 text-center">
                         <button className="text-xs font-bold text-indigo-400 hover:text-indigo-300">Ver Todos los Tickets →</button>
+                    </div>
+                </div>
+
+                {/* REFERRALS PANEL */}
+                <div className="bg-zinc-900 border border-emerald-900/30 rounded-2xl overflow-hidden flex flex-col">
+                    <div className="p-6 border-b border-zinc-800 flex items-center justify-between">
+                        <div>
+                            <h2 className="font-bold text-lg text-emerald-400 flex items-center gap-2">
+                                <Users className="h-5 w-5" />
+                                Pagos a Referidores
+                            </h2>
+                            <p className="text-xs text-zinc-500 mt-1">Recompensas por referidos con operación cerrada</p>
+                        </div>
+                        <span className="px-3 py-1 bg-emerald-500/10 text-emerald-400 text-xs font-bold uppercase rounded-full border border-emerald-500/20">
+                            {referralPayouts.length} Pendientes
+                        </span>
+                    </div>
+                    <div className="p-4 flex-1 overflow-y-auto space-y-3">
+                        {referralPayouts.length === 0 ? (
+                            <div className="text-center py-8 text-zinc-500 text-sm">
+                                No hay pagos pendientes
+                            </div>
+                        ) : (
+                            referralPayouts.map((ref: any) => (
+                                <div key={ref.id} className="bg-zinc-950 p-4 rounded-xl border border-zinc-800">
+                                    <div className="flex justify-between items-start mb-2">
+                                        <div className="flex items-center gap-2">
+                                            <span className="text-xs font-mono text-zinc-500">REF-{ref.id.slice(-4)}</span>
+                                            <span className="text-xs text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">CERRADO</span>
+                                        </div>
+                                        <span className="text-xs text-zinc-400">
+                                            {ref.updated_at ? new Date(ref.updated_at).toLocaleDateString('es-MX') : 'Hoy'}
+                                        </span>
+                                    </div>
+                                    <h4 className="font-bold text-sm text-zinc-200">
+                                        {ref.referrer_profile?.full_name || ref.referrer_profile?.email || 'Referidor'}
+                                    </h4>
+                                    <p className="text-xs text-zinc-400 mt-1">
+                                        Referido: {ref.referred_profile?.full_name || ref.referred_profile?.email || 'Usuario'}
+                                    </p>
+                                    <div className="flex justify-between items-center mt-3 pt-3 border-t border-zinc-800">
+                                        <span className="text-sm font-bold text-emerald-400">
+                                            ${ref.actual_reward || 500} MXN
+                                        </span>
+                                        <button
+                                            onClick={() => handlePayout(ref.id, ref.actual_reward || 500)}
+                                            disabled={payoutLoading === ref.id || !ref.has_stripe_account}
+                                            className="h-8 px-3 bg-emerald-600 hover:bg-emerald-500 disabled:bg-zinc-700 disabled:text-zinc-500 text-white text-xs font-bold rounded-lg flex items-center gap-1"
+                                        >
+                                            {payoutLoading === ref.id ? (
+                                                <Loader2 className="h-3 w-3 animate-spin" />
+                                            ) : !ref.has_stripe_account ? (
+                                                "Sin Cuenta"
+                                            ) : (
+                                                <><DollarSign className="h-3 w-3" /> Pagar</>
+                                            )}
+                                        </button>
+                                    </div>
+                                </div>
+                            ))
+                        )}
+                    </div>
+                    <div className="p-4 bg-zinc-950 border-t border-zinc-800 text-center">
+                        <button className="text-xs font-bold text-emerald-400 hover:text-emerald-300">Ver Todos los Referidos →</button>
                     </div>
                 </div>
             </div>

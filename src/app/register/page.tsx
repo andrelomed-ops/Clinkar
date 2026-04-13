@@ -2,9 +2,9 @@
 
 import { useState } from "react";
 import { createBrowserClient } from "@/lib/supabase/client";
-import { Shield, User, Car, Loader2 } from "lucide-react";
+import { Shield, User, Car, Loader2, Gift } from "lucide-react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -18,6 +18,8 @@ export default function RegisterPage() {
     const [error, setError] = useState<string | null>(null);
     const supabase = createBrowserClient();
     const router = useRouter();
+    const searchParams = useSearchParams();
+    const refCode = searchParams.get("ref");
 
     const handleRegister = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -56,6 +58,12 @@ export default function RegisterPage() {
                     </Link>
                     <h2 className="text-3xl font-bold tracking-tight">Crea tu cuenta</h2>
                     <p className="mt-2 text-muted-foreground">Únete a la plataforma de intermediación segura.</p>
+                    {refCode && (
+                        <div className="mt-4 flex items-center gap-2 text-sm text-green-600 bg-green-50 px-3 py-2 rounded-lg">
+                            <Gift className="h-4 w-4" />
+                            <span>Código de referido aplicado</span>
+                        </div>
+                    )}
                 </div>
 
                 <form onSubmit={handleRegister} className="mt-8 space-y-6">

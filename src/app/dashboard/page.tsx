@@ -73,8 +73,36 @@ export default function DashboardPage() {
 
             // Clean URL
             router.replace("/dashboard");
+
+            // Apply referral code if present in URL
+            const refCode = searchParams.get("ref");
+            if (refCode) {
+                await applyReferralCode(user.id, refCode);
+            }
         }
     }, [searchParams, router]);
+
+    const applyReferralCode = async (userId: string, code: string) => {
+        try {
+            const { data: codeOwner, error: codeError } = await supabase
+                .from("referral_links")
+                .select("user_id")
+                .eq("code", code.toUpperCase())
+                .single();
+
+            if (codeError || !codeOwner) return;
+            if (codeOwner.user_id === userId) return;
+
+            await supabase.from("referrals").insert({
+                referrer_id: codeOwner.user_id,
+                referred_user_id: userId,
+                status: "PENDING_OPERATION",
+            });
+            toast.success("¡Código de referido aplicado!");
+        } catch (err) {
+            console.error(err);
+        }
+    };
 
     useEffect(() => {
         async function loadDashboard() {
