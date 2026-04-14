@@ -51,6 +51,11 @@ export class ConektaService extends BaseService {
                         }
                     ],
                     currency: 'MXN',
+                    customer_info: {
+                        name: 'Referido StarterKar',
+                        email: 'pagos@starterkar.com',
+                        phone: '+5215555555555',
+                    },
                 },
                 metadata: {
                     referral_id: orderId,
