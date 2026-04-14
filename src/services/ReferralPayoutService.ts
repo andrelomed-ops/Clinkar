@@ -1,5 +1,3 @@
-import { stripe } from '@/lib/stripe';
-import Stripe from 'stripe';
 import { SupabaseClient } from '@supabase/supabase-js';
 import { Database } from '@/lib/database.types';
 import { BaseService } from './BaseService';
@@ -7,84 +5,6 @@ import { Logger } from '@/lib/logger';
 import { ConektaService } from './ConektaService';
 
 export class ReferralPayoutService extends BaseService {
-    static async createConnectAccount(
-        supabase: SupabaseClient<Database>,
-        userId: string,
-        email: string
-    ): Promise<{ accountId: string; onboardingUrl: string } | null> {
-        try {
-            const account = await stripe.accounts.create({
-                type: 'express',
-                email: email,
-                capabilities: {
-                    transfers: { requested: true },
-                },
-                metadata: {
-                    userId: userId,
-                    type: 'referral_payout',
-                },
-            });
-
-            const accountLink = await stripe.accountLinks.create({
-                account: account.id,
-                refresh_url: `${process.env.NEXT_PUBLIC_APP_URL}/dashboard/referrals?reauth=true`,
-                return_url: `${process.env.NEXT_PUBLIC_APP_URL}/dashboard/referrals?success=true`,
-                type: 'account_onboarding',
-            });
-
-            await supabase.from('user_perks' as any).insert({
-                user_id: userId,
-                perk_type: 'STRIPE_CONNECT_ACCOUNT',
-                status: 'PENDING_SETUP',
-                metadata: {
-                    stripe_account_id: account.id,
-                    created_at: new Date().toISOString(),
-                },
-            });
-
-            Logger.info(`[STRIPE_CONNECT] Created account ${account.id} for user ${userId}`);
-
-            return {
-                accountId: account.id,
-                onboardingUrl: accountLink.url,
-            };
-        } catch (error) {
-            Logger.error('[STRIPE_CONNECT] Error creating account:', error);
-            return null;
-        }
-    }
-
-    static async getConnectAccountStatus(
-        supabase: SupabaseClient<Database>,
-        userId: string
-    ): Promise<{ chargesEnabled: boolean; payoutsEnabled: boolean; detailsSubmitted: boolean } | null> {
-        try {
-            const { data: perk } = await supabase
-                .from('user_perks' as any)
-                .select('metadata')
-                .eq('user_id', userId)
-                .eq('perk_type', 'STRIPE_CONNECT_ACCOUNT')
-                .order('created_at', { ascending: false })
-                .limit(1)
-                .maybeSingle();
-
-            if (!perk?.metadata?.stripe_account_id) {
-                return null;
-            }
-
-            const account = await stripe.accounts.retrieve(perk.metadata.stripe_account_id);
-
-            return {
-                chargesEnabled: account.charges_enabled,
-                payoutsEnabled: account.payouts_enabled,
-                detailsSubmitted: account.details_submitted,
-            };
-        } catch (error) {
-            Logger.error('[STRIPE_CONNECT] Error retrieving account status:', error);
-            return null;
-        }
-    }
-
     static async createPayout(
         supabase: SupabaseClient<Database>,
         referralId: string,
@@ -107,10 +27,19 @@ export class ReferralPayoutService extends BaseService {
                 throw new Error('Referral must be OPERATION_CLOSED before payout');
             }
 
+            const { data: referrerProfile } = await supabase
+                .from('profiles')
+                .select('email, full_name, phone')
+                .eq('id', referral.referrer_id)
+                .single();
+
             const conektaLink = await ConektaService.createPaymentLink(
                 amount,
                 `Pago de referido: ${description}`,
-                referralId
+                referralId,
+                referrerProfile?.email,
+                referrerProfile?.full_name,
+                referrerProfile?.phone
             );
 
             if (!conektaLink) {
@@ -146,31 +75,10 @@ export class ReferralPayoutService extends BaseService {
                 payoutId: conektaLink.checkoutId,
                 paymentUrl: conektaLink.url,
             };
-
-            Logger.info(`[PAYOUT] Created payout ${transfer.id} for ${amount} MXN to ${accountId}`);
-
-            return {
-                payoutId: transfer.id,
-                transferId: transfer.id,
-            };
         } catch (error: any) {
             Logger.error('[PAYOUT] Error creating payout:', error);
             throw new Error(error.message || 'Error al procesar el pago');
         }
-    }
-
-    static async getPayoutsByReferrer(
-        supabase: SupabaseClient<Database>,
-        userId: string
-    ): Promise<any[]> {
-        const { data: payouts, error } = await supabase
-            .from('user_perks' as any)
-            .select('*')
-            .eq('user_id', userId)
-            .eq('perk_type', 'REFERRAL_PAYOUT')
-            .order('created_at', { ascending: false });
-
-        return payouts || [];
     }
 
     static async getPendingPayouts(
@@ -184,25 +92,6 @@ export class ReferralPayoutService extends BaseService {
 
         if (error || !referrals) return [];
 
-        const enrichedReferrals = await Promise.all(
-            referrals.map(async (ref: any) => {
-                const { data: perk } = await supabase
-                    .from('user_perks' as any)
-                    .select('metadata')
-                    .eq('user_id', ref.referrer_id)
-                    .eq('perk_type', 'STRIPE_CONNECT_ACCOUNT')
-                    .order('created_at', { ascending: false })
-                    .limit(1)
-                    .maybeSingle();
-
-                return {
-                    ...ref,
-                    has_stripe_account: !!perk?.metadata?.stripe_account_id,
-                    stripe_account_id: perk?.metadata?.stripe_account_id || null,
-                };
-            })
-        );
-
-        return enrichedReferrals;
+        return referrals;
     }
 }

@@ -24,7 +24,10 @@ export class ConektaService extends BaseService {
     static async createPaymentLink(
         amount: number,
         description: string,
-        orderId: string
+        orderId: string,
+        customerEmail?: string,
+        customerName?: string,
+        customerPhone?: string
     ): Promise<{ url: string; checkoutId: string } | null> {
         if (!CONEKTA_API_KEY) {
             Logger.warn('[CONEKTA] API key not configured, skipping payment link creation');
@@ -52,9 +55,9 @@ export class ConektaService extends BaseService {
                     ],
                     currency: 'MXN',
                     customer_info: {
-                        name: 'Referido StarterKar',
-                        email: 'pagos@starterkar.com',
-                        phone: '+5215555555555',
+                        name: customerName || 'Referido StarterKar',
+                        email: customerEmail || 'pagos@starterkar.com',
+                        phone: customerPhone || '+5215555555555',
                     },
                 },
                 metadata: {
