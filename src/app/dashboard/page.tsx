@@ -33,6 +33,7 @@ export default function DashboardPage() {
     const [selectedId, setSelectedId] = useState<string | null>(null);
     const [mounted, setMounted] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
+    const [user, setUser] = useState<any>(null);
     const [userProfile, setUserProfile] = useState<any>(null);
     const [ownedCars, setOwnedCars] = useState<any[]>([]);
     const [favoriteCars, setFavoriteCars] = useState<any[]>([]);
@@ -111,6 +112,7 @@ export default function DashboardPage() {
         async function loadDashboard() {
             try {
                 const { data: { user } } = await supabase.auth.getUser();
+                setUser(user);
                 const demoRole = document.cookie.split('; ').find(row => row.startsWith('starterkar_role='))?.split('=')[1];
 
                 if (!user && !demoRole) {
