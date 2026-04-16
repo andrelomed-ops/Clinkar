@@ -1,0 +1,1 @@
+export const NegotiationView = (props: any) => null;

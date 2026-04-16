@@ -11,11 +11,6 @@ import { createBrowserClient } from "@/lib/supabase/client";
 import { useSearchParams } from "next/navigation";
 import { ReviewForm } from "./ReviewForm";
 import confetti from "canvas-confetti";
-// Sub-components
-import { StatusHeader, TransactionStep } from "./dashboard/StatusHeader";
-import { NegotiationView } from "./dashboard/NegotiationView";
-import { ServicesOrchestrator } from "./dashboard/ServicesOrchestrator";
-import { SummarySidebar } from "./dashboard/SummarySidebar";
 import { DocumentUploadFlow } from "./DocumentUploadFlow";
 
 
