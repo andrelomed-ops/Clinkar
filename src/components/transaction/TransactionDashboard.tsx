@@ -12,6 +12,7 @@ import { useSearchParams } from "next/navigation";
 import { ReviewForm } from "./ReviewForm";
 import confetti from "canvas-confetti";
 import { DocumentUploadFlow } from "./DocumentUploadFlow";
+import { TransactionStep, StatusHeader, NegotiationView, ServicesOrchestrator, SummarySidebar } from "./dashboard/StatusHeader";
 
 
 interface TransactionDashboardProps {

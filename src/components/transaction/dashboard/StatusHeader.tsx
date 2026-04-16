@@ -1,4 +1,4 @@
-export type TransactionStep = 'NEGOTIATION' | 'OFFER_ACCEPTED' | 'INSPECTION' | 'PAYMENT' | 'DOCUMENTS' | 'HANDOVER' | 'COMPLETED';
+export type TransactionStep = string;
 
 export const StatusHeader = ({ step, trxId }: { step: TransactionStep; trxId: string | null }) => null;
 
