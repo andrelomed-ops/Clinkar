@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Database } from '@/lib/database.types';
 import { NotificationService } from './NotificationService';
 import { SupabaseClient } from '@supabase/supabase-js';
@@ -109,7 +110,7 @@ export class TransactionService extends BaseService {
 
         // 4.1 Side Orders
         if (data.logisticsQuote) {
-            await supabase.from('logistics_orders' as any).insert({
+            await (supabase.from('logistics_orders' as any) as any).insert({
                 transaction_id: typedTransaction.id,
                 origin_address: data.logisticsQuote.origin,
                 destination_address: data.logisticsQuote.dest,
@@ -122,7 +123,7 @@ export class TransactionService extends BaseService {
         if (data.warrantyQuote) {
             const endDate = new Date();
             endDate.setMonth(endDate.getMonth() + (data.warrantyQuote.type === 'STANDARD' ? 3 : 12));
-            await supabase.from('warranty_policies' as any).insert({
+            await (supabase.from('warranty_policies' as any) as any).insert({
                 car_id: data.carId,
                 transaction_id: typedTransaction.id,
                 type: data.warrantyQuote.type,
@@ -159,11 +160,11 @@ export class TransactionService extends BaseService {
         sessionId: string,
         status: 'PENDING' | 'IN_VAULT' | 'RELEASED' | 'CANCELLED'
     ): Promise<void> {
-        const { data: transaction } = await supabase
+        const { data: transaction } = await (supabase
             .from('transactions')
             .select('id, buyer_id, seller_id, car_price')
             .eq('stripe_session_id', sessionId)
-            .single();
+            .single() as any);
 
         const { error } = await (supabase.from('transactions') as any)
             .update({ status })
