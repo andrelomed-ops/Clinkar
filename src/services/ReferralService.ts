@@ -11,11 +11,11 @@ export class ReferralService extends BaseService {
      * Get or create a referral code for a user
      */
     static async getOrCreateReferralCode(supabase: SupabaseClient<Database>, userId: string): Promise<string> {
-        const { data, error } = await supabase
+        const { data, error } = await (supabase
             .from('referral_codes' as any)
             .select('code')
             .eq('user_id', userId)
-            .maybeSingle();
+            .maybeSingle() as any);
 
         if (data?.code) return data.code;
 
