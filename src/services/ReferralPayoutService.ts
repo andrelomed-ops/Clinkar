@@ -12,26 +12,30 @@ export class ReferralPayoutService extends BaseService {
         description: string
     ): Promise<{ payoutId: string; paymentUrl: string } | null> {
         try {
-            const { data: referral, error: refError } = await supabase
+            const { data, error: refError } = await supabase
                 .from('referrals' as any)
                 .select('id, referrer_id, transaction_id, actual_reward, status')
                 .eq('id', referralId)
                 .single();
 
-            if (refError || !referral) {
+            if (refError || !data) {
                 Logger.error('[PAYOUT] Referral not found:', referralId);
                 return null;
             }
+
+            const referral = data as { id: string; referrer_id: string; transaction_id: string | null; actual_reward: number; status: string };
 
             if (referral.status !== 'OPERATION_CLOSED') {
                 throw new Error('Referral must be OPERATION_CLOSED before payout');
             }
 
-            const { data: referrerProfile } = await supabase
+            const { data: referrerData } = await supabase
                 .from('profiles')
                 .select('email, full_name, phone')
                 .eq('id', referral.referrer_id)
                 .single();
+
+            const referrerProfile = referrerData as { email?: string; full_name?: string; phone?: string } | null;
 
             const conektaLink = await ConektaService.createPaymentLink(
                 amount,
@@ -46,15 +50,14 @@ export class ReferralPayoutService extends BaseService {
                 throw new Error('No se pudo crear el link de pago');
             }
 
-            await supabase
-                .from('referrals' as any)
+            await (supabase.from('referrals' as any) as any)
                 .update({
                     status: 'PAID',
                     updated_at: new Date().toISOString(),
                 })
                 .eq('id', referralId);
 
-            await supabase.from('user_perks' as any).insert({
+            await (supabase.from('user_perks' as any) as any).insert({
                 user_id: referral.referrer_id,
                 perk_type: 'CONEKTA_PAYMENT_LINK',
                 status: 'AVAILABLE',
