@@ -77,7 +77,9 @@ export default function DashboardPage() {
             // Apply referral code if present in URL
             const refCode = searchParams.get("ref");
             if (refCode) {
-                await applyReferralCode(user.id, refCode);
+                (async () => {
+                    await applyReferralCode(user.id, refCode);
+                })();
             }
         }
     }, [searchParams, router]);
