@@ -24,6 +24,8 @@ import { ALL_CARS } from "@/data/cars";
 import { CarService } from "@/services/CarService";
 import { ReferralPromoCard } from "@/components/dashboard/ReferralPromoCard";
 
+// Removed: imports from deleted files (StatusHeader, NegotiationView, etc.)
+
 import { createBrowserClient } from "@/lib/supabase/client";
 
 export default function DashboardPage() {
