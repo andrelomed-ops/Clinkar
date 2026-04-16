@@ -76,13 +76,14 @@ export default function DashboardPage() {
 
             // Apply referral code if present in URL
             const refCode = searchParams.get("ref");
-            if (refCode) {
+            if (refCode && user) {
+                const currentUserId = user.id;
                 (async () => {
-                    await applyReferralCode(user.id, refCode);
+                    await applyReferralCode(currentUserId, refCode);
                 })();
             }
         }
-    }, [searchParams, router]);
+    }, [searchParams, router, user]);
 
     const applyReferralCode = async (userId: string, code: string) => {
         try {
