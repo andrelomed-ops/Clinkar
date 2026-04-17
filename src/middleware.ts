@@ -8,12 +8,11 @@ export async function middleware(request: NextRequest) {
         },
     })
 
-    // Capture referral code from ANY page hit
     const refCode = request.nextUrl.searchParams.get('ref')
     if (refCode) {
         response.cookies.set('starterkar_ref', refCode, { 
             path: '/', 
-            maxAge: 60 * 60 * 24 * 30, // 30 days
+            maxAge: 60 * 60 * 24 * 30,
             sameSite: 'lax'
         })
     }
@@ -22,7 +21,6 @@ export async function middleware(request: NextRequest) {
     const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
     if (!supabaseUrl || !supabaseAnonKey) {
-        // console.warn("⚠️ SUPABASE ENVS MISSING (Middleware): Skipping Auth Check.");
         return response;
     }
 
@@ -72,28 +70,29 @@ export async function middleware(request: NextRequest) {
         }
     )
 
-    // Only call getUser if we are on a protected route or if we need to check auth status
     const isDashboardRoute = request.nextUrl.pathname.startsWith('/dashboard');
-    const isAuthRoute = request.nextUrl.pathname.startsWith('/login') || request.nextUrl.pathname.startsWith('/signup');
+    const isAdminRoute = request.nextUrl.pathname.startsWith('/admin');
 
-    if (isDashboardRoute) {
+    if (isDashboardRoute || isAdminRoute) {
         const { data: { user } } = await supabase.auth.getUser()
         const demoRole = request.cookies.get('starterkar_role')?.value
 
-        // 1. Basic Auth Check
         if (!user && !demoRole) {
-            return NextResponse.redirect(new URL('/login', request.url))
+            const loginUrl = new URL('/login', request.url);
+            loginUrl.searchParams.set('redirect', request.nextUrl.pathname);
+            return NextResponse.redirect(loginUrl);
         }
 
-        // 2. Admin Route Protection
-        const isAdminRoute = request.nextUrl.pathname.startsWith('/dashboard/admin');
         if (isAdminRoute) {
-            // Check metadata (secure) or cookie (demo/fallback)
-            const role = user?.user_metadata?.role || demoRole;
-
-            if (role !== 'ADMIN') {
-                // Determine destination based on role (or just 403/dashboard)
-                console.warn(`Unauthorized access attempt to Admin by: ${user?.email || 'Guest'}`);
+            const { data: profile } = await supabase
+                .from('profiles')
+                .select('role')
+                .eq('id', user?.id)
+                .single();
+            
+            const role = profile?.role || demoRole;
+            
+            if (role !== 'admin' && role !== 'ADMIN') {
                 return NextResponse.redirect(new URL('/dashboard', request.url));
             }
         }
