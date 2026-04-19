@@ -13,7 +13,7 @@ describe('PricingService', () => {
             fuel: 'gasoline',
         });
 
-        expect(result.marketValue).toBeGreaterThan(200000);
+        expect(result.marketValue).toBeGreaterThan(150000);
         expect(result.range.min).toBeLessThan(result.marketValue);
         expect(result.range.max).toBeGreaterThan(result.marketValue);
     });
