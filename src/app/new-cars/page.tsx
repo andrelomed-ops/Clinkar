@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import { Sparkles, ArrowRight, Zap, ShieldCheck, ChevronRight, Star } from "lucide-react";
+import { CarFront, ArrowRight, Zap, ShieldCheck, ChevronRight, Star } from "lucide-react";
 import Link from "next/link";
 import { Navbar } from "@/components/ui/navbar";
 import Image from "next/image";
@@ -53,7 +53,7 @@ export default function NewCarsPage() {
 
                     <div className="relative z-10 max-w-2xl">
                         <div className="inline-flex items-center gap-2 px-4 py-2 bg-indigo-500/10 border border-indigo-500/20 rounded-full mb-6">
-                            <Sparkles className="h-4 w-4 text-indigo-400" />
+                            <CarFront className="h-4 w-4 text-indigo-400" />
                             <span className="text-xs font-black text-indigo-400 uppercase tracking-widest">Alianzas Estratégicas 2026</span>
                         </div>
                         <h1 className="text-5xl font-black tracking-tight text-white mb-6">

@@ -68,6 +68,11 @@ export function CarCard({ car, isFavorite = false, onToggleFavorite }: CarCardPr
                                 Oportunidad
                             </div>
                         )}
+                        {car.interestedPeople && car.interestedPeople > 0 && (
+                            <div className="px-2.5 py-1 bg-rose-500 text-white text-[10px] font-bold rounded-lg uppercase tracking-wide flex items-center gap-1 shadow-sm shadow-rose-500/30 whitespace-nowrap animate-pulse">
+                                🔥 {car.interestedPeople} {car.interestedPeople === 1 ? 'interesado' : 'interesados'}
+                            </div>
+                        )}
                     </div>
 
                     {/* Favorite Button */}
@@ -87,6 +92,25 @@ export function CarCard({ car, isFavorite = false, onToggleFavorite }: CarCardPr
                             )}
                         />
                     </button>
+
+                    {/* LOCK OVERLAY */}
+                    {car.isCurrentlyLocked && (
+                        <div className="absolute inset-0 bg-black/70 backdrop-blur-sm z-30 flex flex-col items-center justify-center p-4 text-center">
+                            <div className="h-12 w-12 bg-amber-500 rounded-full flex items-center justify-center text-white shadow-lg shadow-amber-500/20 mb-3">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                            </div>
+                            <h4 className="text-white font-black text-lg mb-1 leading-tight">En Proceso de Compra</h4>
+                            <p className="text-zinc-200 text-xs font-semibold max-w-[200px] mb-3">
+                                Otro usuario está apartando este auto.
+                            </p>
+                            <div className="px-3 py-1.5 bg-black/50 border border-white/20 rounded-lg text-amber-400 text-sm font-bold animate-pulse">
+                                Espera 15 min...
+                            </div>
+                            <p className="text-zinc-300 text-[10px] mt-2">
+                                Si no concreta el pago, se liberará.
+                            </p>
+                        </div>
+                    )}
                 </div>
 
                 {/* Details Section */}

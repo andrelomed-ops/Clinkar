@@ -16,102 +16,67 @@ export default function TermsPage() {
                     <div className="space-y-4">
                         <h2 className="text-2xl font-bold flex items-center gap-2">
                             <Scale className="h-6 w-6 text-primary" />
-                            1. Naturaleza del Servicio y Orquestación
+                            1. Naturaleza del Servicio y Mediación
                         </h2>
                         <p className="text-muted-foreground leading-relaxed text-justify">
-                            StarterKar S.A. de C.V. (&quot;CLINKAR&quot;) opera como un <strong>Intermediario Tecnológico y Facilitador de Pagos</strong> que orquesta la compraventa de activos motorizados. CLINKAR cobra una <strong>Tarifa por Servicio (Success Fee)</strong> por el uso de su infraestructura de seguridad, inspección y dispersión financiera, sin que esto lo constituya como propietario o revendedor del activo. CLINKAR no capta recursos del público, actuando únicamente bajo mandato de pago irrevocable (Split Payment).
+                            StarterKar S.A. de C.V. (&quot;StarterKar&quot;) opera como una <strong>Plataforma de Certificación y Mediación Operativa</strong>. StarterKar no actúa como depositario de los fondos del precio de compraventa (salvo en operaciones específicas de subasta institucional). El servicio consiste en la validación mecánica, legal y la orquestación presencial del cierre para garantizar la seguridad de ambas partes. StarterKar cobra una <strong>Tarifa de Gestión y Certificación</strong> que es independiente del precio del activo acordado entre particulares.
                         </p>
                     </div>
 
                     <div className="space-y-4">
                         <h2 className="text-2xl font-bold flex items-center gap-2">
                             <Shield className="h-6 w-6 text-primary" />
-                            1.1. Cumplimiento Normativo (PLD/AML)
+                            2. Modelo de Pago Directo Protegido (P2P)
                         </h2>
                         <p className="text-muted-foreground leading-relaxed text-justify">
-                            En cumplimiento con la <strong>Ley Federal para la Prevención e Identificación de Operaciones con Recursos de Procedencia Ilícita (LFPIORPI)</strong>, StarterKar se reserva el derecho de:
-
+                            A diferencia de modelos de custodia digital, StarterKar facilita que el <strong>Pago se realice directamente del Comprador al Vendedor</strong> (vía SPEI, depósito bancario o efectivo escoltado) exclusivamente en el momento de la entrega física. 
                         </p>
                         <ul className="list-disc pl-6 text-muted-foreground space-y-2">
-                            <li>Realizar verificaciones automáticas de identidad contra listas de personas bloqueadas y PEPs.</li>
-                            <li>Solicitar documentación adicional (KYC Reforzado) para transacciones superiores a los umbrales establecidos por la ley.</li>
-                            <li>Cancelar unilateralmente cualquier operación que presente indicadores de alto riesgo, notificando a las autoridades competentes.</li>
+                            <li><strong>Presencia de Marca:</strong> Personal de StarterKar estará presente para validar la realización de la transferencia y autenticar el movimiento de fondos antes de la entrega de llaves.</li>
+                            <li><strong>Escolta Bancaria:</strong> En caso de operaciones que requieran manejo de efectivo, StarterKar proporcionará acompañamiento a sucursal bancaria para garantizar un entorno seguro, sin captar los recursos en sus propias cuentas.</li>
                         </ul>
                     </div>
 
                     <div className="space-y-4">
                         <h2 className="text-2xl font-bold flex items-center gap-2">
-                            <QrCode className="h-6 w-6 text-primary" />
-                            2. Firma Electrónica y Validez del Código QR
+                            <Building2 className="h-6 w-6 text-primary" />
+                            3. Entrega en Taller Aliado Obligatoria
                         </h2>
                         <p className="text-muted-foreground leading-relaxed text-justify">
-                            Conforme a los artículos 89 al 114 del Código de Comercio vigente en México, las partes aceptan que el escaneo del <strong>Código QR de Validación de Entrega</strong> constituye una <strong>Firma Electrónica Simple</strong> con plenos efectos legales.
-
+                            Para mitigar riesgos de seguridad y garantizar la integridad mecánica, <strong>toda entrega de vehículo entre particulares debe realizarse en un Taller Aliado StarterKar</strong> designado. 
                         </p>
                         <div className="bg-primary/5 p-6 rounded-2xl border border-primary/10 italic text-sm text-primary-900 leading-relaxed">
-                            &quot;Al escanear el código QR, el Comprador manifiesta su conformidad absoluta con el estado físico y legal del activo, instruyendo irrevocablemente a la plataforma para la liberación definitiva de los fondos al Vendedor.&quot;
+                            &quot;En caso de discrepancias físicas no detectadas previamente, el personal de StarterKar actuará como mediador para negociar ajustes de precio o reparaciones inmediatas en sitio antes de proceder al cierre de la transacción.&quot;
                         </div>
                     </div>
 
                     <div className="space-y-4">
                         <h2 className="text-2xl font-bold flex items-center gap-2">
-                            <Shield className="h-6 w-6 text-primary" />
-                            3. Bóveda Digital (Escrow) y Aliados Financieros
+                            <AlertTriangle className="h-6 w-6 text-primary" />
+                            4. Seguro de Traslado Obligatorio
                         </h2>
                         <p className="text-muted-foreground leading-relaxed text-justify">
-                            Los fondos son custodiados por Instituciones de Tecnología Financiera (ITF) autorizadas por la CNBV. CLINKAR no capta ni administra recursos del público directamente.
-
+                            StarterKar prohíbe terminantemente el movimiento de cualquier activo que no cuente con una <strong>Póliza de Seguro vigente con cobertura de daños a terceros y robo</strong>. 
                         </p>
                         <ul className="bg-secondary/30 p-6 rounded-2xl space-y-3 text-sm font-medium">
-                            <li className="flex gap-2">
-                                <CheckCircle2 className="h-4 w-4 text-primary shrink-0" />
-                                La liberación de fondos es instantánea pero está sujeta a los tiempos de procesamiento del Sistema de Pagos Electrónicos Interbancarios (SPEI).
+                            <li className="flex gap-2 text-red-700">
+                                <AlertTriangle className="h-4 w-4 shrink-0" />
+                                Ningún vehículo será trasladado por personal de StarterKar o logística aliada sin la certificación de seguro activo.
                             </li>
                             <li className="flex gap-2">
                                 <CheckCircle2 className="h-4 w-4 text-primary shrink-0" />
-                                CLINKAR no se responsabiliza por demoras técnicas ajenas a su plataforma derivadas de la red bancaria nacional.
+                                StarterKar ofrece la contratación inmediata de seguros de trayecto en caso de que la unidad carezca de protección propia.
                             </li>
                         </ul>
                     </div>
 
                     <div className="space-y-4">
                         <h2 className="text-2xl font-bold flex items-center gap-2">
-                            <Building2 className="h-6 w-6 text-primary" />
-                            3.1. Modelo de Dispersión Automática (STP)
+                            <Scale className="h-6 w-6 text-primary" />
+                            5. Jurisdicción y Resolución de Conflictos
                         </h2>
                         <p className="text-muted-foreground leading-relaxed text-justify">
-                            El usuario acepta que los fondos recibidos en la cuenta CLABE virtual asignada a la transacción serán dispersados de manera automática e irrevocable conforme a las instrucciones de pago preacordadas (Precio al Vendedor, Comisiones y Servicios). StarterKar actúa bajo mandato de pago sin tocar los fondos directamente.
-                        </p>
-                    </div>
-
-                    <div className="space-y-4">
-                        <h2 className="text-2xl font-bold flex items-center gap-2">
-                            <AlertTriangle className="h-6 w-6 text-primary" />
-                            4. Limitación de Responsabilidad (Inspección)
-                        </h2>
-                        <p className="text-muted-foreground leading-relaxed text-justify">
-                            La inspección técnica es una auditoría del estado actual del activo en el momento de la revisión. Debido a la naturaleza de los activos usados, CLINKAR no garantiza fallas mecánicas futuras fuera de la garantía obligatoria (NOM-122) que recae sobre el Vendedor. CLINKAR responde únicamente por la veracidad del reporte frente a lo observado por el inspector en la fecha de la diligencia.
-
-                        </p>
-                    </div>
-
-                    <div className="space-y-4">
-                        <h2 className="text-2xl font-bold flex items-center gap-2">
-                            <CheckCircle2 className="h-6 w-6 text-primary" />
-                            4.1. Verificación de Activos (OCRA/REPUVE)
-                        </h2>
-                        <p className="text-muted-foreground leading-relaxed text-justify">
-                            StarterKar ejecuta validaciones automatizadas ante el Registro Público Vehicular (REPUVE) y la Oficina Coordinadora de Riesgos Asegurados (OCRA). Si bien la plataforma bloquea intentos de venta de vehículos con reporte de robo vigente en estas bases, <strong>no garantiza</strong> la inexistencia de reportes en bases de datos estatales no conectadas o procesos judiciales en curso no reflejados digitalmente.
-                        </p>
-                    </div>
-
-                    <div className="space-y-4">
-                        <h2 className="text-2xl font-bold flex items-center gap-2">
-                            <Building2 className="h-6 w-6 text-primary" />
-                            5. Jurisdicción y Competencia
-                        </h2>
-                        <p className="text-muted-foreground leading-relaxed text-justify">
-                            Para cualquier controversia derivada del uso de la plataforma, las partes se someten a la legislación federal de México y a la jurisdicción de los tribunales competentes en la <strong>Ciudad de México</strong>, renunciando a cualquier otro fuero.
+                            Para cualquier controversia, las partes se someten a la legislación federal de México y a la jurisdicción de los tribunales competentes en la Ciudad de México. Las partes reconocen la facultad de StarterKar de suspender el servicio si se detectan comportamientos que vulneren la seguridad física o financiera de los involucrados.
                         </p>
                     </div>
                 </section>

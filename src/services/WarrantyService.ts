@@ -67,16 +67,16 @@ export class WarrantyService extends BaseService {
     }
 
     // New: Logic for "Fix & Certify"
-    static async upgradeToCertified(supabase: SupabaseClient<Database>, carId: string, repairCost: number) {
-        // 1. Mark car as having seal (Software update, assuming physical repair happened)
-        const { error } = await supabase.from('cars')
-            // @ts-expect-error - Tabla no definida en tipos
-            .update({ has_starterkar_seal: true } as any)
+    static async certifyCar(supabase: SupabaseClient<Database>, carId: string): Promise<boolean> {
+        const { error } = await (supabase.from('cars') as any)
+            .update({ has_starterkar_seal: true })
             .eq('id', carId);
+
+        if (error) throw new Error(`Failed to certify car: ${error.message}`);
+        return true;
 
         if (error) throw new Error(`Failed to re-certify car: ${error.message}`);
 
         // 2. Return success
-        return { success: true, verified: true };
     }
 }

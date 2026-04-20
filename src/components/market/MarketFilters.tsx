@@ -328,7 +328,7 @@ export function MarketFilters({ filters, setFilters }: MarketFiltersProps) {
                                 onChange={(e) => setLocSearch(e.target.value)}
                             />
                         </div>
-                        <div className="max-h-40 overflow-y-auto space-y-1 pr-2 custom-scrollbar">
+                        <div className="space-y-1 pr-2">
                             {MX_STATES
                                 .filter(state => state.toLowerCase().includes(locSearch.toLowerCase()))
                                 .map(state => (
@@ -430,7 +430,7 @@ export function MarketFilters({ filters, setFilters }: MarketFiltersProps) {
                                 onChange={(e) => setMakeSearch(e.target.value)}
                             />
                         </div>
-                        <div className="max-h-60 overflow-y-auto space-y-1 pr-2 custom-scrollbar">
+                        <div className="space-y-1 pr-2">
                             {Object.keys(activeBrandsData)
                                 .filter(make => make.toLowerCase().includes(makeSearch.toLowerCase()))
                                 .map(make => (

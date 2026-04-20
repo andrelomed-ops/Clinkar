@@ -21,6 +21,26 @@ export interface PldScreeningResult {
 
 /**
  * Servicio de Prevención de Lavado de Dinero (PLD / AML)
+
+export type PldRiskLevel = 'CLEAN' | 'WARNING' | 'BLOCKED';
+
+export interface PldMatch {
+    list: 'OFAC' | 'SAT_69B' | 'UIF' | 'INTERPOL';
+    reason: string;
+    details: string;
+}
+
+export interface PldScreeningResult {
+    name: string;
+    rfc: string;
+    riskLevel: PldRiskLevel;
+    matches: PldMatch[];
+    checkedAt: string;
+    screeningId: string;
+}
+
+/**
+ * Servicio de Prevención de Lavado de Dinero (PLD / AML)
  * Simula la consulta a listas negras internacionales y nacionales.
  */
 export class PldService {
@@ -40,15 +60,14 @@ export class PldService {
         // 0. SMART CACHING (Optimización Operativa)
         // Verificar si ya existe un perfil de riesgo vigente (< 24 horas)
         try {
-            const { data: profile } = await supabase
-                .from('risk_profiles' as any)
+            const { data: profile } = await (supabase
+                .from('risk_profiles') as any)
                 .select('*')
                 .eq('user_id', userId)
-                .single();
+                .maybeSingle();
 
-            if (profile) {
-                const p = profile as any;
-                const lastCheck = new Date(p.last_assessment_at);
+            if (profile && profile.last_assessment_at) {
+                const lastCheck = new Date(profile.last_assessment_at);
                 const now = new Date();
                 const hoursDiff = (now.getTime() - lastCheck.getTime()) / (1000 * 60 * 60);
 
@@ -57,11 +76,11 @@ export class PldService {
                     return {
                         name,
                         rfc,
-                        riskLevel: p.risk_level === 'BLOCKED' ? 'BLOCKED' :
-                            p.risk_level === 'HIGH' ? 'WARNING' : 'CLEAN',
+                        riskLevel: profile.risk_level === 'BLOCKED' ? 'BLOCKED' :
+                            (profile.risk_level === 'HIGH' || profile.risk_level === 'WARNING') ? 'WARNING' : 'CLEAN',
                         matches: [], // En cache simplificado no devolvemos detalle completo, o podríamos guardarlo en JSON column
-                        checkedAt: p.last_assessment_at,
-                        screeningId: `CACHE-${p.user_id.substring(0, 8)}`
+                        checkedAt: profile.last_assessment_at,
+                        screeningId: `CACHE-${profile.user_id.substring(0, 8)}`
                     };
                 }
             }
@@ -125,24 +144,26 @@ export class PldService {
         // PERSISTENCIA EN BÓVEDA (Audit Trail)
         // Se guarda el registro inmutable en compliance_checks
         try {
-            await supabase.from('compliance_checks' as any).insert({
+            await (supabase.from('compliance_checks') as any).insert({
                 user_id: userId,
                 check_type: context,
                 provider: 'CLINKAR_INTERNAL_ENGINE_V1',
                 result: resultDb,
-                matches: matches,
+                matches: matches as any,
                 created_at: new Date().toISOString()
-            } as any);
+            });
 
             // Actualizar Risk Profile del usuario
             if (riskLevel !== 'CLEAN') {
-                await supabase.from('risk_profiles' as any).upsert({
+                await (supabase.from('risk_profiles') as any).upsert({
                     user_id: userId,
                     risk_level: riskLevel === 'BLOCKED' ? 'BLOCKED' : 'HIGH',
                     risk_score: riskLevel === 'BLOCKED' ? 100 : 75,
                     last_assessment_at: new Date().toISOString(),
-                    flags: matches.map(m => m.list)
-                } as any);
+                    flags: matches.map(m => m.list) as any,
+                    verification_status: riskLevel === 'BLOCKED' ? 'BLOCKED' : 'PENDING',
+                    updated_at: new Date().toISOString()
+                });
             }
         } catch (e) {
             Logger.error("Error persistiendo log PLD:", e);

@@ -8,6 +8,8 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { ReferralService } from "@/services/ReferralService";
+
 
 export default function RegisterPage() {
     const [email, setEmail] = useState("");
@@ -26,23 +28,49 @@ export default function RegisterPage() {
         setLoading(true);
         setError(null);
 
-        const { error } = await supabase.auth.signUp({
-            email,
-            password,
-            options: {
-                data: {
-                    full_name: fullName,
-                    role: role,
+        try {
+            const { data, error } = await supabase.auth.signUp({
+                email,
+                password,
+                options: {
+                    data: {
+                        full_name: fullName,
+                        role: role,
+                    },
+                    emailRedirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent("/dashboard?verified=true")}`,
                 },
-                emailRedirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent("/dashboard?verified=true")}`,
-            },
-        });
+            });
 
-        if (error) {
-            setError(error.message);
+            if (error) {
+                console.error("Supabase Auth Error:", error);
+                setError(error.message);
+                setLoading(false);
+            } else if (data.user && data.session === null) {
+                // Email confirmation sent
+                router.push("/login?message=Verifica tu correo electrónico para confirmar tu cuenta");
+            } else {
+                // Background: Assign Referral if code exists
+                const finalRefCode = refCode || localStorage.getItem("clinkar_ref_code");
+                if (finalRefCode && data.user) {
+                    try {
+                        await ReferralService.assignReferral(supabase, data.user.id, finalRefCode);
+                        localStorage.removeItem("clinkar_ref_code");
+                        console.log(`[REFERRAL] Successfully assigned code ${finalRefCode} to user ${data.user.id}`);
+                    } catch (refErr) {
+                        console.error("[REFERRAL] Failed to assign code:", refErr);
+                    }
+                }
+                router.push("/dashboard");
+            }
+        } catch (err: any) {
+            console.error("Registration Critical Error:", err);
+            // Better diagnosis for 404/Failed to fetch
+            if (err.message?.includes("fetch")) {
+                setError("Error de conexión: No se pudo contactar con el servidor de autenticación. Verifica tu conexión.");
+            } else {
+                setError(err.message || "Inesperado fallo en el registro. Intenta de nuevo.");
+            }
             setLoading(false);
-        } else {
-            router.push("/login?message=Check your email to confirm your account");
         }
     };
 

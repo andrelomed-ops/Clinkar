@@ -2,12 +2,14 @@
 
 import { useState } from "react";
 import { Search, Car, DollarSign, MapPin, MessageSquare, Loader2, CheckCircle2 } from "lucide-react";
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { demandService, DemandRequest } from "@/services/DemandService";
+import { Database } from "@/lib/database.types";
 
 const POPULAR_BRANDS = [
     "Toyota", "Honda", "Nissan", "Volkswagen", "Ford", "Chevrolet", 
@@ -33,15 +35,15 @@ export default function DemandRequestPage() {
         setLoading(true);
 
         try {
-            const demandData: Omit<DemandRequest, 'id' | 'created_at' | 'updated_at'> = {
+            const demandData: Database['public']['Tables']['demand_registry']['Insert'] = {
                 brand: formData.brand,
-                model: formData.model || undefined,
-                year_min: formData.yearMin ? parseInt(formData.yearMin) : undefined,
-                year_max: formData.yearMax ? parseInt(formData.yearMax) : undefined,
-                budget_min: formData.budgetMin ? parseFloat(formData.budgetMin) : undefined,
-                budget_max: formData.budgetMax ? parseFloat(formData.budgetMax) : undefined,
-                location: formData.location || undefined,
-                notes: formData.notes || undefined,
+                model: formData.model || null,
+                year_min: formData.yearMin ? parseInt(formData.yearMin) : null,
+                year_max: formData.yearMax ? parseInt(formData.yearMax) : null,
+                budget_min: formData.budgetMin ? parseFloat(formData.budgetMin) : null,
+                budget_max: formData.budgetMax ? parseFloat(formData.budgetMax) : null,
+                location: formData.location || null,
+                notes: formData.notes || null,
                 status: 'pending'
             };
 
@@ -69,10 +71,10 @@ export default function DemandRequestPage() {
                         </p>
                         <div className="space-y-3">
                             <Button asChild className="w-full">
-                                <a href="/buy">Ver Inventario</a>
+                                <Link href="/buy">Ver Inventario</Link>
                             </Button>
                             <Button variant="outline" asChild className="w-full">
-                                <a href="/">Volver al Inicio</a>
+                                <Link href="/">Volver al Inicio</Link>
                             </Button>
                         </div>
                     </CardContent>

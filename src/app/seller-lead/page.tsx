@@ -7,6 +7,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { demandService, SellerLead } from "@/services/DemandService";
+import { Database } from "@/lib/database.types";
+import Link from "next/link";
 
 const POPULAR_BRANDS = [
     "Toyota", "Honda", "Nissan", "Volkswagen", "Ford", "Chevrolet", 
@@ -39,13 +41,13 @@ export default function SellerLeadPage() {
         setLoading(true);
 
         try {
-            const leadData: Omit<SellerLead, 'id' | 'created_at' | 'updated_at'> = {
+            const leadData: Database['public']['Tables']['seller_leads']['Insert'] = {
                 current_brand: formData.currentBrand,
                 current_model: formData.currentModel,
                 current_year: parseInt(formData.currentYear),
-                current_price_expected: formData.currentPriceExpected ? parseFloat(formData.currentPriceExpected) : undefined,
+                current_price_expected: formData.currentPriceExpected ? parseFloat(formData.currentPriceExpected) : null,
                 condition: formData.condition as any,
-                looking_for: formData.lookingFor || undefined,
+                looking_for: formData.lookingFor || null,
                 contact_preference: formData.contactPreference as any,
                 status: 'new'
             };
@@ -79,10 +81,10 @@ export default function SellerLeadPage() {
                         </p>
                         <div className="space-y-3">
                             <Button asChild className="w-full">
-                                <a href="/dashboard">Ver Mi Dashboard</a>
+                                <Link href="/dashboard">Ver Mi Dashboard</Link>
                             </Button>
                             <Button variant="outline" asChild className="w-full">
-                                <a href="/">Volver al Inicio</a>
+                                <Link href="/">Volver al Inicio</Link>
                             </Button>
                         </div>
                     </CardContent>

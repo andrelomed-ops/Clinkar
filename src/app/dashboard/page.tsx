@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Shield, CreditCard, Clock, CheckCircle2, QrCode, ArrowRight, MapPin, Wrench, Car, Sparkles, Smartphone, Heart } from "lucide-react";
+import { Shield, CreditCard, Clock, CheckCircle2, QrCode, ArrowRight, MapPin, Wrench, Car, CarFront, Smartphone, Heart } from "lucide-react";
 import confetti from "canvas-confetti";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
@@ -517,7 +517,7 @@ export default function DashboardPage() {
                                 ) : (
                                     <div className="p-10 text-center rounded-[2.5rem] bg-indigo-50/30 border border-dashed border-indigo-100 dark:bg-zinc-900/30 dark:border-zinc-800">
                                         <div className="h-12 w-12 bg-white dark:bg-zinc-800 rounded-2xl shadow-sm flex items-center justify-center mx-auto mb-4">
-                                            <Sparkles className="h-6 w-6 text-indigo-400" />
+                                            <CarFront className="h-6 w-6 text-indigo-400" />
                                         </div>
                                         <p className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Tu garage está vacío</p>
                                         <Button asChild variant="link" className="text-indigo-600 text-xs font-black p-0 mt-2">
@@ -596,7 +596,7 @@ export default function DashboardPage() {
                                     <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-500/10 blur-[80px] -translate-y-12 translate-x-12" />
                                     <div className="relative z-10">
                                         <div className="flex items-center gap-3 text-indigo-400 mb-6">
-                                            <Sparkles className="h-5 w-5" />
+                                            <CarFront className="h-5 w-5" />
                                             <span className="text-[10px] font-black uppercase tracking-[0.2em]">Upgrade StarterKar</span>
                                         </div>
                                         <h3 className="text-2xl font-black text-white mb-2 tracking-tighter italic uppercase">¿Buscas algo nuevo?</h3>

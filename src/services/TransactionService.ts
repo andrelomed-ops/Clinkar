@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Database } from '@/lib/database.types';
 import { NotificationService } from './NotificationService';
 import { SupabaseClient } from '@supabase/supabase-js';
@@ -10,6 +9,7 @@ import { SpeiService } from './SpeiService';
 import { Logger } from '@/lib/logger';
 import { PRICING_CONFIG } from '@/config/pricing';
 import { ReferralService } from './ReferralService';
+import { LockService } from './LockService';
 
 export type Transaction = Database['public']['Tables']['transactions']['Row'];
 
@@ -26,34 +26,43 @@ export class TransactionService extends BaseService {
     }): Promise<Transaction | null> {
         Logger.info(`[GATEKEEPER] Iniciando creación de transacción para ${data.sellerId} (Monto: $${data.amount})`);
 
+        // 0. Concurrency Control lock
+        const lockResult = await LockService.acquireLock(supabase, data.carId, data.buyerId, 15);
+        if (!lockResult.success) {
+            throw new Error(`RESOURCE_LOCKED: Vehículo temporalmente reservado y en proceso de pago por otro usuario. Por favor, espera e intenta de nuevo más tarde. Únete a la fila de este auto para ser el primero en fila.`);
+        }
+
         // 1. PLD / AML Screening
         const sellerName = "Seller Name Placeholder";
         const pldResult = await PldService.screenPerson(supabase, data.sellerId, sellerName, undefined, 'TRANSACTION');
 
         if (pldResult.riskLevel === 'BLOCKED') {
-            await supabase.from('audit_logs' as any).insert({
+            await (supabase.from('audit_logs') as any).insert({
                 actor_id: data.sellerId,
                 action: 'ATTEMPT_BLOCKED',
                 entity_type: 'TRANSACTION',
-                metadata: { reason: 'PLD_RISK_DETECTED', details: pldResult.matches },
-                ip_address: '127.0.0.1'
-            } as any);
+                metadata: { reason: 'PLD_BLOCKED', details: pldResult.matches },
+                ip_address: '0.0.0.0'
+            });
             throw new Error("OPERACIÓN BLOQUEADA: Su perfil presenta restricciones de cumplimiento normativo (PLD).");
         }
 
         // 2. AML Thresholds
         const UMBRAL_IDENTIFICACION = 360000;
         if (data.amount > UMBRAL_IDENTIFICACION) {
-            const { data: profile } = await supabase.from('risk_profiles' as any).select('verification_status').eq('user_id', data.sellerId).single();
-            if ((profile as any)?.verification_status !== 'VERIFIED') {
+            const { data: profile } = await (supabase.from('risk_profiles') as any)
+                .select('verification_status')
+                .eq('user_id', data.sellerId)
+                .maybeSingle();
+            if (profile?.verification_status !== 'VERIFIED') {
                 throw new Error("KYC_REQUIRED: Para operar montos mayores a $360,000 MXN, necesitamos verificar tu identidad.");
             }
         }
 
         // 3. Calculate Commissions
         // 3.1 Buyer Commission (Free on 1st purchase)
-        const { count: previousPurchases } = await supabase
-            .from('transactions')
+        const { count: previousPurchases } = await (supabase
+            .from('transactions') as any)
             .select('*', { count: 'exact', head: true })
             .eq('buyer_id', data.buyerId)
             .eq('status', 'RELEASED');
@@ -63,8 +72,8 @@ export class TransactionService extends BaseService {
 
         // 3.2 Seller Fee (3.5% standard, check for discounts)
         let sellerFeePercent = PRICING_CONFIG.SELLER_SUCCESS_FEE_PERCENT;
-        const { data: discountPerk } = await supabase
-            .from('user_perks' as any)
+        const { data: discountPerk } = await (supabase
+            .from('user_perks') as any)
             .select('id')
             .eq('user_id', data.sellerId)
             .eq('perk_type', 'FEE_DISCOUNT')
@@ -81,8 +90,8 @@ export class TransactionService extends BaseService {
         const totalAmount = data.amount + (data.logisticsQuote?.cost || 0) + (data.warrantyQuote?.cost || 0);
 
         // 4. Create Transaction
-        const { data: transaction, error } = await supabase
-            .from('transactions')
+        const { data: transaction, error } = await (supabase
+            .from('transactions') as any)
             .insert({
                 car_id: data.carId,
                 buyer_id: data.buyerId,
@@ -94,10 +103,8 @@ export class TransactionService extends BaseService {
                 warranty_cost: data.warrantyQuote?.cost || 0,
                 stripe_session_id: data.stripeSessionId,
                 status: 'PENDING',
-                pld_status: pldResult.riskLevel === 'CLEAN' ? 'APPROVED' : 'PENDING',
-                risk_metadata: pldResult,
-                metadata: discountPerk ? { used_perk_id: (discountPerk as any).id } : {}
-            } as any)
+                metadata: discountPerk ? { used_perk_id: discountPerk.id } : {}
+            })
             .select()
             .single();
 
@@ -110,8 +117,8 @@ export class TransactionService extends BaseService {
 
         // 4.1 Side Orders
         if (data.logisticsQuote) {
-            await (supabase.from('logistics_orders' as any) as any).insert({
-                transaction_id: typedTransaction.id,
+            await (supabase.from('logistics_orders') as any).insert({
+                transaction_id: transaction.id,
                 origin_address: data.logisticsQuote.origin,
                 destination_address: data.logisticsQuote.dest,
                 distance_km: data.logisticsQuote.distance,
@@ -123,36 +130,37 @@ export class TransactionService extends BaseService {
         if (data.warrantyQuote) {
             const endDate = new Date();
             endDate.setMonth(endDate.getMonth() + (data.warrantyQuote.type === 'STANDARD' ? 3 : 12));
-            await (supabase.from('warranty_policies' as any) as any).insert({
+            await (supabase.from('warranty_policies') as any).insert({
                 car_id: data.carId,
-                transaction_id: typedTransaction.id,
+                transaction_id: transaction.id,
                 type: data.warrantyQuote.type,
                 status: 'PENDING',
                 start_date: new Date().toISOString(),
                 end_date: endDate.toISOString(),
-                coverage_cap_amount: data.warrantyQuote.cost * 10
+                coverage_cap_amount: data.warrantyQuote.cost * 10,
+                coverage_details: {}
             });
         }
 
         // 5. Audit & Notif
-        await supabase.from('audit_logs' as any).insert({
+        await (supabase.from('audit_logs') as any).insert({
             actor_id: data.sellerId,
             action: 'CREATE_TRANSACTION',
             entity_type: 'TRANSACTION',
-            entity_id: typedTransaction.id,
+            entity_id: transaction.id,
             metadata: { totalAmount, buyerCommission, sellerSuccessFee },
             ip_address: '127.0.0.1'
-        } as any);
+        });
 
         await NotificationService.notify(supabase, {
             userId: data.sellerId,
             title: "Nueva Oferta Recibida",
             message: `Oferta por $${data.amount.toLocaleString()}. Comisión: $${sellerSuccessFee.toLocaleString()}.`,
             type: 'INFO',
-            link: `/dashboard/transactions/${typedTransaction.id}`
+            link: `/dashboard/transactions/${transaction.id}`
         });
 
-        return typedTransaction;
+        return transaction;
     }
 
     static async updateTransactionStatusBySessionId(
@@ -161,10 +169,10 @@ export class TransactionService extends BaseService {
         status: 'PENDING' | 'IN_VAULT' | 'RELEASED' | 'CANCELLED'
     ): Promise<void> {
         const { data: transaction } = await (supabase
-            .from('transactions')
+            .from('transactions') as any)
             .select('id, buyer_id, seller_id, car_price')
             .eq('stripe_session_id', sessionId)
-            .single() as any);
+            .maybeSingle();
 
         const { error } = await (supabase.from('transactions') as any)
             .update({ status })
@@ -175,22 +183,21 @@ export class TransactionService extends BaseService {
             throw new Error(error.message);
         }
 
-if (transaction && status === 'IN_VAULT') {
-            const t = transaction as any;
+        if (transaction && status === 'IN_VAULT') {
             await NotificationService.notifyMultiple(supabase, [
                 {
-                    userId: t.buyer_id,
+                    userId: transaction.buyer_id,
                     title: "Pago Exitoso",
                     message: "Fondos protegidos en Bóveda.",
                     type: 'FINANCIAL',
-                    link: `/dashboard/transactions/${t.id}`
+                    link: `/dashboard/transactions/${transaction.id}`
                 },
                 {
-                    userId: t.seller_id,
+                    userId: transaction.seller_id,
                     title: "Fondos en bóveda",
-                    message: `El comprador ha pagado $${Number(t.car_price).toLocaleString()}.`,
+                    message: `El comprador ha pagado $${Number(transaction.car_price).toLocaleString()}.`,
                     type: 'FINANCIAL',
-                    link: `/dashboard/transactions/${t.id}`
+                    link: `/dashboard/transactions/${transaction.id}`
                 }
             ]);
         }
@@ -207,42 +214,39 @@ if (transaction && status === 'IN_VAULT') {
     }
 
     static async getTransactionBySessionId(supabase: SupabaseClient<Database>, sessionId: string): Promise<Transaction | null> {
-        const { data, error } = await supabase
-            .from('transactions')
+        const { data: result, error } = await (supabase
+            .from('transactions') as any)
             .select('*')
             .eq('stripe_session_id', sessionId)
-            .single();
+            .maybeSingle();
 
-        if (error) {
-            Logger.error(`Error getting transaction for session ${sessionId}:`, error);
-            return null;
-        }
-        return data as any;
+        if (error || !result) return null;
+        return result as any;
     }
 
     static async getTransactionById(supabase: SupabaseClient<Database>, id: string): Promise<Transaction | null> {
-        const query = supabase
-            .from('transactions')
+        const query = (supabase
+            .from('transactions') as any)
             .select(`
                 *,
                 cars (*)
             `)
             .eq('id', id)
-            .single();
+            .maybeSingle();
 
-        const result = await this.validateAndHandle(query as any, TransactionSchema);
+        const { data, error } = await query;
 
-        if (!result.success) {
-            Logger.error(`[Fail-Safe] Error getting transaction ${id}:`, result.error);
+        if (error || !data) {
+            Logger.error(`Error fetching transaction by id: ${id}`, error);
             return null;
         }
 
-        return result.data as any;
+        return data as Transaction;
     }
 
     static async getGlobalStats(supabase: SupabaseClient<Database>) {
-        const { data: txs } = await supabase
-            .from('transactions')
+        const { data: txs } = await (supabase
+            .from('transactions') as any)
             .select(`
                 car_price, 
                 buyer_commission, 
@@ -273,12 +277,12 @@ if (transaction && status === 'IN_VAULT') {
                 Number(tx.seller_success_fee || 0);
         });
 
-        const { count: totalCount } = await supabase
-            .from('transactions')
+        const { count: totalCount } = await (supabase
+            .from('transactions') as any)
             .select('*', { count: 'exact', head: true });
 
-        const { count: activeCount } = await supabase
-            .from('transactions')
+        const { count: activeCount } = await (supabase
+            .from('transactions') as any)
             .select('*', { count: 'exact', head: true })
             .in('status', ['PENDING', 'IN_VAULT']);
 
@@ -294,8 +298,8 @@ if (transaction && status === 'IN_VAULT') {
     }
 
     static async getAllTransactions(supabase: SupabaseClient<Database>) {
-        const { data, error } = await supabase
-            .from('transactions')
+        const { data, error } = await (supabase
+            .from('transactions') as any)
             .select(`
                 *,
                 cars (id, make, model, year, vin, plate, documents),
@@ -309,7 +313,7 @@ if (transaction && status === 'IN_VAULT') {
             return [];
         }
 
-        return data as any[];
+        return (data || []) as any[];
     }
 
     static async updateTransactionServices(supabase: SupabaseClient<Database>, id: string, services: {
@@ -332,7 +336,7 @@ if (transaction && status === 'IN_VAULT') {
                 warranty_cost: services.warrantyCost || 0,
                 gestoria_cost: services.gestoriaCost || 0,
                 updated_at: new Date().toISOString()
-            } as Database['public']['Tables']['transactions']['Update'])
+            })
             .eq('id', id);
 
         if (error) {
@@ -344,18 +348,18 @@ if (transaction && status === 'IN_VAULT') {
     }
 
     static async overrideTransactionStatus(supabase: SupabaseClient<Database>, id: string, status: string) {
-        const { data: transaction } = await supabase
-            .from('transactions')
+        const { data: transaction } = await (supabase
+            .from('transactions') as any)
             .select('buyer_id, seller_id')
             .eq('id', id)
-            .single();
+            .maybeSingle();
 
         const { error } = await (supabase
             .from('transactions') as any)
             .update({
                 status,
                 updated_at: new Date().toISOString()
-            } as Database['public']['Tables']['transactions']['Update'])
+            })
             .eq('id', id);
 
         if (error) {
@@ -364,34 +368,43 @@ if (transaction && status === 'IN_VAULT') {
         }
 
         if (transaction) {
-            const t = transaction as any;
             await NotificationService.notifyMultiple(supabase, [
                 {
-                    userId: t.buyer_id,
+                    userId: transaction.buyer_id,
                     title: "Actualización Administrativa",
                     message: `Tu transacción ha sido actualizada manualmente a estado: ${status}.`,
                     type: 'WARNING',
                     link: `/dashboard/transactions/${id}`
                 },
                 {
-                    userId: t.seller_id,
+                    userId: transaction.seller_id,
                     title: "Actualización Administrativa",
                     message: `Tu transacción ha sido actualizada manualmente a estado: ${status}.`,
                     type: 'WARNING',
                     link: `/dashboard/transactions/${id}`
                 }
             ]);
+
+            // [NEW] Trigger referral rewards if manual override to RELEASED
+            if (status === 'RELEASED') {
+                try {
+                    await ReferralService.markOperationAsClosed(supabase, id);
+                    Logger.info(`[REFERRAL] Referral rewards processed for transaction ${id} (Manual Override)`);
+                } catch (err) {
+                    Logger.error(`[REFERRAL] Error processing referral rewards (Manual Override):`, err);
+                }
+            }
         }
 
         return { success: true };
     }
 
     static async simulateSPEIDeposit(supabase: SupabaseClient<Database>, transactionId: string): Promise<boolean> {
-        const { data: transaction, error: fetchError } = await supabase
-            .from('transactions')
-            .select('id, buyer_id, seller_id, car_price')
+        const { data: transaction, error: fetchError } = await (supabase
+            .from('transactions') as any)
+            .select('id, buyer_id, seller_id, car_id, car_price, cars(vin)')
             .eq('id', transactionId)
-            .single();
+                .maybeSingle();
 
         if (fetchError || !transaction) {
             Logger.error('Error fetching transaction for simulation:', fetchError);
@@ -403,7 +416,7 @@ if (transaction && status === 'IN_VAULT') {
             const theftData = await VehicleCheckService.verifyTheftStatus(supabase, vin);
             if (theftData.status === 'STOLEN') {
                 Logger.error(`[FRAUD-BLOCK] Vehículo reportado como ROBADO: ${vin}.`);
-                await (supabase.from('transactions') as any).update({ pld_status: 'BLOCKED_RISK' }).eq('id', transactionId);
+                await (supabase.from('transactions') as any).update({ pld_status: 'BLOCKED_RISK' as any }).eq('id', transactionId);
                 return false;
             }
             await VehicleCheckService.generateCertificate(supabase, transactionId, theftData);
@@ -411,8 +424,8 @@ if (transaction && status === 'IN_VAULT') {
             Logger.error("Error en validación automática vehicular:", checkError);
         }
 
-        await SpeiService.simulateIncomingSpei(supabase, transactionId, Number((transaction as any).car_price));
-
+        await SpeiService.simulateIncomingSpei(supabase, transactionId, Number(transaction.car_price));
+ 
         const { error: updateError } = await (supabase
             .from('transactions') as any)
             .update({ status: 'IN_VAULT' })
@@ -423,19 +436,25 @@ if (transaction && status === 'IN_VAULT') {
             return false;
         }
 
-        const t = transaction as any;
+        // Release the temporary lock since the vehicle is now successfully bought/vaulted
+        if (transaction.car_id) {
+            await LockService.releaseLock(supabase, transaction.car_id);
+            // Lock is released, now we update the car status to SOLD
+            await (supabase.from('cars') as any).update({ status: 'SOLD' }).eq('id', transaction.car_id);
+        }
+
         await NotificationService.notifyMultiple(supabase, [
             {
-                userId: t.buyer_id,
+                userId: transaction.buyer_id,
                 title: "Depósito Confirmado (SPEI)",
                 message: "Hemos recibido tu transferencia.",
                 type: 'FINANCIAL',
-                link: `/dashboard/transactions/${t.id}`
+                link: `/dashboard/transactions/${transaction.id}`
             },
             {
-                userId: t.seller_id,
+                userId: transaction.seller_id,
                 title: "¡Depósito Detectado!",
-                message: `El comprador ha transferido $${Number(t.car_price).toLocaleString()} MXN.`,
+                message: `El comprador ha transferido $${Number(transaction.car_price).toLocaleString()} MXN.`,
                 type: 'FINANCIAL',
                 link: `/dashboard/sell`
             }

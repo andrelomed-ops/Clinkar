@@ -24,8 +24,15 @@ describe('TransactionService', () => {
             eq: vi.fn().mockReturnThis(),
             neq: vi.fn().mockReturnThis(),
             in: vi.fn().mockReturnThis(),
+            lt: vi.fn().mockReturnThis(),
+            gt: vi.fn().mockReturnThis(),
+            lte: vi.fn().mockReturnThis(),
+            gte: vi.fn().mockReturnThis(),
             order: vi.fn().mockReturnThis(),
+
             single: vi.fn().mockReturnThis(),
+            maybeSingle: vi.fn().mockReturnThis(),
+
             // Mocking the thenable behavior for await
             then: vi.fn((onFulfilled) => {
                 return Promise.resolve({ data: null, error: null, count: 0 }).then(onFulfilled);

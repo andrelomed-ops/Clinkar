@@ -157,7 +157,7 @@ export const DigitalPassport = ({ car, purchaseDate, ownerName, serviceHistory }
                         </div>
                         <h2 className="text-3xl font-black tracking-tighter" style={{ fontFamily: 'ui-sans-serif, system-ui, sans-serif', color: '#ffffff' }}>PASAPORTE DIGITAL</h2>
                         <p className="text-[10px] font-mono mt-2 uppercase tracking-widest" style={{ color: 'rgba(199, 210, 254, 0.8)' }}>
-                            ID: {car.id.substring(0, 8).toUpperCase()}-{Math.random().toString(36).substring(7).toUpperCase()}
+                            ID: {car.id.substring(0, 8).toUpperCase()}-{car.id.substring(car.id.length - 4).toUpperCase()}
                         </p>
                     </div>
                 </div>
@@ -270,7 +270,7 @@ export const DigitalPassport = ({ car, purchaseDate, ownerName, serviceHistory }
             </div>
 
             <p className="text-center text-xs text-slate-400 px-4">
-                ¿Problemas con la descarga? Usa la opción <span className="font-bold text-slate-500">"Imprimir"</span> y selecciona "Guardar como PDF" en tu navegador.
+                ¿Problemas con la descarga? Usa la opción <span className="font-bold text-slate-500">&quot;Imprimir&quot;</span> y selecciona &quot;Guardar como PDF&quot; en tu navegador.
             </p>
         </div>
     );

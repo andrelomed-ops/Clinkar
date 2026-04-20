@@ -11,7 +11,7 @@ export default function PrivacyPage() {
                     <h1 className="text-4xl font-black tracking-tight mb-4">Aviso de Privacidad Integral</h1>
                     <p className="text-muted-foreground text-lg italic">Última actualización: 29 de Enero de 2026</p>
                     <p className="mt-4 text-sm text-muted-foreground">
-                        StarterKar S.A. de C.V. (en lo sucesivo &quot;CLINKAR&quot;), con domicilio en la Ciudad de México, es el responsable del uso y protección de sus datos personales, y al respecto le informamos lo siguiente:
+                        StarterKar S.A. de C.V. (en lo sucesivo &quot;StarterKar&quot;), con domicilio en la Ciudad de México, es el responsable del uso y protección de sus datos personales, y al respecto le informamos lo siguiente:
                     </p>
                 </header>
 
@@ -114,7 +114,7 @@ export default function PrivacyPage() {
                             <h2 className="text-2xl font-bold">5. Periodo de Resguardo Obligatorio</h2>
                         </div>
                         <p className="text-muted-foreground leading-relaxed">
-                            De conformidad con el <strong>Artículo 30 del Código Fiscal de la Federación (CFF)</strong>, CLINKAR tiene la obligación legal de conservar la documentación y contabilidad de las transacciones por un <strong>periodo mínimo de 5 años</strong>. Por lo anterior, el ejercicio del derecho de Cancelación de datos personales estará supeditado a que transcurra dicho plazo legal.
+                            De conformidad con el <strong>Artículo 30 del Código Fiscal de la Federación (CFF)</strong>, StarterKar tiene la obligación legal de conservar la documentación y contabilidad de las transacciones por un <strong>periodo mínimo de 5 años</strong>. Por lo anterior, el ejercicio del derecho de Cancelación de datos personales estará supeditado a que transcurra dicho plazo legal.
                         </p>
                     </div>
 

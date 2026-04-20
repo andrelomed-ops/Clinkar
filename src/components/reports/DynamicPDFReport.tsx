@@ -150,7 +150,7 @@ export const DynamicPDFReport = ({ assetData, score, partnerInfo }: PDFReportPro
                 </View>
                 <View style={styles.reportMeta}>
                     <Text style={styles.metaText}>CERTIFICADO DE INSPECCIÓN</Text>
-                    <Text style={[styles.metaText, { fontWeight: 'bold' }]}>#{Math.random().toString(36).substring(7).toUpperCase()}</Text>
+                    <Text style={[styles.metaText, { fontWeight: 'bold' }]}>#{assetData.date.replace(/\//g, '')}-{assetData.year}</Text>
                     <Text style={styles.metaText}>{assetData.date}</Text>
                 </View>
             </View>

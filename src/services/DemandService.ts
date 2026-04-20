@@ -1,48 +1,18 @@
 import { createClient } from '@supabase/supabase-js';
+import { Database } from '@/lib/database.types';
 import { Logger } from '@/lib/logger';
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://placeholder.supabase.co';
 const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'placeholder';
-const supabase = createClient(supabaseUrl, supabaseKey);
+const supabase = createClient<Database>(supabaseUrl, supabaseKey);
 
-export interface DemandRequest {
-    id?: string;
-    user_id?: string;
-    brand: string;
-    model?: string;
-    year_min?: number;
-    year_max?: number;
-    budget_min?: number;
-    budget_max?: number;
-    location?: string;
-    notes?: string;
-    status: 'pending' | 'notified' | 'matched' | 'fulfilled' | 'expired';
-    match_found?: boolean;
-    created_at?: string;
-    updated_at?: string;
-}
-
-export interface SellerLead {
-    id?: string;
-    user_id?: string;
-    current_brand: string;
-    current_model: string;
-    current_year: number;
-    current_price_expected?: number;
-    condition?: 'excellent' | 'good' | 'fair' | 'needs_work';
-    looking_for?: string;
-    contact_preference?: 'phone' | 'whatsapp' | 'email';
-    status: 'new' | 'contacted' | 'matched' | 'sold' | 'expired';
-    demand_match_id?: string;
-    created_at?: string;
-    updated_at?: string;
-}
+export type DemandRequest = Database['public']['Tables']['demand_registry']['Row'];
+export type SellerLead = Database['public']['Tables']['seller_leads']['Row'];
 
 export class DemandService {
-    static async createDemandRequest(data: Omit<DemandRequest, 'id' | 'created_at' | 'updated_at'>): Promise<{ success: boolean; data?: DemandRequest; error?: string }> {
+    static async createDemandRequest(data: Database['public']['Tables']['demand_registry']['Insert']): Promise<{ success: boolean; data?: DemandRequest; error?: string }> {
         try {
-            const { data: result, error } = await supabase
-                .from('demand_registry')
+            const { data: result, error } = await (supabase.from('demand_registry') as any)
                 .insert({
                     ...data,
                     status: 'pending',
@@ -52,6 +22,7 @@ export class DemandService {
                 .single();
 
             if (error) throw error;
+            if (!result) throw new Error("Failed to create demand request");
 
             Logger.info('[DemandService] Created demand request:', result.id);
             
@@ -64,10 +35,9 @@ export class DemandService {
         }
     }
 
-    static async createSellerLead(data: Omit<SellerLead, 'id' | 'created_at' | 'updated_at'>): Promise<{ success: boolean; data?: SellerLead; match?: DemandRequest; error?: string }> {
+    static async createSellerLead(data: Database['public']['Tables']['seller_leads']['Insert']): Promise<{ success: boolean; data?: SellerLead; match?: DemandRequest; error?: string }> {
         try {
-            const { data: lead, error: leadError } = await supabase
-                .from('seller_leads')
+            const { data: lead, error: leadError } = await (supabase.from('seller_leads') as any)
                 .insert({
                     ...data,
                     status: 'new',
@@ -77,17 +47,18 @@ export class DemandService {
                 .single();
 
             if (leadError) throw leadError;
+            if (!lead) throw new Error("Failed to create seller lead");
 
-            const demandMatch = await this.findDemandMatch(lead.current_brand, lead.current_model, lead.current_year);
+            const demandMatch = await this.findDemandMatch(lead.current_brand, lead.current_model || undefined, lead.current_year);
 
             if (demandMatch) {
-                await supabase.from('demand_registry').update({ 
+                await (supabase.from('demand_registry') as any).update({ 
                     status: 'matched', 
                     match_found: true,
                     updated_at: new Date().toISOString()
                 }).eq('id', demandMatch.id);
 
-                await supabase.from('seller_leads').update({
+                await (supabase.from('seller_leads') as any).update({
                     status: 'matched',
                     demand_match_id: demandMatch.id,
                     updated_at: new Date().toISOString()
@@ -105,8 +76,7 @@ export class DemandService {
 
     static async findDemandMatch(brand: string, model?: string, year?: number): Promise<DemandRequest | null> {
         try {
-            let query = supabase
-                .from('demand_registry')
+            let query = (supabase.from('demand_registry') as any)
                 .select('*')
                 .eq('status', 'pending')
                 .ilike('brand', brand);
@@ -115,7 +85,7 @@ export class DemandService {
                 query = query.or(`model.ilike.%${model}%,model.is.null`);
             }
 
-            const { data, error } = await query.single();
+            const { data, error } = await query.maybeSingle();
 
             if (error || !data) return null;
 
@@ -185,27 +155,21 @@ export class DemandService {
         }
     }
 
-    static async getDemandAnalytics(): Promise<{
-        totalDemands: number;
-        totalSellerLeads: number;
-        topSearchedBrands: { brand: string; count: number }[];
-        matchedPercentage: number;
-        pendingPercentage: number;
-    }> {
+    static async getStats(supabase: any) {
         try {
-            const [demands, leads] = await Promise.all([
-                supabase.from('demand_registry').select('brand, status', { count: 'exact' }),
-                supabase.from('seller_leads').select('current_brand', { count: 'exact' })
-            ]);
+            const { data: demandData } = await (supabase.from('demand_registry') as any).select('*');
+            const { data: leadData } = await (supabase.from('seller_leads') as any).select('*');
 
-            const demandCount = demands.count || 0;
-            const leadCount = leads.count || 0;
-            const matchedDemands = demands.data?.filter(d => d.status === 'matched').length || 0;
+            if (!demandData || !leadData) return null;
+
+            const demandCount = demandData.length;
+            const leadCount = leadData.length;
+            const matchedDemands = (demandData as any[]).filter(d => d.status === 'matched').length;
 
             const brandCounts: Record<string, number> = {};
-            demands.data?.forEach(d => {
-                const brand = (d.brand || 'Unknown').toUpperCase();
-                brandCounts[brand] = (brandCounts[brand] || 0) + 1;
+            (demandData as any[]).forEach(d => {
+                const b = d.brand;
+                brandCounts[b] = (brandCounts[b] || 0) + 1;
             });
 
             const topBrands = Object.entries(brandCounts)
@@ -233,14 +197,14 @@ export class DemandService {
     }
 
     static async notifyInterestedSellers(demand: DemandRequest): Promise<void> {
-        const potentialSellers = await supabase
+        const { data: potentialSellers } = await supabase
             .from('seller_leads')
             .select('*')
             .eq('current_brand', demand.brand)
             .eq('status', 'new');
 
-        if (potentialSellers.data && potentialSellers.data.length > 0) {
-            Logger.info(`[DemandService] Found ${potentialSellers.data.length} potential sellers for ${demand.brand}`);
+        if (potentialSellers && potentialSellers.length > 0) {
+            Logger.info(`[DemandService] Found ${potentialSellers.length} potential sellers for ${demand.brand}`);
         }
     }
 }

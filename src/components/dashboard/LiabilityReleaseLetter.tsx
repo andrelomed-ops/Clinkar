@@ -15,9 +15,12 @@ export function LiabilityReleaseLetter({ transactionId, contract }: LiabilityRel
     const [currentTime, setCurrentTime] = useState<string>("");
 
     useEffect(() => {
-        const now = new Date();
-        setCurrentDate(now.toLocaleDateString('es-MX', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }));
-        setCurrentTime(now.toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit' }));
+        const timer = setTimeout(() => {
+            const now = new Date();
+            setCurrentDate(now.toLocaleDateString('es-MX', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }));
+            setCurrentTime(now.toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit' }));
+        }, 0);
+        return () => clearTimeout(timer);
     }, []);
 
     const handlePrint = () => {
@@ -67,7 +70,7 @@ export function LiabilityReleaseLetter({ transactionId, contract }: LiabilityRel
                     {/* Body */}
                     <div className="space-y-6">
                         <p>
-                            Por medio de la presente, el <strong>C. {contract.buyer.name}</strong> (en lo sucesivo "EL COMPRADOR"), recibe de entera conformidad física, mecánica y legal del <strong>C. {contract.seller.name}</strong> (en lo sucesivo "EL VENDEDOR"), el vehículo automotor que se describe a continuación:
+                            Por medio de la presente, el <strong>C. {contract.buyer.name}</strong> (en lo sucesivo &quot;EL COMPRADOR&quot;), recibe de entera conformidad física, mecánica y legal del <strong>C. {contract.seller.name}</strong> (en lo sucesivo &quot;EL VENDEDOR&quot;), el vehículo automotor que se describe a continuación:
                         </p>
 
                         <div className="bg-gray-50 p-6 border border-gray-200 rounded-sm font-sans text-xs">
@@ -92,16 +95,16 @@ export function LiabilityReleaseLetter({ transactionId, contract }: LiabilityRel
 
                         <ol className="list-decimal ml-8 space-y-4 marker:font-bold">
                             <li>
-                                "EL COMPRADOR" asume la <strong>responsabilidad total</strong>, civil, penal, administrativa y de tránsito, derivada del uso, manejo y posesión del vehículo descrito anteriormente.
+                                &quot;EL COMPRADOR&quot; asume la <strong>responsabilidad total</strong>, civil, penal, administrativa y de tránsito, derivada del uso, manejo y posesión del vehículo descrito anteriormente.
                             </li>
                             <li>
-                                "EL COMPRADOR" deslinda a "EL VENDEDOR" de cualquier responsabilidad futura relacionada con infracciones de tránsito, accidentes vehiculares, adeudos de tenencia futuros, o cualquier acto ilícito en el que pudiera verse involucrada la unidad a partir de este momento.
+                                &quot;EL COMPRADOR&quot; deslinda a &quot;EL VENDEDOR&quot; de cualquier responsabilidad futura relacionada con infracciones de tránsito, accidentes vehiculares, adeudos de tenencia futuros, o cualquier acto ilícito en el que pudiera verse involucrada la unidad a partir de este momento.
                             </li>
                             <li>
-                                "EL COMPRADOR" se compromete a realizar el trámite de <strong>cambio de propietario</strong> ante la autoridad vehicular correspondiente en un plazo no mayor a 15 días hábiles, o en su defecto, acepta la responsabilidad por la omisión de dicho trámite.
+                                &quot;EL COMPRADOR&quot; se compromete a realizar el trámite de <strong>cambio de propietario</strong> ante la autoridad vehicular correspondiente en un plazo no mayor a 15 días hábiles, o en su defecto, acepta la responsabilidad por la omisión de dicho trámite.
                             </li>
                             <li>
-                                "EL VENDEDOR" manifiesta que hasta el momento de la entrega, el vehículo no tiene reporte de robo y se entrega libre de gravamen, habiendo cubierto los pagos de tenencia y verificación según se estipula en el contrato de compraventa anexo.
+                                &quot;EL VENDEDOR&quot; manifiesta que hasta el momento de la entrega, el vehículo no tiene reporte de robo y se entrega libre de gravamen, habiendo cubierto los pagos de tenencia y verificación según se estipula en el contrato de compraventa anexo.
                             </li>
                         </ol>
                     </div>

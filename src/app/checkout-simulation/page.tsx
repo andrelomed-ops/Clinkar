@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { processPaymentAction } from "../actions_demo";
+import { startTransaction } from "@/app/actions/transaction";
 import SmartPaymentSelector from "@/components/checkout/SmartPaymentSelector";
 import TrustSeal from "@/components/checkout/TrustSeal";
 import SellerDashboardView from "@/components/dashboard/SellerDashboardView";
@@ -26,10 +26,35 @@ export default function CheckoutSimulationPage() {
     const [agreedToTerms, setAgreedToTerms] = useState(false);
     const [agreedToPrivacy, setAgreedToPrivacy] = useState(false);
 
+    // Concurrency Lock Timer
+    const [timeLeft, setTimeLeft] = useState(15 * 60); // 15 minutes in seconds
+
     useEffect(() => {
         // eslint-disable-next-line react-hooks/set-state-in-effect
         setIsMounted(true);
     }, []);
+
+    useEffect(() => {
+        if (step === 'SUCCESS' || timeLeft <= 0) return;
+        const timer = setInterval(() => {
+            setTimeLeft(prev => {
+                if (prev <= 1) {
+                    // Lock Expired
+                    alert("Tu tiempo para procesar el pago ha expirado. El vehículo ha sido liberado para otros compradores.");
+                    window.location.href = "/buy";
+                    return 0;
+                }
+                return prev - 1;
+            });
+        }, 1000);
+        return () => clearInterval(timer);
+    }, [step, timeLeft]);
+
+    const formatTime = (seconds: number) => {
+        const m = Math.floor(seconds / 60);
+        const s = seconds % 60;
+        return `${m}:${s.toString().padStart(2, '0')}`;
+    };
 
     const formatCurrency = (val: number) => isMounted ? val.toLocaleString() : "...";
 
@@ -39,19 +64,15 @@ export default function CheckoutSimulationPage() {
     const handleProcessPayment = async () => {
         setStep('PROCESSING');
 
-        // In a real app, we would pass the delivery method and total amount to the backend here
-        // For simulation, we assume the backend handles the total amount logic or we pass it
-        const result = await processPaymentAction("00000000-0000-0000-0000-000000000003", totalAmount);
-
-        if (!result.error) {
+        try {
+            await startTransaction("00000000-0000-0000-0000-000000000003", {
+                logistics: deliveryMethod === 'HOME' ? { type: 'HOME', cost: SIMULATION_CONFIG.DELIVERY_COST } : undefined
+            });
+            // If we're here, it succeeded but since startTransaction redirects, it shouldn't execute.
             setStep('SUCCESS');
-        } else {
-            console.error("Payment failed", result.error);
-            if (result.error?.includes("violates foreign key")) {
-                alert("Error: Demo Ticket not found in DB. Please run setup.");
-            } else {
-                alert("Payment Error: " + result.error);
-            }
+        } catch (error: any) {
+            console.error("Payment failed", error);
+            alert("Payment Error: " + error.message);
             setStep('DETAILS'); // Reset
         }
     };
@@ -129,6 +150,12 @@ export default function CheckoutSimulationPage() {
                                         <div>
                                             <h1 className="text-2xl font-black text-white">Tesla Model 3</h1>
                                             <p className="text-zinc-400">2022 • 25,000 km</p>
+                                            <div className="mt-2 inline-flex flex-col">
+                                                <span className="text-[10px] uppercase font-bold text-amber-500 tracking-wider">Tiempo Exclusivo de Compra</span>
+                                                <span className="text-lg font-black text-amber-400 font-mono flex items-center gap-2">
+                                                    ⏱ {formatTime(timeLeft)}
+                                                </span>
+                                            </div>
                                         </div>
                                         <div className="text-right">
                                             <p className="text-sm text-zinc-500 uppercase tracking-widest">Total a Pagar</p>

@@ -11,7 +11,8 @@ import {
     Circle,
     BellOff,
     Settings,
-    AlertTriangle
+    AlertTriangle,
+    CarFront
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { createBrowserClient } from "@/lib/supabase/client";
@@ -150,7 +151,7 @@ export function NotificationCenter() {
                 <div className="p-6 border-b border-zinc-100 dark:border-zinc-800 flex items-center justify-between">
                     <div>
                         <h2 className="text-xl font-black italic uppercase tracking-tight flex items-center gap-2">
-                            <Sparkles className="h-5 w-5 text-indigo-500" />
+                            <CarFront className="h-5 w-5 text-indigo-500" />
                             Notificaciones
                         </h2>
                         <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mt-1">Alertas en Tiempo Real</p>
@@ -237,25 +238,4 @@ export function NotificationCenter() {
     );
 }
 
-function Sparkles(props: any) {
-    return (
-        <svg
-            {...props}
-            xmlns="http://www.w3.org/2000/svg"
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-        >
-            <path d="m12 3 1.912 5.813a2 2 0 0 0 1.275 1.275L21 12l-5.813 1.912a2 2 0 0 0-1.275 1.275L12 21l-1.912-5.813a2 2 0 0 0-1.275-1.275L3 12l5.813-1.912a2 2 0 0 0 1.275-1.275L12 3Z" />
-            <path d="M5 3v4" />
-            <path d="M19 17v4" />
-            <path d="M3 5h4" />
-            <path d="M17 19h4" />
-        </svg>
-    )
-}
+

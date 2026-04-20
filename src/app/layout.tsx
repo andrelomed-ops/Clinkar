@@ -8,8 +8,12 @@ import { GlobalErrorBoundary } from "@/components/GlobalErrorBoundary";
 // import { Navbar } from "@/components/ui/navbar";
 import { Footer } from "@/components/layout/Footer";
 import { PageTransition } from "@/components/layout/PageTransition";
-import { MagicSupport } from "@/components/layout/MagicSupport";
+import { SmartSupport } from "@/components/layout/SmartSupport";
 import { SafeHydration } from "@/components/ui/SafeHydration";
+import { ReferralTracker } from "@/components/layout/ReferralTracker";
+import { PostHogProvider } from "@/components/providers/PostHogProvider";
+
+
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -107,19 +111,22 @@ export default function RootLayout({
           disableTransitionOnChange
           storageKey="starterkar-theme"
         >
-          {/* <Navbar /> removed to fix double-nav issue */}
-          <GlobalErrorBoundary>
-            <SafeHydration fallback={<div className="min-h-screen bg-zinc-950 animate-pulse" />}>
-              <main className="min-h-screen">
-                <PageTransition>
-                  <InstallPrompt />
-                  {children}
-                </PageTransition>
-              </main>
-            </SafeHydration>
-          </GlobalErrorBoundary>
-          <Footer />
-          <MagicSupport />
+          <PostHogProvider>
+            {/* <Navbar /> removed to fix double-nav issue */}
+            <GlobalErrorBoundary>
+              <SafeHydration fallback={<div className="min-h-screen bg-zinc-950 animate-pulse" />}>
+                <main className="min-h-screen">
+                  <PageTransition>
+                    <ReferralTracker />
+                    <InstallPrompt />
+                    {children}
+                  </PageTransition>
+                </main>
+              </SafeHydration>
+            </GlobalErrorBoundary>
+            <Footer />
+            <SmartSupport />
+          </PostHogProvider>
         </ThemeProvider>
       </body>
     </html>

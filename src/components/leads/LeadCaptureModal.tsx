@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Shield, Send, CheckCircle2, AlertCircle, Info, Sparkles, Car } from "lucide-react";
+import { Shield, Send, CheckCircle2, AlertCircle, Info, CarFront, Car } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { ReferralCertificate } from "./ReferralCertificate";
 
@@ -44,7 +44,7 @@ export function LeadCaptureModal({ carName, agency, isOpen, onClose }: LeadCaptu
                     <div className="space-y-8">
                         <div className="space-y-2">
                             <div className="h-12 w-12 bg-emerald-500/10 rounded-2xl flex items-center justify-center mb-4">
-                                <Sparkles className="h-6 w-6 text-emerald-600" />
+                                <CarFront className="h-6 w-6 text-emerald-600" />
                             </div>
                             <h2 className="text-3xl font-black tracking-tight italic">Tu usado es tu enganche</h2>
                             <p className="text-muted-foreground font-medium">
@@ -81,7 +81,7 @@ export function LeadCaptureModal({ carName, agency, isOpen, onClose }: LeadCaptu
                                     className="h-20 rounded-2xl border-2 border-border hover:border-emerald-600 flex items-center px-6 gap-4 transition-all group"
                                 >
                                     <div className="h-10 w-10 rounded-xl bg-emerald-50 dark:bg-zinc-800 flex items-center justify-center group-hover:bg-emerald-600 transition-colors">
-                                        <Sparkles className="h-5 w-5 text-emerald-600 group-hover:text-white" />
+                                        <CarFront className="h-5 w-5 text-emerald-600 group-hover:text-white" />
                                     </div>
                                     <div className="text-left">
                                         <span className="block font-black text-sm uppercase leading-tight">Solicitar Financiamiento Flexible</span>

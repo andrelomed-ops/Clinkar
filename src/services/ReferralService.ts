@@ -37,7 +37,7 @@ export class ReferralService extends BaseService {
         if (codeOwner.user_id === userId) throw new Error('No puedes referirte a ti mismo.');
 
         const { data: existing } = await (supabase as any)
-            .from('referals')
+            .from('referrals')
             .select('id')
             .eq('referred_id', userId)
             .maybeSingle();
@@ -80,7 +80,7 @@ export class ReferralService extends BaseService {
             const rewardType = referral.reward_type || 'CASH';
 
             await (supabase as any).from('referrals').update({ 
-                status: 'COMPLETED', 
+                status: 'OPERATION_CLOSED', 
                 transaction_id: transactionId,
                 actual_reward: PRICING_CONFIG.REFERRAL_REWARD_CASH,
                 updated_at: new Date().toISOString()

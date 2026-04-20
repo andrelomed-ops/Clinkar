@@ -1,5 +1,5 @@
 
-import { BrainCircuit, Loader2, Sparkles } from "lucide-react";
+import { BrainCircuit, Loader2, CarFront } from "lucide-react";
 
 export function ProcessingOverlay({ isVisible, message = "Analizando Documento..." }: { isVisible: boolean, message?: string }) {
     if (!isVisible) return null;
@@ -13,7 +13,7 @@ export function ProcessingOverlay({ isVisible, message = "Analizando Documento..
                     <BrainCircuit className="h-12 w-12 text-white animate-pulse" />
                 </div>
                 <div className="absolute -top-2 -right-2">
-                    <Sparkles className="h-8 w-8 text-yellow-400 animate-spin-slow" />
+                    <CarFront className="h-8 w-8 text-yellow-400 animate-spin-slow" />
                 </div>
             </div>
 

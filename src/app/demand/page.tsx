@@ -95,7 +95,7 @@ export default async function DemandBoardPage() {
 
                                 {demand.notes && (
                                     <div className="text-sm text-foreground bg-accent/30 rounded-lg p-3 italic border-l-2 border-primary">
-                                        "{demand.notes}"
+                                        &quot;{demand.notes}&quot;
                                     </div>
                                 )}
                             </CardContent>

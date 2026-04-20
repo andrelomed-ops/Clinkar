@@ -15,11 +15,15 @@ export function InstallPrompt() {
             setIsVisible(true);
         };
 
-        window.addEventListener("beforeinstallprompt", handler);
-
         // Check if already installed
         if (window.matchMedia("(display-mode: standalone)").matches) {
-            setIsVisible(false);
+            const timer = setTimeout(() => {
+                setIsVisible(false);
+            }, 0);
+            return () => {
+                window.removeEventListener("beforeinstallprompt", handler);
+                clearTimeout(timer);
+            };
         }
 
         return () => window.removeEventListener("beforeinstallprompt", handler);

@@ -52,6 +52,48 @@ function ReferralsContent() {
     const searchParams = useSearchParams();
     const refCode = searchParams.get("ref");
 
+    const applyReferralCode = async (code: string) => {
+        if (!user) return;
+
+        try {
+            const { data: codeOwner, error: codeError } = await supabase
+                .from("referral_links")
+                .select("user_id")
+                .eq("code", code.toUpperCase())
+                .single();
+
+            if (codeError || !codeOwner) {
+                toast.error("Código de referido inválido");
+                return;
+            }
+
+            if (codeOwner.user_id === user.id) {
+                toast.error("No puedes referirte a ti mismo");
+                return;
+            }
+
+            const { error: insertError } = await supabase
+                .from("referrals")
+                .insert({
+                    referrer_id: codeOwner.user_id,
+                    referred_user_id: user.id,
+                    status: "PENDING_OPERATION",
+                });
+
+            if (insertError) {
+                if (insertError.code === "23505") {
+                    toast.info("Ya eras parte de este programa de referidos");
+                } else {
+                    toast.error("Error al aplicar el código");
+                }
+            } else {
+                toast.success("¡Código aplicado! Ganaste beneficios.");
+            }
+        } catch (err) {
+            console.error(err);
+        }
+    };
+
     useEffect(() => {
         async function loadData() {
             const { data: { user } } = await supabase.auth.getUser();
@@ -102,48 +144,6 @@ function ReferralsContent() {
 
         loadData();
     }, [supabase, refCode]);
-
-    const applyReferralCode = async (code: string) => {
-        if (!user) return;
-
-        try {
-            const { data: codeOwner, error: codeError } = await supabase
-                .from("referral_links")
-                .select("user_id")
-                .eq("code", code.toUpperCase())
-                .single();
-
-            if (codeError || !codeOwner) {
-                toast.error("Código de referido inválido");
-                return;
-            }
-
-            if (codeOwner.user_id === user.id) {
-                toast.error("No puedes referirte a ti mismo");
-                return;
-            }
-
-            const { error: insertError } = await supabase
-                .from("referrals")
-                .insert({
-                    referrer_id: codeOwner.user_id,
-                    referred_user_id: user.id,
-                    status: "PENDING_OPERATION",
-                });
-
-            if (insertError) {
-                if (insertError.code === "23505") {
-                    toast.info("Ya eras parte de este programa de referidos");
-                } else {
-                    toast.error("Error al aplicar el código");
-                }
-            } else {
-                toast.success("¡Código aplicado! Ganaste beneficios.");
-            }
-        } catch (err) {
-            console.error(err);
-        }
-    };
 
     const handleCopy = () => {
         if (!referralLink) return;

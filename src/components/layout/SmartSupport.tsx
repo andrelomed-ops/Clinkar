@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ChevronUp, HelpCircle, X, Sparkles, ArrowRight, Send, Loader2, MessageCircle } from "lucide-react";
+import { ChevronUp, HelpCircle, X, ArrowRight, Send, Loader2, MessageCircle, CarFront } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { usePathname } from "next/navigation";
 import { generateOpsBrainResponse } from "@/lib/ops-brain";
@@ -13,7 +13,7 @@ interface ChatMessage {
     content: string;
 }
 
-export function MagicSupport() {
+export function SmartSupport() {
     const [isOpen, setIsOpen] = useState(false);
     const [messages, setMessages] = useState<ChatMessage[]>([]);
     const [input, setInput] = useState("");
@@ -31,13 +31,16 @@ export function MagicSupport() {
 
     useEffect(() => {
         if (isOpen && messages.length === 0) {
-            setMessages([{
-                id: 'welcome',
-                role: 'assistant',
-                content: getInitialAdvice(pathname)
-            }]);
+            const timer = setTimeout(() => {
+                setMessages([{
+                    id: 'welcome',
+                    role: 'assistant',
+                    content: getInitialAdvice(pathname)
+                }]);
+            }, 0);
+            return () => clearTimeout(timer);
         }
-    }, [isOpen]);
+    }, [isOpen, pathname]);
 
     useEffect(() => {
         if (scrollRef.current) {
@@ -94,24 +97,24 @@ export function MagicSupport() {
                         initial={{ opacity: 0, scale: 0.8, y: 20 }}
                         animate={{ opacity: 1, scale: 1, y: 0 }}
                         exit={{ opacity: 0, scale: 0.8, y: 20 }}
-                        className="w-80 md:w-96 bg-white dark:bg-zinc-900 border border-indigo-500/30 rounded-[2.5rem] shadow-[0_20px_60px_rgba(79,70,229,0.3)] flex flex-col overflow-hidden relative"
+                        className="w-80 md:w-96 h-[550px] bg-white/95 dark:bg-zinc-900/95 backdrop-blur-xl border border-border rounded-[2.5rem] shadow-[0_20px_50px_rgba(0,0,0,0.2)] flex flex-col overflow-hidden relative"
                     >
                         {/* Header */}
-                        <div className="bg-indigo-600 p-6 flex justify-between items-center relative overflow-hidden">
+                        <div className="bg-indigo-600 p-6 flex justify-between items-center relative overflow-hidden border-b border-indigo-500/20">
                             <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 blur-3xl -translate-y-16 translate-x-16" />
                             <div className="flex items-center gap-3 relative z-10">
-                                <div className="h-10 w-10 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center border border-white/30">
-                                    <Sparkles className="h-5 w-5 text-white" />
+                                <div className="h-10 w-10 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center border border-white/30 shadow-inner">
+                                    <CarFront className="h-5 w-5 text-white" />
                                 </div>
                                 <div>
-                                    <p className="text-white font-bold text-sm tracking-tight">Asistente StarterKar</p>
+                                    <p className="text-white font-bold text-sm tracking-tight drop-shadow-sm">Asistente StarterKar</p>
                                     <div className="flex items-center gap-1.5">
-                                        <div className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse" />
-                                        <span className="text-[10px] text-white/70 font-bold uppercase tracking-widest">En línea</span>
+                                        <div className="w-1.5 h-1.5 rounded-full bg-green-400 shadow-[0_0_8px_rgba(74,222,128,0.5)] animate-pulse" />
+                                        <span className="text-[10px] text-white/80 font-bold uppercase tracking-widest">En línea</span>
                                     </div>
                                 </div>
                             </div>
-                            <button onClick={() => setIsOpen(false)} className="h-8 w-8 rounded-full hover:bg-white/10 flex items-center justify-center transition-colors relative z-10 text-white">
+                            <button onClick={() => setIsOpen(false)} className="h-8 w-8 rounded-full hover:bg-white/10 flex items-center justify-center transition-colors relative z-10 text-white/70 hover:text-white">
                                 <X className="h-5 w-5" />
                             </button>
                         </div>
@@ -119,7 +122,7 @@ export function MagicSupport() {
                         {/* Chat Context / Messages */}
                         <div
                             ref={scrollRef}
-                            className="flex-1 h-96 overflow-y-auto p-6 space-y-4 custom-scrollbar bg-slate-50/50 dark:bg-zinc-950/50"
+                            className="flex-1 h-96 overflow-y-auto p-6 space-y-4 custom-scrollbar bg-transparent"
                         >
                             {messages.map((msg) => (
                                 <div
@@ -130,10 +133,10 @@ export function MagicSupport() {
                                     )}
                                 >
                                     <div className={cn(
-                                        "max-w-[85%] p-4 rounded-2xl text-xs font-medium leading-relaxed shadow-sm",
+                                        "max-w-[85%] p-4 rounded-2xl text-xs font-semibold leading-relaxed shadow-sm",
                                         msg.role === 'user'
                                             ? "bg-indigo-600 text-white rounded-tr-none"
-                                            : "bg-white dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300 border border-border/50 rounded-tl-none"
+                                            : "bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 border border-border/50 rounded-tl-none"
                                     )}>
                                         {msg.content}
                                     </div>
@@ -141,7 +144,7 @@ export function MagicSupport() {
                             ))}
                             {isTyping && (
                                 <div className="flex justify-start">
-                                    <div className="bg-white dark:bg-zinc-800 p-4 rounded-2xl rounded-tl-none border border-border/50 flex gap-1">
+                                    <div className="bg-zinc-100 dark:bg-zinc-800 p-4 rounded-2xl rounded-tl-none border border-border/50 flex gap-1">
                                         <div className="w-1.5 h-1.5 bg-indigo-400 rounded-full animate-bounce [animation-delay:-0.3s]" />
                                         <div className="w-1.5 h-1.5 bg-indigo-400 rounded-full animate-bounce [animation-delay:-0.15s]" />
                                         <div className="w-1.5 h-1.5 bg-indigo-400 rounded-full animate-bounce" />
@@ -151,7 +154,7 @@ export function MagicSupport() {
                         </div>
 
                         {/* Input & Human Action */}
-                        <div className="p-4 bg-white dark:bg-zinc-900 border-t border-border/50 space-y-4">
+                        <div className="p-4 bg-white/5 backdrop-blur-3xl border-t border-white/10 space-y-4">
                             <div className="relative flex items-center">
                                 <input
                                     type="text"
@@ -159,11 +162,11 @@ export function MagicSupport() {
                                     onChange={(e) => setInput(e.target.value)}
                                     onKeyDown={(e) => e.key === 'Enter' && handleSend()}
                                     placeholder="Escribe tu duda operativa..."
-                                    className="w-full h-12 pl-4 pr-12 rounded-2xl bg-secondary/50 dark:bg-zinc-800/50 border-none text-xs font-medium focus:ring-2 focus:ring-indigo-500/20"
+                                    className="w-full h-12 pl-4 pr-12 rounded-2xl bg-zinc-100 dark:bg-zinc-800 border border-border text-zinc-900 dark:text-zinc-100 text-xs font-bold focus:ring-2 focus:ring-indigo-500/20 transition-all"
                                 />
                                 <button
                                     onClick={handleSend}
-                                    className="absolute right-2 h-8 w-8 rounded-xl bg-indigo-600 text-white flex items-center justify-center hover:scale-105 active:scale-95 transition-all shadow-lg shadow-indigo-500/20"
+                                    className="absolute right-2 h-8 w-8 rounded-xl bg-indigo-600/90 text-white flex items-center justify-center hover:scale-105 active:scale-95 transition-all shadow-lg shadow-indigo-500/20"
                                 >
                                     <Send className="h-4 w-4" />
                                 </button>
@@ -173,12 +176,12 @@ export function MagicSupport() {
                                 <motion.div
                                     initial={{ opacity: 0, scale: 0.9 }}
                                     animate={{ opacity: 1, scale: 1 }}
-                                    className="p-3 bg-indigo-50 dark:bg-indigo-900/10 rounded-2xl border border-indigo-100 dark:border-indigo-900/30"
+                                    className="p-3 bg-indigo-600/20 backdrop-blur-md rounded-2xl border border-indigo-500/30"
                                 >
-                                    <p className="text-[10px] text-zinc-500 dark:text-zinc-400 text-center mb-3 font-medium italic">¿Todavía tienes dudas? Un experto puede ayudarte:</p>
+                                    <p className="text-[10px] text-white/60 text-center mb-3 font-medium italic">¿Todavía tienes dudas? Un experto puede ayudarte:</p>
                                     <button
                                         onClick={handleTalkToHuman}
-                                        className="w-full h-10 bg-indigo-600 text-white rounded-xl text-[10px] font-black uppercase tracking-widest flex items-center justify-center gap-2 hover:opacity-90 transition-all group shadow-lg shadow-indigo-600/20"
+                                        className="w-full h-10 bg-indigo-600 text-white rounded-xl text-[10px] font-black uppercase tracking-widest flex items-center justify-center gap-2 hover:opacity-90 transition-all group shadow-lg shadow-indigo-600/40"
                                     >
                                         <MessageCircle className="h-3.5 w-3.5" />
                                         Hablar con un Humano <ArrowRight className="h-3 w-3 group-hover:translate-x-1 transition-transform" />
@@ -199,7 +202,7 @@ export function MagicSupport() {
                 className="h-14 w-14 rounded-full bg-indigo-600 text-white shadow-2xl shadow-indigo-600/40 flex items-center justify-center relative group"
             >
                 <div className="absolute inset-0 rounded-full bg-indigo-600 animate-ping opacity-20 group-hover:opacity-0" />
-                {isOpen ? <X className="h-6 w-6" /> : <Sparkles className="h-6 w-6" />}
+                {isOpen ? <X className="h-6 w-6" /> : <CarFront className="h-6 w-6" />}
             </motion.button>
         </div >
     );

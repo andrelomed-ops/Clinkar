@@ -31,7 +31,7 @@ export function WarrantyExplanation() {
                     icon="📋"
                     title="Nivel 1: Transparencia (Incluido)"
                 >
-                    StarterKar garantiza la **veracidad del reporte de inspección**. Si el reporte declara un fallo, tú compras sabiendo la condición exacta ("As-Is"). Nuestra responsabilidad es que no haya sorpresas omitidas por negligencia del inspector.
+                    StarterKar garantiza la **veracidad del reporte de inspección**. Si el reporte declara un fallo, tú compras sabiendo la condición exacta (&quot;As-Is&quot;). Nuestra responsabilidad es que no haya sorpresas omitidas por negligencia del inspector.
                 </AccordionItem>
 
                 <AccordionItem

@@ -1,1 +1,0 @@
-export const SummarySidebar = (props: any) => null;

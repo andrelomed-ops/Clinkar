@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { X, Send, Sparkles, Car } from "lucide-react";
+import { X, Send, Car, CarFront } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { generateAIBrainResponse } from "@/lib/ai-brain"; // Import from library
 import { Vehicle } from "@/data/cars";
@@ -13,14 +13,14 @@ interface Message {
     recommendations?: any[];
 }
 
-interface StarterKarAIAdvisorProps {
+interface StarterKarAIBotProps {
     isOpen: boolean;
     onClose: () => void;
     onSelectCar?: (carId: string) => void;
     inventory?: Vehicle[];
 }
 
-export function StarterKarAIAdvisor({ isOpen, onClose, onSelectCar, inventory = [], mode = 'modal' }: StarterKarAIAdvisorProps & { mode?: 'modal' | 'embedded' }) {
+export function StarterKarAIBot({ isOpen, onClose, onSelectCar, inventory = [], mode = 'modal' }: StarterKarAIBotProps & { mode?: 'modal' | 'embedded' }) {
     const [input, setInput] = useState("");
     const [messages, setMessages] = useState<Message[]>([
         {
@@ -105,11 +105,11 @@ export function StarterKarAIAdvisor({ isOpen, onClose, onSelectCar, inventory = 
 
     // Conditional classes based on mode
     const wrapperClasses = mode === 'modal'
-        ? "fixed inset-0 z-[100] bg-background/80 backdrop-blur-md flex items-center justify-center p-4"
+        ? "fixed inset-0 z-[100] bg-zinc-950/20 backdrop-blur-md flex items-center justify-center p-4"
         : "w-full h-[600px] flex flex-col border border-border rounded-3xl shadow-sm bg-card overflow-hidden";
 
     const innerClasses = mode === 'modal'
-        ? "bg-background w-full max-w-md h-[600px] rounded-[2rem] shadow-2xl border border-border flex flex-col overflow-hidden animate-in zoom-in-95 duration-200"
+        ? "bg-white/10 dark:bg-zinc-900/10 backdrop-blur-[40px] w-full max-w-md h-[600px] rounded-[2.5rem] shadow-[0_20px_80px_rgba(0,0,0,0.3)] border border-white/30 flex flex-col overflow-hidden animate-in zoom-in-95 duration-300"
         : "flex flex-col h-full";
 
     return (
@@ -153,14 +153,14 @@ function Content({ onClose, messages, input, setInput, handleSend, isTyping, sea
     return (
         <>
             {/* Header */}
-            <div className={`p-4 border-b bg-primary text-primary-foreground flex justify-between items-center ${mode === 'embedded' ? 'rounded-t-3xl' : ''}`}>
+            <div className={`p-4 border-b bg-indigo-600/40 backdrop-blur-2xl text-white flex justify-between items-center ${mode === 'embedded' ? 'rounded-t-3xl' : ''}`}>
                 <div className="flex items-center gap-3">
-                    <div className="h-10 w-10 bg-white/20 rounded-full flex items-center justify-center">
-                        <Sparkles className="h-5 w-5 text-yellow-300" />
+                    <div className="h-10 w-10 bg-white/20 rounded-full flex items-center justify-center border border-white/10">
+                        <CarFront className="h-5 w-5 text-white" />
                     </div>
                     <div>
-                        <h3 className="font-bold">StarterKar AI</h3>
-                        <p className="text-xs text-primary-foreground/80">Asesor Predictivo</p>
+                        <h3 className="font-bold">Asesor StarterKar AI</h3>
+                        <p className="text-xs text-white/70">Asesor Predictivo Inteligente</p>
                     </div>
                 </div>
                 {mode === 'modal' && (
@@ -171,14 +171,14 @@ function Content({ onClose, messages, input, setInput, handleSend, isTyping, sea
             </div>
 
             {/* Chat Area */}
-            <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-secondary/30">
+            <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-transparent backdrop-blur-sm">
                 {messages.map((msg: Message) => (
                     <div key={msg.id} className={cn("flex flex-col max-w-[85%]", msg.role === 'user' ? "ml-auto items-end" : "mr-auto items-start")}>
                         <div className={cn(
-                            "p-4 rounded-2xl text-sm",
+                            "p-4 rounded-2xl text-sm font-black shadow-xl backdrop-blur-xl",
                             msg.role === 'user'
-                                ? "bg-primary text-primary-foreground rounded-br-none"
-                                : "bg-background border border-border rounded-bl-none shadow-sm"
+                                ? "bg-indigo-600/90 text-white rounded-tr-none border border-white/20"
+                                : "bg-white/30 dark:bg-zinc-800/30 text-zinc-950 dark:text-zinc-100 border border-white/40 rounded-bl-none"
                         )}>
                             {msg.content}
                         </div>
@@ -234,7 +234,7 @@ function Content({ onClose, messages, input, setInput, handleSend, isTyping, sea
             </div>
 
             {/* Input Area */}
-            <div className="p-4 bg-background border-t">
+            <div className="p-4 bg-white/5 dark:bg-zinc-900/5 backdrop-blur-3xl border-t border-white/10">
                 <form
                     onSubmit={(e) => { e.preventDefault(); handleSend(); }}
                     className="flex gap-2"

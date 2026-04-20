@@ -22,6 +22,11 @@ export interface Vehicle {
     passengers: number;
     vin?: string;
 
+    // Concurrency / Live Status
+    isCurrentlyLocked?: boolean;
+    lockedUntil?: string;
+    interestedPeople?: number;
+
     // Internal Financial Fields
     inspection_fee_paid?: boolean;
     success_fee_pending_amount?: number;

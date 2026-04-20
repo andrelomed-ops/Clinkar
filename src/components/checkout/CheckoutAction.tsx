@@ -4,7 +4,7 @@ import { useState } from "react";
 import { LogisticsWidget } from "./LogisticsWidget";
 import { WarrantySelector, WarrantyType } from "./WarrantySelector";
 import { startTransaction } from "@/app/actions/transaction";
-import { Loader2 } from "lucide-react";
+import { Loader2, ShieldCheck, MapPin } from "lucide-react";
 
 export function CheckoutAction({ carId, carPrice, carLocation }: { carId: string, carPrice: number, carLocation: string }) {
 
@@ -40,6 +40,17 @@ export function CheckoutAction({ carId, carPrice, carLocation }: { carId: string
                 onSelect={(w) => setWarranty(w)}
             />
 
+            {/* Mandatory Allied Workshop Delivery */}
+            <div className="bg-indigo-50/50 dark:bg-indigo-900/10 border border-indigo-200/50 dark:border-indigo-800/30 p-5 rounded-2xl flex items-start gap-4 shadow-sm">
+                <MapPin className="h-6 w-6 text-indigo-600 dark:text-indigo-400 mt-0.5 shrink-0" />
+                <div>
+                    <h4 className="font-bold text-sm text-indigo-900 dark:text-indigo-300">Entrega en Taller Aliado StarterKar</h4>
+                    <p className="text-xs text-indigo-700/80 dark:text-indigo-300/70 mt-1.5 leading-relaxed">
+                        Para garantizar la seguridad y bloquear fraudes, la entrega física del auto y revisión final se realiza en el taller certificado más cercano a tu ubicación. <b>Gratis.</b>
+                    </p>
+                </div>
+            </div>
+
             {/* Total Summary */}
             <div className="bg-zinc-900 text-white p-6 rounded-2xl shadow-xl">
                 <div className="flex justify-between items-center mb-2">
@@ -66,16 +77,17 @@ export function CheckoutAction({ carId, carPrice, carLocation }: { carId: string
                     <span className="font-black text-3xl">${total.toLocaleString()}</span>
                 </div>
 
-                <div className="text-xs text-zinc-500 mb-4 text-center">
-                    Al proceder, aceptas que se retenga este monto en Bóveda y nuestros <a href="/terms" target="_blank" className="underline hover:text-zinc-300">Términos del Servicio</a>.
+                <div className="text-xs text-zinc-400 mb-6 text-center leading-relaxed bg-zinc-800/50 p-3 rounded-xl border border-zinc-700">
+                    <div className="flex justify-center mb-2"><ShieldCheck className="h-5 w-5 text-emerald-400" /></div>
+                    <b>Pago Directo y Protegido:</b> No retenemos el valor del auto. Realizarás el pago directo al vendedor (SPEI o depósito bancario) <b>únicamente hasta que recibas y apruebes el coche físicamente</b>. Nuestro equipo presenciará y certificará la operación en Taller Aliado o sucursal bancaria para tu total seguridad.
                 </div>
 
                 <button
                     onClick={handleSubmit}
                     disabled={isPending}
-                    className="w-full h-14 bg-blue-600 hover:bg-blue-500 text-white font-black text-lg rounded-xl transition-all hover:scale-[1.02] shadow-lg shadow-blue-600/20 flex items-center justify-center gap-2"
+                    className="w-full h-14 bg-indigo-600 hover:bg-indigo-500 text-white font-black text-lg rounded-xl transition-all hover:scale-[1.02] shadow-lg shadow-indigo-600/20 flex items-center justify-center gap-2"
                 >
-                    {isPending ? <Loader2 className="animate-spin" /> : "Comprar Ahora"}
+                    {isPending ? <Loader2 className="animate-spin" /> : "Bloquear Auto y Agendar Entrega"}
                 </button>
             </div>
         </div>

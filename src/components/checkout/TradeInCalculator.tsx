@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Car, RefreshCcw, DollarSign, Calculator, ChevronRight, Gauge, Calendar, Zap, Loader2, Sparkles, CheckCircle2 } from "lucide-react";
+import { Car, RefreshCcw, DollarSign, Calculator, ChevronRight, Gauge, Calendar, Zap, Loader2, CarFront, CheckCircle2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
@@ -112,7 +112,7 @@ export function TradeInCalculator({ onAppraisalComplete }: TradeInCalculatorProp
                     <div className="py-8 text-center space-y-4">
                         <div className="relative h-20 w-20 mx-auto">
                             <Loader2 className="h-20 w-20 text-indigo-600 animate-spin" />
-                            <Sparkles className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-8 w-8 text-indigo-400 animate-pulse" />
+                            <CarFront className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-8 w-8 text-indigo-400 animate-pulse" />
                         </div>
                         <div className="space-y-1">
                             <p className="font-black text-lg">Analizando mercado regional...</p>

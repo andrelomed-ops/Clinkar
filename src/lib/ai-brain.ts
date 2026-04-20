@@ -18,7 +18,7 @@ export const generateAIBrainResponse = async (text: string, inventory: Vehicle[]
     if (supabase) {
         try {
             // RAG-Lite & Dynamic Query Construction
-            let query = supabase.from('cars').select('*').eq('status', 'available');
+            let query = (supabase.from('cars') as any).select('*').eq('status', 'available');
 
             // 1. Budget Extraction (Re-used for DB Query)
             const cleanStr = lower.replace(/,/g, '').replace(/\$/g, '');

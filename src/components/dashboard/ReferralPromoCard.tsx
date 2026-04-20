@@ -1,6 +1,6 @@
 "use client";
 
-import { Gift, ArrowRight, Sparkles, CheckCircle2 } from "lucide-react";
+import { Gift, ArrowRight, CarFront, CheckCircle2 } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 
@@ -13,7 +13,7 @@ export function ReferralPromoCard() {
             
             <div className="relative z-10">
                 <div className="flex items-center gap-2 mb-4">
-                    <Sparkles className="h-5 w-5 text-emerald-300 animate-pulse" />
+                    <CarFront className="h-5 w-5 text-emerald-300 animate-pulse" />
                     <span className="text-[10px] font-black uppercase tracking-[0.2em] text-emerald-200">Programa de Referidos PRO</span>
                 </div>
                 <h3 className="text-3xl font-black mb-3 tracking-tighter italic uppercase underline decoration-emerald-400 decoration-4 underline-offset-4">Gana con StarterKar</h3>

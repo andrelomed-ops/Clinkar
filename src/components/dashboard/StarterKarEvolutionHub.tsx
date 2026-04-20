@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Lightbulb, Rocket, Globe, Building2, Send, CheckCircle2, Sparkles, TrendingUp, X } from "lucide-react";
+import { Lightbulb, Rocket, Globe, Building2, Send, CheckCircle2, CarFront, TrendingUp, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 
@@ -49,7 +49,7 @@ export function StarterKarEvolutionHub() {
                         <div className="relative z-10 space-y-4">
                             <header className="space-y-1">
                                 <div className="flex items-center gap-2">
-                                    <Sparkles className="h-3 w-3 text-indigo-400" />
+                                    <CarFront className="h-3 w-3 text-indigo-400" />
                                     <h3 className="text-[8px] font-black uppercase tracking-[0.2em] text-indigo-400">Motor de Evolución</h3>
                                 </div>
                                 <h2 className="text-xl font-black text-white tracking-tight">¿Qué mejoramos hoy?</h2>
@@ -91,7 +91,7 @@ export function StarterKarEvolutionHub() {
                     className="h-14 w-14 bg-indigo-600 hover:bg-indigo-700 text-white rounded-full shadow-lg shadow-indigo-600/30 flex items-center justify-center transition-all hover:scale-110 active:scale-95 group relative overflow-hidden"
                 >
                     <div className="absolute inset-0 bg-gradient-to-tr from-white/0 to-white/20 opacity-0 group-hover:opacity-100 transition-opacity" />
-                    <Sparkles className="h-6 w-6 animate-pulse" />
+                    <CarFront className="h-6 w-6 animate-pulse" />
                 </button>
             )}
         </div>

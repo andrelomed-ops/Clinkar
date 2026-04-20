@@ -28,7 +28,7 @@ export class BaseService {
      * Prevents "Cannot read property of undefined" errors.
      */
     public static async validateAndHandle<T>(
-        query: Promise<{ data: any; error: PostgrestError | null }>,
+        query: any,
         schema: z.ZodType<T>
     ): Promise<ServiceResult<T>> {
         try {

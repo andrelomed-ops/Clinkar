@@ -1,6 +1,6 @@
 "use client";
 
-import { Shield, CheckCircle2, QrCode, Building2, User, Car, Calendar, Sparkles } from "lucide-react";
+import { Shield, CheckCircle2, QrCode, Building2, User, Car, Calendar, CarFront } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface ReferralCertificateProps {
@@ -90,7 +90,7 @@ export function ReferralCertificate({ folio, customerName, targetCar, agency, on
                     <footer className="pt-6 border-t border-dashed border-zinc-200 flex justify-between items-start bg-zinc-50/50 -mx-12 -mb-12 p-12 gap-8">
                         <div className="space-y-4 max-w-sm">
                             <p className="text-[8px] text-zinc-400 font-medium leading-relaxed italic uppercase tracking-tighter">
-                                * Este folio constituye una intención de compra vinculada al programa "Puente Financiero StarterKar". La validez del incentivo está sujeta a la ratificación de la venta de la unidad seminueva por parte del titular. StarterKar S.A. de C.V. actúa como intermediario certificado y garante del traslado de capital.
+                                * Este folio constituye una intención de compra vinculada al programa &quot;Puente Financiero StarterKar&quot;. La validez del incentivo está sujeta a la ratificación de la venta de la unidad seminueva por parte del titular. StarterKar S.A. de C.V. actúa como intermediario certificado y garante del traslado de capital.
                             </p>
                             <div className="flex gap-4 opacity-30 grayscale">
                                 <span className="text-[7px] font-black border border-zinc-400 px-1 rounded">PROFECO A-2026</span>
@@ -101,7 +101,7 @@ export function ReferralCertificate({ folio, customerName, targetCar, agency, on
                             onClick={() => window.print()}
                             className="bg-zinc-950 text-white px-8 h-12 rounded-xl font-black text-xs uppercase tracking-widest hover:bg-zinc-800 transition-all flex items-center gap-2 shadow-xl shrink-0"
                         >
-                            Imprimir Certificado <Sparkles className="h-4 w-4" />
+                            Imprimir Certificado <CarFront className="h-4 w-4" />
                         </button>
                     </footer>
                 </div>

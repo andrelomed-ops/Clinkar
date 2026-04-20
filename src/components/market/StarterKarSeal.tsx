@@ -10,25 +10,25 @@ interface StarterKarSealProps {
     score?: number;
 }
 
-export function StarterKarSeal({ variant = "compact", className, score }: StarterKarSealProps) {
-    // Unique Minimalist Logo: A stylized "C" that forms a Shield/Safety Ring
-    const BrandMark = ({ size = "md" }: { size?: "sm" | "md" | "lg" }) => {
-        const dims = size === "sm" ? "h-5 w-5" : size === "md" ? "h-8 w-8" : "h-12 w-12";
-        const iconSize = size === "sm" ? "h-3 w-3" : size === "md" ? "h-5 w-5" : "h-7 w-7";
+const BrandMark = ({ size = "md" }: { size?: "sm" | "md" | "lg" }) => {
+    const dims = size === "sm" ? "h-5 w-5" : size === "md" ? "h-8 w-8" : "h-12 w-12";
+    const iconSize = size === "sm" ? "h-3 w-3" : size === "md" ? "h-5 w-5" : "h-7 w-7";
 
-        return (
-            <div className={cn("relative flex items-center justify-center shrink-0", dims)}>
-                {/* Outer Shield Shape / Ring */}
-                <div className="absolute inset-0 rounded-full border-[2px] border-indigo-500/10" />
+    return (
+        <div className={cn("relative flex items-center justify-center shrink-0", dims)}>
+            {/* Outer Shield Shape / Ring */}
+            <div className="absolute inset-0 rounded-full border-[2px] border-indigo-500/10" />
 
-                {/* Core Shield */}
-                <div className="relative z-10 bg-indigo-600 rounded-lg p-1.5 shadow-lg shadow-indigo-600/30 group-hover:scale-110 transition-transform flex items-center justify-center rotate-3 group-hover:rotate-0">
-                    <Shield className={cn("text-white fill-white/20", iconSize)} />
-                    <Check className={cn("absolute text-white stroke-[4px]", size === "sm" ? "h-2 w-2" : size === "md" ? "h-3 w-3" : "h-4 w-4")} />
-                </div>
+            {/* Core Shield */}
+            <div className="relative z-10 bg-indigo-600 rounded-lg p-1.5 shadow-lg shadow-indigo-600/30 group-hover:scale-110 transition-transform flex items-center justify-center rotate-3 group-hover:rotate-0">
+                <Shield className={cn("text-white fill-white/20", iconSize)} />
+                <Check className={cn("absolute text-white stroke-[4px]", size === "sm" ? "h-2 w-2" : size === "md" ? "h-3 w-3" : "h-4 w-4")} />
             </div>
-        );
-    };
+        </div>
+    );
+};
+
+export function StarterKarSeal({ variant = "compact", className, score }: StarterKarSealProps) {
 
     if (variant === "compact") {
         return (

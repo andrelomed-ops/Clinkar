@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useMemo, useEffect } from "react";
-import { Shield, Search, Filter, MapPin, Tag, Menu, Sparkles, SlidersHorizontal, ArrowDownWideNarrow, Heart, ChevronLeft, ChevronRight } from "lucide-react";
+import { Shield, Search, Filter, MapPin, Tag, Menu, SlidersHorizontal, ArrowDownWideNarrow, Heart, ChevronLeft, ChevronRight, CarFront } from "lucide-react";
 import Link from "next/link";
 import dynamic from "next/dynamic";
 import { MarketFilters } from "@/components/market/MarketFilters";
@@ -15,10 +15,11 @@ import { CarCard } from "@/components/market/CarCard";
 import { Navbar } from "@/components/ui/navbar";
 import { Skeleton } from "@/components/ui/skeleton";
 
-const StarterKarAIAdvisor = dynamic(
-    () => import("@/components/market/StarterKarAIAdvisor").then((mod) => mod.StarterKarAIAdvisor),
+// Cache Buster: v1.0.3 - Design Restoration & Runtime Fix (Build ID: 1776709215)
+const StarterKarAIBot = dynamic(
+    () => import("@/components/market/StarterKarAIBot").then((mod) => mod.StarterKarAIBot),
     { 
-        loading: () => <div className="h-96 animate-pulse bg-muted rounded-xl" />,
+        loading: () => <div className="h-96 animate-pulse bg-muted/20 backdrop-blur-sm rounded-xl" />,
         ssr: false 
     }
 );
@@ -100,6 +101,8 @@ export default function BuyPage() {
         async function fetchCars() {
             try {
                 // Attempt to fetch from Supabase
+                const { LockService } = await import('@/services/LockService');
+                const lockStats = await LockService.getGlobalConcurrencyStats(supabase);
                 const { data, error } = await supabase
                     .from('cars')
                     .select('*')
@@ -123,14 +126,28 @@ export default function BuyPage() {
                         transmission: 'Automática',
                         fuel: 'Gasolina',
                         condition: 'Seminuevo',
-                        has_starterkar_seal: dbCar.has_starterkar_seal, // Map from DB
+                        has_starterkar_seal: dbCar.has_starterkar_seal,
+                        isCurrentlyLocked: lockStats[dbCar.id]?.isLocked || false,
+                        interestedPeople: lockStats[dbCar.id]?.interestedCount || 0
                     }));
                     setCars(mappedCars);
                 } else {
-                    // console.log("No cars in DB, using Mock Data.");
+                    const enrichedMockCars = ALL_CARS.map(car => ({
+                        ...car,
+                        isCurrentlyLocked: lockStats[car.id]?.isLocked || false,
+                        interestedPeople: lockStats[car.id]?.interestedCount || 0
+                    }));
+                    setCars(enrichedMockCars);
                 }
             } catch (e) {
-                // console.error("Supabase fetch failed, using fallback:", e);
+                const { LockService } = await import('@/services/LockService');
+                const lockStats = await LockService.getGlobalConcurrencyStats(supabase);
+                const enrichedMockCars = ALL_CARS.map(car => ({
+                    ...car,
+                    isCurrentlyLocked: lockStats[car.id]?.isLocked || false,
+                    interestedPeople: lockStats[car.id]?.interestedCount || 0
+                }));
+                setCars(enrichedMockCars);
             } finally {
                 setIsLoading(false);
             }
@@ -256,7 +273,7 @@ export default function BuyPage() {
                 <div className="flex flex-col lg:flex-row gap-8">
 
                     {/* Sidebar Filters - Desktop (Reused Component) */}
-                    <aside className="hidden md:block w-72 shrink-0 space-y-8 sticky top-24 h-[calc(100vh-8rem)] overflow-y-auto custom-scrollbar">
+                    <aside className="hidden md:block w-72 shrink-0 space-y-8">
 
 
 
@@ -288,7 +305,7 @@ export default function BuyPage() {
                                 <div className="flex items-center gap-3 relative z-10">
                                     {/* Icon Container - Jewel like */}
                                     <div className="h-9 w-9 rounded-xl bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center shadow-lg shadow-indigo-500/30 group-hover:scale-105 transition-transform duration-300">
-                                        <Sparkles className="h-5 w-5 text-white animate-pulse" style={{ animationDuration: '3s' }} />
+                                        <CarFront className="h-5 w-5 text-white animate-pulse" style={{ animationDuration: '3s' }} />
                                     </div>
 
                                     {/* Text Content - Sober & Clean */}
@@ -304,7 +321,7 @@ export default function BuyPage() {
 
                                 {/* Right Element: Call to Action Arrow */}
                                 <div className="h-8 w-8 rounded-full bg-indigo-50 dark:bg-indigo-500/10 flex items-center justify-center group-hover:bg-indigo-500 group-hover:text-white transition-all duration-300 relative z-10">
-                                    <Sparkles className="h-4 w-4 opacity-50 group-hover:opacity-100 transition-opacity" />
+                                    <CarFront className="h-4 w-4 opacity-50 group-hover:opacity-100 transition-opacity" />
                                 </div>
                             </button>
 
@@ -453,7 +470,7 @@ export default function BuyPage() {
                 </div>
             )}
             {/* AI COMPONENT (Modal Mode) */}
-            <StarterKarAIAdvisor
+            <StarterKarAIBot
                 isOpen={showAI}
                 onClose={() => setShowAI(false)}
                 inventory={cars}

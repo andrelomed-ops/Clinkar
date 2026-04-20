@@ -1,12 +1,17 @@
 
 "use client";
 
-import React, { useState, useMemo } from 'react';
-import { ArrowRight, Banknote, ShieldCheck, Sparkles, RefreshCw, BarChart3 } from 'lucide-react';
+import React, { useState, useMemo, useEffect } from 'react';
+import { ArrowRight, Banknote, ShieldCheck, CarFront, RefreshCw, BarChart3 } from 'lucide-react';
 import { ALL_CARS } from "@/data/cars";
 
 export const InstantQuote = () => {
     const [step, setStep] = useState<'INPUT' | 'ANALYZING' | 'RESULT'>('INPUT');
+    const [isMounted, setIsMounted] = useState(false);
+
+    useEffect(() => {
+        setIsMounted(true);
+    }, []);
 
     // Form State
     const [year, setYear] = useState("");
@@ -64,17 +69,15 @@ export const InstantQuote = () => {
 
     return (
         <div className="relative bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 p-8 rounded-[2rem] shadow-2xl space-y-8 transition-all min-h-[480px] flex flex-col justify-center overflow-hidden">
-
-            {/* Background Decor */}
-            <div className={`absolute top-0 right-0 p-12 transition-opacity duration-1000 ${step === 'ANALYZING' ? 'opacity-100' : 'opacity-0'}`}>
-                <div className="h-32 w-32 bg-indigo-500 rounded-full blur-3xl opacity-20 animate-pulse" />
-            </div>
-
-            {step === 'INPUT' && (
+            {!isMounted ? (
+                <div className="flex items-center justify-center h-full">
+                    <RefreshCw className="h-8 w-8 animate-spin text-indigo-500" />
+                </div>
+            ) : step === 'INPUT' && (
                 <div className="animate-in fade-in zoom-in duration-500 space-y-6">
                     <div>
                         <div className="inline-flex items-center gap-2 mb-2 text-indigo-600 dark:text-indigo-400">
-                            <Sparkles className="h-4 w-4" />
+                            <CarFront className="h-4 w-4" />
                             <span className="text-xs font-bold uppercase tracking-wider">Algoritmo Neural v2.0</span>
                         </div>
                         <h3 className="text-3xl font-black tracking-tight leading-none text-zinc-900 dark:text-white">
@@ -138,7 +141,7 @@ export const InstantQuote = () => {
                         <div className="absolute inset-0 border-4 border-zinc-200 dark:border-zinc-800 rounded-full" />
                         <div className="absolute inset-0 border-4 border-indigo-500 rounded-full border-t-transparent animate-spin" />
                         <div className="absolute inset-0 flex items-center justify-center">
-                            <Sparkles className="h-8 w-8 text-indigo-500 animate-pulse" />
+                            <CarFront className="h-8 w-8 text-indigo-500 animate-pulse" />
                         </div>
                     </div>
                     <div className="space-y-2">

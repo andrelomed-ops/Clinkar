@@ -7,7 +7,7 @@ import {
     History,
     Settings2,
     ArrowRight,
-    Sparkles,
+    CarFront,
     UserCog,
     Download,
     BellRing,
@@ -161,11 +161,11 @@ export function PostSaleEcosystem({ transactionId, state = "CDMX" }: { transacti
                 {requestedService === 'endoso_guia' && (
                     <div className="mt-8 p-8 bg-zinc-950 border border-indigo-500/20 rounded-3xl animate-in slide-in-from-top-4">
                         <div className="flex items-center gap-3 mb-6">
-                            <Sparkles className="h-5 w-5 text-indigo-400" />
+                            <CarFront className="h-5 w-5 text-indigo-400" />
                             <h4 className="font-bold text-white uppercase tracking-widest text-sm">Guía de Endoso Sugerida (IA)</h4>
                         </div>
                         <div className="bg-zinc-900 border border-zinc-800 p-6 rounded-2xl font-cursive text-zinc-300 italic leading-relaxed text-sm shadow-inner">
-                            "Por medio del presente, endoso la propiedad del vehículo descrito al calce a favor del C. [Nombre del Comprador], por valor recibido el día [Fecha] conforme al Art. 391 del Código de Comercio."
+                            &quot;Por medio del presente, endoso la propiedad del vehículo descrito al calce a favor del C. [Nombre del Comprador], por valor recibido el día [Fecha] conforme al Art. 391 del Código de Comercio.&quot;
                         </div>
                         <p className="text-[10px] text-zinc-500 mt-4 leading-relaxed italic">
                             Copia este párrafo al reverso de tu factura original y asegúrate de que la firma coincida con tu identificación oficial para evitar rechazos en el cambio de propietario.

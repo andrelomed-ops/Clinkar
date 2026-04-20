@@ -3,6 +3,7 @@ import { SupabaseClient } from '@supabase/supabase-js';
 import { BaseService } from './BaseService';
 import { CarSchema } from './schemas';
 import { Logger } from '@/lib/logger';
+import { LockService } from './LockService';
 
 export type Car = Database['public']['Tables']['cars']['Row'];
 
@@ -22,13 +23,18 @@ export class CarService {
             .eq('id', id)
             .maybeSingle();
 
-        const result = await BaseService.validateAndHandle(query as any, CarSchema);
+        const result = await BaseService.validateAndHandle(query, CarSchema);
 
         if (!result.success) {
             return null;
         }
 
-        const d = result.data as any;
+        const d = result.data;
+
+        // Fetch Lock and Waitlist concurrency status
+        const lockStatus = await LockService.checkLock(supabase, id);
+        const waitlistCount = await LockService.getWaitlistCount(supabase, id);
+
         // Map DB fields to UI expected format (Mock compatibility)
         return {
             ...d,
@@ -37,9 +43,13 @@ export class CarService {
             transmission: d.transmission || 'Automatic',
             // Parse JSONB fields or fallback
             sensory: d.sensory_data || {},
-            priceEquation: d.market_data?.priceEquation || {},
-            marketValue: d.market_data?.marketValue || d.price,
-            digitalPassport: d.digital_passport_data || null
+            priceEquation: (d.market_data as any)?.priceEquation || {},
+            marketValue: (d.market_data as any)?.marketValue || d.price,
+            digitalPassport: d.digital_passport_data || null,
+            // Enhanced Concurrency Info
+            isCurrentlyLocked: lockStatus.isLocked,
+            lockedUntil: lockStatus.expiresAt,
+            interestedPeople: waitlistCount + (lockStatus.isLocked ? 1 : 0) // The one buying + waitlist
         };
     }
 
@@ -54,13 +64,11 @@ export class CarService {
             return [];
         }
 
-        return data as any[];
+        return data || [];
     }
 
     static async updateCarStatus(supabase: SupabaseClient<Database>, id: string, status: string): Promise<boolean> {
-        const { error } = await supabase
-            .from('cars')
-            // @ts-expect-error - Status es string válido
+        const { error } = await (supabase.from('cars') as any)
             .update({ status: status })
             .eq('id', id);
 
