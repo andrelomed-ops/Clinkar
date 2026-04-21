@@ -116,6 +116,11 @@ export default function SellPage() {
                     </div>
 
                     <div className="grid md:grid-cols-3 gap-8">
+                        <div className="p-8 glass-card rounded-premium border-border/40 hover:border-indigo-500/30 transition-all duration-500 group animate-reveal stagger-1">
+                            <div className="h-12 w-12 bg-white dark:bg-zinc-800 rounded-2xl flex items-center justify-center mb-6 shadow-sm group-hover:scale-110 transition-transform">
+                                <Search className="h-6 w-6 text-indigo-600 dark:text-indigo-400" />
+                            </div>
+                            <h3 className="font-bold text-xl mb-3 text-foreground">1. Cotización Instantánea</h3>
                             <p className="text-muted-foreground text-sm leading-relaxed">Paso 1: Clasifica tu auto y recibe una cotización base del Libro Negro. Si te gusta, seguimos adelante.</p>
                         </div>
 

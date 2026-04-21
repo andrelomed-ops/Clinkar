@@ -152,9 +152,7 @@ export default function SellOnboardingPage() {
                         </div>
                         <h2 className="text-3xl font-black text-zinc-900 dark:text-white">¡Inspección Agendada!</h2>
                         <p className="text-zinc-500 dark:text-zinc-400 leading-relaxed">
-                            {inspectionType === 'home' 
-                                ? "Nuestro inspector acudirá a la dirección indicada en el horario seleccionado."
-                                : `Te esperamos en ${selectedPartner?.name} en la fecha y hora seleccionada.`} 
+                            Te esperamos en <span className="font-bold">{selectedPartner?.name}</span> en la fecha y hora seleccionada para tu inspección de 150 puntos. 
                             Una vez aprobada, tu {make} {model} será publicado oficialmente.
                         </p>
                         <p className="text-xs font-bold text-zinc-400 pt-4 uppercase tracking-wider animate-pulse">
@@ -228,14 +226,11 @@ export default function SellOnboardingPage() {
                                             </select>
                                             <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 h-5 w-5 text-zinc-400 pointer-events-none" />
                                         </div>
-                                        {selectedPartner && (
-                                            <div className="p-4 bg-zinc-50 dark:bg-zinc-800/80 rounded-xl border border-zinc-200 dark:border-zinc-700 flex items-start gap-3">
-                                                <MapPin className="h-4 w-4 text-indigo-500 mt-1 shrink-0" />
-                                                <p className="text-xs font-medium text-zinc-600 dark:text-zinc-400 leading-relaxed">
-                                                    {selectedPartner.address}, {selectedPartner.city}
-                                                </p>
-                                            </div>
-                                        )}
+                                    <div className="p-4 bg-zinc-50 dark:bg-zinc-800/80 rounded-xl border border-zinc-200 dark:border-zinc-700 flex items-start gap-3">
+                                        <MapPin className="h-4 w-4 text-indigo-500 mt-1 shrink-0" />
+                                        <p className="text-xs font-medium text-zinc-600 dark:text-zinc-400 leading-relaxed">
+                                            {selectedPartner.address}, {selectedPartner.city}
+                                        </p>
                                     </div>
                                 )}
 
@@ -245,7 +240,8 @@ export default function SellOnboardingPage() {
                                         <span className="font-black">${INSPECTION_BASE_COST.toLocaleString()}</span>
                                     </div>
                                     <div className="h-px bg-indigo-200 dark:bg-indigo-800 my-4" />
-                                        <span className="text-xs font-black uppercase tracking-widest text-indigo-900 dark:text-indigo-300">Costo Certificación</span>
+                                    <div className="flex justify-between items-center">
+                                        <span className="text-sm font-black uppercase tracking-widest text-indigo-900 dark:text-indigo-300">Costo Certificación</span>
                                         <span className="font-black text-indigo-900 dark:text-indigo-200">${INSPECTION_BASE_COST.toLocaleString()}</span>
                                     </div>
                                     <div className="h-px bg-indigo-200 dark:bg-indigo-800/50 my-4" />
