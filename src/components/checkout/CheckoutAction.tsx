@@ -112,17 +112,26 @@ export function CheckoutAction({ carId, carPrice, carLocation }: { carId: string
                 )}
                 {deliveryType === 'home' && (
                     <div className="flex justify-between items-center mb-2 text-sm text-indigo-400 animate-in fade-in">
-                        <span>Entrega a Domicilio</span>
-                        <span className="font-medium">+$500</span>
+                        <span className="flex items-center gap-2">
+                            Entrega a Domicilio 
+                            <span className="text-[10px] bg-indigo-500/20 px-2 py-0.5 rounded-full font-black uppercase">En Sitio</span>
+                        </span>
+                        <span className="font-medium">$500 (COD)</span>
                     </div>
                 )}
 
                 <div className="h-px bg-zinc-700 my-4" />
 
-                <div className="flex justify-between items-baseline mb-6">
-                    <span className="font-bold text-lg">Total a Pagar</span>
-                    <span className="font-black text-3xl">${total.toLocaleString()}</span>
+                <div className="flex justify-between items-baseline mb-2">
+                    <span className="font-bold text-lg">Total Plataforma</span>
+                    <span className="font-black text-3xl">${(carPrice + (logistics?.cost || 0) + (warranty?.cost || 0)).toLocaleString()}</span>
                 </div>
+                
+                {deliveryType === 'home' && (
+                    <p className="text-[10px] text-zinc-500 font-medium mb-6 italic">
+                        * Los $500 de entrega se pagan directo al personal al recibir el auto.
+                    </p>
+                )}
 
                 <div className="text-xs text-zinc-400 mb-6 text-center leading-relaxed bg-zinc-800/50 p-3 rounded-xl border border-zinc-700">
                     <div className="flex justify-center mb-2"><ShieldCheck className="h-5 w-5 text-emerald-400" /></div>

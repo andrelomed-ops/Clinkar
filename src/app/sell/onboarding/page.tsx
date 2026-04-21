@@ -4,9 +4,16 @@ import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { createBrowserClient } from "@/lib/supabase/client";
 import { NotificationService } from "@/services/NotificationService";
-import { ShieldCheck, Calendar, MapPin, CheckCircle2, Home, Warehouse, Clock } from "lucide-react";
+import { ShieldCheck, Calendar, MapPin, CheckCircle2, Home, Warehouse, Clock, ChevronDown } from "lucide-react";
 import { Navbar } from "@/components/ui/navbar";
 import { cn } from "@/lib/utils";
+
+interface Partner {
+    id: string;
+    name: string;
+    address: string;
+    city: string;
+}
 
 export default function SellOnboardingPage() {
     const router = useRouter();
@@ -16,6 +23,10 @@ export default function SellOnboardingPage() {
     const [loading, setLoading] = useState(false);
     const [success, setSuccess] = useState(false);
     const [inspectionType, setInspectionType] = useState<'workshop' | 'home'>('workshop');
+    
+    // Partners data
+    const [partners, setPartners] = useState<Partner[]>([]);
+    const [selectedPartner, setSelectedPartner] = useState<Partner | null>(null);
 
     // Car Details
     const year = searchParams.get('year') || "";
@@ -31,10 +42,26 @@ export default function SellOnboardingPage() {
     const HOME_SERVICE_FEE = 500;
     const totalCost = inspectionType === 'home' ? INSPECTION_BASE_COST + HOME_SERVICE_FEE : INSPECTION_BASE_COST;
 
+    useEffect(() => {
+        const fetchPartners = async () => {
+            const { data } = await supabase
+                .from('partners')
+                .select('*')
+                .eq('is_active', true);
+            if (data) setPartners(data);
+        };
+        fetchPartners();
+    }, [supabase]);
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         
-        // Time validation (10:00 - 16:00)
+        // Validation
+        if (inspectionType === 'workshop' && !selectedPartner) {
+            alert("Por favor selecciona un Taller Aliado para la revisión.");
+            return;
+        }
+
         const selectedDate = new Date(date);
         const hours = selectedDate.getHours();
         
@@ -53,6 +80,10 @@ export default function SellOnboardingPage() {
                 return;
             }
 
+            const finalAddress = inspectionType === 'home' 
+                ? address 
+                : `${selectedPartner?.name} - ${selectedPartner?.address}, ${selectedPartner?.city}`;
+
             // 1. Create the car in Draft/Pending status
             const { data: carData, error: carError } = await supabase.from('cars').insert({
                 seller_id: user.id,
@@ -61,7 +92,7 @@ export default function SellOnboardingPage() {
                 year: parseInt(year) || new Date().getFullYear(),
                 price: parseInt(priceMin) * 1.05,
                 status: 'pending_inspection',
-                description: `Inspección de 150 puntos (${inspectionType === 'home' ? 'A domicilio' : 'En taller'}). Ubicación: ${inspectionType === 'home' ? address : 'Por asignar (Taller Aliado)'}`
+                description: `Inspección de 150 puntos (${inspectionType === 'home' ? 'A domicilio' : 'En taller'}). Ubicación: ${finalAddress}`
             }).select('id').single();
 
             if (carError || !carData) throw new Error("Error creando pre-registro del auto.");
@@ -72,7 +103,7 @@ export default function SellOnboardingPage() {
                 type: '150_point_inspection',
                 status: 'SCHEDULED',
                 scheduled_at: new Date(date).toISOString(),
-                partner_id: inspectionType === 'workshop' ? 'ALLIED_WORKSHOP' : null // Marker for admin
+                partner_id: inspectionType === 'workshop' ? selectedPartner?.id : null
             });
 
             if (ticketError) throw new Error("Error agendando inspección.");
@@ -83,13 +114,14 @@ export default function SellOnboardingPage() {
                 entityType: "SERVICE_TICKETS",
                 entityId: carData.id,
                 metadata: { 
-                    address: inspectionType === 'home' ? address : 'Taller Aliado', 
+                    address: finalAddress, 
                     type: inspectionType,
                     make, 
                     model, 
                     year, 
                     seller_id: user.id,
-                    total_to_pay: totalCost 
+                    total_to_pay: totalCost,
+                    payment_method: "ONLINE_OR_ON_SITE" // To be clarified by admin
                 }
             });
 
@@ -121,7 +153,7 @@ export default function SellOnboardingPage() {
                         <p className="text-zinc-500 dark:text-zinc-400 leading-relaxed">
                             {inspectionType === 'home' 
                                 ? "Nuestro inspector acudirá a la dirección indicada en el horario seleccionado."
-                                : "Te contactaremos vía WhatsApp para indicarte cuál es el Taller Aliado más cercano a tu ubicación."} 
+                                : `Te esperamos en ${selectedPartner?.name} en la fecha y hora seleccionada.`} 
                             Una vez aprobada, tu {make} {model} será publicado oficialmente.
                         </p>
                         <p className="text-xs font-bold text-zinc-400 pt-4 uppercase tracking-wider animate-pulse">
@@ -218,11 +250,35 @@ export default function SellOnboardingPage() {
                                         />
                                     </div>
                                 ) : (
-                                    <div className="p-6 bg-zinc-50 dark:bg-zinc-800/50 border-2 border-dashed border-zinc-200 dark:border-zinc-700 rounded-2xl text-center">
-                                        <MapPin className="h-8 w-8 text-zinc-300 mx-auto mb-3" />
-                                        <p className="text-sm font-medium text-zinc-600 dark:text-zinc-400">
-                                            Tras agendar el horario, te contactaremos para asignarte el **Taller Aliado** más cercano a tu ubicación.
-                                        </p>
+                                    <div className="space-y-4 animate-in fade-in slide-in-from-top-2 duration-300">
+                                        <label className="flex items-center gap-2 text-sm font-bold text-zinc-700 dark:text-zinc-300 mb-3">
+                                            <MapPin className="h-4 w-4" />
+                                            Selecciona el Taller Aliado más cercano
+                                        </label>
+                                        <div className="relative">
+                                            <select
+                                                required
+                                                onChange={(e) => {
+                                                    const partner = partners.find(p => p.id === e.target.value);
+                                                    if (partner) setSelectedPartner(partner);
+                                                }}
+                                                className="w-full appearance-none bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-300 dark:border-zinc-700 rounded-xl px-6 py-4 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 font-medium transition-all"
+                                            >
+                                                <option value="">Selecciona un taller...</option>
+                                                {partners.map(p => (
+                                                    <option key={p.id} value={p.id}>{p.name} ({p.city})</option>
+                                                ))}
+                                            </select>
+                                            <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 h-5 w-5 text-zinc-400 pointer-events-none" />
+                                        </div>
+                                        {selectedPartner && (
+                                            <div className="p-4 bg-zinc-50 dark:bg-zinc-800/80 rounded-xl border border-zinc-200 dark:border-zinc-700 flex items-start gap-3">
+                                                <MapPin className="h-4 w-4 text-indigo-500 mt-1 shrink-0" />
+                                                <p className="text-xs font-medium text-zinc-600 dark:text-zinc-400 leading-relaxed">
+                                                    {selectedPartner.address}, {selectedPartner.city}
+                                                </p>
+                                            </div>
+                                        )}
                                     </div>
                                 )}
 
