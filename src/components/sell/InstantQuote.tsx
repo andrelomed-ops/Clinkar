@@ -4,6 +4,7 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { ArrowRight, Banknote, ShieldCheck, CarFront, RefreshCw, BarChart3 } from 'lucide-react';
 import { ALL_CARS } from "@/data/cars";
+import { PRICING_DATABASE, SEGMENT_PRICING } from "@/lib/pricing-data";
 
 export const InstantQuote = () => {
     const [step, setStep] = useState<'INPUT' | 'ANALYZING' | 'RESULT'>('INPUT');
@@ -17,42 +18,66 @@ export const InstantQuote = () => {
     const [year, setYear] = useState("");
     const [make, setMake] = useState("");
     const [model, setModel] = useState("");
+    const [version, setVersion] = useState("");
     const [mileage, setMileage] = useState("");
 
-    const [quote, setQuote] = useState<{ min: number, max: number, confidence: number } | null>(null);
+    const [quote, setQuote] = useState<{ min: number, max: number, confidence: number, isEstimate: boolean } | null>(null);
 
     const availableMakes = useMemo(() => {
-        const makes = new Set(ALL_CARS.map(car => car.make));
-        return Array.from(makes).sort();
+        const dbMakes = Object.keys(PRICING_DATABASE);
+        const inventoryMakes = Array.from(new Set(ALL_CARS.map(car => car.make)));
+        return Array.from(new Set([...dbMakes, ...inventoryMakes])).sort();
     }, []);
+
+    const availableVersions = useMemo(() => {
+        if (!make || !model || !year) return [];
+        return PRICING_DATABASE[make]?.[model]?.[parseInt(year)]?.versions || [];
+    }, [make, model, year]);
 
     const handleCalculate = () => {
         setStep('ANALYZING');
 
-        // Simulate AI Processing Steps
         setTimeout(() => {
-            // Logic: Base price from inventory or default, adjusted by mileage/year
-            const brandCars = ALL_CARS.filter(c => c.make === make);
-            let basePrice = brandCars.length > 0
-                ? brandCars.reduce((acc, c) => acc + c.price, 0) / brandCars.length
-                : 350000; // Default if brand not found
+            // 1. Try exact match in PRICING_DATABASE
+            const dbData = PRICING_DATABASE[make]?.[model]?.[parseInt(year)];
+            const selectedVersionData = dbData?.versions.find(v => v.name === version);
 
-            // Year Adjustment (Assuming 2025 is base, -5% per year old)
-            const age = 2025 - parseInt(year);
-            basePrice = basePrice * Math.pow(0.95, age);
+            let basePrice = 0;
+            let isEstimate = false;
 
-            // Mileage Adjustment (Assuming 15k km/year is standard)
-            const standardMileage = age * 15000;
-            const inputMileage = parseInt(mileage) || standardMileage;
-            if (inputMileage > standardMileage) {
-                basePrice = basePrice * 0.90; // High mileage penalty
+            if (selectedVersionData) {
+                basePrice = selectedVersionData.basePrice;
+            } else {
+                // 2. Fallback to Segment Estimation or Inventory Average
+                const brandCars = ALL_CARS.filter(c => c.make === make);
+                basePrice = brandCars.length > 0
+                    ? brandCars.reduce((acc, c) => acc + c.price, 0) / brandCars.length
+                    : 350000;
+                
+                // Adjustment for old years if using avg
+                const age = 2024 - parseInt(year);
+                basePrice = basePrice * Math.pow(0.92, age); // 8% depreciation
+                isEstimate = true;
             }
 
-            // Create a range (+/- 5%)
+            // 3. Mileage Adjustment (15k km/year standard)
+            const age = 2024 - parseInt(year);
+            const standardMileage = Math.max(1, age) * 15000;
+            const inputMileage = parseInt(mileage) || standardMileage;
+            
+            if (inputMileage > standardMileage) {
+                const diff = inputMileage - standardMileage;
+                basePrice = basePrice - (diff * 0.5); // $0.50 penalty per km
+            } else if (inputMileage < standardMileage && inputMileage > 0) {
+                const diff = standardMileage - inputMileage;
+                basePrice = basePrice + (diff * 0.2); // Smaller bonus for low mileage
+            }
+
             setQuote({
-                min: Math.floor(basePrice * 0.85), // Buy price is usually lower than retail
-                max: Math.floor(basePrice * 0.95),
-                confidence: 96
+                min: Math.floor(basePrice * 0.88),
+                max: Math.floor(basePrice * 0.98),
+                confidence: selectedVersionData ? 98 : 75,
+                isEstimate
             });
             setStep('RESULT');
         }, 2500);
@@ -64,6 +89,7 @@ export const InstantQuote = () => {
         setYear("");
         setMake("");
         setModel("");
+        setVersion("");
         setMileage("");
     };
 
@@ -111,11 +137,32 @@ export const InstantQuote = () => {
 
                     <input
                         type="text"
-                        placeholder="Modelo (Ej. CX-5 Grand Touring)"
+                        placeholder="Modelo (Ej. Seltos o Jetta)"
                         className="w-full h-14 bg-zinc-50 dark:bg-zinc-800 rounded-xl px-4 font-bold border-2 border-transparent focus:border-indigo-500 outline-none transition-all"
                         value={model}
                         onChange={(e) => setModel(e.target.value)}
                     />
+
+                    {availableVersions.length > 0 ? (
+                        <select
+                            className="w-full h-14 bg-zinc-50 dark:bg-zinc-800 rounded-xl px-4 font-bold border-2 border-transparent border-indigo-500/30 focus:border-indigo-500 outline-none transition-all animate-in fade-in slide-in-from-top-2"
+                            value={version}
+                            onChange={(e) => setVersion(e.target.value)}
+                        >
+                            <option value="">Selecciona Versión (Libro Negro)</option>
+                            {availableVersions.map(v => (
+                                <option key={v.name} value={v.name}>{v.name}</option>
+                            ))}
+                        </select>
+                    ) : (
+                        <input
+                            type="text"
+                            placeholder="Versión (Ej. EX, Touring, Advance)"
+                            className="w-full h-14 bg-zinc-50 dark:bg-zinc-800 rounded-xl px-4 font-bold border-2 border-transparent focus:border-indigo-500 outline-none transition-all"
+                            value={version}
+                            onChange={(e) => setVersion(e.target.value)}
+                        />
+                    )}
 
                     <input
                         type="number"
@@ -162,7 +209,9 @@ export const InstantQuote = () => {
                     </div>
 
                     <div>
-                        <p className="text-sm font-bold text-zinc-400 uppercase tracking-widest mb-2">Tu {make} {model} vale entre</p>
+                        <p className="text-sm font-bold text-zinc-400 uppercase tracking-widest mb-2">
+                            Tu {make} {model} {version} vale entre
+                        </p>
                         <div className="flex items-baseline justify-center gap-2 text-zinc-900 dark:text-white">
                             <span className="text-4xl lg:text-5xl font-black tracking-tighter">${quote.min.toLocaleString()}</span>
                             <span className="text-xl text-zinc-400">-</span>
@@ -170,8 +219,11 @@ export const InstantQuote = () => {
                         </div>
                     </div>
 
-                    <div className="p-4 bg-zinc-50 dark:bg-black/40 rounded-xl border border-dashed border-zinc-300 dark:border-zinc-700 text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">
-                        Esta oferta preliminar está garantizada por 7 días, sujeta a la inspección física de 150 puntos.
+                    <div className="p-4 bg-amber-50 dark:bg-amber-900/10 rounded-xl border border-dashed border-amber-200 dark:border-amber-800/40 text-xs text-amber-700 dark:text-amber-400 leading-relaxed font-medium">
+                        {quote.isEstimate ? 
+                            "⚠️ El valor real se determinará en la revisión. Esta calculadora es solo un estimado. Si tu automóvil no está en el catálogo, requeriremos la valuación de nuestro equipo de expertos." :
+                            "✅ Valuación basada en parámetros de Libro Negro. El valor real final se determinará en la revisión física de 150 puntos."
+                        }
                     </div>
 
                     <div className="space-y-3">
@@ -190,7 +242,7 @@ export const InstantQuote = () => {
                             className="w-full h-14 bg-indigo-600 text-white rounded-xl font-bold text-lg hover:bg-indigo-700 transition-colors shadow-lg shadow-indigo-500/30 flex items-center justify-center gap-2"
                         >
                             <ShieldCheck className="h-5 w-5" />
-                            Agendar Inspección Gratis
+                            Agendar Inspección (150 pts)
                         </button>
                         <button
                             onClick={reset}

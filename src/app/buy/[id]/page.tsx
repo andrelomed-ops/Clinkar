@@ -4,7 +4,7 @@ import { use, useEffect, useState } from "react";
 import { ALL_CARS, Vehicle } from "@/data/cars";
 import { Navbar } from "@/components/ui/navbar";
 import { CheckoutAction } from "@/components/checkout/CheckoutAction";
-import { StarterKarAIBot } from "@/components/market/StarterKarAIBot";
+import { OfferModal } from "@/components/market/OfferModal";
 import { supabase } from "@/lib/supabase";
 import { 
     ChevronLeft, 
@@ -198,33 +198,57 @@ export default function CarDetailPage({ params }: { params: Promise<{ id: string
                             <p className="text-muted-foreground leading-relaxed">
                                 Este vehículo ha sido auditado por la Mesa de Control de StarterKar. Se verificó la autenticidad de la factura nacional, el historial de tenencias sin adeudos y se realizó un escaneo computarizado de 150 puntos críticos.
                             </p>
-                            
-                            {/* Embedded AI Bot for this specific car */}
-                            <div className="pt-8">
-                                <div className="bg-gradient-to-br from-indigo-600 to-violet-700 rounded-[2rem] p-8 text-white shadow-2xl relative overflow-hidden group">
-                                    {/* Glass Sheen */}
-                                    <div className="absolute inset-0 bg-white/5 backdrop-blur-3xl" />
-                                    <div className="relative z-10 flex flex-col md:flex-row gap-8 items-center">
-                                        <div className="h-20 w-20 rounded-2xl bg-white/10 backdrop-blur-md flex items-center justify-center border border-white/20 shrink-0">
-                                            <CarFront className="h-10 w-10" />
-                                        </div>
-                                        <div className="flex-1 space-y-2 text-center md:text-left">
-                                            <h3 className="text-2xl font-black tracking-tight">Negociador Inteligente</h3>
-                                            <p className="text-indigo-100/80 font-medium">Pregúntale a nuestra IA sobre el historial de este {car.make}, rendimiento real o solicita una oferta personalizada.</p>
-                                        </div>
-                                    </div>
 
-                                    {/* Embed simple chat input here as "Gateway" or the whole Bot as embedded */}
-                                    <div className="mt-8 relative z-10">
-                                        <StarterKarAIBot 
-                                            isOpen={true} 
-                                            onClose={() => {}} 
-                                            mode="embedded" 
-                                            inventory={[car]}
-                                        />
+                            {/* Transparency Window */}
+                            {car.priceEquation && (
+                                <div className="bg-secondary/30 border border-border rounded-3xl p-6 space-y-4">
+                                    <h4 className="text-sm font-black uppercase tracking-widest text-zinc-500">Transparencia de Precio</h4>
+                                    <div className="grid gap-4">
+                                        <div className="flex justify-between items-center bg-background/50 p-4 rounded-2xl border border-border/50">
+                                            <div className="flex items-center gap-3">
+                                                <div className="p-2 bg-indigo-500/10 rounded-lg">
+                                                    <Info className="h-4 w-4 text-indigo-600" />
+                                                </div>
+                                                <span className="text-sm font-bold">Valor Libro Negro</span>
+                                            </div>
+                                            <span className="font-black">${car.priceEquation.marketValue.toLocaleString()}</span>
+                                        </div>
+
+                                        <div className="flex justify-between items-center bg-background/50 p-4 rounded-2xl border border-border/50">
+                                            <div className="flex items-center gap-3">
+                                                <div className="p-2 bg-amber-500/10 rounded-lg">
+                                                    <Activity className="h-4 w-4 text-amber-600" />
+                                                </div>
+                                                <span className="text-sm font-bold">Puesta a Punto Estimada</span>
+                                            </div>
+                                            <span className="font-black text-amber-600">
+                                                - ${car.priceEquation.deductions.filter((d: any) => d.type === 'mechanical').reduce((acc: number, d: any) => acc + d.amount, 0).toLocaleString()}
+                                            </span>
+                                        </div>
+
+                                        <div className="flex justify-between items-center bg-primary/5 p-4 rounded-2xl border border-primary/20">
+                                            <span className="text-sm font-black text-primary uppercase italic">Precio StarterKar</span>
+                                            <span className="text-xl font-black text-primary">${car.price.toLocaleString()}</span>
+                                        </div>
                                     </div>
+                                    <p className="text-[10px] font-medium text-muted-foreground italic leading-tight px-2">
+                                        * El precio ya ha sido ajustado considerando las mejoras preventivas y estéticas necesarias para garantizar tu seguridad y el valor de reventa futuro.
+                                    </p>
                                 </div>
-                            </div>
+                            )}
+                            
+                                    {/* Embedded Manual Offer Modal */}
+                                    <div className="pt-8">
+                                        <div className="w-full">
+                                            <OfferModal 
+                                                id={car.id}
+                                                carPrice={car.price}
+                                                carName={`${car.make} ${car.model}`}
+                                                repairCost={car.priceEquation?.deductions?.filter((d: any) => d.type === 'mechanical').reduce((a: number, c: any) => a + c.amount, 0) || 0}
+                                                hasSeal={car.status === 'CERTIFIED'}
+                                            />
+                                        </div>
+                                    </div>
                         </div>
                     </div>
 

@@ -7,9 +7,9 @@ import { toast } from "sonner";
 
 export default function AdminLegalDashboard() {
     const [transactions, setTransactions] = useState([
-        { id: "TX-9982", car: "Mazda CX-5 2022", seller: "Juan Pérez", buyer: "Carlos Demo", status: "PENDING", stage: "Verificación de Fondos", amount: 385000 },
-        { id: "TX-9983", car: "Tesla Model 3 2021", seller: "Ana García", buyer: "N/A (Listing)", status: "INSPECTION", stage: "Inspección Programada", amount: 550000 },
-        { id: "TX-9984", car: "Toyota RAV4 2020", seller: "Pedro L.", buyer: "Roberto M.", status: "FUNDS_HELD", stage: "Liberación Pendiente", amount: 410000 },
+        { id: "TX-9982", car: "Mazda CX-5 2022", seller: "Juan Pérez", buyer: "Carlos Demo", status: "PENDIENTE", stage: "Verificación de Fondos", amount: 385000 },
+        { id: "TX-9983", car: "Tesla Model 3 2021", seller: "Ana García", buyer: "N/A (Publicado)", status: "INSPECCIÓN", stage: "Inspección Programada", amount: 550000 },
+        { id: "TX-9984", car: "Toyota RAV4 2020", seller: "Pedro L.", buyer: "Roberto M.", status: "FONDOS EN BÓVEDA", stage: "Liberación Pendiente", amount: 410000 },
     ]);
 
     const [referralPayouts, setReferralPayouts] = useState<any[]>([]);
@@ -21,7 +21,7 @@ export default function AdminLegalDashboard() {
                 const payouts = await getPendingReferralPayouts();
                 setReferralPayouts(payouts || []);
             } catch (err) {
-                console.error("Error loading payouts:", err);
+                console.error("Error al cargar pagos:", err);
             }
         }
         loadPayouts();

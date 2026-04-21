@@ -13,6 +13,83 @@ export const generateAIBrainResponse = async (text: string, inventory: Vehicle[]
     // 🧠 Normalization
     const lower = text.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
 
+    // 💰 NEGOTIATION / HAGGLING LOGIC 💰
+    // Check if the user is making an offer for a specific car (e.g. "te ofrezco 300k por el seltos")
+    const extractPriceFromText = (str: string): number | null => {
+        const cleanStr = str.replace(/,/g, '').replace(/\$/g, '');
+        const kMatch = cleanStr.match(/(\d+(?:\.\d+)?)\s*k\b/i);
+        const milMatch = cleanStr.match(/(\d+(?:\.\d+)?)\s*mil\b/i);
+        const directMatch = cleanStr.match(/(\d{5,8})/);
+        if (kMatch) return parseFloat(kMatch[1]) * 1000;
+        if (milMatch) return parseFloat(milMatch[1]) * 1000;
+        if (directMatch) return parseFloat(directMatch[0]);
+        return null;
+    };
+
+    const isOfferIntent = lower.includes('ofrezco') || lower.includes('oferta') || lower.includes('doy') || lower.includes('pago');
+    const offeredAmount = extractPriceFromText(lower);
+
+    if (isOfferIntent && offeredAmount) {
+        // Find which car context we are in from the inventory
+        // (In a real scenario, we might have a 'currentCarId' in state, here we infer from lower)
+        const targetCar = inventory.find(c => lower.includes(c.make.toLowerCase()) || lower.includes(c.model.toLowerCase()));
+
+        if (targetCar) {
+            const floorPrice = targetCar.marketValue || (targetCar.price * 0.92); // Fallback to 92% if no marketValue (min_price)
+            
+            // Calculate mechanical repairs total if available
+            const repairTotal = targetCar.priceEquation?.deductions
+                .filter(d => d.type === 'mechanical')
+                .reduce((acc, d) => acc + d.amount, 0) || 0;
+
+            // 🛑 CASE A: FLASH SALE (Strict)
+            if (targetCar.flashSale) {
+                return {
+                    id: Date.now().toString() + 'neg',
+                    role: 'assistant',
+                    content: `¡Un gusto saludarte! Entiendo que buscas una oportunidad excepcional con este **${targetCar.model}**, sin embargo, esta unidad se encuentra en **Venta Flash**. Esto significa que su precio ya ha sido reducido al mínimo absoluto por nuestro sistema para una salida inmediata. Como asesor de StarterKar, te confirmo que es el precio final más competitivo que encontrarás para un vehículo con esta certificación.`,
+                };
+            }
+
+            // 🛑 CASE B: BELOW FLOOR
+            if (offeredAmount < floorPrice) {
+                const repairArg = repairTotal > 0 
+                    ? `Considerando que este vehículo ya cuenta con una inversión de **$${repairTotal.toLocaleString()}** en mejoras preventivas para tu total seguridad, una `
+                    : `Una `;
+                
+                return {
+                    id: Date.now().toString() + 'neg',
+                    role: 'assistant',
+                    content: `Entiendo perfectamente tu propuesta y valoro tu interés. Sin embargo, en StarterKar nuestra prioridad es la transparencia y la calidad. ${repairArg}oferta de $${offeredAmount.toLocaleString()} se encuentra fuera del rango que el vendedor puede aceptar tras haber pasado nuestra rigurosa auditoría de 150 puntos. Te sugiero ajustar tu oferta un poco más hacia el valor de mercado para que podamos avanzar hoy mismo con la reserva.`,
+                };
+            }
+
+            // 🛑 CASE C: BETWEEN FLOOR AND ASKING (Haggle)
+            if (offeredAmount >= floorPrice && offeredAmount < targetCar.price) {
+                // Calculate a persuasive counter-offer (halfway to floor but staying up)
+                const counterOffer = Math.floor(targetCar.price - (targetCar.price - offeredAmount) * 0.4);
+                const repairContext = repairTotal > 0 
+                    ? `El precio actual ya refleja una puesta a punto técnica por **$${repairTotal.toLocaleString()}** realizada por nuestros especialistas. `
+                    : `Esta unidad ya cuenta con el sello de certificación StarterKar y su auditoría legal completa. `;
+
+                return {
+                    id: Date.now().toString() + 'neg',
+                    role: 'assistant',
+                    content: `¡Excelente contrapropuesta! Se nota que conoces el valor de un buen auto. ${repairContext}Por la calidad de este **${targetCar.model}**, lo más que puedo hacer para acercarnos a tu cifra y cerrar el trato ahora mismo es **$${counterOffer.toLocaleString()}**. Es un equilibrio justo entre tu ahorro y la garantía de llevarte un vehículo impecable. ¿Te parece si procedemos con la reserva con este monto?`,
+                };
+            }
+
+            // 🛑 CASE D: ACCEPTANCE
+            if (offeredAmount >= targetCar.price) {
+                return {
+                    id: Date.now().toString() + 'neg',
+                    role: 'assistant',
+                    content: `¡Excelente propuesta! Una oferta de $${offeredAmount.toLocaleString()} por el **${targetCar.make} ${targetCar.model}** cumple con todas las expectativas. Procederé a bloquear la unidad por 15 minutos para que puedas completar tu apartado seguro. ¿Deseas avanzar al checkout?`,
+                };
+            }
+        }
+    }
+    
     // Dynamic fetching if Supabase is provided
     let dynamicInventory: Vehicle[] = [];
     if (supabase) {

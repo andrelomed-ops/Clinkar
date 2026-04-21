@@ -20,7 +20,7 @@ export default function AdminLayout({
                     <div className="flex items-center gap-4 text-xs font-bold text-zinc-500">
                         <Link href="/admin" className="hover:text-zinc-300">Torre de Control</Link>
                         <Link href="/admin/inspector" className="hover:text-zinc-300">Inspector</Link>
-                        <Link href="/admin/logistics" className="hover:text-zinc-300">Logística</Link>
+                        <Link href="/admin/partners" className="hover:text-zinc-300">Talleres</Link>
                     </div>
                 </div>
                 <div className="flex items-center gap-4">

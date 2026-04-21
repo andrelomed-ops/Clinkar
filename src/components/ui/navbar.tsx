@@ -77,7 +77,7 @@ export function Navbar({
 
                     {/* Center Section: Navigation Links (Home variant only) */}
                     {variant === 'home' && (
-                        <div className="hidden md:flex items-center gap-8 absolute left-1/2 -translate-x-1/2">
+                        <div className="hidden lg:flex items-center gap-8 absolute left-1/2 -translate-x-1/2">
                             <Link href="#security" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">Seguridad</Link>
                             <Link href="#how-it-works" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">Proceso</Link>
                         </div>
@@ -116,19 +116,16 @@ export function Navbar({
                                     <Link href="/new-cars" className="text-sm font-black text-indigo-600 dark:text-indigo-400 hover:text-foreground transition-colors italic tracking-tight">Autos Nuevos</Link>
                                 </>
                             )}
-                            <Link href="/login" className="text-sm font-bold hover:text-primary transition-colors">Entrar</Link>
+                            <Link href="/login" className="h-10 px-6 rounded-full bg-primary text-primary-foreground text-sm font-bold flex items-center hover:opacity-90 transition-all active:scale-95 shadow-lg shadow-primary/5 shrink-0">
+                                Acceder
+                            </Link>
+                            <NotificationCenter />
+                            <ThemeToggle />
                         </div>
-
-                        <Link href="/register" className="h-10 px-4 sm:px-6 rounded-full bg-primary text-primary-foreground text-xs sm:text-sm font-bold flex items-center hover:opacity-90 transition-all active:scale-95 shadow-lg shadow-primary/5 shrink-0">
-                            Comenzar
-                        </Link>
-
-                        <NotificationCenter />
-                        <ThemeToggle />
 
                         <button
                             onClick={() => setIsMenuOpen(!isMenuOpen)}
-                            className="md:hidden text-muted-foreground hover:text-foreground transition-colors"
+                            className="lg:hidden text-muted-foreground hover:text-foreground transition-colors"
                         >
                             <Menu className="h-6 w-6" />
                         </button>
@@ -137,7 +134,7 @@ export function Navbar({
 
                 {/* Mobile Menu */}
                 {isMenuOpen && (
-                    <div className="md:hidden glass-card mt-2 border-x-0 rounded-none p-6 animate-reveal duration-300">
+                    <div className="lg:hidden glass-card mt-2 border-x-0 rounded-none p-6 animate-reveal duration-300">
                         <div className="flex flex-col gap-6">
                             {navLinks.map((link) => (
                                 <Link

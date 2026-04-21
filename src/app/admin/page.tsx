@@ -8,7 +8,7 @@ import { toast } from "sonner";
 export default function AdminDashboard() {
     const [transactions, setTransactions] = useState([
         { id: "TX-9982", car: "Mazda CX-5 2022", seller: "Juan Pérez", buyer: "Carlos Demo", status: "PENDING", stage: "Verificación de Fondos", amount: 385000 },
-        { id: "TX-9983", car: "Tesla Model 3 2021", seller: "Ana García", buyer: "N/A (Listing)", status: "INSPECTION", stage: "Inspección Programada", amount: 550000 },
+        { id: "TX-9983", car: "Tesla Model 3 2021", seller: "Ana García", buyer: "N/A (Publicado)", status: "INSPECTION", stage: "Inspección Programada", amount: 550000 },
         { id: "TX-9984", car: "Toyota RAV4 2020", seller: "Pedro L.", buyer: "Roberto M.", status: "FUNDS_HELD", stage: "Liberación Pendiente", amount: 410000 },
     ]);
 
@@ -258,7 +258,7 @@ export default function AdminDashboard() {
                 <div className="p-4 border-b border-zinc-800 flex items-center justify-between">
                     <h2 className="font-bold text-lg flex items-center gap-2">
                         <span className="h-2 w-2 rounded-full bg-green-500 animate-pulse" />
-                        Live Operations
+                        Operaciones en Vivo
                     </h2>
                     {/* ... Rest of existing table header ... */}
                     <div className="flex items-center gap-2">
@@ -357,10 +357,17 @@ function StatusBadge({ status }: { status: string }) {
 
     const Icon = icons[status] || AlertCircle;
 
+    const labels: Record<string, string> = {
+        PENDING: "PENDIENTE",
+        INSPECTION: "INSPECCIÓN",
+        FUNDS_HELD: "FONDOS EN BÓVEDA",
+        RELEASED: "COMPLETADA",
+    };
+
     return (
         <div className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full border text-[10px] font-bold uppercase tracking-wide ${styles[status] || "bg-zinc-800 text-zinc-400 border-zinc-700"}`}>
             <Icon className="h-3 w-3" />
-            {status}
+            {labels[status] || status}
         </div>
     )
 }

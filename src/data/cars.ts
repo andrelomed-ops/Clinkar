@@ -392,6 +392,34 @@ export const ALL_CARS: Vehicle[] = [
         passengers: 7
     },
     {
+        id: 'suv-seltos-2022',
+        make: 'Kia',
+        model: 'Seltos EX Pack',
+        year: 2022,
+        price: 385000,
+        location: 'CDMX Satélite',
+        distance: 45,
+        images: ['https://images.unsplash.com/photo-1628155930542-3c7a64e2c833?q=80&w=800&auto=format&fit=crop'],
+        status: 'CERTIFIED',
+        category: 'Car',
+        type: 'SUV',
+        transmission: 'Automática',
+        fuel: 'Gasolina',
+        condition: 'Seminuevo',
+        tags: ['Familiar', 'Tecnología', 'Local'],
+        capabilities: ['Ciudad', 'Carretera'],
+        passengers: 5,
+        priceEquation: {
+            marketValue: 420000,
+            deductions: [
+                { label: "Servicio de Frenos y Balatas", amount: 15000, type: "mechanical" },
+                { label: "Cambio de Neumáticos (2)", amount: 8000, type: "mechanical" },
+                { label: "Detalle Estético Facia Delantera", amount: 12000, type: "esthetic" }
+            ],
+            finalPrice: 385000
+        }
+    },
+    {
         id: 'suv-3',
         make: 'Mazda',
         model: 'CX-90',

@@ -504,12 +504,43 @@ export default function DashboardPage() {
                                                     </div>
                                                     <div className="min-w-0 flex-1">
                                                         <h3 className="font-black text-lg italic truncate">{car.make} {car.model}</h3>
-                                                        <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">{car.year} • {car.transmission}</p>
+                                                        <div className="flex flex-col gap-1">
+                                                            <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">{car.year} • {car.transmission}</p>
+                                                            
+                                                            {/* Price Strategy Helper */}
+                                                            {car.priceEquation && (
+                                                                <div className="mt-2 p-3 bg-indigo-500/5 border border-indigo-500/10 rounded-xl space-y-2">
+                                                                    <div className="flex justify-between items-center text-[9px] font-bold">
+                                                                        <span className="text-muted-foreground uppercase">Libro Negro</span>
+                                                                        <span>${car.priceEquation.marketValue.toLocaleString()}</span>
+                                                                    </div>
+                                                                    <div className="flex justify-between items-center text-[9px] font-bold text-amber-600">
+                                                                        <span className="uppercase">Reparaciones Detectadas</span>
+                                                                        <span>- ${car.priceEquation.deductions.filter((d: any) => d.type === 'mechanical').reduce((acc: number, d: any) => acc + d.amount, 0).toLocaleString()}</span>
+                                                                    </div>
+                                                                    <div className="pt-1 border-t border-indigo-500/10 flex justify-between items-center text-[10px] font-black text-indigo-600">
+                                                                        <span className="uppercase italic tracking-tighter">Sugerencia StarterKar</span>
+                                                                        <span>${(car.priceEquation.marketValue - car.priceEquation.deductions.filter((d: any) => d.type === 'mechanical').reduce((acc: number, d: any) => acc + d.amount, 0)).toLocaleString()}</span>
+                                                                    </div>
+                                                                    <div className="flex justify-between items-center text-[8px] font-bold text-zinc-400">
+                                                                        <span className="uppercase tracking-widest">Comisión StarterKar</span>
+                                                                        <span>3.5% + Inspección</span>
+                                                                    </div>
+                                                                </div>
+                                                            )}
+                                                        </div>
                                                     </div>
                                                     <Button variant="ghost" size="sm" className="rounded-xl font-black text-[10px] uppercase tracking-widest group-hover:bg-primary group-hover:text-white transition-all">
                                                         Gestionar
                                                         <ArrowRight className="ml-2 h-4 w-4" />
                                                     </Button>
+                                                </div>
+                                                <div className="mt-4 pt-4 border-t border-dashed border-border flex items-center justify-between text-[10px] font-bold text-muted-foreground">
+                                                    <div className="flex items-center gap-2">
+                                                        <Smartphone className="h-3 w-3 text-indigo-500" />
+                                                        IA Negociando Activa
+                                                    </div>
+                                                    <span className="text-zinc-400 italic">Protegiendo tu inversión</span>
                                                 </div>
                                             </Link>
                                         ))}

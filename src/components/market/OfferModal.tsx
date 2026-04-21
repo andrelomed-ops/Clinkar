@@ -90,13 +90,9 @@ export function OfferModal({ id, carPrice, repairCost, carName, hasSeal }: Offer
                             <div className="flex justify-between items-center text-sm font-bold text-red-500">
                                 <span className="flex items-center gap-2">
                                     <Calculator className="h-4 w-4" />
-                                    Descuento por Reparaciones
+                                    Descuento Estimado por Puesta a Punto
                                 </span>
                                 <span>- ${repairCost.toLocaleString()} MXN</span>
-                            </div>
-                            <div className="pt-4 border-t border-border flex justify-between items-center">
-                                <span className="text-lg font-black text-primary">Piso de Oferta</span>
-                                <span className="text-lg font-black text-primary">${offerFloor.toLocaleString()} MXN</span>
                             </div>
                         </div>
 
@@ -109,17 +105,10 @@ export function OfferModal({ id, carPrice, repairCost, carName, hasSeal }: Offer
                                     value={offerAmount}
                                     onChange={(e) => setOfferAmount(Number(e.target.value))}
                                     className={cn(
-                                        "w-full h-20 rounded-2xl bg-secondary/50 border-4 pl-12 pr-6 text-3xl font-black focus:ring-0 transition-all",
-                                        isValid ? "border-primary/20 focus:border-primary" : "border-red-500 focus:border-red-600"
+                                        "w-full h-20 rounded-2xl bg-secondary/50 border-4 pl-12 pr-6 text-3xl font-black focus:ring-0 transition-all border-primary/20 focus:border-primary"
                                     )}
                                 />
                             </div>
-                            {!isValid && (
-                                <p className="text-red-500 text-xs font-bold flex items-center gap-2 animate-pulse">
-                                    <AlertCircle className="h-4 w-4" />
-                                    Tu oferta no puede ser inferior al piso calculado por reparaciones.
-                                </p>
-                            )}
                         </div>
 
                         {/* Cost Breakdown & Fee */}
