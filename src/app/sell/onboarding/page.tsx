@@ -4,8 +4,9 @@ import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { createBrowserClient } from "@/lib/supabase/client";
 import { NotificationService } from "@/services/NotificationService";
-import { ShieldCheck, Calendar, MapPin, CheckCircle2, Home, Warehouse, Clock, ChevronDown } from "lucide-react";
+import { ShieldCheck, Calendar, MapPin, CheckCircle2, Warehouse, Clock, ChevronDown } from "lucide-react";
 import { Navbar } from "@/components/ui/navbar";
+import { VEHICLE_CATEGORIES } from "@/lib/vehicle-intake-config";
 import { cn } from "@/lib/utils";
 
 interface Partner {
@@ -22,25 +23,26 @@ export default function SellOnboardingPage() {
 
     const [loading, setLoading] = useState(false);
     const [success, setSuccess] = useState(false);
-    const [inspectionType, setInspectionType] = useState<'workshop' | 'home'>('workshop');
     
     // Partners data
     const [partners, setPartners] = useState<Partner[]>([]);
     const [selectedPartner, setSelectedPartner] = useState<Partner | null>(null);
 
-    // Car Details
+    // Car Details from Wizard
+    const categoryId = searchParams.get('category') || "";
     const year = searchParams.get('year') || "";
     const make = searchParams.get('make') || "";
     const model = searchParams.get('model') || "";
-    const priceMin = searchParams.get('min') || "0";
+    const km = searchParams.get('km') || "0";
+    const isAdmin = searchParams.get('admin') === 'true';
+    
+    const categoryInfo = VEHICLE_CATEGORIES.find(c => c.id === categoryId);
     
     // Form Details
     const [date, setDate] = useState("");
-    const [address, setAddress] = useState("");
 
     const INSPECTION_BASE_COST = 1500;
-    const HOME_SERVICE_FEE = 500;
-    const totalCost = inspectionType === 'home' ? INSPECTION_BASE_COST + HOME_SERVICE_FEE : INSPECTION_BASE_COST;
+    const totalCost = INSPECTION_BASE_COST;
 
     useEffect(() => {
         const fetchPartners = async () => {
@@ -74,25 +76,24 @@ export default function SellOnboardingPage() {
 
         try {
             const { data: { user } } = await supabase.auth.getUser();
-            if (!user) {
+            if (!user && !isAdmin) {
                 alert("Debes iniciar sesión para publicar un auto.");
                 router.push('/login?next=/sell');
                 return;
             }
 
-            const finalAddress = inspectionType === 'home' 
-                ? address 
-                : `${selectedPartner?.name} - ${selectedPartner?.address}, ${selectedPartner?.city}`;
+            const finalAddress = `${selectedPartner?.name} - ${selectedPartner?.address}, ${selectedPartner?.city}`;
 
             // 1. Create the car in Draft/Pending status
             const { data: carData, error: carError } = await supabase.from('cars').insert({
-                seller_id: user.id,
+                seller_id: user?.id || '00000000-0000-0000-0000-000000000000', // Mock UUID if admin without user
                 make,
                 model,
                 year: parseInt(year) || new Date().getFullYear(),
-                price: parseInt(priceMin) * 1.05,
+                price: 0, // To be defined after inspection/agreement
                 status: 'pending_inspection',
-                description: `Inspección de 150 puntos (${inspectionType === 'home' ? 'A domicilio' : 'En taller'}). Ubicación: ${finalAddress}`
+                mileage: parseInt(km),
+                description: `Registro vía Wizard. Categoría: ${categoryInfo?.title}. Ubicación: ${finalAddress}`
             }).select('id').single();
 
             if (carError || !carData) throw new Error("Error creando pre-registro del auto.");
@@ -103,7 +104,7 @@ export default function SellOnboardingPage() {
                 type: '150_point_inspection',
                 status: 'SCHEDULED',
                 scheduled_at: new Date(date).toISOString(),
-                partner_id: inspectionType === 'workshop' ? selectedPartner?.id : null
+                partner_id: selectedPartner?.id
             });
 
             if (ticketError) throw new Error("Error agendando inspección.");
@@ -115,13 +116,13 @@ export default function SellOnboardingPage() {
                 entityId: carData.id,
                 metadata: { 
                     address: finalAddress, 
-                    type: inspectionType,
+                    type: 'workshop',
+                    vehicleCategory: categoryId,
                     make, 
                     model, 
                     year, 
-                    seller_id: user.id,
-                    total_to_pay: totalCost,
-                    payment_method: "ONLINE_OR_ON_SITE" // To be clarified by admin
+                    isAdminAction: isAdmin,
+                    total_to_pay: totalCost
                 }
             });
 
@@ -176,40 +177,12 @@ export default function SellOnboardingPage() {
 
                         <form onSubmit={handleSubmit} className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-3xl p-8 shadow-sm space-y-8">
                             <div className="space-y-8">
-                                {/* Inspection Type Selector */}
-                                <div className="grid grid-cols-2 gap-4">
-                                    <button
-                                        type="button"
-                                        onClick={() => setInspectionType('workshop')}
-                                        className={cn(
-                                            "p-6 rounded-2xl border-2 transition-all text-left flex flex-col gap-3 group",
-                                            inspectionType === 'workshop' 
-                                                ? "border-indigo-600 bg-indigo-50 dark:bg-indigo-900/10" 
-                                                : "border-zinc-100 dark:border-zinc-800 hover:border-zinc-200"
-                                        )}
-                                    >
-                                        <Warehouse className={cn("h-6 w-6", inspectionType === 'workshop' ? "text-indigo-600" : "text-zinc-400")} />
-                                        <div>
-                                            <div className="font-bold text-sm">Taller Aliado</div>
-                                            <div className="text-xs text-zinc-500 font-medium">Sin costo extra</div>
-                                        </div>
-                                    </button>
-                                    <button
-                                        type="button"
-                                        onClick={() => setInspectionType('home')}
-                                        className={cn(
-                                            "p-6 rounded-2xl border-2 transition-all text-left flex flex-col gap-3 group",
-                                            inspectionType === 'home' 
-                                                ? "border-indigo-600 bg-indigo-50 dark:bg-indigo-900/10" 
-                                                : "border-zinc-100 dark:border-zinc-800 hover:border-zinc-200"
-                                        )}
-                                    >
-                                        <Home className={cn("h-6 w-6", inspectionType === 'home' ? "text-indigo-600" : "text-zinc-400")} />
-                                        <div>
-                                            <div className="font-bold text-sm">A Domicilio</div>
-                                            <div className="text-xs text-zinc-500 font-medium">+$500 pesos</div>
-                                        </div>
-                                    </button>
+                                <div className="p-6 rounded-2xl border-2 border-indigo-600 bg-indigo-50 dark:bg-indigo-900/10 text-left flex flex-col gap-3 group">
+                                    <Warehouse className="h-6 w-6 text-indigo-600" />
+                                    <div>
+                                        <div className="font-bold text-sm">Taller Aliado (Zona Segura)</div>
+                                        <div className="text-xs text-zinc-500 font-medium">Inspección física obligatoria por seguridad</div>
+                                    </div>
                                 </div>
 
                                 <div>
@@ -234,27 +207,11 @@ export default function SellOnboardingPage() {
                                     </p>
                                 </div>
 
-                                {inspectionType === 'home' ? (
-                                    <div className="animate-in fade-in slide-in-from-top-2 duration-300">
-                                        <label className="flex items-center gap-2 text-sm font-bold text-zinc-700 dark:text-zinc-300 mb-3">
-                                            <MapPin className="h-4 w-4" />
-                                            ¿A qué dirección completa y segura acudimos?
-                                        </label>
-                                        <textarea 
-                                            required
-                                            placeholder="Ej: Privada Altair 123, Colonia Valle, Monterrey, NL. C.P. 64000."
-                                            value={address}
-                                            rows={3}
-                                            onChange={(e) => setAddress(e.target.value)}
-                                            className="w-full bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-300 dark:border-zinc-700 rounded-xl px-6 py-4 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 font-medium transition-all resize-none"
-                                        />
-                                    </div>
-                                ) : (
-                                    <div className="space-y-4 animate-in fade-in slide-in-from-top-2 duration-300">
-                                        <label className="flex items-center gap-2 text-sm font-bold text-zinc-700 dark:text-zinc-300 mb-3">
-                                            <MapPin className="h-4 w-4" />
-                                            Selecciona el Taller Aliado más cercano
-                                        </label>
+                                <div className="space-y-4 animate-in fade-in slide-in-from-top-2 duration-300">
+                                    <label className="flex items-center gap-2 text-sm font-bold text-zinc-700 dark:text-zinc-300 mb-3">
+                                        <MapPin className="h-4 w-4" />
+                                        Selecciona el Taller Aliado para la revisión de 150 puntos
+                                    </label>
                                         <div className="relative">
                                             <select
                                                 required
@@ -284,22 +241,20 @@ export default function SellOnboardingPage() {
 
                                 <div className="p-6 bg-indigo-50 dark:bg-indigo-900/10 border border-indigo-200 dark:border-indigo-900/30 rounded-2xl">
                                     <div className="flex justify-between items-center mb-2">
-                                        <span className="text-sm font-bold text-indigo-900 dark:text-indigo-300">Costo Inspección</span>
+                                        <span className="text-sm font-bold text-indigo-900 dark:text-indigo-300">Costo Inspección Estándar</span>
                                         <span className="font-black">${INSPECTION_BASE_COST.toLocaleString()}</span>
                                     </div>
-                                    {inspectionType === 'home' && (
-                                        <div className="flex justify-between items-center mb-2 animate-in fade-in">
-                                            <span className="text-sm font-medium text-indigo-600 dark:text-indigo-400">Cargo a Domicilio</span>
-                                            <span className="font-bold">+${HOME_SERVICE_FEE.toLocaleString()}</span>
-                                        </div>
-                                    )}
                                     <div className="h-px bg-indigo-200 dark:bg-indigo-800 my-4" />
-                                    <div className="flex justify-between items-center">
-                                        <span className="text-lg font-black text-indigo-900 dark:text-indigo-200">Total</span>
-                                        <span className="text-2xl font-black text-indigo-600">${totalCost.toLocaleString()}</span>
+                                        <span className="text-xs font-black uppercase tracking-widest text-indigo-900 dark:text-indigo-300">Costo Certificación</span>
+                                        <span className="font-black text-indigo-900 dark:text-indigo-200">${INSPECTION_BASE_COST.toLocaleString()}</span>
                                     </div>
-                                    <p className="mt-4 text-[11px] text-indigo-500 dark:text-indigo-400 leading-tight font-medium">
-                                        * Este costo puede ser reembolsado o bonificado si el vehículo se publica en nuestra plataforma cumpliendo los estándares de calidad.
+                                    <div className="h-px bg-indigo-200 dark:bg-indigo-800/50 my-4" />
+                                    <div className="flex justify-between items-center">
+                                        <span className="text-xl font-black italic text-indigo-900 dark:text-indigo-200">Total</span>
+                                        <span className="text-3xl font-black text-indigo-600">${totalCost.toLocaleString()}</span>
+                                    </div>
+                                    <p className="mt-4 text-[10px] text-indigo-500 dark:text-indigo-400 leading-tight font-medium">
+                                        * Este costo es reembolsable si vendes el auto a través de StarterKar.
                                     </p>
                                 </div>
                             </div>

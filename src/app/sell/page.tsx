@@ -2,13 +2,26 @@
 
 import { ShieldCheck, Camera, Banknote, Car, CheckCircle2, FileText, Calculator } from "lucide-react";
 import { InstantQuote } from "@/components/sell/InstantQuote";
-import { DocumentUploadView } from "@/components/sell/DocumentUploadView";
+import { IntakeWizard } from "@/components/sell/IntakeWizard";
 import { Navbar } from "@/components/ui/navbar";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { createBrowserClient } from "@/lib/supabase/client";
 import { cn } from "@/lib/utils";
 
 export default function SellPage() {
     const [view, setView] = useState<'quote' | 'documents'>('quote');
+    const [isAdmin, setIsAdmin] = useState(false);
+    const supabase = createBrowserClient();
+
+    useEffect(() => {
+        async function checkAdmin() {
+            const { data: { user } } = await supabase.auth.getUser();
+            if (user?.email === 'admin@starterkar.mx' || (user as any)?.role === 'admin') {
+                setIsAdmin(true);
+            }
+        }
+        checkAdmin();
+    }, [supabase]);
 
     return (
         <div className="min-h-screen bg-background text-foreground transition-colors duration-500">
@@ -42,15 +55,15 @@ export default function SellPage() {
                         <div className="space-y-4 pt-4">
                             <div className="flex items-center gap-3">
                                 <CheckCircle2 className="h-5 w-5 text-emerald-500" />
-                                <span className="font-bold text-lg">Inspección Mecánica a Domicilio</span>
+                                <span className="font-bold text-lg">Inspección Mecánica en Taller Aliado</span>
                             </div>
                             <div className="flex items-center gap-3">
                                 <CheckCircle2 className="h-5 w-5 text-emerald-500" />
-                                <span className="font-bold text-lg">Gestión de Trámites Legales</span>
+                                <span className="font-bold text-lg">Validación Legal Concierge</span>
                             </div>
                             <div className="flex items-center gap-3">
                                 <CheckCircle2 className="h-5 w-5 text-emerald-500" />
-                                <span className="font-bold text-lg">Depósito Directo a tu Cuenta</span>
+                                <span className="font-bold text-lg">Depósito Seguro a tu Cuenta</span>
                             </div>
                         </div>
                     </div>
@@ -90,7 +103,7 @@ export default function SellPage() {
                         {view === 'quote' ? (
                             <InstantQuote />
                         ) : (
-                            <DocumentUploadView onComplete={() => setView('quote')} />
+                            <IntakeWizard isAdminMode={isAdmin} />
                         )}
                     </div>
                 </div>
@@ -103,28 +116,23 @@ export default function SellPage() {
                     </div>
 
                     <div className="grid md:grid-cols-3 gap-8">
-                        <div className="p-8 glass-card rounded-premium border-border/40 hover:border-indigo-500/30 transition-all duration-500 group animate-reveal stagger-1">
-                            <div className="h-12 w-12 bg-white dark:bg-zinc-800 rounded-2xl flex items-center justify-center mb-6 shadow-sm group-hover:scale-110 transition-transform">
-                                <Camera className="h-6 w-6 text-indigo-600 dark:text-indigo-400" />
-                            </div>
-                            <h3 className="font-bold text-xl mb-3 text-foreground">1. Cotiza y Agenda</h3>
-                            <p className="text-muted-foreground text-sm leading-relaxed">Sube fotos de tu auto y recibe un rango de precio. Si te gusta, agendamos la inspección a domicilio.</p>
+                            <p className="text-muted-foreground text-sm leading-relaxed">Paso 1: Clasifica tu auto y recibe una cotización base del Libro Negro. Si te gusta, seguimos adelante.</p>
                         </div>
 
                         <div className="p-8 glass-card rounded-premium border-border/40 hover:border-indigo-500/30 transition-all duration-500 group animate-reveal stagger-2">
                             <div className="h-12 w-12 bg-white dark:bg-zinc-800 rounded-2xl flex items-center justify-center mb-6 shadow-sm group-hover:scale-110 transition-transform">
-                                <Car className="h-6 w-6 text-indigo-600 dark:text-indigo-400" />
+                                <FileText className="h-6 w-6 text-indigo-600 dark:text-indigo-400" />
                             </div>
-                            <h3 className="font-bold text-xl mb-3 text-foreground">2. Certificación</h3>
-                            <p className="text-muted-foreground text-sm leading-relaxed">Nuestro experto revisa 150 puntos mecánicos y valida que los papeles estén en regla. Gratis.</p>
+                            <h3 className="font-bold text-xl mb-3 text-foreground">2. Validación Legal</h3>
+                            <p className="text-muted-foreground text-sm leading-relaxed">Sube tus papeles. Nosotros validamos REPUVE, tenencias e infracciones directamente por ti.</p>
                         </div>
 
                         <div className="p-8 glass-card rounded-premium border-border/40 hover:border-indigo-500/30 transition-all duration-500 group animate-reveal stagger-3">
                             <div className="h-12 w-12 bg-white dark:bg-zinc-800 rounded-2xl flex items-center justify-center mb-6 shadow-sm group-hover:scale-110 transition-transform">
-                                <ShieldCheck className="h-6 w-6 text-indigo-600 dark:text-indigo-400" />
+                                <Car className="h-6 w-6 text-indigo-600 dark:text-indigo-400" />
                             </div>
-                            <h3 className="font-bold text-xl mb-3 text-foreground">3. Venta Segura</h3>
-                            <p className="text-muted-foreground text-sm leading-relaxed">Publicamos tu auto. Cuando alguien compra, el dinero entra a la Bóveda. Entregas el auto y liberas el pago.</p>
+                            <h3 className="font-bold text-xl mb-3 text-foreground">3. Certificación en Taller</h3>
+                            <p className="text-muted-foreground text-sm leading-relaxed">Nuestro experto revisa 150 puntos mecánicos en una zona segura (Taller Aliado). ¡Listo para vender!</p>
                         </div>
                     </div>
                 </div>

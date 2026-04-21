@@ -98,7 +98,7 @@ export function CameraUpload({ onUpload, label = "Capturar", description, catego
             const path = `uploads/${transactionId || 'anonymous'}/${Date.now()}_${fileName}.${fileExt}`;
 
             const { error: uploadError } = await supabase.storage
-                .from('transaction-docs')
+                .from('inspection-evidence')
                 .upload(path, compressedBlob, {
                     contentType: 'image/jpeg',
                     upsert: true
@@ -107,7 +107,7 @@ export function CameraUpload({ onUpload, label = "Capturar", description, catego
             if (uploadError) throw uploadError;
 
             const { data: { publicUrl } } = supabase.storage
-                .from('transaction-docs')
+                .from('inspection-evidence')
                 .getPublicUrl(path);
 
             onUpload(publicUrl);

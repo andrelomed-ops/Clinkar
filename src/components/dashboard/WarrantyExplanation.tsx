@@ -41,7 +41,7 @@ export function WarrantyExplanation() {
                     icon="🛡️"
                     title="Nivel 2: Seguro de Protección (Opcional)"
                 >
-                    Puedes contratar planes de **30, 60 o 90 días** de cobertura mecánica. Este es un seguro que StarterKar gestiona con terceros para cubrir averías imprevistas en motor y transmisión que NO estaban presentes el día de la venta. Es una excelente forma de monetizar y dar paz mental.
+                    Puedes contratar planes de **60 o 90 días** de cobertura mecánica. Este es un seguro que StarterKar gestiona con terceros para cubrir averías imprevistas en motor y transmisión que NO estaban presentes el día de la venta. Es una excelente forma de dar paz mental tras la compra segura.
                 </AccordionItem>
 
                 <AccordionItem
@@ -68,7 +68,7 @@ export function WarrantyExplanation() {
             <div className="mt-6 pt-6 border-t border-dashed border-border flex items-center gap-2">
                 <span className="h-2 w-2 bg-emerald-500 rounded-full animate-pulse" />
                 <p className="text-[10px] text-muted-foreground font-medium italic">
-                    Protección basada en inspección mecánica certificada de 180 puntos.
+                    Protección basada en inspección mecánica certificada de 150 puntos.
                 </p>
             </div>
         </div>

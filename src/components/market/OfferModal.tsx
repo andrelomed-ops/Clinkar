@@ -19,6 +19,7 @@ interface OfferModalProps {
 export function OfferModal({ id, carPrice, repairCost, carName, hasSeal }: OfferModalProps) {
     const router = useRouter();
     const [isOpen, setIsOpen] = useState(false);
+    const [showReservePopup, setShowReservePopup] = useState(false);
     const [offerAmount, setOfferAmount] = useState<number>(carPrice - repairCost);
     const offerFloor = carPrice - repairCost;
 
@@ -26,10 +27,7 @@ export function OfferModal({ id, carPrice, repairCost, carName, hasSeal }: Offer
 
     const handleOffer = () => {
         if (!isValid) return;
-        // In a real app, we would make an API call to create the transaction record here
-        // For now, satisfy the mock requirement by redirecting
-        setIsOpen(false);
-        router.push(`/transaction/${id}?offer=${offerAmount}`);
+        setShowReservePopup(true);
     };
 
     return (
@@ -146,7 +144,7 @@ export function OfferModal({ id, carPrice, repairCost, carName, hasSeal }: Offer
                                 <span className="text-[10px] font-black uppercase tracking-widest">Aviso de Exclusividad StarterKar</span>
                             </div>
                             <p className="text-[10px] text-zinc-400 leading-relaxed italic">
-                                El Certificado de Inspección (Vigencia 30 días) y el acceso a Garantía Mecánica de 90 días **solo cobran validez** si la transacción se liquida vía StarterKar.
+                                El Certificado de Inspección (Vigencia 60 días) y el acceso a Garantía Mecánica de 90 días **solo cobran validez** si la transacción se liquida vía StarterKar.
                             </p>
                         </div>
 
@@ -166,6 +164,24 @@ export function OfferModal({ id, carPrice, repairCost, carName, hasSeal }: Offer
                             className="w-full h-16 rounded-2xl bg-primary text-primary-foreground font-black text-lg shadow-xl shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all disabled:opacity-50 disabled:grayscale"
                         >
                             Iniciar Compra Segura
+                        </button>
+                    </div>
+                </div>
+            )}
+
+            {showReservePopup && (
+                <div className="fixed inset-0 z-[110] flex items-center justify-center p-4 bg-background/90 backdrop-blur-md animate-in fade-in duration-300">
+                    <div className="bg-background border border-border max-w-sm rounded-[2rem] p-8 text-center space-y-6 shadow-2xl">
+                        <div className="h-16 w-16 bg-primary/10 text-primary mx-auto rounded-full flex items-center justify-center">
+                            <Info className="h-8 w-8" />
+                        </div>
+                        <h3 className="text-xl font-black">Operación en Espera</h3>
+                        <p className="text-sm text-muted-foreground font-medium">Un asesor especializado se pondrá en contacto contigo a la brevedad para reservar la cita de confirmación en el Taller Aliado.</p>
+                        <button
+                            onClick={() => setShowReservePopup(false)}
+                            className="w-full h-12 bg-primary text-primary-foreground font-bold rounded-xl hover:scale-105 transition-all"
+                        >
+                            Entendido
                         </button>
                     </div>
                 </div>

@@ -47,33 +47,10 @@ export function CheckoutAction({ carId, carPrice, carLocation }: { carId: string
             {/* Delivery Method Selection */}
             <div className="space-y-3">
                 <label className="text-sm font-bold text-zinc-500 uppercase tracking-widest">Método de Entrega</label>
-                <div className="grid grid-cols-2 gap-3">
-                    <button
-                        onClick={() => setDeliveryType('workshop')}
-                        className={cn(
-                            "p-4 rounded-xl border-2 transition-all text-left flex flex-col gap-2",
-                            deliveryType === 'workshop' 
-                                ? "border-indigo-600 bg-indigo-50 dark:bg-indigo-900/10" 
-                                : "border-zinc-100 dark:border-zinc-800"
-                        )}
-                    >
-                        <Warehouse className={cn("h-5 w-5", deliveryType === 'workshop' ? "text-indigo-600" : "text-zinc-400")} />
-                        <span className="font-bold text-xs">En Taller Aliado</span>
-                        <span className="text-[10px] text-zinc-500 font-medium leading-none whitespace-nowrap">Gratis</span>
-                    </button>
-                    <button
-                        onClick={() => setDeliveryType('home')}
-                        className={cn(
-                            "p-4 rounded-xl border-2 transition-all text-left flex flex-col gap-2",
-                            deliveryType === 'home' 
-                                ? "border-indigo-600 bg-indigo-50 dark:bg-indigo-900/10" 
-                                : "border-zinc-100 dark:border-zinc-800"
-                        )}
-                    >
-                        <Home className={cn("h-5 w-5", deliveryType === 'home' ? "text-indigo-600" : "text-zinc-400")} />
-                        <span className="font-bold text-xs">A Domicilio</span>
-                        <span className="text-[10px] text-zinc-500 font-medium leading-none whitespace-nowrap">+$500 pesos</span>
-                    </button>
+                <div className="p-4 rounded-xl border-2 border-indigo-600 bg-indigo-50 dark:bg-indigo-900/10 text-left flex flex-col gap-2">
+                    <Warehouse className="h-5 w-5 text-indigo-600" />
+                    <span className="font-bold text-xs">En Taller Aliado</span>
+                    <span className="text-[10px] text-zinc-500 font-medium leading-none whitespace-nowrap">Por seguridad, la entrega es en zona certificada</span>
                 </div>
             </div>
 
@@ -82,12 +59,10 @@ export function CheckoutAction({ carId, carPrice, carLocation }: { carId: string
                 <MapPin className="h-6 w-6 text-indigo-600 dark:text-indigo-400 mt-0.5 shrink-0" />
                 <div>
                     <h4 className="font-bold text-sm text-indigo-900 dark:text-indigo-300">
-                        {deliveryType === 'home' ? 'Entrega Personalizada' : 'Entrega en Taller Aliado StarterKar'}
+                        Entrega en Taller Aliado StarterKar (Módulos Seguros)
                     </h4>
                     <p className="text-xs text-indigo-700/80 dark:text-indigo-300/70 mt-1.5 leading-relaxed">
-                        {deliveryType === 'home' 
-                            ? 'Llevamos tu nuevo auto directamente a tu ubicación. Un inspector StarterKar certificará el proceso en la puerta de tu casa.' 
-                            : 'Para garantizar la seguridad y bloquear fraudes, la entrega física del auto y revisión final se realiza en el taller certificado más cercano.'}
+                        Para garantizar la seguridad y bloquear fraudes, la entrega física del auto y revisión final se realiza en el taller certificado más cercano o en módulos con vigilancia oficial. No ofrecemos entrega a domicilio.
                     </p>
                 </div>
             </div>
@@ -110,28 +85,10 @@ export function CheckoutAction({ carId, carPrice, carLocation }: { carId: string
                         <span className="font-medium">+${warranty.cost.toLocaleString()}</span>
                     </div>
                 )}
-                {deliveryType === 'home' && (
-                    <div className="flex justify-between items-center mb-2 text-sm text-indigo-400 animate-in fade-in">
-                        <span className="flex items-center gap-2">
-                            Entrega a Domicilio 
-                            <span className="text-[10px] bg-indigo-500/20 px-2 py-0.5 rounded-full font-black uppercase">En Sitio</span>
-                        </span>
-                        <span className="font-medium">$500 (COD)</span>
-                    </div>
-                )}
-
-                <div className="h-px bg-zinc-700 my-4" />
-
                 <div className="flex justify-between items-baseline mb-2">
                     <span className="font-bold text-lg">Total Plataforma</span>
                     <span className="font-black text-3xl">${(carPrice + (logistics?.cost || 0) + (warranty?.cost || 0)).toLocaleString()}</span>
                 </div>
-                
-                {deliveryType === 'home' && (
-                    <p className="text-[10px] text-zinc-500 font-medium mb-6 italic">
-                        * Los $500 de entrega se pagan directo al personal al recibir el auto.
-                    </p>
-                )}
 
                 <div className="text-xs text-zinc-400 mb-6 text-center leading-relaxed bg-zinc-800/50 p-3 rounded-xl border border-zinc-700">
                     <div className="flex justify-center mb-2"><ShieldCheck className="h-5 w-5 text-emerald-400" /></div>

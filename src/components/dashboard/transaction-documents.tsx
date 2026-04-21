@@ -54,9 +54,16 @@ export function TransactionDocuments({ transactionId }: DocUploadProps) {
     };
 
     const documentTypes = [
-        { id: "title", label: "Título de Propiedad" },
-        { id: "registration", label: "Tarjeta de Circulación" },
-        { id: "id_proof", label: "Identificación Oficial" },
+        { id: "invoice", label: "Factura Original / Re-facturación" },
+        { id: "registration", label: "Tarjeta de Circulación (Vigente)" },
+        { id: "ine", label: "INE / ID Oficial (Vendedor)" },
+        { id: "proof_address", label: "Comprobante de Domicilio" },
+        { id: "tax_payments", label: "Tenencias (Últimos 5 años)" },
+        { id: "verification", label: "Verificación Vehicular (Vigente)" },
+        { id: "repuve", label: "Consulta REPUVE (Sin reporte de robo)" },
+        { id: "infractions", label: "Comprobante de No Infracciones" },
+        { id: "tax_constancy", label: "Constancia de Situación Fiscal" },
+        { id: "contract", label: "Contrato de Compraventa Privado" },
     ];
 
     return (

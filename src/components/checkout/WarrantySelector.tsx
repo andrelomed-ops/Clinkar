@@ -35,9 +35,14 @@ export function WarrantySelector({ carPrice, onSelect }: { carPrice: number, onS
 
     return (
         <div className="space-y-3 mb-6">
-            <div className="flex items-center gap-2 text-zinc-900 dark:text-white font-bold text-sm">
-                <ShieldCheck className="h-4 w-4 text-emerald-500" />
-                Protección Mecánica (Opcional)
+            <div className="flex flex-col gap-1 mb-2">
+                <div className="flex items-center gap-2 text-zinc-900 dark:text-white font-bold text-sm">
+                    <ShieldCheck className="h-4 w-4 text-emerald-500" />
+                    Protección Mecánica (Opcional)
+                </div>
+                <span className="text-[10px] text-amber-600 dark:text-amber-500 font-medium italic">
+                    * Solo aplica si el vendedor o comprador autorizaron el Ajuste por Reparaciones del Taller Aliado.
+                </span>
             </div>
 
             <div className="grid grid-cols-1 gap-2">

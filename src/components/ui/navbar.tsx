@@ -7,6 +7,7 @@ import { ThemeToggle } from '@/components/layout/ThemeToggle';
 import { cn } from '@/lib/utils';
 import { useState, useEffect } from 'react';
 import { NotificationCenter } from './NotificationCenter';
+import { AgentModeBar } from '@/components/admin/AgentModeBar';
 
 interface NavbarProps {
     variant?: 'default' | 'home' | 'market' | 'sell';
@@ -108,12 +109,12 @@ export function Navbar({
                             </button>
                         )}
 
-                        <div className="hidden lg:flex items-center gap-6">
+                        <div className="hidden lg:flex items-center gap-4">
                             {variant !== 'market' && variant !== 'sell' && (
                                 <>
                                     <Link href="/buy" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">Comprar</Link>
                                     <Link href="/sell" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">Vender</Link>
-                                    <Link href="/new-cars" className="text-sm font-black text-indigo-600 dark:text-indigo-400 hover:text-foreground transition-colors italic tracking-tight">Autos Nuevos</Link>
+                                    <Link href="/new-cars" className="text-sm font-black text-indigo-600 dark:text-indigo-400 hover:text-foreground transition-colors italic">Autos Nuevos</Link>
                                 </>
                             )}
                             <Link href="/login" className="h-10 px-6 rounded-full bg-primary text-primary-foreground text-sm font-bold flex items-center hover:opacity-90 transition-all active:scale-95 shadow-lg shadow-primary/5 shrink-0">
@@ -157,6 +158,7 @@ export function Navbar({
                     </div>
                 )}
             </nav>
+            <AgentModeBar />
         </>
     );
 }

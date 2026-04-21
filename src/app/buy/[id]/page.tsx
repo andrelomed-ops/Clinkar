@@ -219,7 +219,7 @@ export default function CarDetailPage({ params }: { params: Promise<{ id: string
                                                 <div className="p-2 bg-amber-500/10 rounded-lg">
                                                     <Activity className="h-4 w-4 text-amber-600" />
                                                 </div>
-                                                <span className="text-sm font-bold">Puesta a Punto Estimada</span>
+                                                <span className="text-sm font-bold">Ajustes sugeridos (Reparaciones/Adeudos)</span>
                                             </div>
                                             <span className="font-black text-amber-600">
                                                 - ${car.priceEquation.deductions.filter((d: any) => d.type === 'mechanical').reduce((acc: number, d: any) => acc + d.amount, 0).toLocaleString()}
@@ -238,7 +238,7 @@ export default function CarDetailPage({ params }: { params: Promise<{ id: string
                             )}
                             
                                     {/* Embedded Manual Offer Modal */}
-                                    <div className="pt-8">
+                                    <div className="pt-8 space-y-8">
                                         <div className="w-full">
                                             <OfferModal 
                                                 id={car.id}
@@ -247,6 +247,30 @@ export default function CarDetailPage({ params }: { params: Promise<{ id: string
                                                 repairCost={car.priceEquation?.deductions?.filter((d: any) => d.type === 'mechanical').reduce((a: number, c: any) => a + c.amount, 0) || 0}
                                                 hasSeal={car.status === 'CERTIFIED'}
                                             />
+                                        </div>
+
+                                        {/* Restoration of Repair Request Flow */}
+                                        <div className="bg-white dark:bg-zinc-900 border border-indigo-200 dark:border-indigo-900/30 rounded-3xl p-8 shadow-xl shadow-indigo-500/5">
+                                            <div className="flex items-center gap-4 mb-6">
+                                                <div className="h-12 w-12 bg-indigo-600 rounded-2xl flex items-center justify-center text-white">
+                                                    <Activity className="h-6 w-6" />
+                                                </div>
+                                                <div>
+                                                    <h3 className="text-xl font-black">Solicitar Reparación Integral</h3>
+                                                    <p className="text-xs text-muted-foreground font-bold uppercase tracking-widest">Garantía Certificada StarterKar</p>
+                                                </div>
+                                            </div>
+                                            <p className="text-sm text-muted-foreground mb-6 leading-relaxed">
+                                                Para que la **Garantía Mecánica** tenga validez absoluta, recomendamos solicitar que el vehículo sea reparado integralmente en el Taller Aliado antes de tu entrega física. Así garantizamos que tu nuevo auto salga en condiciones óptimas.
+                                            </p>
+                                            <div className="p-4 bg-zinc-50 dark:bg-zinc-800/50 rounded-2xl border border-dashed border-zinc-300 dark:border-zinc-700 text-center">
+                                                <Link 
+                                                    href={`/dashboard/repair-request?carId=${car.id}`}
+                                                    className="inline-flex items-center gap-2 text-indigo-600 dark:text-indigo-400 font-black text-sm hover:underline"
+                                                >
+                                                    Explorar Reporte Técnico y Solicitar Presupuesto →
+                                                </Link>
+                                            </div>
                                         </div>
                                     </div>
                         </div>

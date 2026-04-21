@@ -9,22 +9,16 @@ import { useState, useEffect } from "react";
 import { ArrowLeft, Camera, CheckCircle2, ChevronRight, Save, XCircle } from "lucide-react";
 import { ProcessingOverlay } from "@/components/ui/ProcessingOverlay";
 import { CameraUpload } from "@/components/ui/CameraUpload";
+import { INSPECTION_SECTIONS } from "@/lib/inspection-data";
 
-// Simplified categories for the 150 points
-const CATEGORIES = [
-    { id: "motor", label: "Motor y Transmisión", items: ["Nivel Aceite", "Fugas Motor", "Soportes", "Banda Distribución", "Cambios Caja", "Ruidos Extraños"] },
-    { id: "exterior", label: "Exterior y Carrocería", items: ["Pintura General", "Parachoques", "Puertas/Cofre", "Cristales", "Llantas", "Rines"] },
-    { id: "interior", label: "Interior y Eléctrico", items: ["Tablero", "Asientos", "Aire Acondicionado", "Vidrios Eléctricos", "Luces", "Estéreo"] },
-    { id: "suspension", label: "Suspensión y Frenos", items: ["Amortiguadores", "Discos/Balatas", "Dirección", "Freno de Mano"] },
-    { id: "road_test", label: "Prueba de Manejo", items: ["Aceleración", "Frenado", "Estabilidad", "Alineación"] },
-    { id: "documentation", label: "Documentación y VIN", items: ["VIN Visible y Coincide", "Tarjeta de Circulación Vigente", "Placas Coinciden"] }
-];
+// We now use the list from INSPECTION_SECTIONS
 
 export default function ChecklistPage({ params }: { params: Promise<{ id: string }> }) {
     const [carId, setCarId] = useState<string>("");
     const [loading, setLoading] = useState(false);
+    const [role, setRole] = useState<'MECHANIC' | 'LEGAL'>('MECHANIC');
     const [overallResult, setOverallResult] = useState<'APROBADO' | 'RECHAZADO'>('APROBADO');
-    const [checklist, setChecklist] = useState<Record<string, { pass: boolean; note?: string }>>({});
+    const [checklist, setChecklist] = useState<Record<string, { pass: boolean; note?: string; photos?: string[] }>>({});
 
     // AI State
     const [analyzing, setAnalyzing] = useState(false);
@@ -131,27 +125,44 @@ export default function ChecklistPage({ params }: { params: Promise<{ id: string
                 <button onClick={() => router.back()} className="p-2 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-full">
                     <ArrowLeft className="h-5 w-5" />
                 </button>
-                <h1 className="font-bold text-sm uppercase tracking-wider">Checklist 150 Puntos</h1>
+                <div className="flex gap-1 bg-zinc-100 dark:bg-zinc-800 p-1 rounded-xl">
+                    <button 
+                        onClick={() => setRole('MECHANIC')}
+                        className={cn("px-4 py-1.5 text-[10px] font-black uppercase rounded-lg transition-all", role === 'MECHANIC' ? "bg-white dark:bg-zinc-700 shadow-sm" : "opacity-50")}
+                    >
+                        Mecánica
+                    </button>
+                    <button 
+                        onClick={() => setRole('LEGAL')}
+                        className={cn("px-4 py-1.5 text-[10px] font-black uppercase rounded-lg transition-all", role === 'LEGAL' ? "bg-white dark:bg-zinc-700 shadow-sm" : "opacity-50")}
+                    >
+                        Legal
+                    </button>
+                </div>
                 <div className="w-8" />
             </header>
 
             <main className="pt-20 px-4 max-w-2xl mx-auto space-y-8">
 
                 {/* AI Quick Action */}
-                <div className="bg-indigo-600 rounded-3xl p-6 text-white shadow-xl shadow-indigo-600/20 flex items-center justify-between">
-                    <div>
-                        <h3 className="font-black italic uppercase text-lg">Validación IA</h3>
-                        <p className="text-indigo-200 text-xs font-bold uppercase tracking-wider">Autofirma de Documentos</p>
+                {role === 'LEGAL' && (
+                    <div className="bg-indigo-600 rounded-3xl p-6 text-white shadow-xl shadow-indigo-600/20 flex items-center justify-between">
+                        <div>
+                            <h3 className="font-black italic uppercase text-lg">Validación IA</h3>
+                            <p className="text-indigo-200 text-xs font-bold uppercase tracking-wider">Lectura de Tarjeta de Circulación</p>
+                        </div>
+                        <button
+                            onClick={() => setShowScanner(true)}
+                            className="h-12 w-12 bg-white text-indigo-600 rounded-2xl flex items-center justify-center hover:scale-110 transition-transform"
+                        >
+                            <Camera className="h-6 w-6" />
+                        </button>
                     </div>
-                    <button
-                        onClick={() => setShowScanner(true)}
-                        className="h-12 w-12 bg-white text-indigo-600 rounded-2xl flex items-center justify-center hover:scale-110 transition-transform"
-                    >
-                        <Camera className="h-6 w-6" />
-                    </button>
-                </div>
+                )}
 
-                {CATEGORIES.map(cat => (
+                {INSPECTION_SECTIONS
+                    .filter(sec => role === 'MECHANIC' ? sec.id !== 'legal' : sec.id === 'legal')
+                    .map(cat => (
                     <section key={cat.id} className="bg-white dark:bg-zinc-900 rounded-3xl border p-6 shadow-sm">
                         <h2 className="font-black text-xl italic mb-6 flex items-center gap-2">
                             <span className="h-2 w-2 rounded-full bg-blue-600 block" />
@@ -159,35 +170,51 @@ export default function ChecklistPage({ params }: { params: Promise<{ id: string
                         </h2>
 
                         <div className="space-y-6">
-                            {cat.items.map(item => {
-                                const state = checklist[item];
+                            {cat.items.map((item: any) => {
+                                const state = checklist[item.label];
                                 return (
-                                    <div key={item} className="pb-4 border-b border-zinc-100 dark:border-zinc-800 last:border-0 last:pb-0">
-                                        <div className="flex items-center justify-between mb-3">
-                                            <span className="font-medium text-sm text-zinc-700 dark:text-zinc-300">{item}</span>
-                                            <div className="flex gap-2">
+                                    <div key={item.id} className="pb-6 border-b border-zinc-100 dark:border-zinc-800 last:border-0 last:pb-0">
+                                        <div className="flex items-center justify-between mb-4">
+                                            <span className="font-medium text-sm text-zinc-700 dark:text-zinc-300 pr-4">{item.label}</span>
+                                            <div className="flex gap-2 shrink-0">
                                                 <button
-                                                    onClick={() => handleToggle(item, true)}
+                                                    onClick={() => handleToggle(item.label, true)}
                                                     className={`p-2 rounded-xl transition-all ${state?.pass === true ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/20' : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-400'}`}
                                                 >
                                                     <CheckCircle2 className="h-5 w-5" />
                                                 </button>
                                                 <button
-                                                    onClick={() => handleToggle(item, false)}
+                                                    onClick={() => handleToggle(item.label, false)}
                                                     className={`p-2 rounded-xl transition-all ${state?.pass === false ? 'bg-red-500 text-white shadow-lg shadow-red-500/20' : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-400'}`}
                                                 >
                                                     <XCircle className="h-5 w-5" />
                                                 </button>
                                             </div>
                                         </div>
-                                        {state?.pass === false && (
-                                            <input
-                                                type="text"
-                                                placeholder="Describa el problema..."
-                                                className="w-full text-xs p-2 bg-red-50 dark:bg-red-900/10 border border-red-100 dark:border-red-900/30 rounded-lg text-red-900 dark:text-red-200 outline-none focus:ring-1 focus:ring-red-500"
-                                                onChange={(e) => handleNote(item, e.target.value)}
+                                        
+                                        {/* Optional Evidence Section per Item */}
+                                        <div className="flex gap-3">
+                                            {state?.pass === false && (
+                                                <input
+                                                    type="text"
+                                                    placeholder="Razón del fallo..."
+                                                    className="flex-1 text-xs p-2.5 bg-red-50 dark:bg-red-900/10 border border-red-100 dark:border-red-900/30 rounded-lg text-red-900 dark:text-red-200 outline-none focus:ring-1 focus:ring-red-500"
+                                                    onChange={(e) => handleNote(item.label, e.target.value)}
+                                                />
+                                            )}
+                                            <CameraUpload 
+                                                onUpload={(url) => {
+                                                    const current = checklist[item.label] || { pass: false };
+                                                    setChecklist({
+                                                        ...checklist,
+                                                        [item.label]: { ...current, photos: [...(current.photos || []), url] }
+                                                    });
+                                                }}
+                                                className="w-auto h-auto scale-75 origin-right"
+                                                category={role === 'LEGAL' ? 'DOCUMENT' : 'PHOTO'}
+                                                transactionId={carId}
                                             />
-                                        )}
+                                        </div>
                                     </div>
                                 )
                             })}
