@@ -45,9 +45,6 @@ export default function RegisterPage() {
                 console.error("Supabase Auth Error:", error);
                 setError(error.message);
                 setLoading(false);
-            } else if (data.user && data.session === null) {
-                // Email confirmation sent
-                router.push("/login?message=Verifica tu correo electrónico para confirmar tu cuenta");
             } else {
                 // Background: Assign Referral if code exists
                 const finalRefCode = refCode || localStorage.getItem("clinkar_ref_code");
@@ -60,7 +57,13 @@ export default function RegisterPage() {
                         console.error("[REFERRAL] Failed to assign code:", refErr);
                     }
                 }
-                router.push("/dashboard");
+
+                if (data.session === null) {
+                    // Email confirmation sent
+                    router.push("/login?message=Verifica tu correo electrónico para confirmar tu cuenta");
+                } else {
+                    router.push("/dashboard");
+                }
             }
         } catch (err: any) {
             console.error("Registration Critical Error:", err);

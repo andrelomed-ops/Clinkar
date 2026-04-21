@@ -290,11 +290,11 @@ export default function DashboardPage() {
 
                             <div className="w-full md:w-auto flex flex-wrap gap-3">
                                 <StarterKarEvolutionHub />
-                                <Link href="/admin/inspector" className="h-14 px-6 bg-secondary rounded-2xl flex items-center gap-3 font-bold text-sm hover:bg-secondary/80 transition-all">
+                                <Link href="/inspector" className="h-14 px-6 bg-secondary rounded-2xl flex items-center gap-3 font-bold text-sm hover:bg-secondary/80 transition-all">
                                     <Smartphone className="h-5 w-5 text-blue-500" />
                                     Inspector
                                 </Link>
-                                <Link href="/admin/legal" className="h-14 px-6 bg-emerald-500/10 text-emerald-600 rounded-2xl flex items-center gap-3 font-bold text-sm hover:bg-emerald-500/20 transition-all border border-emerald-500/20">
+                                <Link href="/admin" className="h-14 px-6 bg-emerald-500/10 text-emerald-600 rounded-2xl flex items-center gap-3 font-bold text-sm hover:bg-emerald-500/20 transition-all border border-emerald-500/20">
                                     <Shield className="h-5 w-5" />
                                     Admin Legal
                                 </Link>
