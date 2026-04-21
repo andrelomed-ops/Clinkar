@@ -535,6 +535,38 @@ export type Database = {
                     created_at?: string
                 }
             }
+            partners: {
+                Row: {
+                    id: string
+                    name: string
+                    address: string
+                    city: string
+                    phone: string | null
+                    is_active: boolean
+                    created_at: string
+                    updated_at: string
+                }
+                Insert: {
+                    id?: string
+                    name: string
+                    address: string
+                    city: string
+                    phone?: string | null
+                    is_active?: boolean
+                    created_at?: string
+                    updated_at?: string
+                }
+                Update: {
+                    id?: string
+                    name?: string
+                    address?: string
+                    city?: string
+                    phone?: string | null
+                    is_active?: boolean
+                    created_at?: string
+                    updated_at?: string
+                }
+            }
         }
         Views: {
             [_ in never]: never
