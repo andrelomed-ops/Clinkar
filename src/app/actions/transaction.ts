@@ -13,6 +13,7 @@ import { redirect } from 'next/navigation';
 export async function startTransaction(carId: string, addOns?: {
     logistics?: any;
     warranty?: any;
+    deliveryType?: 'workshop' | 'home';
 }) {
     const supabase = await createClient();
 
