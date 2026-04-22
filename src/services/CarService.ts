@@ -80,4 +80,19 @@ export class CarService {
         Logger.info(`[CarService] Car ${id} locked with status: ${status}`);
         return true;
     }
+
+    static async createCar(supabase: SupabaseClient<Database>, carData: Partial<Car>): Promise<Car | null> {
+        const { data, error } = await supabase
+            .from('cars')
+            .insert(carData as any)
+            .select()
+            .single();
+
+        if (error) {
+            Logger.error('[CarService] Failed to create car:', error);
+            return null;
+        }
+
+        return data;
+    }
 }

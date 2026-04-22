@@ -3,7 +3,9 @@
 import { useState, useEffect } from "react";
 import { Search, Filter, MoreHorizontal, CheckCircle2, AlertCircle, Clock, Ban, ShieldAlert, ExternalLink, Users, DollarSign, Loader2, CarFront } from "lucide-react";
 import { getPendingReferralPayouts, processReferralPayout } from "@/app/actions/admin";
+import { createCarAction, getAdminInventoryAction } from "@/app/actions/cars";
 import { toast } from "sonner";
+import { cn } from "@/lib/utils";
 
 export default function AdminDashboard() {
     const [transactions, setTransactions] = useState([
@@ -12,46 +14,53 @@ export default function AdminDashboard() {
         { id: "TX-9984", car: "Toyota RAV4 2020", seller: "Pedro L.", buyer: "Roberto M.", status: "FUNDS_HELD", stage: "Liberación Pendiente", amount: 410000 },
     ]);
 
-    const [inventory, setInventory] = useState([
-        { id: "1", car: "BMW M4 2022", price: 1250000, offersEnabled: true, status: "PUBLICADO" },
-        { id: "2", car: "Porsche 911 2021", price: 2100000, offersEnabled: false, status: "EN_REVISIÓN" },
-    ]);
-
+    const [inventory, setInventory] = useState<any[]>([]);
     const [view, setView] = useState<'OPERATIONS' | 'INVENTORY'>('OPERATIONS');
+    const [loadingInventory, setLoadingInventory] = useState(false);
+    const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+    const [newCar, setNewCar] = useState({
+        make: "",
+        model: "",
+        year: 2024,
+        price: 0,
+        mileage: 0,
+        transmission: "Automatic",
+        fuel_type: "Gasoline",
+        location: "CDMX"
+    });
 
     const [referralPayouts, setReferralPayouts] = useState<any[]>([]);
     const [payoutLoading, setPayoutLoading] = useState<string | null>(null);
 
     useEffect(() => {
-        async function loadPayouts() {
+        async function loadData() {
             try {
                 const payouts = await getPendingReferralPayouts();
                 setReferralPayouts(payouts || []);
+                
+                setLoadingInventory(true);
+                const cars = await getAdminInventoryAction();
+                setInventory(cars || []);
             } catch (err) {
-                console.error("Error loading payouts:", err);
+                console.error("Error loading admin data:", err);
+            } finally {
+                setLoadingInventory(false);
             }
         }
-        loadPayouts();
+        loadData();
     }, []);
 
-    const handlePayout = async (referralId: string, amount: number) => {
-        setPayoutLoading(referralId);
+    const handleCreateCar = async (e: React.FormEvent) => {
+        e.preventDefault();
         try {
-            const result = await processReferralPayout(
-                referralId,
-                amount,
-                `Pago de referido por operación completada`
-            );
-            toast.success("Link de pago generado - Envíalo al referidor");
-            if (result?.paymentUrl) {
-                await navigator.clipboard.writeText(result.paymentUrl);
-                toast.info("Link copiado al portapapeles");
-            }
-            setReferralPayouts(prev => prev.filter(p => p.id !== referralId));
+            await createCarAction(newCar);
+            toast.success("Vehículo publicado con éxito");
+            setIsCreateModalOpen(false);
+            // Reload inventory
+            const cars = await getAdminInventoryAction();
+            setInventory(cars || []);
         } catch (err: any) {
-            toast.error(err.message || "Error al generar link");
-        } finally {
-            setPayoutLoading(null);
+            toast.error(err.message || "Error al crear vehículo");
         }
     };
 
@@ -133,10 +142,51 @@ export default function AdminDashboard() {
                             <CarFront className="h-5 w-5 text-indigo-400" />
                             Listado de Vehículos en Plataforma
                         </h2>
-                        <button className="h-12 px-6 bg-white text-black font-black rounded-xl hover:scale-105 transition-all">
+                        <button 
+                            onClick={() => setIsCreateModalOpen(true)}
+                            className="h-12 px-6 bg-white text-black font-black rounded-xl hover:scale-105 transition-all"
+                        >
                             + ALTA DE VEHÍCULO
                         </button>
                     </div>
+
+                    {isCreateModalOpen && (
+                        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+                            <div className="bg-zinc-900 border border-zinc-800 p-8 rounded-[2rem] w-full max-w-2xl animate-in zoom-in-95 duration-200">
+                                <h3 className="text-2xl font-black text-white mb-6 uppercase italic">Nuevo Vehículo en Inventario</h3>
+                                <form onSubmit={handleCreateCar} className="grid grid-cols-2 gap-4">
+                                    <div className="space-y-1">
+                                        <label className="text-[10px] font-black text-zinc-500 uppercase tracking-widest">Marca</label>
+                                        <input required className="w-full h-12 bg-zinc-950 border border-zinc-800 rounded-xl px-4 text-white" placeholder="Toyota" onChange={e => setNewCar({...newCar, make: e.target.value})} />
+                                    </div>
+                                    <div className="space-y-1">
+                                        <label className="text-[10px] font-black text-zinc-500 uppercase tracking-widest">Modelo</label>
+                                        <input required className="w-full h-12 bg-zinc-950 border border-zinc-800 rounded-xl px-4 text-white" placeholder="Corolla" onChange={e => setNewCar({...newCar, model: e.target.value})} />
+                                    </div>
+                                    <div className="space-y-1">
+                                        <label className="text-[10px] font-black text-zinc-500 uppercase tracking-widest">Año</label>
+                                        <input required type="number" className="w-full h-12 bg-zinc-950 border border-zinc-800 rounded-xl px-4 text-white" placeholder="2022" onChange={e => setNewCar({...newCar, year: parseInt(e.target.value)})} />
+                                    </div>
+                                    <div className="space-y-1">
+                                        <label className="text-[10px] font-black text-zinc-500 uppercase tracking-widest">Precio (MXN)</label>
+                                        <input required type="number" className="w-full h-12 bg-zinc-950 border border-zinc-800 rounded-xl px-4 text-white" placeholder="350000" onChange={e => setNewCar({...newCar, price: parseFloat(e.target.value)})} />
+                                    </div>
+                                    <div className="space-y-1">
+                                        <label className="text-[10px] font-black text-zinc-500 uppercase tracking-widest">Kilometraje</label>
+                                        <input required type="number" className="w-full h-12 bg-zinc-950 border border-zinc-800 rounded-xl px-4 text-white" placeholder="15000" onChange={e => setNewCar({...newCar, mileage: parseInt(e.target.value)})} />
+                                    </div>
+                                    <div className="space-y-1">
+                                        <label className="text-[10px] font-black text-zinc-500 uppercase tracking-widest">Ubicación</label>
+                                        <input required className="w-full h-12 bg-zinc-950 border border-zinc-800 rounded-xl px-4 text-white" placeholder="Ciudad de México" onChange={e => setNewCar({...newCar, location: e.target.value})} />
+                                    </div>
+                                    <div className="col-span-2 pt-4 flex gap-4">
+                                        <button type="submit" className="flex-1 h-14 bg-indigo-600 text-white font-black rounded-2xl hover:bg-indigo-500 transition-all uppercase tracking-widest">Publicar Ahora</button>
+                                        <button type="button" onClick={() => setIsCreateModalOpen(false)} className="px-8 h-14 bg-zinc-800 text-zinc-400 font-black rounded-2xl hover:bg-zinc-700 transition-all uppercase tracking-widest">Cancelar</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    )}
 
                     <div className="grid gap-4">
                         {inventory.map(car => (
@@ -146,11 +196,11 @@ export default function AdminDashboard() {
                                         <CarFront className="h-8 w-8 text-zinc-700" />
                                     </div>
                                     <div>
-                                        <h4 className="text-lg font-black text-white">{car.car}</h4>
+                                        <h4 className="text-lg font-black text-white">{car.make} {car.model} {car.year}</h4>
                                         <div className="flex gap-4 mt-1">
-                                            <span className="text-xs text-zinc-500 font-bold tracking-widest">${car.price.toLocaleString()} MXN</span>
-                                            <span className={cn("text-[10px] font-black px-2 py-0.5 rounded", car.status === 'PUBLICADO' ? "bg-emerald-500/10 text-emerald-500" : "bg-amber-500/10 text-amber-500")}>
-                                                {car.status}
+                                            <span className="text-xs text-zinc-500 font-bold tracking-widest">${car.price?.toLocaleString()} MXN</span>
+                                            <span className={cn("text-[10px] font-black px-2 py-0.5 rounded", car.status === 'published' ? "bg-emerald-500/10 text-emerald-500" : "bg-amber-500/10 text-amber-500")}>
+                                                {car.status?.toUpperCase()}
                                             </span>
                                         </div>
                                     </div>
