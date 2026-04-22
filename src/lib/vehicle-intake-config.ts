@@ -113,6 +113,18 @@ export const ALL_DOCUMENTS: Record<string, DocumentRequirement> = {
         description: 'Multas de tránsito pendientes.',
         required: false,
         managedByStarterKar: true
+    },
+    rfc: {
+        id: 'rfc',
+        label: 'Constancia de Situación Fiscal (RFC)',
+        description: 'Documento oficial del SAT con fecha reciente.',
+        required: true
+    },
+    proof_of_address: {
+        id: 'proof_of_address',
+        label: 'Comprobante de Domicilio',
+        description: 'Luz, agua o telefonía fija (no mayor a 3 meses).',
+        required: true
     }
 };
 
@@ -122,7 +134,7 @@ export const VEHICLE_CATEGORIES: VehicleCategoryConfig[] = [
         title: 'Nacional / Dueño Directo',
         description: 'Comprado nuevo en agencia o seminuevo de un solo dueño.',
         icon: '🚗',
-        documents: ['ine_current', 'invoice_original', 'circulation_card', 'responsiva']
+        documents: ['ine_current', 'invoice_original', 'circulation_card', 'responsiva', 'rfc', 'proof_of_address']
     },
     {
         id: 'SECONDARY',
