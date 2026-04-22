@@ -82,13 +82,14 @@ export function Navbar({
                                 <ArrowLeft className="h-4 w-4 group-hover:-translate-x-1 transition-transform" />
                                 <span className="font-semibold text-sm hidden sm:inline">{backLabel}</span>
                             </Link>
-                        ) : variant === 'home' ? (
-                            <Link href="/" className="flex items-center gap-3 group">
-                                <StarterKarSeal variant="compact" className="!bg-transparent !border-none !shadow-none !p-0" />
-                            </Link>
                         ) : (
                             <Link href="/" className="flex items-center gap-2 group">
-                                <StarterKarSeal variant="compact" className="scale-110" />
+                                {/* Logo B: image on light bg, inverted on dark */}
+                                <img
+                                    src="/logo_official.png"
+                                    alt="StarterKar"
+                                    className="h-8 w-auto object-contain dark:brightness-0 dark:invert dark:contrast-200 transition-all"
+                                />
                             </Link>
                         )}
                     </div>

@@ -50,8 +50,8 @@ export const metadata: Metadata = {
     title: "StarterKar",
   },
   icons: {
-    icon: "/shield-icon-192.png",
-    apple: "/shield-icon-192.png",
+    icon: "/logo_official.png",
+    apple: "/logo_official.png",
   },
   openGraph: {
     title: "StarterKar | Compraventa Segura de Autos",

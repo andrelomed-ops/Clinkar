@@ -1,10 +1,8 @@
 "use client";
 
 import { useState, useRef } from "react";
-import { Camera, Image as ImageIcon, Check, X, Loader2, UploadCloud } from "lucide-react";
+import { Camera, Check, Loader2, UploadCloud, FileText, X } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { Button } from "./button";
-
 import { createBrowserClient } from "@/lib/supabase/client";
 
 interface CameraUploadProps {
@@ -13,28 +11,31 @@ interface CameraUploadProps {
     description?: string;
     category?: 'PHOTO' | 'DOCUMENT';
     className?: string;
-    transactionId?: string; // Optional for generic use
+    transactionId?: string;
 }
+
+type UploadMode = 'gallery' | 'camera' | 'pdf';
 
 export function CameraUpload({ onUpload, label = "Capturar", description, category = 'PHOTO', className, transactionId }: CameraUploadProps) {
     const [isUploading, setIsUploading] = useState(false);
     const [preview, setPreview] = useState<string | null>(null);
-    const fileInputRef = useRef<HTMLInputElement>(null);
+    const [uploadedFileName, setUploadedFileName] = useState<string | null>(null);
+    const [compressionRate, setCompressionRate] = useState<number | null>(null);
+    const [isPdf, setIsPdf] = useState(false);
+
+    const galleryInputRef = useRef<HTMLInputElement>(null);
+    const cameraInputRef = useRef<HTMLInputElement>(null);
+    const pdfInputRef = useRef<HTMLInputElement>(null);
     const supabase = createBrowserClient();
 
-    const [compressionRate, setCompressionRate] = useState<number | null>(null);
-
-    // Helper: Client-side compression
     const compressImage = async (file: File): Promise<Blob> => {
         return new Promise((resolve, reject) => {
             const img = new Image();
             img.src = URL.createObjectURL(file);
             img.onload = () => {
                 const canvas = document.createElement('canvas');
-                const MAX_WIDTH = 1200; // Good balance for documents
+                const MAX_WIDTH = 1200;
                 const scaleSize = MAX_WIDTH / img.width;
-
-                // Only resize if width > MAX_WIDTH
                 if (scaleSize < 1) {
                     canvas.width = MAX_WIDTH;
                     canvas.height = img.height * scaleSize;
@@ -42,67 +43,57 @@ export function CameraUpload({ onUpload, label = "Capturar", description, catego
                     canvas.width = img.width;
                     canvas.height = img.height;
                 }
-
                 const ctx = canvas.getContext('2d');
-                if (!ctx) {
-                    reject(new Error('Canvas context not available'));
-                    return;
-                }
-
+                if (!ctx) { reject(new Error('Canvas context not available')); return; }
                 ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-
-                // Compress to JPEG at 80% quality
                 canvas.toBlob((blob) => {
-                    if (blob) {
-                        resolve(blob);
-                    } else {
-                        reject(new Error('Compression failed'));
-                    }
+                    if (blob) resolve(blob);
+                    else reject(new Error('Compression failed'));
                 }, 'image/jpeg', 0.8);
             };
             img.onerror = (err) => reject(err);
         });
     };
 
-    const handleCapture = async (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0];
-        if (!file) return;
-
-        // Reset previous states
+    const uploadFile = async (file: File, isDocument = false) => {
+        setIsUploading(true);
+        setIsPdf(isDocument);
         setCompressionRate(null);
 
-        // Create local preview immediately
-        const objectUrl = URL.createObjectURL(file);
-        setPreview(objectUrl);
-        setIsUploading(true);
-
         try {
-            // 1. Compress
-            const compressedBlob = await compressImage(file);
-            const originalSize = file.size / 1024 / 1024; // MB
-            const compressedSize = compressedBlob.size / 1024 / 1024; // MB
-            const reduction = Math.round((1 - (compressedSize / originalSize)) * 100);
-            setCompressionRate(reduction > 0 ? reduction : 0);
+            let uploadBlob: Blob = file;
+            let ext = 'jpg';
+            let contentType = 'image/jpeg';
 
-            // 2. Size Validation (Max 5MB)
-            if (compressedBlob.size > 5 * 1024 * 1024) {
-                alert("La imagen es demasiado grande incluso después de comprimir. Intenta con otra.");
+            if (isDocument) {
+                // PDF: upload directly
+                uploadBlob = file;
+                ext = 'pdf';
+                contentType = 'application/pdf';
+                setPreview('pdf');
+                setUploadedFileName(file.name);
+            } else {
+                // Image: compress
+                const objectUrl = URL.createObjectURL(file);
+                setPreview(objectUrl);
+                uploadBlob = await compressImage(file);
+                const reduction = Math.round((1 - (uploadBlob.size / file.size)) * 100);
+                setCompressionRate(reduction > 0 ? reduction : 0);
+            }
+
+            if (uploadBlob.size > 15 * 1024 * 1024) {
+                alert("El archivo es demasiado grande. Máximo 15MB.");
                 setPreview(null);
                 setIsUploading(false);
                 return;
             }
 
-            // 3. Upload
             const fileName = label.replace(/\s+/g, '_').toLowerCase();
-            const fileExt = 'jpg'; // We force JPEG
-            const path = `uploads/${transactionId || 'anonymous'}/${Date.now()}_${fileName}.${fileExt}`;
+            const path = `uploads/${transactionId || 'anonymous'}/${Date.now()}_${fileName}.${ext}`;
 
             const { error: uploadError } = await supabase.storage
                 .from('inspection-evidence')
-                .upload(path, compressedBlob, {
-                    contentType: 'image/jpeg',
-                    upsert: true
-                });
+                .upload(path, uploadBlob, { contentType, upsert: true });
 
             if (uploadError) throw uploadError;
 
@@ -111,118 +102,143 @@ export function CameraUpload({ onUpload, label = "Capturar", description, catego
                 .getPublicUrl(path);
 
             onUpload(publicUrl);
-        } catch (error) {
-            // console.error("Upload failed:", error);
-            // alert("Error al subir la imagen. Inténtalo de nuevo."); // Remove alert for cleaner UI or handle differently
+        } catch {
             setPreview(null);
+            setUploadedFileName(null);
         } finally {
             setIsUploading(false);
         }
     };
 
-    const clearPreview = () => {
-        setPreview(null);
-        setCompressionRate(null);
-        if (fileInputRef.current) fileInputRef.current.value = "";
+    const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+        await uploadFile(file, false);
     };
 
+    const handlePdfChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+        await uploadFile(file, true);
+    };
+
+    const clearPreview = () => {
+        setPreview(null);
+        setUploadedFileName(null);
+        setCompressionRate(null);
+        setIsPdf(false);
+        if (galleryInputRef.current) galleryInputRef.current.value = "";
+        if (cameraInputRef.current) cameraInputRef.current.value = "";
+        if (pdfInputRef.current) pdfInputRef.current.value = "";
+    };
+
+    const isSuccess = preview && !isUploading;
+
     return (
-        <div className={cn("space-y-4", className)}>
+        <div className={cn("space-y-3", className)}>
             {label && (
-                <label className="text-sm font-bold text-foreground/80 block">
-                    {label}
-                </label>
+                <label className="text-sm font-bold text-foreground/80 block">{label}</label>
             )}
 
-            <div
-                className={cn(
-                    "relative min-h-[180px] rounded-3xl border-2 border-dashed transition-all duration-300 flex flex-col items-center justify-center p-6 text-center overflow-hidden",
-                    preview
-                        ? "border-primary/50 bg-primary/5"
-                        : "border-border hover:border-primary/30 hover:bg-secondary/50"
-                )}
-            >
-                {preview ? (
-                    <div className="absolute inset-0 z-0">
-                        {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img
-                            src={preview}
-                            alt="Preview"
-                            className="w-full h-full object-cover opacity-40 blur-[2px]"
-                        />
+            {/* Preview / Success State */}
+            {isSuccess ? (
+                <div className="relative rounded-2xl border-2 border-emerald-500/40 bg-emerald-50 dark:bg-emerald-900/10 p-5 flex items-center gap-4">
+                    <div className="h-12 w-12 bg-emerald-500/10 rounded-xl flex items-center justify-center shrink-0">
+                        {isPdf ? (
+                            <FileText className="h-6 w-6 text-emerald-600" />
+                        ) : (
+                            <Check className="h-6 w-6 text-emerald-600" />
+                        )}
                     </div>
-                ) : null}
-
-                <div className="relative z-10 flex flex-col items-center gap-3">
-                    {isUploading ? (
-                        <>
-                            <div className="h-12 w-12 bg-primary/10 rounded-full flex items-center justify-center animate-pulse">
-                                <Loader2 className="h-6 w-6 text-primary animate-spin" />
-                            </div>
-                            <p className="text-sm font-bold text-primary animate-pulse">Subiendo...</p>
-                        </>
-                    ) : preview ? (
-                        <>
-                            <div className="h-12 w-12 bg-green-500/10 rounded-full flex items-center justify-center">
-                                <Check className="h-6 w-6 text-green-500" />
-                            </div>
-                            <div className="space-y-1">
-                                <p className="text-sm font-bold text-foreground">Imagen Capturada</p>
-                                <button
-                                    onClick={clearPreview}
-                                    className="text-xs text-red-500 font-bold hover:underline"
-                                >
-                                    Cambiar / Eliminar
-                                </button>
-                                {compressionRate !== null && compressionRate > 0 && (
-                                    <p className="text-[10px] text-green-600 font-medium animate-in fade-in">
-                                        Generando versión web... (-{compressionRate}%)
-                                    </p>
-                                )}
-                            </div>
-                        </>
-                    ) : (
-                        <>
-                            <div className="h-14 w-14 bg-secondary rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                                {category === 'PHOTO' ? (
-                                    <Camera className="h-7 w-7 text-muted-foreground" />
-                                ) : (
-                                    <UploadCloud className="h-7 w-7 text-muted-foreground" />
-                                )}
-                            </div>
-                            <div className="space-y-1">
-                                <p className="text-sm font-bold text-foreground">
-                                    {category === 'PHOTO' ? "Tomar Foto o Subir" : "Escanear Documento"}
-                                </p>
-                                {description && (
-                                    <p className="text-xs text-muted-foreground max-w-[200px]">
-                                        {description}
-                                    </p>
-                                )}
-                            </div>
-                        </>
-                    )}
+                    <div className="flex-1 min-w-0">
+                        <p className="text-sm font-bold text-emerald-700 dark:text-emerald-400">
+                            {isPdf ? "PDF Subido Correctamente" : "Imagen Capturada"}
+                        </p>
+                        {uploadedFileName && (
+                            <p className="text-xs text-emerald-600/70 truncate">{uploadedFileName}</p>
+                        )}
+                        {compressionRate !== null && compressionRate > 0 && (
+                            <p className="text-[10px] text-emerald-600 font-medium">Optimizado (-{compressionRate}%)</p>
+                        )}
+                    </div>
+                    <button onClick={clearPreview} className="p-1.5 rounded-lg hover:bg-red-100 dark:hover:bg-red-900/20 text-zinc-400 hover:text-red-500 transition-colors">
+                        <X className="h-4 w-4" />
+                    </button>
                 </div>
+            ) : isUploading ? (
+                <div className="rounded-2xl border-2 border-dashed border-indigo-300 bg-indigo-50 dark:bg-indigo-900/10 p-8 flex flex-col items-center gap-3">
+                    <Loader2 className="h-8 w-8 text-indigo-500 animate-spin" />
+                    <p className="text-sm font-bold text-indigo-600 animate-pulse">Subiendo archivo...</p>
+                </div>
+            ) : (
+                /* Upload Options */
+                <div className="space-y-2">
+                    {/* Three action buttons */}
+                    <div className="grid grid-cols-3 gap-2">
+                        {/* Galería / Archivo */}
+                        <button
+                            type="button"
+                            onClick={() => galleryInputRef.current?.click()}
+                            className="relative flex flex-col items-center gap-2 p-4 rounded-2xl border-2 border-dashed border-zinc-200 dark:border-zinc-700 hover:border-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-900/10 transition-all group"
+                        >
+                            <UploadCloud className="h-6 w-6 text-zinc-400 group-hover:text-indigo-500 transition-colors" />
+                            <span className="text-[10px] font-bold text-zinc-500 group-hover:text-indigo-600 uppercase tracking-wide">Galería</span>
+                        </button>
 
-                {/* Hidden File Input with native capture */}
-                <input
-                    ref={fileInputRef}
-                    type="file"
-                    accept="image/*"
-                    capture={category === 'PHOTO' ? "environment" : undefined}
-                    onChange={handleCapture}
-                    className="absolute inset-0 opacity-0 cursor-pointer z-20"
-                    disabled={isUploading}
-                />
-            </div>
+                        {/* Cámara */}
+                        <button
+                            type="button"
+                            onClick={() => cameraInputRef.current?.click()}
+                            className="relative flex flex-col items-center gap-2 p-4 rounded-2xl border-2 border-dashed border-zinc-200 dark:border-zinc-700 hover:border-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-900/10 transition-all group"
+                        >
+                            <Camera className="h-6 w-6 text-zinc-400 group-hover:text-emerald-500 transition-colors" />
+                            <span className="text-[10px] font-bold text-zinc-500 group-hover:text-emerald-600 uppercase tracking-wide">Cámara</span>
+                        </button>
 
-            {!preview && !isUploading && (
-                <div className="flex justify-center gap-4">
-                    <p className="text-[10px] uppercase tracking-widest font-black text-muted-foreground">
-                        Soporta: JPG, PNG, HEIC
+                        {/* PDF */}
+                        <button
+                            type="button"
+                            onClick={() => pdfInputRef.current?.click()}
+                            className="relative flex flex-col items-center gap-2 p-4 rounded-2xl border-2 border-dashed border-zinc-200 dark:border-zinc-700 hover:border-red-400 hover:bg-red-50 dark:hover:bg-red-900/10 transition-all group"
+                        >
+                            <FileText className="h-6 w-6 text-zinc-400 group-hover:text-red-500 transition-colors" />
+                            <span className="text-[10px] font-bold text-zinc-500 group-hover:text-red-600 uppercase tracking-wide">PDF</span>
+                        </button>
+                    </div>
+
+                    {description && (
+                        <p className="text-xs text-muted-foreground text-center">{description}</p>
+                    )}
+
+                    <p className="text-[10px] uppercase tracking-widest font-black text-muted-foreground text-center">
+                        Soporta: JPG · PNG · HEIC · PDF
                     </p>
                 </div>
             )}
+
+            {/* Hidden Inputs */}
+            <input
+                ref={galleryInputRef}
+                type="file"
+                accept="image/*"
+                onChange={handleImageChange}
+                className="hidden"
+            />
+            <input
+                ref={cameraInputRef}
+                type="file"
+                accept="image/*"
+                capture="environment"
+                onChange={handleImageChange}
+                className="hidden"
+            />
+            <input
+                ref={pdfInputRef}
+                type="file"
+                accept="application/pdf"
+                onChange={handlePdfChange}
+                className="hidden"
+            />
         </div>
     );
 }
