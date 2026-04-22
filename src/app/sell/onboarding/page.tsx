@@ -142,13 +142,18 @@ export default function SellOnboardingPage() {
             setSuccess(true);
             toast.success("¡Inspección agendada con éxito!");
             
+            // Stronger redirect
             setTimeout(() => {
-                router.push('/dashboard');
-            }, 3000);
+                window.location.href = '/dashboard';
+            }, 2500);
 
         } catch (err: any) {
             console.error("Error en onboarding completo:", err);
-            toast.error(err.message || "Error al agendar la revisión");
+            if (err.message?.includes('403') || err.code === '42501') {
+                toast.error("Error de permisos (RLS): El administrador debe aplicar la migración de seguridad en Supabase.");
+            } else {
+                toast.error(err.message || "Error al agendar la revisión");
+            }
         } finally {
             setLoading(false);
         }
