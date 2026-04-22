@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { createBrowserClient } from "@/lib/supabase/client";
 import { Shield, User, Car, Loader2, Gift } from "lucide-react";
-import { StarterKarSeal } from "@/components/market/StarterKarSeal";
+import { StarterKarLogo } from "@/components/ui/StarterKarLogo";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { cn } from "@/lib/utils";
@@ -82,9 +82,9 @@ export default function RegisterPage() {
         <div className="flex min-h-screen items-center justify-center bg-background px-6 py-12">
             <div className="w-full max-w-md space-y-8">
                 <div className="flex flex-col items-center text-center">
-                    <Link href="/" className="mb-8 group">
-                        <StarterKarSeal variant="compact" className="scale-150" />
-                    </Link>
+                    <div className="mb-8">
+                        <StarterKarLogo size="lg" />
+                    </div>
                     <h2 className="text-3xl font-bold tracking-tight">Crea tu cuenta</h2>
                     <p className="mt-2 text-muted-foreground">Únete a la plataforma de intermediación segura.</p>
                     {refCode && (

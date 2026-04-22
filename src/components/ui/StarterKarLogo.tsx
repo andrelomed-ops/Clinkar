@@ -8,33 +8,26 @@ interface StarterKarLogoProps {
     className?: string;
     href?: string;
     showWordmark?: boolean;
+    showMonogram?: boolean;
+    orientation?: "horizontal" | "vertical";
+    label?: string;
 }
 
-/**
- * StarterKarLogo — Letras SK efecto acrílico retroiluminado 3D (Opción C).
- *
- * Técnica: la imagen Option C (S negro mate + K azul retroiluminado) se renderiza
- * con mix-blend-mode: multiply.
- *
- * Matemática: pixel_blanco × fondo_navbar = fondo_navbar → desaparece.
- *             pixel_negro × fondo = negro → se mantiene.
- *             pixel_azul × fondo_claro = azul → se mantiene.
- *
- * Resultado: letras hiperrealistas flotando directamente sobre la superficie,
- * sin ningún marco, borde ni fondo visible. Idénticas a la imagen generada.
- */
 export function StarterKarLogo({
     size = "md",
     className,
     href = "/",
     showWordmark = true,
+    showMonogram = true,
+    orientation = "horizontal",
+    label,
 }: StarterKarLogoProps) {
     const imgSizes = {
-        xs: "h-8",
-        sm: "h-12",
-        md: "h-16",
-        lg: "h-20",
-        xl: "h-28",
+        xs: "h-6",
+        sm: "h-10",
+        md: "h-14",
+        lg: "h-18",
+        xl: "h-24",
     };
 
     const wordmarkSizes = {
@@ -46,25 +39,40 @@ export function StarterKarLogo({
     };
 
     const mark = (
-        <div className={cn("flex items-center gap-1", className)}>
-            {/* SK Monogram — PNG con alpha transparente, sin fondo cuadrado */}
-            <img
-                src="/logo_sk_transparent.png"
-                alt="SK"
-                className={cn(
-                    "w-auto object-contain select-none transition-transform group-hover:scale-105",
-                    imgSizes[size]
-                )}
-                style={{
-                    // Filtro de sombra paralela para reforzar el efecto de "pegado al muro"
-                    filter: "drop-shadow(0 2px 4px rgba(0,0,0,0.15))",
-                }}
-                draggable={false}
-            />
+        <div className={cn(
+            "flex items-center gap-1", 
+            orientation === "vertical" ? "flex-col gap-0.5" : "flex-row",
+            className
+        )}>
+            {/* SK Monogram */}
+            {showMonogram && (
+                <img
+                    src="/logo_sk_transparent.png"
+                    alt="SK"
+                    className={cn(
+                        "w-auto object-contain select-none transition-all duration-300 group-hover:scale-110 group-active:scale-95",
+                        imgSizes[size]
+                    )}
+                    style={{
+                        filter: "drop-shadow(0 3px 6px rgba(0,0,0,0.2))",
+                    }}
+                    draggable={false}
+                />
+            )}
+
+            {/* Label for vertical orientation (e.g. "Inicio") */}
+            {orientation === "vertical" && label && (
+                <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-zinc-500 group-hover:text-indigo-600 transition-colors">
+                    {label}
+                </span>
+            )}
 
             {/* Wordmark */}
             {showWordmark && (
-                <div className="flex flex-col justify-center leading-tight ml-1">
+                <div className={cn(
+                    "flex flex-col justify-center leading-tight",
+                    orientation === "horizontal" ? "ml-1" : "items-center text-center mt-1"
+                )}>
                     <span
                         className={cn(
                             "font-black uppercase tracking-[0.12em] text-zinc-900 dark:text-white",
@@ -91,7 +99,7 @@ export function StarterKarLogo({
     if (!href) return mark;
 
     return (
-        <Link href={href} className="flex items-center group transition-opacity hover:opacity-90">
+        <Link href={href} className="flex items-center group no-underline">
             {mark}
         </Link>
     );

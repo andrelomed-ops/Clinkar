@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { Facebook, Twitter, Instagram, Linkedin } from "lucide-react";
-import { StarterKarSeal } from "../market/StarterKarSeal";
+import { StarterKarLogo } from "../ui/StarterKarLogo";
 
 export function Footer() {
     return (
@@ -9,9 +9,9 @@ export function Footer() {
                 <div className="grid grid-cols-1 gap-12 md:grid-cols-4">
                     {/* Brand Column */}
                     <div className="md:col-span-1 space-y-6">
-                        <Link href="/" className="flex items-center gap-2 group">
-                            <StarterKarSeal variant="compact" className="scale-125 mr-1" />
-                        </Link>
+                        <div className="flex items-center gap-2">
+                            <StarterKarLogo size="md" />
+                        </div>
                         <p className="text-sm text-muted-foreground leading-relaxed max-w-xs">
                             La bóveda digital más segura para la compraventa de autos seminuevos. Tu dinero protegido hasta la entrega.
                         </p>

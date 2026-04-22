@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Shield, CreditCard, Clock, CheckCircle2, QrCode, ArrowRight, MapPin, Wrench, Car, CarFront, Smartphone, Heart } from "lucide-react";
+import { StarterKarLogo } from "@/components/ui/StarterKarLogo";
 import confetti from "canvas-confetti";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
@@ -258,7 +259,7 @@ export default function DashboardPage() {
                         <ArrowRight className="h-5 w-5 rotate-180" />
                     </Link>
                     <div className="flex items-center gap-2">
-                        <Shield className="h-6 w-6 text-indigo-600" />
+                        <StarterKarLogo size="xs" showWordmark={false} href="/dashboard" />
                         <span className="font-bold text-lg">Mi StarterKar</span>
                     </div>
                 </div>

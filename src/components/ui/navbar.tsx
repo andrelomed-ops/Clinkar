@@ -83,7 +83,7 @@ export function Navbar({
                                 <span className="font-semibold text-sm hidden sm:inline">{backLabel}</span>
                             </Link>
                         ) : (
-                            <StarterKarLogo size="sm" href="/" />
+                            <StarterKarLogo size="sm" showMonogram={false} href="/" />
                         )}
                     </div>
 
@@ -128,15 +128,14 @@ export function Navbar({
                                     <Link href="/new-cars" className="text-sm font-black text-indigo-600 dark:text-indigo-400 hover:text-foreground transition-colors italic">Autos Nuevos</Link>
                                 </>
                             )}
-                            {user ? (
-                                <Link href="/dashboard" className="h-10 px-6 rounded-full bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 text-sm font-bold flex items-center hover:opacity-90 transition-all active:scale-95 shadow-lg shadow-primary/5 shrink-0">
-                                    Sesión StarterKar
-                                </Link>
-                            ) : (
-                                <Link href="/login" className="h-10 px-6 rounded-full bg-primary text-primary-foreground text-sm font-bold flex items-center hover:opacity-90 transition-all active:scale-95 shadow-lg shadow-primary/5 shrink-0">
-                                    Acceder
-                                </Link>
-                            )}
+                            <StarterKarLogo 
+                                size="sm" 
+                                showWordmark={false} 
+                                orientation="vertical" 
+                                label={user ? "Mi Panel" : "Inicio"} 
+                                href={user ? "/dashboard" : "/login"} 
+                                className="hover:translate-y-[-2px] transition-all"
+                            />
                             <NotificationCenter />
                             <ThemeToggle />
                         </div>
