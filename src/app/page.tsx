@@ -103,7 +103,8 @@ export default function Home() {
         </section>
 
         {/* --- THE 3 PILLARS: Clean & Professional --- */}
-        <section id="security" className="py-32 bg-secondary/30">
+        <section id="security" className="py-32 bg-secondary/30 relative">
+          <div id="how-it-works" className="absolute -top-32" />
           <div className="mx-auto max-w-7xl px-6">
             <div className="grid md:grid-cols-3 gap-12">
               <div className="space-y-6">
