@@ -1,0 +1,198 @@
+"use client";
+
+import { useState, useEffect } from "react";
+import { createBrowserClient } from "@/lib/supabase/client";
+import { User, Mail, Phone, MapPin, Shield, Loader2, Camera, Save } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { toast } from "sonner";
+import { Navbar } from "@/components/ui/navbar";
+import Link from "next/link";
+
+export default function ProfilePage() {
+    const supabase = createBrowserClient();
+    const [user, setUser] = useState<any>(null);
+    const [profile, setProfile] = useState<any>(null);
+    const [loading, setLoading] = useState(true);
+    const [saving, setSaving] = useState(false);
+
+    useEffect(() => {
+        async function loadProfile() {
+            const { data: { user } } = await supabase.auth.getUser();
+            if (!user) {
+                window.location.href = "/login";
+                return;
+            }
+            setUser(user);
+
+            const { data: profile } = await supabase
+                .from("profiles")
+                .select("*")
+                .eq("id", user.id)
+                .single();
+
+            if (profile) setProfile(profile);
+            setLoading(false);
+        }
+        loadProfile();
+    }, [supabase]);
+
+    const handleSave = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setSaving(true);
+        try {
+            const { error } = await supabase
+                .from("profiles")
+                .update({
+                    full_name: profile.full_name,
+                    phone: profile.phone,
+                    location: profile.location
+                })
+                .eq("id", user.id);
+
+            if (error) throw error;
+            toast.success("Perfil actualizado con éxito");
+        } catch (err) {
+            toast.error("Error al actualizar perfil");
+        } finally {
+            setSaving(false);
+        }
+    };
+
+    if (loading) return (
+        <div className="min-h-screen bg-background flex flex-col items-center justify-center">
+            <Loader2 className="h-10 w-10 animate-spin text-indigo-600 mb-4" />
+            <p className="text-zinc-500 font-bold">Cargando tu identidad digital...</p>
+        </div>
+    );
+
+    return (
+        <div className="min-h-screen bg-background">
+            <div className="border-b border-border bg-background/80 backdrop-blur-md px-6 h-16 shrink-0 flex items-center justify-between z-50">
+                <div className="flex items-center gap-4">
+                    <Link href="/dashboard" className="p-2 hover:bg-secondary rounded-full transition-colors">
+                        <User className="h-5 w-5" />
+                    </Link>
+                    <span className="font-bold text-lg">Mi Perfil StarterKar</span>
+                </div>
+                <div className="flex items-center gap-4">
+                     <span className="text-[10px] font-black bg-emerald-100 text-emerald-700 px-3 py-1 rounded-full uppercase">Cuenta Verificada</span>
+                </div>
+            </div>
+
+            <main className="max-w-4xl mx-auto py-12 px-6">
+                <div className="grid md:grid-cols-12 gap-12">
+                    {/* Left: Avatar & Quick Info */}
+                    <div className="md:col-span-4 space-y-6 text-center">
+                        <div className="relative inline-block group">
+                            <div className="h-32 w-32 rounded-full bg-indigo-100 border-4 border-white dark:border-zinc-900 shadow-2xl flex items-center justify-center text-4xl font-black text-indigo-600">
+                                {profile?.full_name ? profile.full_name.split(' ').map((n: any) => n[0]).join('') : 'U'}
+                            </div>
+                            <button className="absolute bottom-0 right-0 p-2 bg-indigo-600 text-white rounded-full shadow-lg hover:scale-110 transition-all">
+                                <Camera className="h-4 w-4" />
+                            </button>
+                        </div>
+                        <div>
+                            <h2 className="text-2xl font-black">{profile?.full_name || 'Usuario'}</h2>
+                            <p className="text-sm text-zinc-500 font-medium">{user?.email}</p>
+                        </div>
+                        <div className="p-4 bg-zinc-50 dark:bg-zinc-900 rounded-2xl border border-zinc-200 dark:border-zinc-800 text-left space-y-3">
+                            <div className="flex items-center gap-3 text-xs font-bold text-zinc-600">
+                                <Shield className="h-4 w-4 text-indigo-600" />
+                                Nivel de Seguridad: Alto
+                            </div>
+                            <div className="flex items-center gap-3 text-xs font-bold text-zinc-600">
+                                <Shield className="h-4 w-4 text-indigo-600" />
+                                Bóveda Activa: Sí
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Right: Form */}
+                    <div className="md:col-span-8">
+                        <form onSubmit={handleSave} className="space-y-8 glass-card p-8 rounded-[2.5rem] border-border/40 shadow-2xl shadow-indigo-500/5">
+                            <div className="space-y-6">
+                                <div className="grid gap-2">
+                                    <Label htmlFor="name" className="text-xs font-black uppercase tracking-widest text-zinc-400">Nombre Completo</Label>
+                                    <div className="relative">
+                                        <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400" />
+                                        <Input 
+                                            id="name"
+                                            value={profile?.full_name || ""}
+                                            onChange={(e) => setProfile({ ...profile, full_name: e.target.value })}
+                                            className="pl-10 h-12 rounded-xl bg-secondary/30 border-transparent focus:bg-white transition-all"
+                                            placeholder="Tu nombre legal"
+                                        />
+                                    </div>
+                                </div>
+
+                                <div className="grid gap-2">
+                                    <Label htmlFor="email" className="text-xs font-black uppercase tracking-widest text-zinc-400">Email (Protegido)</Label>
+                                    <div className="relative">
+                                        <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400" />
+                                        <Input 
+                                            id="email"
+                                            value={user?.email || ""}
+                                            disabled
+                                            className="pl-10 h-12 rounded-xl bg-zinc-100 dark:bg-zinc-800 border-transparent cursor-not-allowed opacity-60"
+                                        />
+                                    </div>
+                                </div>
+
+                                <div className="grid md:grid-cols-2 gap-6">
+                                    <div className="grid gap-2">
+                                        <Label htmlFor="phone" className="text-xs font-black uppercase tracking-widest text-zinc-400">Teléfono</Label>
+                                        <div className="relative">
+                                            <Phone className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400" />
+                                            <Input 
+                                                id="phone"
+                                                value={profile?.phone || ""}
+                                                onChange={(e) => setProfile({ ...profile, phone: e.target.value })}
+                                                className="pl-10 h-12 rounded-xl bg-secondary/30 border-transparent focus:bg-white transition-all"
+                                                placeholder="+52 ..."
+                                            />
+                                        </div>
+                                    </div>
+                                    <div className="grid gap-2">
+                                        <Label htmlFor="location" className="text-xs font-black uppercase tracking-widest text-zinc-400">Ubicación</Label>
+                                        <div className="relative">
+                                            <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400" />
+                                            <Input 
+                                                id="location"
+                                                value={profile?.location || ""}
+                                                onChange={(e) => setProfile({ ...profile, location: e.target.value })}
+                                                className="pl-10 h-12 rounded-xl bg-secondary/30 border-transparent focus:bg-white transition-all"
+                                                placeholder="Ciudad, Estado"
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="pt-6 border-t border-border flex justify-end">
+                                <Button 
+                                    type="submit" 
+                                    disabled={saving}
+                                    className="h-12 px-8 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-black shadow-lg shadow-indigo-600/20 transition-all hover:scale-105 active:scale-95"
+                                >
+                                    {saving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
+                                    Guardar Cambios
+                                </Button>
+                            </div>
+                        </form>
+
+                        <div className="mt-8 p-6 bg-amber-50 dark:bg-amber-900/10 border border-amber-200 dark:border-amber-900/30 rounded-3xl">
+                            <h4 className="text-amber-800 dark:text-amber-400 font-black text-sm uppercase tracking-widest mb-2 flex items-center gap-2">
+                                <Shield className="h-4 w-4" /> Zona de Seguridad
+                            </h4>
+                            <p className="text-xs text-amber-700 dark:text-amber-500 leading-relaxed">
+                                Para cambiar tu correo electrónico o solicitar la eliminación definitiva de tu identidad digital y activos en la Bóveda, por favor contacta a soporte técnico de StarterKar.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    );
+}

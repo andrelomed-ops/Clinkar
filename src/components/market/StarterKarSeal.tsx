@@ -21,8 +21,7 @@ const BrandMark = ({ size = "md" }: { size?: "sm" | "md" | "lg" }) => {
 
             {/* Core Shield */}
             <div className="relative z-10 bg-indigo-600 rounded-lg p-1.5 shadow-lg shadow-indigo-600/30 group-hover:scale-110 transition-transform flex items-center justify-center rotate-3 group-hover:rotate-0">
-                <Shield className={cn("text-white fill-white/20", iconSize)} />
-                <Check className={cn("absolute text-white stroke-[4px]", size === "sm" ? "h-2 w-2" : size === "md" ? "h-3 w-3" : "h-4 w-4")} />
+                <img src="/logo_official.png" alt="StarterKar" className={cn("object-contain", size === "sm" ? "h-4 w-4" : size === "md" ? "h-6 w-6" : "h-10 w-10")} />
             </div>
         </div>
     );
@@ -33,10 +32,13 @@ export function StarterKarSeal({ variant = "compact", className, score }: Starte
     if (variant === "compact") {
         return (
             <div className={cn(
-                "group flex items-center gap-2 px-2 py-1 bg-white/95 dark:bg-zinc-900/90 backdrop-blur-md rounded-full border border-zinc-200 dark:border-zinc-800 shadow-[0_4px_12px_-4px_rgba(0,0,0,0.1)] hover:border-indigo-500/30 transition-all duration-300",
+                "group flex items-center gap-2 px-3 py-1.5 bg-white/95 dark:bg-zinc-900/90 backdrop-blur-md rounded-full border border-zinc-200 dark:border-zinc-800 shadow-[0_4px_12px_-4px_rgba(0,0,0,0.1)] hover:border-indigo-500/30 transition-all duration-300",
                 className
             )}>
                 <BrandMark size="sm" />
+                <span className="text-sm font-black tracking-tighter text-zinc-900 dark:text-white uppercase italic">
+                    Starter<span className="text-indigo-600">Kar</span>
+                </span>
             </div>
         );
     }

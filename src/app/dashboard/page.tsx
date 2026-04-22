@@ -298,6 +298,12 @@ export default function DashboardPage() {
                                     <Shield className="h-5 w-5" />
                                     Admin Legal
                                 </Link>
+                                {(user?.email === 'admin@starterkar.mx' || (user as any)?.role === 'admin') && (
+                                    <Link href="/sell?admin=true" className="h-14 px-6 bg-indigo-600 text-white rounded-2xl flex items-center gap-3 font-black text-sm hover:bg-indigo-700 transition-all shadow-xl shadow-indigo-600/20 animate-pulse hover:animate-none">
+                                        <CarFront className="h-5 w-5" />
+                                        Publicar Auto (Admin)
+                                    </Link>
+                                )}
                             </div>
 
                             {/* Role Switcher */}

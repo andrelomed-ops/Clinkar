@@ -136,7 +136,7 @@ export function Navbar({
                             )}
                             {user ? (
                                 <Link href="/dashboard" className="h-10 px-6 rounded-full bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 text-sm font-bold flex items-center hover:opacity-90 transition-all active:scale-95 shadow-lg shadow-primary/5 shrink-0">
-                                    Panel de Control
+                                    Sesión StarterKar
                                 </Link>
                             ) : (
                                 <Link href="/login" className="h-10 px-6 rounded-full bg-primary text-primary-foreground text-sm font-bold flex items-center hover:opacity-90 transition-all active:scale-95 shadow-lg shadow-primary/5 shrink-0">

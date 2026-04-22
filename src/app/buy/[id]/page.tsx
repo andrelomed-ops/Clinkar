@@ -23,6 +23,7 @@ import {
 import Link from "next/link";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
+import { toast } from "sonner";
 
 export default function CarDetailPage({ params }: { params: Promise<{ id: string }> }) {
     const { id } = use(params);
@@ -101,7 +102,22 @@ export default function CarDetailPage({ params }: { params: Promise<{ id: string
                         Volver a Inventario
                     </Link>
                     <div className="flex gap-2">
-                        <button className="p-2.5 rounded-full border border-border bg-background hover:bg-secondary transition-colors">
+                        <button 
+                            onClick={async () => {
+                                const shareData = {
+                                    title: `${car.make} ${car.model} ${car.year}`,
+                                    text: `Mira este ${car.make} en StarterKar | Bóveda Digital Segura`,
+                                    url: window.location.href
+                                };
+                                if (navigator.share) {
+                                    try { await navigator.share(shareData); } catch (e) {}
+                                } else {
+                                    navigator.clipboard.writeText(window.location.href);
+                                    toast.success("Enlace copiado al portapapeles");
+                                }
+                            }}
+                            className="p-2.5 rounded-full border border-border bg-background hover:bg-secondary transition-colors"
+                        >
                             <Share2 className="h-5 w-5" />
                         </button>
                         <button 

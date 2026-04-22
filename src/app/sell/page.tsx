@@ -70,7 +70,7 @@ export default function SellPage() {
 
                     {/* Right: Valuation UI Wrapper */}
                     <div className="relative">
-                        <div className="absolute -inset-1 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-[2.5rem] blur-xl opacity-20 dark:opacity-40" />
+                        <div className="absolute -inset-1 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-[2.5rem] blur-xl opacity-20 dark:opacity-40 pointer-events-none" />
 
                         {/* View Toggle */}
                         <div className="relative z-10 flex p-1 bg-zinc-100 dark:bg-zinc-800/50 rounded-2xl mb-6 mx-auto max-w-sm border border-zinc-200 dark:border-zinc-700">

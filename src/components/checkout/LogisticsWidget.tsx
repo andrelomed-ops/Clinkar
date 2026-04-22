@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Truck, MapPin, Calculator, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { toast } from "sonner";
 
 interface ShippingQuote {
     distanceKm: number;
@@ -26,18 +27,28 @@ export function LogisticsWidget({ carLocation, onQuote }: { carLocation: string,
         await new Promise(r => setTimeout(r, 1500));
 
         // Mock Calculation Logic (Same as Service)
-        const distance = Math.floor(Math.random() * 1200) + 100;
+        const isSameCity = (zipCode.startsWith('0') && carLocation.toLowerCase().includes('mexico')) || 
+                           (zipCode.startsWith('6') && carLocation.toLowerCase().includes('monterrey'));
+
+        const distance = isSameCity ? Math.floor(Math.random() * 20) + 5 : Math.floor(Math.random() * 1200) + 100;
         const cost = 1500 + (distance * 3.5);
         const finalCost = Math.ceil(cost / 100) * 100;
 
         const mockQuote: ShippingQuote = {
             distanceKm: distance,
             cost: finalCost,
-            estimatedDays: Math.ceil(distance / 400) + 1,
+            estimatedDays: isSameCity ? 1 : Math.ceil(distance / 400) + 1,
             provider: 'Clinkargo',
             origin: carLocation,
-            dest: `CP ${zipCode}`
+            dest: isSameCity ? `Misma Ciudad (${zipCode})` : `Foráneo (${zipCode})`
         };
+
+        if (isSameCity) {
+            toast.info("📍 Estás en la misma ciudad", {
+                description: "Por seguridad y ahorro, te recomendamos elegir entrega en 'Taller Aliado'.",
+                duration: 6000
+            });
+        }
 
         setQuote(mockQuote);
         onQuote(mockQuote);
