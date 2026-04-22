@@ -11,18 +11,23 @@ interface StarterKarSealProps {
 }
 
 const BrandMark = ({ size = "md" }: { size?: "sm" | "md" | "lg" }) => {
-    const dims = size === "sm" ? "h-5 w-5" : size === "md" ? "h-8 w-8" : "h-12 w-12";
-    const iconSize = size === "sm" ? "h-3 w-3" : size === "md" ? "h-5 w-5" : "h-7 w-7";
+    const dims = size === "sm" ? "h-6 w-6" : size === "md" ? "h-9 w-9" : "h-14 w-14";
+    const padding = size === "sm" ? "p-1" : size === "md" ? "p-1.5" : "p-2.5";
 
     return (
-        <div className={cn("relative flex items-center justify-center shrink-0", dims)}>
-            {/* Outer Shield Shape / Ring */}
-            <div className="absolute inset-0 rounded-full border-[2px] border-indigo-500/10" />
-
-            {/* Core Shield */}
-            <div className="relative z-10 bg-indigo-600 rounded-lg p-1.5 shadow-lg shadow-indigo-600/30 group-hover:scale-110 transition-transform flex items-center justify-center rotate-3 group-hover:rotate-0">
-                <img src="/logo_official.png" alt="StarterKar" className={cn("object-contain", size === "sm" ? "h-4 w-4" : size === "md" ? "h-6 w-6" : "h-10 w-10")} />
-            </div>
+        <div className={cn(
+            "relative flex items-center justify-center shrink-0 rounded-xl bg-indigo-600 shadow-lg shadow-indigo-600/40 group-hover:scale-110 transition-transform rotate-3 group-hover:rotate-0",
+            dims,
+            padding
+        )}>
+            {/* Inline SVG: Shield with car silhouette */}
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-full">
+                {/* Shield path */}
+                <path d="M12 2L3 6v6c0 5.25 3.75 10.15 9 11.35C17.25 22.15 21 17.25 21 12V6L12 2z" fill="white" fillOpacity="0.9"/>
+                {/* Car silhouette inside shield */}
+                <path d="M8 14.5h8M9.5 14.5l1-2.5h3l1 2.5M9 14.5v1h1.5v-1M13.5 14.5v1H15v-1" stroke="#4F46E5" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/>
+                <path d="M10.5 12h3l-.5-1.5h-2L10.5 12z" fill="#4F46E5" fillOpacity="0.6"/>
+            </svg>
         </div>
     );
 };
