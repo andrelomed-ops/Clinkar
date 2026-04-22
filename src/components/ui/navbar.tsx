@@ -132,7 +132,7 @@ export function Navbar({
                                 size="sm" 
                                 showWordmark={false} 
                                 orientation="vertical" 
-                                label={user ? "Mi Panel" : "Inicio"} 
+                                label={user ? "Mi Garage" : "Inicio"} 
                                 href={user ? "/dashboard" : "/login"} 
                                 className="hover:translate-y-[-2px] transition-all"
                             />

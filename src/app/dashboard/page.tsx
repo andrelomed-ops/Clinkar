@@ -260,7 +260,7 @@ export default function DashboardPage() {
                     </Link>
                     <div className="flex items-center gap-2">
                         <StarterKarLogo size="xs" showWordmark={false} href="/dashboard" />
-                        <span className="font-bold text-lg">Mi StarterKar</span>
+                        <span className="font-bold text-lg">Mi Garage</span>
                     </div>
                 </div>
                 <div className="flex items-center gap-4">
@@ -286,26 +286,36 @@ export default function DashboardPage() {
                                 <h1 className="text-4xl font-black tracking-tight mb-2">
                                     {new Date().getHours() < 12 ? 'Buenos días' : new Date().getHours() < 19 ? 'Buenas tardes' : 'Buenas noches'}, {userProfile?.full_name?.split(' ')[0] || 'Usuario'} 👋
                                 </h1>
-                                <p className="text-muted-foreground font-medium">Gestiona tu garage digital y explora nuevas oportunidades.</p>
+                                <p className="text-muted-foreground font-medium text-sm">
+                                    {transactions.length > 0 || ownedCars.length > 0
+                                        ? `${transactions.length + ownedCars.length} operación${transactions.length + ownedCars.length !== 1 ? 'es' : ''} activa${transactions.length + ownedCars.length !== 1 ? 's' : ''}`
+                                        : 'Tu garage digital te espera'}
+                                </p>
                             </div>
 
-                            <div className="w-full md:w-auto flex flex-wrap gap-3">
-                                <StarterKarEvolutionHub />
-                                <Link href="/admin/inspector" className="h-14 px-6 bg-secondary rounded-2xl flex items-center gap-3 font-bold text-sm hover:bg-secondary/80 transition-all">
-                                    <Smartphone className="h-5 w-5 text-blue-500" />
-                                    Inspector
-                                </Link>
-                                <Link href="/admin/legal" className="h-14 px-6 bg-emerald-500/10 text-emerald-600 rounded-2xl flex items-center gap-3 font-bold text-sm hover:bg-emerald-500/20 transition-all border border-emerald-500/20">
-                                    <Shield className="h-5 w-5" />
-                                    Admin Legal
-                                </Link>
-                                {(user?.email === 'admin@starterkar.mx' || (user as any)?.role === 'admin') && (
-                                    <Link href="/sell?admin=true" className="h-14 px-6 bg-indigo-600 text-white rounded-2xl flex items-center gap-3 font-black text-sm hover:bg-indigo-700 transition-all shadow-xl shadow-indigo-600/20 animate-pulse hover:animate-none">
-                                        <CarFront className="h-5 w-5" />
-                                        Publicar Auto (Admin)
-                                    </Link>
-                                )}
-                            </div>
+                            {/* Role-gated admin tools — solo admin/inspector */}
+                            {(userProfile?.role === 'admin' || userProfile?.role === 'inspector') && (
+                                <div className="w-full md:w-auto flex flex-wrap gap-3">
+                                    {userProfile?.role === 'inspector' || userProfile?.role === 'admin' ? (
+                                        <Link href="/admin/inspector" className="h-14 px-6 bg-secondary rounded-2xl flex items-center gap-3 font-bold text-sm hover:bg-secondary/80 transition-all">
+                                            <Smartphone className="h-5 w-5 text-blue-500" />
+                                            Inspector
+                                        </Link>
+                                    ) : null}
+                                    {userProfile?.role === 'admin' && (
+                                        <>
+                                            <Link href="/admin/legal" className="h-14 px-6 bg-emerald-500/10 text-emerald-600 rounded-2xl flex items-center gap-3 font-bold text-sm hover:bg-emerald-500/20 transition-all border border-emerald-500/20">
+                                                <Shield className="h-5 w-5" />
+                                                Admin Legal
+                                            </Link>
+                                            <Link href="/sell?admin=true" className="h-14 px-6 bg-indigo-600 text-white rounded-2xl flex items-center gap-3 font-black text-sm hover:bg-indigo-700 transition-all shadow-xl shadow-indigo-600/20">
+                                                <CarFront className="h-5 w-5" />
+                                                Publicar Auto
+                                            </Link>
+                                        </>
+                                    )}
+                                </div>
+                            )}
 
                             {/* Role Switcher */}
                             <button
@@ -361,22 +371,58 @@ export default function DashboardPage() {
                                     ))}
                                 </div>
                             ) : (
-                                <div className="relative group overflow-hidden text-center py-24 bg-zinc-50 dark:bg-zinc-900/50 rounded-[3rem] border border-dashed border-zinc-200 dark:border-zinc-800 transition-all hover:border-indigo-500/30">
-                                    <div className="absolute inset-0 bg-gradient-to-b from-indigo-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-                                    <div className="relative z-10 px-6">
-                                        <div className="h-20 w-20 bg-white dark:bg-zinc-800 rounded-3xl shadow-xl shadow-indigo-500/10 flex items-center justify-center mx-auto mb-6 transform group-hover:scale-110 group-hover:rotate-3 transition-transform duration-500">
-                                            <Car className="h-10 w-10 text-indigo-600" />
-                                        </div>
-                                        <h3 className="text-2xl font-black mb-3 tracking-tight italic uppercase">Tu Garage Está Listo</h3>
-                                        <p className="text-muted-foreground mb-8 max-w-xs mx-auto text-sm font-medium leading-relaxed">
-                                            Aún no tienes transacciones activas. Explora el inventario certificado y comienza tu compra segura.
-                                        </p>
-                                        <Button asChild size="lg" className="rounded-2xl h-14 px-10 bg-indigo-600 text-white font-black hover:bg-indigo-700 shadow-2xl shadow-indigo-600/20 transition-all hover:scale-105 active:scale-95">
-                                            <Link href="/buy">
-                                                <CheckCircle2 className="mr-2 h-5 w-5" />
-                                                Explorar Inventario
-                                            </Link>
-                                        </Button>
+                                /* Pantalla de bienvenida para usuario nuevo */
+                                <div className="py-8 space-y-8 animate-in fade-in duration-500">
+                                    <div className="text-center space-y-2">
+                                        <p className="text-xs font-black uppercase tracking-[0.25em] text-indigo-500">¿Qué quieres hacer hoy?</p>
+                                        <h2 className="text-2xl font-black tracking-tight">Elige tu próximo paso</h2>
+                                    </div>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-2xl mx-auto">
+                                        {/* CTA Comprar */}
+                                        <Link
+                                            href="/buy"
+                                            className="group relative overflow-hidden rounded-[2.5rem] p-8 bg-gradient-to-br from-indigo-600 via-indigo-700 to-purple-800 text-white shadow-2xl shadow-indigo-500/30 hover:shadow-indigo-500/50 transition-all hover:scale-[1.02] active:scale-[0.99]"
+                                        >
+                                            <div className="absolute top-0 right-0 p-6 opacity-10 group-hover:opacity-20 group-hover:scale-110 transition-all duration-700">
+                                                <Car className="h-32 w-32" />
+                                            </div>
+                                            <div className="relative z-10 space-y-4">
+                                                <div className="h-12 w-12 bg-white/20 rounded-2xl flex items-center justify-center backdrop-blur-sm">
+                                                    <Car className="h-6 w-6 text-white" />
+                                                </div>
+                                                <div>
+                                                    <p className="text-[10px] font-black uppercase tracking-[0.25em] text-indigo-200 mb-1">Inventario Certificado</p>
+                                                    <h3 className="text-2xl font-black tracking-tight">Comprar Auto</h3>
+                                                    <p className="text-indigo-200 text-sm font-medium mt-2 leading-relaxed">Explora autos con inspección de 150 puntos y pago protegido en bóveda.</p>
+                                                </div>
+                                                <div className="flex items-center gap-2 text-sm font-bold text-indigo-200 group-hover:text-white transition-colors">
+                                                    Ver inventario <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                                                </div>
+                                            </div>
+                                        </Link>
+
+                                        {/* CTA Vender */}
+                                        <Link
+                                            href="/sell"
+                                            className="group relative overflow-hidden rounded-[2.5rem] p-8 bg-zinc-950 border border-zinc-800 text-white shadow-2xl hover:border-indigo-500/50 transition-all hover:scale-[1.02] active:scale-[0.99]"
+                                        >
+                                            <div className="absolute top-0 right-0 p-6 opacity-10 group-hover:opacity-20 group-hover:scale-110 transition-all duration-700">
+                                                <CarFront className="h-32 w-32" />
+                                            </div>
+                                            <div className="relative z-10 space-y-4">
+                                                <div className="h-12 w-12 bg-indigo-600/30 rounded-2xl flex items-center justify-center">
+                                                    <CarFront className="h-6 w-6 text-indigo-400" />
+                                                </div>
+                                                <div>
+                                                    <p className="text-[10px] font-black uppercase tracking-[0.25em] text-zinc-500 mb-1">Proceso Certificado</p>
+                                                    <h3 className="text-2xl font-black tracking-tight">Vender mi Auto</h3>
+                                                    <p className="text-zinc-400 text-sm font-medium mt-2 leading-relaxed">Publica tu vehículo, agenda inspección y recibe tu pago seguro.</p>
+                                                </div>
+                                                <div className="flex items-center gap-2 text-sm font-bold text-zinc-400 group-hover:text-indigo-400 transition-colors">
+                                                    Publicar ahora <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                                                </div>
+                                            </div>
+                                        </Link>
                                     </div>
                                 </div>
                             )}
