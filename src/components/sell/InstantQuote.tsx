@@ -5,6 +5,7 @@ import React, { useState, useMemo, useEffect } from 'react';
 import { ArrowRight, Banknote, ShieldCheck, CarFront, RefreshCw, BarChart3 } from 'lucide-react';
 import { ALL_CARS } from "@/data/cars";
 import { PRICING_DATABASE, SEGMENT_PRICING } from "@/lib/pricing-data";
+import { getMarketPriceAction } from '@/app/actions/cars';
 
 export const InstantQuote = () => {
     const [step, setStep] = useState<'INPUT' | 'ANALYZING' | 'RESULT'>('INPUT');
@@ -35,21 +36,33 @@ export const InstantQuote = () => {
         return PRICING_DATABASE[make]?.[model]?.[parseInt(year)]?.versions || [];
     }, [make, model, year]);
 
-    const handleCalculate = () => {
+    const handleCalculate = async () => {
         setStep('ANALYZING');
 
-        setTimeout(() => {
-            // 1. Try exact match in PRICING_DATABASE
+        // Artificial delay for UX
+        await new Promise(resolve => setTimeout(resolve, 1500));
+
+        let basePrice = 0;
+        let isEstimate = false;
+
+        // 1. Try real market pricing from DB
+        const marketData = await getMarketPriceAction(make, model, parseInt(year));
+        let isExact = !!marketData && marketData.length > 0;
+        
+        if (marketData && marketData.length > 0) {
+            // Use the average of available versions
+            const avgPrice = marketData.reduce((acc: number, curr: any) => acc + Number(curr.price_base), 0) / marketData.length;
+            basePrice = avgPrice;
+        } else {
+            // 2. Fallback to exact match in PRICING_DATABASE
             const dbData = PRICING_DATABASE[make]?.[model]?.[parseInt(year)];
             const selectedVersionData = dbData?.versions.find(v => v.name === version);
 
-            let basePrice = 0;
-            let isEstimate = false;
-
             if (selectedVersionData) {
                 basePrice = selectedVersionData.basePrice;
+                isExact = true;
             } else {
-                // 2. Fallback to Segment Estimation or Inventory Average
+                // 3. Fallback to Segment Estimation or Inventory Average
                 const segmentKey = (model.toLowerCase().includes('suv') || model.toLowerCase().includes('cr-v') || model.toLowerCase().includes('seltos')) ? "SUV Compacta" : "Sedan Mediano";
                 const segmentBase = SEGMENT_PRICING[segmentKey] || 350000;
                 
@@ -70,28 +83,28 @@ export const InstantQuote = () => {
                 basePrice = basePrice * Math.pow(depreciationRate, age);
                 isEstimate = true;
             }
+        }
 
-            // 3. Mileage Adjustment (15k km/year standard)
-            const age = 2024 - parseInt(year);
-            const standardMileage = Math.max(1, age) * 15000;
-            const inputMileage = parseInt(mileage) || standardMileage;
-            
-            if (inputMileage > standardMileage) {
-                const diff = inputMileage - standardMileage;
-                basePrice = basePrice - (diff * 0.5); // $0.50 penalty per km
-            } else if (inputMileage < standardMileage && inputMileage > 0) {
-                const diff = standardMileage - inputMileage;
-                basePrice = basePrice + (diff * 0.2); // Smaller bonus for low mileage
-            }
+        // 3. Mileage Adjustment (15k km/year standard)
+        const age = 2024 - parseInt(year);
+        const standardMileage = Math.max(1, age) * 15000;
+        const inputMileage = parseInt(mileage) || standardMileage;
+        
+        if (inputMileage > standardMileage) {
+            const diff = inputMileage - standardMileage;
+            basePrice = basePrice - (diff * 0.5); // $0.50 penalty per km
+        } else if (inputMileage < standardMileage && inputMileage > 0) {
+            const diff = standardMileage - inputMileage;
+            basePrice = basePrice + (diff * 0.2); // Smaller bonus for low mileage
+        }
 
-            setQuote({
-                min: Math.floor(basePrice * 0.88),
-                max: Math.floor(basePrice * 0.98),
-                confidence: selectedVersionData ? 98 : 75,
-                isEstimate
-            });
-            setStep('RESULT');
-        }, 2500);
+        setQuote({
+            min: Math.floor(basePrice * 0.88),
+            max: Math.floor(basePrice * 0.98),
+            confidence: isExact ? 98 : 75,
+            isEstimate
+        });
+        setStep('RESULT');
     };
 
     const reset = () => {

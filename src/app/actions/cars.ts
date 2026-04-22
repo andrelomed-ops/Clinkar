@@ -51,3 +51,21 @@ export async function getAdminInventoryAction() {
 
     return cars;
 }
+
+export async function getMarketPriceAction(make: string, model: string, year: number) {
+    const supabase = await createClient();
+    
+    const { data, error } = await supabase
+        .from("pricing_market")
+        .select("*")
+        .eq("make", make)
+        .eq("model", model)
+        .eq("year", year);
+
+    if (error) {
+        console.error("Error fetching market price:", error);
+        return null;
+    }
+
+    return data;
+}
