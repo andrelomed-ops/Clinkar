@@ -10,6 +10,7 @@ import { ArrowLeft, Camera, CheckCircle2, ChevronRight, Save, XCircle } from "lu
 import { ProcessingOverlay } from "@/components/ui/ProcessingOverlay";
 import { CameraUpload } from "@/components/ui/CameraUpload";
 import { INSPECTION_SECTIONS } from "@/lib/inspection-data";
+import { cn } from "@/lib/utils";
 
 // We now use the list from INSPECTION_SECTIONS
 

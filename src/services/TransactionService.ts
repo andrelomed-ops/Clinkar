@@ -23,6 +23,7 @@ export class TransactionService extends BaseService {
         // Optional Services
         logisticsQuote?: { cost: number; distance: number; origin: string; dest: string };
         warrantyQuote?: { cost: number; type: 'STANDARD' | 'EXTENDED' };
+        appliedPerkId?: string;
     }): Promise<Transaction | null> {
         Logger.info(`[GATEKEEPER] Iniciando creación de transacción para ${data.sellerId} (Monto: $${data.amount})`);
 
@@ -72,7 +73,7 @@ export class TransactionService extends BaseService {
 
         // 3.2 Seller Fee (3.5% standard, check for discounts)
         let sellerFeePercent = PRICING_CONFIG.SELLER_SUCCESS_FEE_PERCENT;
-        const { data: discountPerk } = await (supabase
+        const { data: feeDiscount } = await (supabase
             .from('user_perks') as any)
             .select('id')
             .eq('user_id', data.sellerId)
@@ -80,11 +81,11 @@ export class TransactionService extends BaseService {
             .eq('status', 'AVAILABLE')
         
         // 3.3 Optional Discount Perks (Referrals)
-        let discountPerk = null;
+        let appliedPerk = null;
         if (data.appliedPerkId) {
-            const { data: perk } = await supabase.from('user_perks').select('*').eq('id', data.appliedPerkId).single();
+            const { data: perk } = await (supabase.from('user_perks') as any).select('*').eq('id', data.appliedPerkId).single();
             if (perk && perk.status === 'AVAILABLE') {
-                discountPerk = perk;
+                appliedPerk = perk;
                 sellerFeePercent = sellerFeePercent * (PRICING_CONFIG.REFERRAL_REWARD_FEE_DISCOUNT_PERCENT / 100);
                 Logger.info(`[PRICING] Applying ${PRICING_CONFIG.REFERRAL_REWARD_FEE_DISCOUNT_PERCENT}% discount to seller ${data.sellerId}`);
             }
@@ -109,7 +110,7 @@ export class TransactionService extends BaseService {
                 status: 'PENDING',
                 pld_status: pldResult.riskLevel === 'CLEAN' ? 'APPROVED' : 'PENDING',
                 risk_metadata: pldResult as any,
-                metadata: discountPerk ? { used_perk_id: discountPerk.id } : {}
+                metadata: appliedPerk ? { used_perk_id: (appliedPerk as any).id } : {}
             })
             .select()
             .single();

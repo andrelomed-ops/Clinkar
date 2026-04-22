@@ -54,9 +54,12 @@ export const InstantQuote = () => {
             const avgPrice = marketData.reduce((acc: number, curr: any) => acc + Number(curr.price_base), 0) / marketData.length;
             basePrice = avgPrice;
         } else {
-            // 2. Fallback to exact match in PRICING_DATABASE
-            const dbData = PRICING_DATABASE[make]?.[model]?.[parseInt(year)];
-            const selectedVersionData = dbData?.versions.find(v => v.name === version);
+            // 2. Fallback to exact match in PRICING_DATABASE (Case-insensitive)
+            const dbMakeKey = Object.keys(PRICING_DATABASE).find(k => k.toLowerCase() === make.toLowerCase());
+            const dbModelKey = dbMakeKey ? Object.keys(PRICING_DATABASE[dbMakeKey]).find(k => k.toLowerCase() === model.toLowerCase()) : null;
+            
+            const dbData = (dbMakeKey && dbModelKey) ? PRICING_DATABASE[dbMakeKey][dbModelKey][parseInt(year)] : null;
+            const selectedVersionData = dbData?.versions.find(v => v.name.toLowerCase() === version.toLowerCase() || version === "");
 
             if (selectedVersionData) {
                 basePrice = selectedVersionData.basePrice;
@@ -66,7 +69,7 @@ export const InstantQuote = () => {
                 const segmentKey = (model.toLowerCase().includes('suv') || model.toLowerCase().includes('cr-v') || model.toLowerCase().includes('seltos')) ? "SUV Compacta" : "Sedan Mediano";
                 const segmentBase = SEGMENT_PRICING[segmentKey] || 350000;
                 
-                const brandCars = ALL_CARS.filter(c => c.make === make);
+                const brandCars = ALL_CARS.filter(c => c.make.toLowerCase() === make.toLowerCase());
                 const brandAvg = brandCars.length > 0
                     ? brandCars.reduce((acc, c) => acc + c.price, 0) / brandCars.length
                     : segmentBase;
@@ -78,8 +81,8 @@ export const InstantQuote = () => {
                 
                 // Adjustment for old years if using reference (2024 as base)
                 const age = 2024 - parseInt(year);
-                // Aggressive depreciation for older cars (11%) vs newer (8%)
-                const depreciationRate = age > 5 ? 0.89 : 0.92;
+                // Aggressive depreciation for older cars (13% for 10+ years)
+                const depreciationRate = age > 8 ? 0.87 : 0.91;
                 basePrice = basePrice * Math.pow(depreciationRate, age);
                 isEstimate = true;
             }
@@ -92,11 +95,17 @@ export const InstantQuote = () => {
         
         if (inputMileage > standardMileage) {
             const diff = inputMileage - standardMileage;
-            basePrice = basePrice - (diff * 0.5); // $0.50 penalty per km
+            // More realistic penalty: $0.30 per excess km for older cars, $0.50 for newer
+            const penaltyPerKm = age > 8 ? 0.30 : 0.50;
+            basePrice = basePrice - (diff * penaltyPerKm); 
         } else if (inputMileage < standardMileage && inputMileage > 0) {
             const diff = standardMileage - inputMileage;
-            basePrice = basePrice + (diff * 0.2); // Smaller bonus for low mileage
+            basePrice = basePrice + (diff * 0.15); // Smaller bonus for low mileage
         }
+
+        // Final Floor: Never go below 50% of base market value due to mileage
+        const floorPrice = isExact ? basePrice * 0.7 : basePrice * 0.6;
+        if (basePrice < floorPrice) basePrice = floorPrice;
 
         setQuote({
             min: Math.floor(basePrice * 0.88),

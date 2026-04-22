@@ -4,15 +4,12 @@ import { useState, useEffect } from "react";
 import { Search, Filter, MoreHorizontal, CheckCircle2, AlertCircle, Clock, Ban, ShieldAlert, ExternalLink, Users, DollarSign, Loader2, CarFront } from "lucide-react";
 import { getPendingReferralPayouts, processReferralPayout } from "@/app/actions/admin";
 import { createCarAction, getAdminInventoryAction } from "@/app/actions/cars";
+import { getLegalTransactionsAction, overrideTransactionStatusAction } from "@/app/actions/transaction";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
 export default function AdminDashboard() {
-    const [transactions, setTransactions] = useState([
-        { id: "TX-9982", car: "Mazda CX-5 2022", seller: "Juan Pérez", buyer: "Carlos Demo", status: "PENDING", stage: "Verificación de Fondos", amount: 385000 },
-        { id: "TX-9983", car: "Tesla Model 3 2021", seller: "Ana García", buyer: "N/A (Publicado)", status: "INSPECTION", stage: "Inspección Programada", amount: 550000 },
-        { id: "TX-9984", car: "Toyota RAV4 2020", seller: "Pedro L.", buyer: "Roberto M.", status: "FUNDS_HELD", stage: "Liberación Pendiente", amount: 410000 },
-    ]);
+    const [transactions, setTransactions] = useState<any[]>([]);
 
     const [inventory, setInventory] = useState<any[]>([]);
     const [view, setView] = useState<'OPERATIONS' | 'INVENTORY'>('OPERATIONS');
@@ -41,6 +38,9 @@ export default function AdminDashboard() {
                 setLoadingInventory(true);
                 const cars = await getAdminInventoryAction();
                 setInventory(cars || []);
+
+                const txs = await getLegalTransactionsAction();
+                setTransactions(txs || []);
             } catch (err) {
                 console.error("Error loading admin data:", err);
             } finally {
@@ -64,35 +64,24 @@ export default function AdminDashboard() {
         }
     };
 
-    const cycleStatus = (id: string, currentStatus: string) => {
+    const cycleStatus = async (id: string, currentStatus: string) => {
         let nextStatus = currentStatus;
-        let nextStage = "";
 
-        // Simple State Machine for Demo
         switch (currentStatus) {
-            case "PENDING":
-                nextStatus = "FUNDS_HELD";
-                nextStage = "Fondos en Bóveda";
-                break;
-            case "FUNDS_HELD":
-                nextStatus = "RELEASED";
-                nextStage = "Operación Completada";
-                break;
-            case "INSPECTION":
-                nextStatus = "PENDING"; // Assume listed -> pending sale
-                nextStage = "En Negociación";
-                break;
-            case "RELEASED":
-                nextStatus = "PENDING"; // Reset for demo
-                nextStage = "Reinicio Demo";
-                break;
-            default:
-                break;
+            case "PENDING": nextStatus = "IN_VAULT"; break;
+            case "IN_VAULT": nextStatus = "RELEASED"; break;
+            case "RELEASED": nextStatus = "PENDING"; break;
+            default: nextStatus = "PENDING"; break;
         }
 
-        setTransactions(prev => prev.map(tx =>
-            tx.id === id ? { ...tx, status: nextStatus, stage: nextStage } : tx
-        ));
+        try {
+            await overrideTransactionStatusAction(id, nextStatus);
+            toast.success("Estado actualizado");
+            const txs = await getLegalTransactionsAction();
+            setTransactions(txs || []);
+        } catch (err) {
+            toast.error("Error al actualizar");
+        }
     };
 
     return (

@@ -107,7 +107,7 @@ export function SmartSupport() {
                                     <CarFront className="h-5 w-5 text-white" />
                                 </div>
                                 <div>
-                                    <p className="text-white font-bold text-sm tracking-tight drop-shadow-sm">Asistente StarterKar</p>
+                                    <p className="text-white font-bold text-sm tracking-tight drop-shadow-sm">Asistente AI</p>
                                     <div className="flex items-center gap-1.5">
                                         <div className="w-1.5 h-1.5 rounded-full bg-green-400 shadow-[0_0_8px_rgba(74,222,128,0.5)] animate-pulse" />
                                         <span className="text-[10px] text-white/80 font-bold uppercase tracking-widest">En línea</span>

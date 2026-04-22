@@ -37,7 +37,6 @@ export function StarterKarSeal({ variant = "compact", className, score }: Starte
                 className
             )}>
                 <BrandMark size="sm" />
-                <span className="text-[9px] font-black text-zinc-900 dark:text-zinc-100 tracking-[0.1em] uppercase pr-1">StarterKar</span>
             </div>
         );
     }

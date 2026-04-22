@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { Search, Filter, MoreHorizontal, CheckCircle2, AlertCircle, Clock, Ban, ShieldAlert, ExternalLink, Users, DollarSign, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { getPendingReferralPayouts, processReferralPayout } from "@/app/actions/admin";
-import { getLegalTransactionsAction } from "@/app/actions/transaction";
+import { getLegalTransactionsAction, overrideTransactionStatusAction } from "@/app/actions/transaction";
 import { toast } from "sonner";
 
 export default function AdminLegalDashboard() {
@@ -53,35 +53,25 @@ export default function AdminLegalDashboard() {
         }
     };
 
-    const cycleStatus = (id: string, currentStatus: string) => {
+    const cycleStatus = async (id: string, currentStatus: string) => {
         let nextStatus = currentStatus;
-        let nextStage = "";
 
-        // Simple State Machine for Demo
         switch (currentStatus) {
-            case "PENDING":
-                nextStatus = "FUNDS_HELD";
-                nextStage = "Fondos en Bóveda";
-                break;
-            case "FUNDS_HELD":
-                nextStatus = "RELEASED";
-                nextStage = "Operación Completada";
-                break;
-            case "INSPECTION":
-                nextStatus = "PENDING"; // Assume listed -> pending sale
-                nextStage = "En Negociación";
-                break;
-            case "RELEASED":
-                nextStatus = "PENDING"; // Reset for demo
-                nextStage = "Reinicio Demo";
-                break;
-            default:
-                break;
+            case "PENDING": nextStatus = "IN_VAULT"; break;
+            case "IN_VAULT": nextStatus = "RELEASED"; break;
+            case "RELEASED": nextStatus = "PENDING"; break;
+            default: nextStatus = "PENDING"; break;
         }
 
-        setTransactions(prev => prev.map(tx =>
-            tx.id === id ? { ...tx, status: nextStatus, stage: nextStage } : tx
-        ));
+        try {
+            await overrideTransactionStatusAction(id, nextStatus);
+            toast.success(`Estado actualizado a ${nextStatus}`);
+            // Refresh
+            const txs = await getLegalTransactionsAction();
+            setTransactions(txs || []);
+        } catch (err) {
+            toast.error("Error al actualizar estado");
+        }
     };
 
     return (
@@ -223,10 +213,13 @@ export default function AdminLegalDashboard() {
                                     </td>
                                     <td className="px-6 py-4 text-zinc-300">Usuario #{tx.seller_id?.substring(0, 5)}</td>
                                     <td className="px-6 py-4">
-                                        <span className={cn("px-2 py-1 rounded text-[10px] font-bold uppercase", 
-                                            tx.status === 'RELEASED' ? "bg-emerald-500/10 text-emerald-500" : "bg-amber-500/10 text-amber-500")}>
+                                        <button 
+                                            onClick={() => cycleStatus(tx.id, tx.status)}
+                                            className={cn("px-2 py-1 rounded text-[10px] font-bold uppercase hover:opacity-80 transition-all", 
+                                                tx.status === 'RELEASED' ? "bg-emerald-500/10 text-emerald-500" : "bg-amber-500/10 text-amber-500")}
+                                        >
                                             {tx.status}
-                                        </span>
+                                        </button>
                                     </td>
                                     <td className="px-6 py-4 text-right font-mono text-zinc-300">
                                         ${tx.total_amount?.toLocaleString()}

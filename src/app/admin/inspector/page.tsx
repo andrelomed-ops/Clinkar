@@ -8,7 +8,8 @@ import {
     ChevronRight,
     MapPin,
     Clock,
-    User
+    User,
+    Warehouse
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import Link from 'next/link';
@@ -60,7 +61,7 @@ export default function AdminInspectorDashboardPage() {
             <main className="flex-1 max-w-4xl mx-auto w-full px-4 py-10">
                 {/* Saludo y Fecha */}
                 <div className="mb-10 text-center md:text-left">
-                    <h1 className="text-4xl font-black tracking-tighter mb-2">
+                    <h1 className="text-4xl font-black tracking-tighter mb-2 text-zinc-900 dark:text-white">
                         ¡Hola, <span className="text-indigo-600">Inspector!</span>
                     </h1>
                     <p className="text-xl font-bold text-muted-foreground italic">
@@ -94,7 +95,7 @@ export default function AdminInspectorDashboardPage() {
                                             item.status === 'PAID_PENDING_VISIT' ? "bg-amber-100 text-amber-600" : "bg-indigo-600 text-white")}>
                                             {item.status === 'PAID_PENDING_VISIT' ? "⏳ Visita Pendiente" : "✅ Confirmado"}
                                         </span>
-                                        <h3 className="text-3xl font-black tracking-tighter leading-tight">
+                                        <h3 className="text-3xl font-black tracking-tighter leading-tight text-zinc-900 dark:text-white">
                                             {item.car?.make} {item.car?.model} {item.car?.year}
                                         </h3>
                                     </div>

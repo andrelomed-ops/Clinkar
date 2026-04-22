@@ -3,6 +3,7 @@
 import { useState, Suspense } from "react";
 import { createBrowserClient } from "@/lib/supabase/client";
 import { Shield, Loader2 } from "lucide-react";
+import { StarterKarSeal } from "@/components/market/StarterKarSeal";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
@@ -69,11 +70,8 @@ function LoginForm() {
         <div className="flex min-h-screen items-center justify-center bg-background px-6 py-12">
             <div className="w-full max-w-md space-y-8">
                 <div className="flex flex-col items-center text-center">
-                    <Link href="/" className="mb-8 flex items-center gap-2">
-                        <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary">
-                            <Shield className="h-6 w-6 text-primary-foreground" />
-                        </div>
-                        <span className="text-2xl font-bold tracking-tight">StarterKar</span>
+                    <Link href="/" className="mb-8 group">
+                        <StarterKarSeal variant="compact" className="scale-150" />
                     </Link>
                     <h2 className="text-3xl font-bold tracking-tight">Bienvenido de nuevo</h2>
                     <p className="mt-2 text-muted-foreground">Ingresa tus credenciales para continuar.</p>

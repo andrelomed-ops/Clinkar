@@ -42,6 +42,7 @@ export default function SellOnboardingPage() {
     // Form Details
     const [date, setDate] = useState("");
 
+    const inspectionType = 'workshop';
     const INSPECTION_BASE_COST = 1500;
     const totalCost = INSPECTION_BASE_COST;
 

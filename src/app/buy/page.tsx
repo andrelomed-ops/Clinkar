@@ -14,6 +14,7 @@ import { CarCard } from "@/components/market/CarCard";
 
 import { Navbar } from "@/components/ui/navbar";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Button } from "@/components/ui/button";
 
 // Cache Buster: v1.0.3 - Design Restoration & Runtime Fix (Build ID: 1776709215)
 const StarterKarAIBot = dynamic(
@@ -445,6 +446,12 @@ export default function BuyPage() {
                                 >
                                     {showFavoritesOnly ? 'Ver todos los autos' : 'Limpiar filtros'}
                                 </button>
+                                <div className="mt-8 pt-8 border-t border-border/50 max-w-sm mx-auto">
+                                    <p className="text-sm font-medium text-muted-foreground mb-4">¿No encuentras lo que buscas?</p>
+                                    <Button asChild variant="outline" className="w-full rounded-xl font-bold h-12">
+                                        <Link href="/demand-request">Pedir un Auto Específico</Link>
+                                    </Button>
+                                </div>
                             </div>
                         )}
                     </div>

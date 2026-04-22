@@ -11,7 +11,6 @@ export function Footer() {
                     <div className="md:col-span-1 space-y-6">
                         <Link href="/" className="flex items-center gap-2 group">
                             <StarterKarSeal variant="compact" className="scale-125 mr-1" />
-                            <span className="text-2xl font-black tracking-tighter">StarterKar</span>
                         </Link>
                         <p className="text-sm text-muted-foreground leading-relaxed max-w-xs">
                             La bóveda digital más segura para la compraventa de autos seminuevos. Tu dinero protegido hasta la entrega.
