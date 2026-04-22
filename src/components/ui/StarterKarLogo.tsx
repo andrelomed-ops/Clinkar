@@ -52,9 +52,13 @@ export function StarterKarLogo({
                 src="/logo_sk_transparent.png"
                 alt="SK"
                 className={cn(
-                    "w-auto object-contain select-none",
+                    "w-auto object-contain select-none transition-transform group-hover:scale-105",
                     imgSizes[size]
                 )}
+                style={{
+                    // Filtro de sombra paralela para reforzar el efecto de "pegado al muro"
+                    filter: "drop-shadow(0 2px 4px rgba(0,0,0,0.15))",
+                }}
                 draggable={false}
             />
 
