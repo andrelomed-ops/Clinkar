@@ -53,12 +53,16 @@ export function StarterKarLogo({
                 alt="SK"
                 className={cn(
                     "w-auto object-contain select-none",
-                    imgSizes[size],
-                    // Light mode: multiply elimina el blanco del fondo
-                    "mix-blend-multiply",
-                    // Dark mode: invert + screen para mantener visibilidad en fondos oscuros
-                    "dark:invert dark:mix-blend-screen"
+                    imgSizes[size]
                 )}
+                style={{
+                    // 1. Subir brillo empuja grises residuales → blanco puro
+                    // 2. multiply: blanco × fondo = fondo (desaparece)
+                    //    negro × fondo = negro (S se mantiene)
+                    //    azul × blanco = azul (K se mantiene)
+                    filter: "brightness(1.15) contrast(1.05)",
+                    mixBlendMode: "multiply",
+                }}
                 draggable={false}
             />
 
