@@ -2,19 +2,24 @@
 
 import { useState, useEffect } from "react";
 import { Search, Filter, MoreHorizontal, CheckCircle2, AlertCircle, Clock, Ban, ShieldAlert, ExternalLink, Users, DollarSign, Loader2, CarFront } from "lucide-react";
-import { getPendingReferralPayouts, processReferralPayout } from "@/app/actions/admin";
+import { getPendingReferralPayouts, processReferralPayout, getInvestorApplicationsAction, approveInvestorApplicationAction, rejectInvestorApplicationAction } from "@/app/actions/admin";
 import { createCarAction, getAdminInventoryAction } from "@/app/actions/cars";
 import { getLegalTransactionsAction, overrideTransactionStatusAction } from "@/app/actions/transaction";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+import { createBrowserClient } from "@/lib/supabase/client";
 
 export default function AdminDashboard() {
     const [transactions, setTransactions] = useState<any[]>([]);
-
     const [inventory, setInventory] = useState<any[]>([]);
-    const [view, setView] = useState<'OPERATIONS' | 'INVENTORY'>('OPERATIONS');
+    const [investorApps, setInvestorApps] = useState<any[]>([]);
+    const [view, setView] = useState<'OPERATIONS' | 'INVENTORY' | 'INVESTORS'>('OPERATIONS');
     const [loadingInventory, setLoadingInventory] = useState(false);
+    const [actionLoading, setActionLoading] = useState<string | null>(null);
     const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+    
+    const supabase = createBrowserClient();
+
     const [newCar, setNewCar] = useState({
         make: "",
         model: "",
@@ -29,26 +34,56 @@ export default function AdminDashboard() {
     const [referralPayouts, setReferralPayouts] = useState<any[]>([]);
     const [payoutLoading, setPayoutLoading] = useState<string | null>(null);
 
-    useEffect(() => {
-        async function loadData() {
-            try {
-                const payouts = await getPendingReferralPayouts();
-                setReferralPayouts(payouts || []);
-                
-                setLoadingInventory(true);
-                const cars = await getAdminInventoryAction();
-                setInventory(cars || []);
+    async function loadData() {
+        try {
+            const payouts = await getPendingReferralPayouts();
+            setReferralPayouts(payouts || []);
+            
+            setLoadingInventory(true);
+            const cars = await getAdminInventoryAction();
+            setInventory(cars || []);
 
-                const txs = await getLegalTransactionsAction();
-                setTransactions(txs || []);
-            } catch (err) {
-                console.error("Error loading admin data:", err);
-            } finally {
-                setLoadingInventory(false);
-            }
+            const txs = await getLegalTransactionsAction();
+            setTransactions(txs || []);
+
+            const apps = await getInvestorApplicationsAction();
+            setInvestorApps(apps || []);
+        } catch (err) {
+            console.error("Error loading admin data:", err);
+        } finally {
+            setLoadingInventory(false);
         }
+    }
+
+    useEffect(() => {
         loadData();
     }, []);
+
+    const handleApproveInvestor = async (id: string) => {
+        setActionLoading(id);
+        try {
+            await approveInvestorApplicationAction(id);
+            toast.success("Inversionista aprobado con éxito");
+            await loadData();
+        } catch (err: any) {
+            toast.error(err.message || "Error al aprobar");
+        } finally {
+            setActionLoading(null);
+        }
+    };
+
+    const handleRejectInvestor = async (id: string) => {
+        setActionLoading(id);
+        try {
+            await rejectInvestorApplicationAction(id);
+            toast.success("Solicitud rechazada");
+            await loadData();
+        } catch (err: any) {
+            toast.error(err.message || "Error al rechazar");
+        } finally {
+            setActionLoading(null);
+        }
+    };
 
     const handleCreateCar = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -56,7 +91,6 @@ export default function AdminDashboard() {
             await createCarAction(newCar);
             toast.success("Vehículo publicado con éxito");
             setIsCreateModalOpen(false);
-            // Reload inventory
             const cars = await getAdminInventoryAction();
             setInventory(cars || []);
         } catch (err: any) {
@@ -66,7 +100,6 @@ export default function AdminDashboard() {
 
     const cycleStatus = async (id: string, currentStatus: string) => {
         let nextStatus = currentStatus;
-
         switch (currentStatus) {
             case "PENDING": nextStatus = "IN_VAULT"; break;
             case "IN_VAULT": nextStatus = "RELEASED"; break;
@@ -101,6 +134,12 @@ export default function AdminDashboard() {
                     >
                         Inventario
                     </button>
+                    <button 
+                        onClick={() => setView('INVESTORS')}
+                        className={cn("px-6 py-2 text-xs font-black uppercase rounded-lg transition-all", view === 'INVESTORS' ? "bg-indigo-600 text-white" : "text-zinc-500")}
+                    >
+                        Inversionistas
+                    </button>
                 </div>
             </header>
             
@@ -108,8 +147,8 @@ export default function AdminDashboard() {
             <div className="grid grid-cols-5 gap-4 mb-8">
                 <KpiCard label="Volumen Activo" value="$1.2M" trend="+12%" />
                 <KpiCard label="Riesgo PLD" value="2 ALERTAS" trend="CRÍTICO" active={false} alert={true} />
-                <KpiCard label="Gestoría Pendiente" value="3 Tickets" trend="En Cola" />
-                <KpiCard label="Referidos Pendientes" value="5" trend="Por Pagar" />
+                <KpiCard label="Inversionistas" value={investorApps.length.toString()} trend="Pendientes" />
+                <KpiCard label="Referidos Pendientes" value={referralPayouts.length.toString()} trend="Por Pagar" />
                 <KpiCard label="Tiempo Promedio" value="48h" trend="Cierre" />
             </div>
 
@@ -117,13 +156,182 @@ export default function AdminDashboard() {
                 <>
                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
                         {/* COMPLIANCE CENTER */}
-                        {/* ... existing code ... */}
+                        <div className="lg:col-span-1 space-y-6">
+                            <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6">
+                                <h3 className="text-sm font-black text-white uppercase tracking-widest mb-6 flex items-center gap-2">
+                                    <ShieldAlert className="h-4 w-4 text-red-500" />
+                                    Alertas de Cumplimiento
+                                </h3>
+                                <div className="space-y-4">
+                                    <div className="p-4 bg-red-900/10 border border-red-900/50 rounded-xl">
+                                        <p className="text-xs font-bold text-red-400 uppercase tracking-widest mb-1">Detección de Riesgo</p>
+                                        <p className="text-sm text-zinc-300 font-medium">Múltiples transacciones de alto valor desde una IP no identificada.</p>
+                                    </div>
+                                    <div className="p-4 bg-amber-900/10 border border-amber-900/50 rounded-xl">
+                                        <p className="text-xs font-bold text-amber-400 uppercase tracking-widest mb-1">Documentación Vencida</p>
+                                        <p className="text-sm text-zinc-300 font-medium">3 vehículos requieren actualización de tenencia 2024.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* REFERRAL PAYOUTS */}
+                        <div className="lg:col-span-2 bg-zinc-900 border border-zinc-800 rounded-2xl p-6">
+                            <div className="flex justify-between items-center mb-6">
+                                <h3 className="text-sm font-black text-white uppercase tracking-widest flex items-center gap-2">
+                                    <DollarSign className="h-4 w-4 text-emerald-500" />
+                                    Pagos de Referidos Pendientes
+                                </h3>
+                            </div>
+                            <div className="grid gap-4">
+                                {referralPayouts.length > 0 ? referralPayouts.map(payout => (
+                                    <div key={payout.id} className="bg-zinc-950 border border-zinc-800 p-4 rounded-xl flex items-center justify-between">
+                                        <div>
+                                            <p className="text-sm font-black text-white">{payout.profiles.full_name}</p>
+                                            <p className="text-[10px] text-zinc-500 uppercase tracking-widest">{payout.profiles.email}</p>
+                                        </div>
+                                        <div className="flex items-center gap-6">
+                                            <div className="text-right">
+                                                <p className="text-sm font-black text-emerald-500">$1,000.00 MXN</p>
+                                                <p className="text-[9px] text-zinc-600 font-bold">BONO POR REFERENCIA</p>
+                                            </div>
+                                            <button 
+                                                onClick={async () => {
+                                                    setPayoutLoading(payout.id);
+                                                    try {
+                                                        await processReferralPayout(payout.id, 1000, "Bono StarterKar");
+                                                        toast.success("Pago procesado");
+                                                        const p = await getPendingReferralPayouts();
+                                                        setReferralPayouts(p || []);
+                                                    } catch (e) {
+                                                        toast.error("Error al procesar");
+                                                    } finally {
+                                                        setPayoutLoading(null);
+                                                    }
+                                                }}
+                                                className="h-10 px-4 bg-emerald-600 text-white text-[10px] font-black rounded-lg hover:bg-emerald-500 transition-all uppercase tracking-widest flex items-center gap-2"
+                                            >
+                                                {payoutLoading === payout.id ? <Loader2 className="h-3 w-3 animate-spin" /> : "PAGAR AHORA"}
+                                            </button>
+                                        </div>
+                                    </div>
+                                )) : (
+                                    <div className="py-12 text-center text-zinc-600 font-bold uppercase tracking-widest text-xs">No hay pagos pendientes</div>
+                                )}
+                            </div>
+                        </div>
                     </div>
 
-                    <div className="bg-zinc-900 border border-zinc-800 rounded-lg overflow-hidden">
-                        {/* ... existing table ... */}
+                    <div className="bg-zinc-900 border border-zinc-800 rounded-2xl overflow-hidden">
+                        <table className="w-full text-left">
+                            <thead>
+                                <tr className="border-b border-zinc-800 bg-zinc-900/50">
+                                    <th className="px-6 py-4 text-[10px] font-black text-zinc-500 uppercase tracking-[0.2em]">Vehículo / ID</th>
+                                    <th className="px-6 py-4 text-[10px] font-black text-zinc-500 uppercase tracking-[0.2em]">Estatus Bóveda</th>
+                                    <th className="px-6 py-4 text-[10px] font-black text-zinc-500 uppercase tracking-[0.2em]">Monto</th>
+                                    <th className="px-6 py-4 text-[10px] font-black text-zinc-500 uppercase tracking-[0.2em]">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody className="divide-y divide-zinc-800">
+                                {transactions.map(tx => (
+                                    <tr key={tx.id} className="hover:bg-zinc-800/30 transition-colors">
+                                        <td className="px-6 py-4">
+                                            <p className="text-sm font-black text-white italic">{tx.cars.make} {tx.cars.model} {tx.cars.year}</p>
+                                            <p className="text-[9px] text-zinc-600 font-bold">REF: {tx.id.slice(0, 8)}</p>
+                                        </td>
+                                        <td className="px-6 py-4">
+                                            <StatusBadge status={tx.status} />
+                                        </td>
+                                        <td className="px-6 py-4">
+                                            <p className="text-sm font-black text-white">${tx.car_price.toLocaleString()}</p>
+                                        </td>
+                                        <td className="px-6 py-4">
+                                            <button onClick={() => cycleStatus(tx.id, tx.status)} className="h-8 px-4 bg-zinc-800 text-zinc-400 text-[10px] font-black rounded-lg hover:text-white transition-all">MANUAL OVERRIDE</button>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
                     </div>
                 </>
+            ) : view === 'INVESTORS' ? (
+                <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                    <h2 className="text-xl font-bold text-white flex items-center gap-2">
+                        <ShieldAlert className="h-5 w-5 text-indigo-400" />
+                        Solicitudes de Acceso Inversionista
+                    </h2>
+                    
+                    <div className="grid gap-4">
+                        {investorApps.length > 0 ? investorApps.map(app => (
+                            <div key={app.id} className="bg-zinc-900 border border-zinc-800 p-8 rounded-[2rem] flex flex-col md:flex-row items-center justify-between gap-8">
+                                <div className="flex items-center gap-8 flex-1">
+                                    <div className="h-16 w-16 bg-zinc-950 rounded-2xl flex items-center justify-center border border-zinc-800">
+                                        <Users className="h-8 w-8 text-indigo-400" />
+                                    </div>
+                                    <div className="space-y-1 flex-1">
+                                        <div className="flex items-center gap-3">
+                                            <h4 className="text-lg font-black text-white uppercase italic tracking-tighter">{app.profiles.full_name}</h4>
+                                            <span className={cn(
+                                                "px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest",
+                                                app.tier_id === 'elite' ? "bg-zinc-800 text-white" : app.tier_id === 'pro' ? "bg-amber-500/10 text-amber-500" : "bg-indigo-500/10 text-indigo-500"
+                                            )}>
+                                                TIER {app.tier_id.toUpperCase()}
+                                            </span>
+                                        </div>
+                                        <div className="flex flex-wrap gap-x-6 gap-y-1">
+                                            <p className="text-xs font-bold text-zinc-500 uppercase tracking-widest">RFC: <span className="text-zinc-300">{app.rfc}</span></p>
+                                            <p className="text-xs font-bold text-zinc-500 uppercase tracking-widest">TEL: <span className="text-zinc-300">{app.telefono}</span></p>
+                                            <p className="text-xs font-bold text-zinc-500 uppercase tracking-widest">PAGO: <span className="text-zinc-300">{app.payment_method.toUpperCase()}</span></p>
+                                        </div>
+                                        <p className="text-[10px] text-zinc-600 font-medium truncate max-w-md">{app.profiles.email}</p>
+                                    </div>
+                                </div>
+
+                                <div className="flex items-center gap-4 shrink-0">
+                                    <a 
+                                        href={`${supabase.storage.from('investor-docs').getPublicUrl(app.constancia_fiscal_url).data.publicUrl}`}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="h-14 px-6 bg-zinc-800 text-zinc-400 font-black rounded-2xl flex items-center gap-3 hover:bg-zinc-700 transition-all uppercase tracking-widest text-[10px]"
+                                    >
+                                        <ExternalLink className="h-4 w-4" />
+                                        Ver CSF
+                                    </a>
+                                    
+                                    {app.status === 'pending' ? (
+                                        <div className="flex gap-2">
+                                            <button 
+                                                onClick={() => handleRejectInvestor(app.id)}
+                                                disabled={actionLoading === app.id}
+                                                className="h-14 px-6 border border-red-900/50 text-red-500 font-black rounded-2xl hover:bg-red-500/10 transition-all uppercase tracking-widest text-[10px]"
+                                            >
+                                                {actionLoading === app.id ? <Loader2 className="h-4 w-4 animate-spin" /> : "Rechazar"}
+                                            </button>
+                                            <button 
+                                                onClick={() => handleApproveInvestor(app.id)}
+                                                disabled={actionLoading === app.id}
+                                                className="h-14 px-8 bg-indigo-600 text-white font-black rounded-2xl hover:bg-indigo-500 transition-all uppercase tracking-widest text-[10px] shadow-xl shadow-indigo-600/20"
+                                            >
+                                                {actionLoading === app.id ? <Loader2 className="h-4 w-4 animate-spin" /> : "Aprobar Acceso"}
+                                            </button>
+                                        </div>
+                                    ) : (
+                                        <div className={cn(
+                                            "px-6 py-4 rounded-2xl border font-black uppercase tracking-widest text-[10px]",
+                                            app.status === 'approved' ? "bg-emerald-500/10 text-emerald-500 border-emerald-500/20" : "bg-red-500/10 text-red-500 border-red-500/20"
+                                        )}>
+                                            {app.status === 'approved' ? 'Acceso Autorizado' : 'Solicitud Rechazada'}
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                        )) : (
+                            <div className="py-24 text-center border-2 border-dashed border-zinc-800 rounded-[3rem]">
+                                <p className="text-zinc-600 font-black uppercase tracking-[0.3em] italic">Sin solicitudes pendientes</p>
+                            </div>
+                        )}
+                    </div>
+                </div>
             ) : (
                 <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
                     <div className="flex justify-between items-center">

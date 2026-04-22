@@ -16,7 +16,6 @@ export default function RegisterPage() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [fullName, setFullName] = useState("");
-    const [role, setRole] = useState<"buyer" | "seller">("buyer");
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const supabase = createBrowserClient();
@@ -36,7 +35,7 @@ export default function RegisterPage() {
                 options: {
                     data: {
                         full_name: fullName,
-                        role: role,
+                        role: "user",
                     },
                     emailRedirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent("/dashboard?verified=true")}`,
                 },
@@ -97,35 +96,6 @@ export default function RegisterPage() {
 
                 <form onSubmit={handleRegister} className="mt-8 space-y-6">
                     <div className="space-y-4">
-                        {/* Role Selector */}
-                        <div className="grid grid-cols-2 gap-4">
-                            <button
-                                type="button"
-                                onClick={() => setRole("buyer")}
-                                className={cn(
-                                    "flex flex-col items-center justify-center gap-2 rounded-2xl border-2 p-4 transition-all",
-                                    role === "buyer"
-                                        ? "border-primary bg-primary/5 text-primary"
-                                        : "border-border bg-background text-muted-foreground hover:bg-secondary"
-                                )}
-                            >
-                                <User className="h-6 w-6" />
-                                <span className="text-sm font-semibold">Comprador</span>
-                            </button>
-                            <button
-                                type="button"
-                                onClick={() => setRole("seller")}
-                                className={cn(
-                                    "flex flex-col items-center justify-center gap-2 rounded-2xl border-2 p-4 transition-all",
-                                    role === "seller"
-                                        ? "border-primary bg-primary/5 text-primary"
-                                        : "border-border bg-background text-muted-foreground hover:bg-secondary"
-                                )}
-                            >
-                                <Car className="h-6 w-6" />
-                                <span className="text-sm font-semibold">Vendedor</span>
-                            </button>
-                        </div>
 
                         <div className="space-y-2">
                             <label className="text-sm font-medium leading-none" htmlFor="fullName">Nombre completo</label>

@@ -4,6 +4,7 @@ import Link from "next/link";
 import { HeroTrackerDemo } from "@/components/landing/HeroTrackerDemo";
 import { Navbar } from "@/components/ui/navbar";
 import { JsonLd } from "@/components/seo/JsonLd";
+import { Button } from "@/components/ui/button";
 
 export default function Home() {
   return (
@@ -41,132 +42,118 @@ export default function Home() {
 
       <Navbar variant="home" />
 
-      <main className="flex-1 pt-32">
+      <main className="flex-1">
+        
+        {/* --- HERO SECTION: Impactful & Minimalist --- */}
+        <section className="relative pt-32 pb-24 md:pt-48 md:pb-40 overflow-hidden">
+          {/* Subtle Background Glow */}
+          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-7xl h-full pointer-events-none opacity-20">
+            <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-indigo-500 rounded-full blur-[120px] animate-pulse" />
+            <div className="absolute bottom-[10%] right-[-10%] w-[30%] h-[30%] bg-purple-500 rounded-full blur-[100px] animate-pulse delay-700" />
+          </div>
 
-        {/* --- HERO SECTION: Pure & Trust-Based --- */}
-        <section className="px-6 pb-24 md:pb-32 border-b border-border">
-          <div className="mx-auto max-w-7xl grid lg:grid-cols-2 gap-20 items-center">
-
-            {/* Left: Manifesto Copy */}
-            <div className="space-y-8 flex flex-col items-center lg:items-start text-center lg:text-left">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-border bg-secondary">
+          <div className="mx-auto max-w-7xl px-6 relative z-10">
+            <div className="flex flex-col items-center text-center space-y-10">
+              <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-border bg-background/50 backdrop-blur-sm shadow-sm animate-in fade-in slide-in-from-top-4 duration-1000">
                 <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Bóveda Digital Activa</span>
+                <span className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em]">Bóveda Digital Activa</span>
               </div>
 
-              <div className="relative">
-                <div className="absolute -inset-10 bg-gradient-to-r from-indigo-500/20 to-purple-500/20 blur-[60px] opacity-50 animate-pulse pointer-events-none" />
-                <h1 className="text-6xl md:text-8xl font-black font-heading tracking-tighter leading-[0.95] text-foreground animate-reveal relative z-10">
-                  Confianza <br />
-                  <span className="text-gradient">Transparente.</span>
-                </h1>
-              </div>
+              <h1 className="text-6xl md:text-9xl font-black tracking-tighter leading-[0.85] text-foreground animate-in fade-in slide-in-from-bottom-8 duration-1000">
+                CONFIANZA<br />
+                <span className="text-indigo-600 italic">TRANSPARENTE</span>
+              </h1>
 
-              <p className="text-xl text-muted-foreground max-w-lg leading-relaxed font-medium animate-reveal stagger-1">
-                La plataforma de compra-venta automotriz diseñada para la seguridad total. <strong>0% Comisión para el comprador</strong> y revisión mecánica certificada por expertos.
+              <p className="text-lg md:text-xl text-muted-foreground max-w-2xl leading-relaxed font-medium animate-in fade-in slide-in-from-bottom-6 duration-1000 delay-200">
+                La plataforma de compra-venta diseñada para la seguridad total. <br className="hidden md:block" />
+                <span className="text-foreground font-bold">0% Comisión Comprador</span> y revisión mecánica certificada.
               </p>
 
-              <div className="flex flex-col sm:flex-row gap-4 pt-4 animate-reveal stagger-2 w-full sm:w-auto justify-center lg:justify-start">
-                <Link href="/buy" className="h-14 px-8 rounded-full bg-primary text-primary-foreground font-bold text-lg flex items-center justify-center gap-2 hover:opacity-90 transition-all active:scale-95 shadow-xl shadow-primary/10 glow-on-hover px-10">
+              <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto animate-in fade-in slide-in-from-bottom-4 duration-1000 delay-300">
+                <Link href="/buy" className="h-16 px-12 rounded-2xl bg-zinc-950 text-white font-black text-lg flex items-center justify-center gap-3 hover:scale-[1.02] active:scale-[0.98] transition-all shadow-2xl shadow-indigo-500/20">
                   Explorar Inventario
+                  <ArrowRight className="h-5 w-5" />
                 </Link>
-                <Link href="/sell" className="h-14 px-8 rounded-full border border-border bg-background text-foreground font-bold text-lg flex items-center justify-center gap-2 hover:bg-muted transition-all active:scale-95">
-                  Vender Auto
+                <Link href="/sell" className="h-16 px-12 rounded-2xl border-2 border-border bg-background text-foreground font-black text-lg flex items-center justify-center gap-3 hover:bg-secondary transition-all active:scale-[0.98]">
+                  Vender mi Auto
                 </Link>
               </div>
-            </div>
 
-            {/* Right: The Demo (Minimalist) */}
-            <div className="relative animate-reveal animate-float stagger-3">
-              <HeroTrackerDemo />
+              {/* Trust Metrics */}
+              <div className="pt-12 grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-16 border-t border-border w-full max-w-4xl animate-in fade-in duration-1000 delay-500">
+                <div className="space-y-1">
+                  <p className="text-2xl font-black tracking-tighter">150</p>
+                  <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Pts Inspección</p>
+                </div>
+                <div className="space-y-1">
+                  <p className="text-2xl font-black tracking-tighter">0%</p>
+                  <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Comisión</p>
+                </div>
+                <div className="space-y-1">
+                  <p className="text-2xl font-black tracking-tighter">100%</p>
+                  <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Pago Seguro</p>
+                </div>
+                <div className="space-y-1">
+                  <p className="text-2xl font-black tracking-tighter">24/7</p>
+                  <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Soporte IA</p>
+                </div>
+              </div>
             </div>
-
           </div>
         </section>
 
-        {/* --- THE 3 PILLARS (Security First) --- */}
-        <section id="security" className="py-24 bg-background border-t border-border">
-          <div id="how-it-works" className="scroll-mt-32" />
+        {/* --- THE 3 PILLARS: Clean & Professional --- */}
+        <section id="security" className="py-32 bg-secondary/30">
           <div className="mx-auto max-w-7xl px-6">
-            <div className="mb-16 max-w-2xl">
-              <h2 className="text-3xl md:text-4xl font-bold font-heading mb-4 tracking-tight text-foreground">El Estándar de Seguridad StarterKar.</h2>
-              <p className="text-muted-foreground text-lg">
-                No somos solo un marketplace. Somos el árbitro imparcial que garantiza la integridad de cada transacción a través de 3 pilares inquebrantables.
-              </p>
-            </div>
-
-            <div className="grid md:grid-cols-3 gap-8">
-
-              {/* Pillar 1: Mechanical */}
-              <div className="glass-card p-8 rounded-3xl animate-reveal stagger-1">
-                <div className="h-12 w-12 bg-indigo-500/10 rounded-2xl flex items-center justify-center mb-6 text-indigo-500">
+            <div className="grid md:grid-cols-3 gap-12">
+              <div className="space-y-6">
+                <div className="h-14 w-14 bg-indigo-600 text-white rounded-2xl flex items-center justify-center shadow-lg shadow-indigo-600/20">
                   <Wrench className="h-6 w-6" />
                 </div>
-                <h3 className="text-xl font-bold font-heading mb-3 text-foreground">1. Revisión Mecánica</h3>
-                <p className="text-muted-foreground leading-relaxed text-sm">
-                  150 puntos de inspección certificados por expertos. Si el auto no pasa la revisión física, no se publica. Tú ves exactamente lo que compras, sin filtros.
+                <h3 className="text-2xl font-black tracking-tight italic">01. REVISIÓN TÉCNICA</h3>
+                <p className="text-muted-foreground text-sm leading-relaxed font-medium">
+                  Inspección profunda de 150 puntos. Si el auto no es perfecto mecánicamente, no entra a nuestra bóveda. Transparencia absoluta.
                 </p>
               </div>
 
-              {/* Pillar 2: Legal */}
-              <div className="glass-card p-8 rounded-3xl animate-reveal stagger-2">
-                <div className="h-12 w-12 bg-emerald-500/10 rounded-2xl flex items-center justify-center mb-6 text-emerald-500">
+              <div className="space-y-6">
+                <div className="h-14 w-14 bg-emerald-600 text-white rounded-2xl flex items-center justify-center shadow-lg shadow-emerald-600/20">
                   <ShieldCheck className="h-6 w-6" />
                 </div>
-                <h3 className="text-xl font-bold font-heading mb-3 text-foreground">2. Validación Legal</h3>
-                <p className="text-muted-foreground leading-relaxed text-sm">
-                  Conexión directa con bases de datos gubernamentales (REPUVE, Fiscalía). Garantizamos &quot;0 Adeudos&quot; y &quot;0 Reportes de Robo&quot; antes de firmar.
+                <h3 className="text-2xl font-black tracking-tight italic">02. BLINDAJE LEGAL</h3>
+                <p className="text-muted-foreground text-sm leading-relaxed font-medium">
+                  Validación directa con REPUVE y Fiscalía. Garantizamos que cada vehículo sea legalmente impecable antes de cualquier firma.
                 </p>
               </div>
 
-              {/* Pillar 3: Contract */}
-              <div className="glass-card p-8 rounded-3xl animate-reveal stagger-3">
-                <div className="h-12 w-12 bg-blue-500/10 rounded-2xl flex items-center justify-center mb-6 text-blue-500">
+              <div className="space-y-6">
+                <div className="h-14 w-14 bg-blue-600 text-white rounded-2xl flex items-center justify-center shadow-lg shadow-blue-600/20">
                   <FileCheck className="h-6 w-6" />
                 </div>
-                <h3 className="text-xl font-bold font-heading mb-3 text-foreground">3. Contrato Blindado</h3>
-                <p className="text-muted-foreground leading-relaxed text-sm">
-                  Nuestra tecnología genera contratos con validez jurídica oficial. Firmas digitales con sellos de tiempo que protegen a ambas partes Legalmente.
+                <h3 className="text-2xl font-black tracking-tight italic">03. CONTRATO DIGITAL</h3>
+                <p className="text-muted-foreground text-sm leading-relaxed font-medium">
+                  Tecnología de firma electrónica con validez jurídica. Protegemos tu inversión con contratos inteligentes y sellos de tiempo.
                 </p>
               </div>
-
             </div>
           </div>
         </section>
 
-        {/* --- SECONDARY VALUES & CTA --- */}
-        <section className="py-24 px-6 border-t border-border">
-          <div className="mx-auto max-w-7xl grid md:grid-cols-2 gap-16 items-center">
-            <div>
-              <h2 className="text-3xl font-bold font-heading mb-6">Más allá de la seguridad.</h2>
-              <ul className="space-y-6">
-                <li className="flex gap-4 items-start">
-                  <span className="h-6 w-6 rounded-full bg-secondary flex items-center justify-center text-xs font-bold shrink-0">AI</span>
-                  <div>
-                    <h4 className="font-bold text-foreground">Inteligencia de Datos</h4>
-                    <p className="text-sm text-muted-foreground">Precios justos calculados algorítmicamente.</p>
-                  </div>
-                </li>
-                <li className="flex gap-4 items-start">
-                  <div className="h-6 w-6 rounded-full bg-emerald-100 flex items-center justify-center shrink-0">
-                    <CheckCircle2 className="h-3 w-3 text-emerald-600" />
-                  </div>
-                  <div>
-                    <h4 className="font-bold text-foreground">0% Comisión Comprador</h4>
-                    <p className="text-sm text-muted-foreground">En StarterKar, el comprador no paga comisiones de gestión. Directo y transparente.</p>
-                  </div>
-                </li>
-              </ul>
-            </div>
-
-            <div className="bg-secondary rounded-[2rem] p-12 text-center">
-              <h3 className="text-2xl font-bold font-heading mb-4 text-foreground">Experiencia Premium</h3>
-              <p className="text-muted-foreground mb-8">
-                Únete a la plataforma que prioriza la paz mental sobre la velocidad.
+        {/* --- FINAL CTA --- */}
+        <section className="py-32 px-6">
+          <div className="mx-auto max-w-5xl rounded-[3rem] bg-zinc-950 p-12 md:p-24 text-center text-white relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-500/10 blur-[100px] -translate-y-1/2 translate-x-1/2" />
+            <div className="relative z-10 space-y-8">
+              <h2 className="text-4xl md:text-6xl font-black tracking-tighter">EXPERIENCIA PREMIUM</h2>
+              <p className="text-zinc-400 text-lg md:text-xl max-w-2xl mx-auto font-medium">
+                Únete a la plataforma que prioriza la paz mental sobre la velocidad. Compra y vende con la seguridad de una bóveda.
               </p>
-              <Link href="/buy" className="inline-flex h-12 px-8 rounded-full bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 font-bold items-center hover:scale-105 transition-transform">
-                Ver Autos Certificados <ArrowRight className="ml-2 h-4 w-4" />
-              </Link>
+              <Button asChild size="lg" className="h-16 px-12 rounded-2xl bg-white text-zinc-950 font-black hover:bg-zinc-200 transition-all">
+                <Link href="/buy">
+                  Ver Autos Certificados
+                  <ArrowRight className="ml-3 h-5 w-5" />
+                </Link>
+              </Button>
             </div>
           </div>
         </section>

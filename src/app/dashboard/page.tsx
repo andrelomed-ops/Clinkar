@@ -41,6 +41,7 @@ export default function DashboardPage() {
     const [ownedCars, setOwnedCars] = useState<any[]>([]);
     const [favoriteCars, setFavoriteCars] = useState<any[]>([]);
     const [activeTab, setActiveTab] = useState<"buying" | "selling">("buying");
+    const [investorApp, setInvestorApp] = useState<any>(null);
 
     const supabase = createBrowserClient();
 
@@ -175,17 +176,12 @@ export default function DashboardPage() {
 
                     if (carsError) throw carsError;
                     if (cars) setOwnedCars(cars);
-
+                    
                     // Fetch Favorites
                     const favIds = await FavoriteService.getFavorites(supabase);
                     if (favIds.length > 0) {
-                        // Ideally we have a bulk fetch in CarService, for now we map parallel
-                        // Or better: filter local ALL_CARS for mock and simple fetch for DB.
-                        // Let's support hybrid:
                         const dbCars = await Promise.all(favIds.map(id => CarService.getCarById(supabase, id)));
                         const validDbCars = dbCars.filter(c => c !== null);
-
-                        // If any ID was not found in DB, check ALL_CARS (Mock)
                         const mockFavs = favIds
                             .filter(id => !validDbCars.find(c => c.id === id))
                             .map(id => ALL_CARS.find(c => c.id === id))
@@ -193,6 +189,13 @@ export default function DashboardPage() {
 
                         setFavoriteCars([...validDbCars, ...mockFavs]);
                     }
+
+                    // Fetch Investor Application
+                    const { data: invData } = await supabase
+                        .from('investor_applications')
+                        .select('*')
+                        .single();
+                    if (invData) setInvestorApp(invData);
                 }
             } catch (err) {
                 console.error("Error loading dashboard:", err);
@@ -255,11 +258,8 @@ export default function DashboardPage() {
             {/* Navbar */}
             <nav className="border-b border-border bg-background/80 backdrop-blur-md px-6 h-16 shrink-0 flex items-center justify-between z-50">
                 <div className="flex items-center gap-4">
-                    <Link href="/" className="p-2 hover:bg-secondary rounded-full transition-colors">
-                        <ArrowRight className="h-5 w-5 rotate-180" />
-                    </Link>
                     <div className="flex items-center gap-2">
-                        <StarterKarLogo size="xs" showWordmark={false} href="/dashboard" />
+                        <StarterKarLogo size="xs" showWordmark={false} href="/" />
                         <span className="font-bold text-lg">Mi Garage</span>
                     </div>
                 </div>
@@ -317,16 +317,6 @@ export default function DashboardPage() {
                                 </div>
                             )}
 
-                            {/* Role Switcher */}
-                            <button
-                                onClick={() => setActiveTab("selling")}
-                                className={cn(
-                                    "px-6 py-2.5 rounded-xl text-sm font-black transition-all flex items-center gap-2 active:scale-95",
-                                    activeTab === "selling" ? "bg-white dark:bg-zinc-800 shadow-xl text-indigo-600" : "text-muted-foreground hover:text-foreground"
-                                )}
-                            >
-                                <CreditCard className="h-4 w-4" /> Vender
-                            </button>
                         </div>
                     </div>
 
@@ -671,6 +661,52 @@ export default function DashboardPage() {
                                         </div>
                                     </div>
                                 )) : null}
+
+                                {/* Investor Membership Card */}
+                                {userProfile?.role !== 'investor' && (
+                                    <div className={cn(
+                                        "rounded-[2.5rem] p-8 relative overflow-hidden group shadow-2xl animate-reveal stagger-2 flex flex-col justify-between min-h-[320px] border",
+                                        investorApp?.status === 'pending' 
+                                            ? "bg-amber-50 border-amber-200" 
+                                            : "bg-gradient-to-br from-indigo-900 to-zinc-950 border-zinc-800"
+                                    )}>
+                                        <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 blur-[80px] -translate-y-12 translate-x-12" />
+                                        <div className="relative z-10">
+                                            <div className={cn(
+                                                "flex items-center gap-3 mb-6",
+                                                investorApp?.status === 'pending' ? "text-amber-600" : "text-indigo-400"
+                                            )}>
+                                                <Shield className="h-5 w-5" />
+                                                <span className="text-[10px] font-black uppercase tracking-[0.2em]">StarterKar Inversionista</span>
+                                            </div>
+                                            
+                                            {investorApp?.status === 'pending' ? (
+                                                <>
+                                                    <h3 className="text-2xl font-black text-amber-900 mb-2 tracking-tighter italic uppercase">Solicitud en Revisión</h3>
+                                                    <p className="text-amber-800/70 text-sm font-medium leading-relaxed">
+                                                        Estamos validando tu Constancia Fiscal y el pago de tu membresía <span className="font-black italic underline">{investorApp.tier_id?.toUpperCase()}</span>.
+                                                    </p>
+                                                    <div className="mt-6 flex items-center gap-2 text-[10px] font-black text-amber-600 uppercase tracking-widest bg-white/50 w-fit px-4 py-2 rounded-full border border-amber-200">
+                                                        <Clock className="h-3 w-3 animate-spin-slow" />
+                                                        Validación en proceso (24h)
+                                                    </div>
+                                                </>
+                                            ) : (
+                                                <>
+                                                    <h3 className="text-2xl font-black text-white mb-2 tracking-tighter italic uppercase">Haz crecer tu capital</h3>
+                                                    <p className="text-zinc-500 text-sm mb-8 font-medium leading-relaxed">
+                                                        Accede a precios <span className="text-white font-bold">15% por debajo del mercado</span>, inventario exclusivo y compra por volumen.
+                                                    </p>
+                                                    <Button asChild className="relative z-10 w-full rounded-2xl h-14 bg-indigo-600 text-white font-black hover:bg-indigo-700 transition-all shadow-xl shadow-indigo-600/20 active:scale-95">
+                                                        <Link href="/investor/apply">
+                                                            Solicitar Acceso Inversionista <ArrowRight className="ml-2 h-4 w-4" />
+                                                        </Link>
+                                                    </Button>
+                                                </>
+                                            )}
+                                        </div>
+                                    </div>
+                                )}
 
                                 {/* Referral Promo Card (NEW) */}
                                 <ReferralPromoCard />

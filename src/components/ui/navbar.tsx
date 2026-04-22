@@ -107,8 +107,15 @@ export function Navbar({
                                         : "border-transparent hover:bg-secondary text-muted-foreground"
                                 )}
                             >
-                                <Heart className={cn("h-4 w-4", showFavoritesOnly && "fill-current")} />
-                                <span className="hidden lg:inline">Mis Favoritos</span>
+                                <Heart className={cn(
+                                    "h-4 w-4 transition-all",
+                                    favoritesCount > 0 ? "fill-red-500 text-red-500 animate-heartbeat" : "text-muted-foreground",
+                                    showFavoritesOnly && "fill-current"
+                                )} />
+                                <span className={cn(
+                                    "hidden lg:inline font-bold",
+                                    favoritesCount > 0 ? "text-red-600" : "text-muted-foreground"
+                                )}>Mis Favoritos</span>
                                 {favoritesCount > 0 && (
                                     <span className={cn(
                                         "px-1.5 py-0.5 rounded-full text-[10px]",

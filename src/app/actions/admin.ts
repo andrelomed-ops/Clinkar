@@ -6,7 +6,7 @@ import { revalidatePath } from "next/cache";
 import { ReferralPayoutService } from "@/services/ReferralPayoutService";
 import { ServiceTicketService } from "@/services/ServiceTicketService";
 
-export async function updateUserRole(targetUserId: string, newRole: 'admin' | 'inspector' | 'seller' | 'buyer') {
+export async function updateUserRole(targetUserId: string, newRole: 'admin' | 'inspector' | 'seller' | 'buyer' | 'investor') {
     const supabase = await createClient();
 
     // 1. Verify Requestor is Admin
@@ -113,4 +113,105 @@ export async function getInspectorScheduleAction() {
     }
 
     return await ServiceTicketService.getInspectorSchedule(supabase);
+}
+
+export async function getInvestorApplicationsAction() {
+    const supabase = await createClient();
+
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) throw new Error("Unauthorized");
+
+    const { data: profile } = await supabase
+        .from("profiles")
+        .select("role")
+        .eq("id", user.id)
+        .single();
+
+    if (profile?.role !== 'admin') {
+        throw new Error("Forbidden");
+    }
+
+    const { data, error } = await supabase
+        .from("investor_applications")
+        .select(`
+            *,
+            profiles:user_id (full_name, email),
+            tier:tier_id (name, price)
+        `)
+        .order("created_at", { ascending: false });
+
+    if (error) throw error;
+    return data;
+}
+
+export async function approveInvestorApplicationAction(applicationId: string) {
+    const supabase = await createClient();
+
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) throw new Error("Unauthorized");
+
+    const { data: profile } = await supabase
+        .from("profiles")
+        .select("role")
+        .eq("id", user.id)
+        .single();
+
+    if (profile?.role !== 'admin') {
+        throw new Error("Forbidden");
+    }
+
+    // 1. Get Application Details
+    const { data: app, error: appError } = await supabase
+        .from("investor_applications")
+        .select("*")
+        .eq("id", applicationId)
+        .single();
+
+    if (appError || !app) throw new Error("Application not found");
+
+    // 2. Update Role in Profiles
+    const { error: roleError } = await supabase
+        .from("profiles")
+        .update({ role: 'investor' })
+        .eq("id", app.user_id);
+
+    if (roleError) throw roleError;
+
+    // 3. Update Application Status
+    const { error: statusError } = await supabase
+        .from("investor_applications")
+        .update({ status: 'approved' })
+        .eq("id", applicationId);
+
+    if (statusError) throw statusError;
+
+    revalidatePath("/admin");
+    return { success: true };
+}
+
+export async function rejectInvestorApplicationAction(applicationId: string) {
+    const supabase = await createClient();
+
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) throw new Error("Unauthorized");
+
+    const { data: profile } = await supabase
+        .from("profiles")
+        .select("role")
+        .eq("id", user.id)
+        .single();
+
+    if (profile?.role !== 'admin') {
+        throw new Error("Forbidden");
+    }
+
+    const { error } = await supabase
+        .from("investor_applications")
+        .update({ status: 'rejected' })
+        .eq("id", applicationId);
+
+    if (error) throw error;
+
+    revalidatePath("/admin");
+    return { success: true };
 }
