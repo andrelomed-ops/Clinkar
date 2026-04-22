@@ -45,12 +45,17 @@ export default function SellOnboardingPage() {
     const totalCost = INSPECTION_BASE_COST;
 
     useEffect(() => {
+        const timer = setTimeout(() => setIsMounted(true), 0);
+        return () => clearTimeout(timer);
+    }, []);
+
+    useEffect(() => {
         const fetchPartners = async () => {
             const { data } = await supabase
                 .from('partners')
                 .select('*')
                 .eq('is_active', true);
-            if (data) setPartners(data);
+            if (data) setTimeout(() => setPartners(data), 0);
         };
         fetchPartners();
     }, [supabase]);
@@ -226,13 +231,15 @@ export default function SellOnboardingPage() {
                                             </select>
                                             <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 h-5 w-5 text-zinc-400 pointer-events-none" />
                                         </div>
-                                    <div className="p-4 bg-zinc-50 dark:bg-zinc-800/80 rounded-xl border border-zinc-200 dark:border-zinc-700 flex items-start gap-3">
-                                        <MapPin className="h-4 w-4 text-indigo-500 mt-1 shrink-0" />
-                                        <p className="text-xs font-medium text-zinc-600 dark:text-zinc-400 leading-relaxed">
-                                            {selectedPartner.address}, {selectedPartner.city}
-                                        </p>
-                                    </div>
-                                )}
+                                    {selectedPartner && (
+                                        <div className="p-4 bg-zinc-50 dark:bg-zinc-800/80 rounded-xl border border-zinc-200 dark:border-zinc-700 flex items-start gap-3">
+                                            <MapPin className="h-4 w-4 text-indigo-500 mt-1 shrink-0" />
+                                            <p className="text-xs font-medium text-zinc-600 dark:text-zinc-400 leading-relaxed">
+                                                {selectedPartner.address}, {selectedPartner.city}
+                                            </p>
+                                        </div>
+                                    )}
+                                </div>
 
                                 <div className="p-6 bg-indigo-50 dark:bg-indigo-900/10 border border-indigo-200 dark:border-indigo-900/30 rounded-2xl">
                                     <div className="flex justify-between items-center mb-2">

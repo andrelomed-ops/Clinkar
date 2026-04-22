@@ -8,7 +8,7 @@ import { PRICING_CONFIG } from '@/config/pricing';
 export class ReferralService extends BaseService {
     static async getOrCreateReferralCode(supabase: SupabaseClient<Database>, userId: string): Promise<string> {
         const { data } = await (supabase as any)
-            .from('referral_codes')
+            .from('referral_links')
             .select('code')
             .eq('user_id', userId)
             .maybeSingle();
@@ -17,10 +17,10 @@ export class ReferralService extends BaseService {
 
         const newCode = `STARTER-${Math.random().toString(36).substring(2, 6).toUpperCase()}`;
         
-        await (supabase as any).from('referral_codes').insert({
+        await (supabase as any).from('referral_links').insert({
             user_id: userId,
             code: newCode,
-            default_reward_amount: PRICING_CONFIG.REFERRAL_REWARD_CASH
+            reward_amount: PRICING_CONFIG.REFERRAL_REWARD_CASH
         });
 
         return newCode;
@@ -28,7 +28,7 @@ export class ReferralService extends BaseService {
 
     static async assignReferral(supabase: SupabaseClient<Database>, userId: string, code: string): Promise<void> {
         const { data: codeOwner } = await (supabase as any)
-            .from('referral_codes')
+            .from('referral_links')
             .select('user_id')
             .eq('code', code)
             .single();
@@ -39,15 +39,15 @@ export class ReferralService extends BaseService {
         const { data: existing } = await (supabase as any)
             .from('referrals')
             .select('id')
-            .eq('referred_id', userId)
+            .eq('referred_user_id', userId)
             .maybeSingle();
 
         if (existing) return;
 
         await (supabase as any).from('referrals').insert({
             referrer_id: codeOwner.user_id,
-            referred_id: userId,
-            status: 'PENDING',
+            referred_user_id: userId,
+            status: 'PENDING_OPERATION',
             reward_type: 'CASH'
         });
     }
@@ -64,15 +64,15 @@ export class ReferralService extends BaseService {
         const { data: buyerReferral } = await (supabase as any)
             .from('referrals')
             .select('*')
-            .eq('referred_id', tx.buyer_id)
-            .eq('status', 'PENDING')
+            .eq('referred_user_id', tx.buyer_id)
+            .eq('status', 'PENDING_OPERATION')
             .maybeSingle();
 
         const { data: sellerReferral } = await (supabase as any)
             .from('referrals')
             .select('*')
-            .eq('referred_id', tx.seller_id)
-            .eq('status', 'PENDING')
+            .eq('referred_user_id', tx.seller_id)
+            .eq('status', 'PENDING_OPERATION')
             .maybeSingle();
 
         const processReward = async (referral: any) => {
@@ -103,4 +103,4 @@ export class ReferralService extends BaseService {
         await processReward(buyerReferral);
         await processReward(sellerReferral);
     }
-}
+}

@@ -78,12 +78,16 @@ export class TransactionService extends BaseService {
             .eq('user_id', data.sellerId)
             .eq('perk_type', 'FEE_DISCOUNT')
             .eq('status', 'AVAILABLE')
-            .limit(1)
-            .maybeSingle();
-
-        if (discountPerk) {
-            sellerFeePercent = sellerFeePercent * (PRICING_CONFIG.REFERRAL_REWARD_FEE_DISCOUNT_PERCENT / 100);
-            Logger.info(`[PRICING] Applying ${PRICING_CONFIG.REFERRAL_REWARD_FEE_DISCOUNT_PERCENT}% discount to seller ${data.sellerId}`);
+        
+        // 3.3 Optional Discount Perks (Referrals)
+        let discountPerk = null;
+        if (data.appliedPerkId) {
+            const { data: perk } = await supabase.from('user_perks').select('*').eq('id', data.appliedPerkId).single();
+            if (perk && perk.status === 'AVAILABLE') {
+                discountPerk = perk;
+                sellerFeePercent = sellerFeePercent * (PRICING_CONFIG.REFERRAL_REWARD_FEE_DISCOUNT_PERCENT / 100);
+                Logger.info(`[PRICING] Applying ${PRICING_CONFIG.REFERRAL_REWARD_FEE_DISCOUNT_PERCENT}% discount to seller ${data.sellerId}`);
+            }
         }
 
         const sellerSuccessFee = (data.amount * sellerFeePercent) / 100;
@@ -103,6 +107,8 @@ export class TransactionService extends BaseService {
                 warranty_cost: data.warrantyQuote?.cost || 0,
                 stripe_session_id: data.stripeSessionId,
                 status: 'PENDING',
+                pld_status: pldResult.riskLevel === 'CLEAN' ? 'APPROVED' : 'PENDING',
+                risk_metadata: pldResult as any,
                 metadata: discountPerk ? { used_perk_id: discountPerk.id } : {}
             })
             .select()

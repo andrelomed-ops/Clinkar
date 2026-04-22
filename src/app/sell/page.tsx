@@ -1,6 +1,6 @@
 "use client";
 
-import { ShieldCheck, Camera, Banknote, Car, CheckCircle2, FileText, Calculator } from "lucide-react";
+import { ShieldCheck, Camera, Banknote, Car, CheckCircle2, FileText, Calculator, Search } from "lucide-react";
 import { InstantQuote } from "@/components/sell/InstantQuote";
 import { IntakeWizard } from "@/components/sell/IntakeWizard";
 import { Navbar } from "@/components/ui/navbar";

@@ -91,11 +91,37 @@ export class VerificationService {
                 purchased_at: (transaction as any).created_at || new Date().toISOString(),
                 id: (transaction as any).id
             } : null,
-            inspection: inspection ? {
-                date: (inspection as any).created_at || new Date().toISOString(),
-                rating: 5, // Placeholder
-                result: (inspection as any).overall_result
-            } : null
+            inspection: inspection ? (() => {
+                const results = (inspection as any).data || {};
+                const items = Object.entries(results);
+                
+                let passMech = 0;
+                const totalMech = 120; // motor, transmision, suspension, carroceria (30 each)
+                let passLegal = 0;
+                const totalLegal = 30; // legal section
+
+                items.forEach(([key, state]: any) => {
+                    const isPass = state.pass;
+                    
+                    // Categorize by ID prefix
+                    if (key.startsWith('l')) {
+                        if (isPass) passLegal++;
+                    } else if (key.startsWith('m') || key.startsWith('t') || key.startsWith('s') || key.startsWith('c')) {
+                        if (isPass) passMech++;
+                    }
+                });
+
+                const mechanicalRating = Math.round((passMech / totalMech) * 100);
+                const legalRating = Math.round((passLegal / totalLegal) * 100);
+
+                return {
+                    date: (inspection as any).created_at || new Date().toISOString(),
+                    rating: Math.round((mechanicalRating + legalRating) / 2),
+                    mechanicalRating,
+                    legalRating,
+                    result: (inspection as any).overall_result
+                };
+            })() : null
         };
     }
 

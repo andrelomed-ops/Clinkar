@@ -49,7 +49,8 @@ export default function AdminPartnersPage() {
     };
 
     useEffect(() => {
-        fetchPartners();
+        const timer = setTimeout(() => fetchPartners(), 0);
+        return () => clearTimeout(timer);
     }, []);
 
     const handleAddPartner = async (e: React.FormEvent) => {

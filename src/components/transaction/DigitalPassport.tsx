@@ -1,5 +1,5 @@
 import React, { useRef, useState } from 'react';
-import { BadgeCheck, History, Loader2, Printer, Download } from 'lucide-react';
+import { BadgeCheck, History, Loader2, Printer, Download, Shield } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import html2canvas from 'html2canvas'; // Import html2canvas
@@ -151,10 +151,37 @@ export const DigitalPassport = ({ car, purchaseDate, ownerName, serviceHistory }
                 {/* Holographic Header */}
                 <div style={{ height: '140px', position: 'relative', overflow: 'hidden', background: 'linear-gradient(135deg, #4f46e5 0%, #1e1b4b 100%)' }}>
                     <div style={{ position: 'absolute', inset: 0, opacity: 0.2, backgroundImage: 'radial-gradient(white 1px, transparent 1px)', backgroundSize: '10px 10px' }}></div>
-                    <div className="absolute inset-0 flex flex-col items-center justify-center p-6 text-center" style={{ color: '#ffffff' }}>
-                        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest mb-3" style={{ backgroundColor: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.2)', backdropFilter: 'blur(12px)', color: '#ffffff' }}>
-                            <BadgeCheck className="h-3 w-3" style={{ color: '#34d399' }} /> StarterKar Verified Asset
+                    <div className="absolute inset-0 flex flex-col items-center justify-center p-4 text-center" style={{ color: '#ffffff' }}>
+                        <div className="flex gap-6 mb-4">
+                            {/* Mechanical Certification Badge */}
+                            <div className="flex flex-col items-center gap-1.5 group cursor-help">
+                                <div className="relative">
+                                    <div className="absolute -inset-1 bg-emerald-500/20 rounded-full blur opacity-0 group-hover:opacity-100 transition duration-500"></div>
+                                    <div className="relative inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-[0.15em] shadow-lg" style={{ backgroundColor: 'rgba(16, 185, 129, 0.1)', border: '1px solid rgba(16, 185, 129, 0.3)', backdropFilter: 'blur(8px)', color: '#10b981' }}>
+                                        <BadgeCheck className="h-3.5 w-3.5" /> Técnica
+                                    </div>
+                                </div>
+                                <div className="flex items-baseline gap-1">
+                                    <span className="text-xs font-black text-white">{car.mechanicalRating || 0}</span>
+                                    <span className="text-[8px] font-bold text-white/40">%</span>
+                                </div>
+                            </div>
+
+                            {/* Legal Certification Badge */}
+                            <div className="flex flex-col items-center gap-1.5 group cursor-help">
+                                <div className="relative">
+                                    <div className="absolute -inset-1 bg-indigo-500/20 rounded-full blur opacity-0 group-hover:opacity-100 transition duration-500"></div>
+                                    <div className="relative inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-[0.15em] shadow-lg" style={{ backgroundColor: 'rgba(99, 102, 241, 0.1)', border: '1px solid rgba(99, 102, 241, 0.3)', backdropFilter: 'blur(8px)', color: '#818cf8' }}>
+                                        <Shield className="h-3.5 w-3.5" /> Legal
+                                    </div>
+                                </div>
+                                <div className="flex items-baseline gap-1">
+                                    <span className="text-xs font-black text-white">{car.legalRating || 0}</span>
+                                    <span className="text-[8px] font-bold text-white/40">%</span>
+                                </div>
+                            </div>
                         </div>
+
                         <h2 className="text-3xl font-black tracking-tighter" style={{ fontFamily: 'ui-sans-serif, system-ui, sans-serif', color: '#ffffff' }}>PASAPORTE DIGITAL</h2>
                         <p className="text-[10px] font-mono mt-2 uppercase tracking-widest" style={{ color: 'rgba(199, 210, 254, 0.8)' }}>
                             ID: {car.id.substring(0, 8).toUpperCase()}-{car.id.substring(car.id.length - 4).toUpperCase()}
