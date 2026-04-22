@@ -224,11 +224,7 @@ export function NotificationCenter() {
                 </div>
 
                 {/* Footer */}
-                <div className="p-6 border-t border-zinc-100 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-900/50 space-y-4">
-                    <button className="w-full h-12 bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 rounded-2xl font-bold text-sm hover:opacity-90 transition-opacity flex items-center justify-center gap-2">
-                        <Settings className="h-4 w-4" />
-                        Configurar Canales
-                    </button>
+                <div className="p-6 border-t border-zinc-100 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-900/50">
                     <p className="text-[10px] text-center text-zinc-400 font-bold uppercase tracking-widest">
                         Seguridad StarterKar Protegida
                     </p>

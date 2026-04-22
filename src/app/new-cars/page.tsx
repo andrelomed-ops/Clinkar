@@ -42,7 +42,7 @@ const MOCK_NEW_CARS = [
 export default function NewCarsPage() {
     return (
         <div className="min-h-screen bg-background text-foreground">
-            <Navbar variant="market" backHref="/" backLabel="Volver" />
+            <Navbar variant="market" />
 
             <main className="pt-24 pb-20 px-6 max-w-7xl mx-auto">
                 {/* Hero / Banner */}

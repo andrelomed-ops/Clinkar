@@ -87,7 +87,7 @@ export function CarCard({ car, isFavorite = false, onToggleFavorite }: CarCardPr
                             className={cn(
                                 "h-5 w-5 transition-all duration-300",
                                 isFavorite
-                                    ? "fill-red-500 text-red-500 scale-110"
+                                    ? "fill-red-500 text-red-500 scale-110 animate-pulse"
                                     : "text-white group-hover/heart:scale-110"
                             )}
                         />

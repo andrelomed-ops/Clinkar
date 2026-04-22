@@ -12,9 +12,6 @@ import { createBrowserClient } from '@/lib/supabase/client';
 
 interface NavbarProps {
     variant?: 'default' | 'home' | 'market' | 'sell';
-    showBack?: boolean;
-    backHref?: string;
-    backLabel?: string;
     showFavorites?: boolean;
     favoritesCount?: number;
     showFavoritesOnly?: boolean;
@@ -23,9 +20,6 @@ interface NavbarProps {
 
 export function Navbar({
     variant = 'default',
-    showBack = false,
-    backHref = '/',
-    backLabel = 'Volver',
     showFavorites = false,
     favoritesCount = 0,
     showFavoritesOnly = false,
@@ -42,23 +36,27 @@ export function Navbar({
         };
         window.addEventListener('scroll', handleScroll);
 
-        // Auth listener
         const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
             setUser(session?.user ?? null);
         });
 
-        // Initial check
         supabase.auth.getUser().then(({ data: { user } }) => {
             setUser(user);
         });
 
-        return () => {
-            window.removeEventListener('scroll', handleScroll);
-            subscription.unsubscribe();
-        };
+        return () => subscription.unsubscribe();
     }, [supabase]);
 
+    const handleSignOut = async () => {
+        await supabase.auth.signOut();
+        window.location.href = '/';
+    };
+
     const navLinks = [
+        ...(variant === 'home' ? [
+            { href: '#security', label: 'Seguridad' },
+            { href: '#how-it-works', label: 'Proceso' },
+        ] : []),
         { href: '/buy', label: 'Comprar' },
         { href: '/sell', label: 'Vender' },
         { href: '/new-cars', label: 'Autos Nuevos', className: "font-black text-indigo-600 dark:text-indigo-400 italic" },
@@ -75,16 +73,9 @@ export function Navbar({
             )}>
                 <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-6">
 
-                    {/* Left Section: Back Button or Logo */}
+                    {/* Left Section: Logo */}
                     <div className="flex items-center gap-4">
-                        {showBack ? (
-                            <Link href={backHref} className="flex items-center gap-2 group text-muted-foreground hover:text-foreground transition-colors">
-                                <ArrowLeft className="h-4 w-4 group-hover:-translate-x-1 transition-transform" />
-                                <span className="font-semibold text-sm hidden sm:inline">{backLabel}</span>
-                            </Link>
-                        ) : (
-                            <StarterKarLogo size="sm" showMonogram={false} href="/" />
-                        )}
+                        <StarterKarLogo size="sm" showMonogram={false} href="/" />
                     </div>
 
                     {/* Center Section: Navigation Links (Home variant only) */}
@@ -143,6 +134,14 @@ export function Navbar({
                                 href={user ? "/dashboard" : "/login"} 
                                 className="hover:translate-y-[-2px] transition-all"
                             />
+                            {user && (
+                                <button 
+                                    onClick={handleSignOut}
+                                    className="text-[10px] font-black uppercase tracking-widest text-zinc-400 hover:text-red-500 transition-colors"
+                                >
+                                    Salir
+                                </button>
+                            )}
                             <NotificationCenter />
                             <ThemeToggle />
                         </div>
@@ -170,13 +169,23 @@ export function Navbar({
                                     {link.label}
                                 </Link>
                             ))}
-                            <Link
-                                href="/login"
-                                onClick={() => setIsMenuOpen(false)}
-                                className="text-lg font-bold tracking-tight text-foreground/80 hover:text-foreground transition-colors"
-                            >
-                                Entrar
-                            </Link>
+                            {!user && (
+                                <Link
+                                    href="/login"
+                                    onClick={() => setIsMenuOpen(false)}
+                                    className="text-lg font-bold tracking-tight text-foreground/80 hover:text-foreground transition-colors"
+                                >
+                                    Entrar
+                                </Link>
+                            )}
+                            {user && (
+                                <button 
+                                    onClick={() => { handleSignOut(); setIsMenuOpen(false); }}
+                                    className="text-lg font-bold tracking-tight text-red-500 text-left pt-4 border-t border-zinc-100 dark:border-zinc-800"
+                                >
+                                    Cerrar Sesión
+                                </button>
+                            )}
                         </div>
                     </div>
                 )}

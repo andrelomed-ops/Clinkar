@@ -6,6 +6,8 @@ import { Navbar } from "@/components/ui/navbar";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { Button } from "@/components/ui/button";
 
+import { InteractiveProcess } from "@/components/landing/InteractiveProcess";
+
 export default function Home() {
   return (
     <div className="flex min-h-screen flex-col bg-background text-foreground transition-colors duration-500">
@@ -102,9 +104,8 @@ export default function Home() {
           </div>
         </section>
 
-        {/* --- THE 3 PILLARS: Clean & Professional --- */}
-        <section id="security" className="py-32 bg-secondary/30 relative">
-          <div id="how-it-works" className="absolute -top-32" />
+        {/* --- THE 3 PILLARS: Security Features --- */}
+        <section id="security" className="py-32 bg-secondary/30 relative border-t border-border">
           <div className="mx-auto max-w-7xl px-6">
             <div className="grid md:grid-cols-3 gap-12">
               <div className="space-y-6">
@@ -139,6 +140,9 @@ export default function Home() {
             </div>
           </div>
         </section>
+
+        {/* --- HOW IT WORKS: The Interactive Process --- */}
+        <InteractiveProcess />
 
         {/* --- FINAL CTA --- */}
         <section className="py-32 px-6">

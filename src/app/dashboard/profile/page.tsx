@@ -2,12 +2,13 @@
 
 import { useState, useEffect } from "react";
 import { createBrowserClient } from "@/lib/supabase/client";
-import { User, Mail, Phone, MapPin, Shield, Loader2, Camera, Save } from "lucide-react";
+import { User, Mail, Phone, MapPin, Shield, Loader2, Camera, Save, FileCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { Navbar } from "@/components/ui/navbar";
+import { CameraUpload } from "@/components/ui/CameraUpload";
 import Link from "next/link";
 
 export default function ProfilePage() {
@@ -47,7 +48,10 @@ export default function ProfilePage() {
                 .update({
                     full_name: profile.full_name,
                     phone: profile.phone,
-                    location: profile.location
+                    location: profile.location,
+                    avatar_url: profile.avatar_url,
+                    rfc: profile.rfc,
+                    cif_url: profile.cif_url
                 })
                 .eq("id", user.id);
 
@@ -71,9 +75,7 @@ export default function ProfilePage() {
         <div className="min-h-screen bg-background">
             <div className="border-b border-border bg-background/80 backdrop-blur-md px-6 h-16 shrink-0 flex items-center justify-between z-50">
                 <div className="flex items-center gap-4">
-                    <Link href="/dashboard" className="p-2 hover:bg-secondary rounded-full transition-colors">
-                        <User className="h-5 w-5" />
-                    </Link>
+                    <User className="h-5 w-5 text-indigo-600" />
                     <span className="font-bold text-lg">Mi Perfil StarterKar</span>
                 </div>
                 <div className="flex items-center gap-4">
@@ -86,12 +88,25 @@ export default function ProfilePage() {
                     {/* Left: Avatar & Quick Info */}
                     <div className="md:col-span-4 space-y-6 text-center">
                         <div className="relative inline-block group">
-                            <div className="h-32 w-32 rounded-full bg-indigo-100 border-4 border-white dark:border-zinc-900 shadow-2xl flex items-center justify-center text-4xl font-black text-indigo-600">
-                                {profile?.full_name ? profile.full_name.split(' ').map((n: any) => n[0]).join('') : 'U'}
+                            {profile?.avatar_url ? (
+                                <img 
+                                    src={profile.avatar_url} 
+                                    alt="Avatar" 
+                                    className="h-32 w-32 rounded-full border-4 border-white dark:border-zinc-900 shadow-2xl object-cover"
+                                />
+                            ) : (
+                                <div className="h-32 w-32 rounded-full bg-indigo-100 border-4 border-white dark:border-zinc-900 shadow-2xl flex items-center justify-center text-4xl font-black text-indigo-600">
+                                    {profile?.full_name ? profile.full_name.split(' ').map((n: any) => n[0]).join('') : 'U'}
+                                </div>
+                            )}
+                            
+                            <div className="absolute -bottom-2 -right-2">
+                                <CameraUpload 
+                                    onUpload={(url) => setProfile({ ...profile, avatar_url: url })}
+                                    label=""
+                                    className="scale-75 origin-bottom-right"
+                                />
                             </div>
-                            <button className="absolute bottom-0 right-0 p-2 bg-indigo-600 text-white rounded-full shadow-lg hover:scale-110 transition-all">
-                                <Camera className="h-4 w-4" />
-                            </button>
                         </div>
                         <div>
                             <h2 className="text-2xl font-black">{profile?.full_name || 'Usuario'}</h2>
@@ -166,6 +181,39 @@ export default function ProfilePage() {
                                                 placeholder="Ciudad, Estado"
                                             />
                                         </div>
+                                    </div>
+                                </div>
+
+                                <div className="pt-6 border-t border-border/50">
+                                    <h3 className="text-sm font-black uppercase tracking-[0.2em] text-zinc-800 dark:text-zinc-200 mb-6 flex items-center gap-2">
+                                        <FileCheck className="h-4 w-4 text-indigo-600" />
+                                        Información Fiscal (Dealerships)
+                                    </h3>
+                                    
+                                    <div className="grid md:grid-cols-2 gap-8">
+                                        <div className="grid gap-2">
+                                            <Label htmlFor="rfc" className="text-xs font-black uppercase tracking-widest text-zinc-400">RFC (Tax ID)</Label>
+                                            <div className="relative">
+                                                <Shield className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400" />
+                                                <Input 
+                                                    id="rfc"
+                                                    value={profile?.rfc || ""}
+                                                    onChange={(e) => setProfile({ ...profile, rfc: e.target.value.toUpperCase() })}
+                                                    className="pl-10 h-12 rounded-xl bg-secondary/30 border-transparent focus:bg-white transition-all font-mono"
+                                                    placeholder="ABCD123456..."
+                                                    maxLength={13}
+                                                />
+                                            </div>
+                                            <p className="text-[10px] text-zinc-500 font-medium italic">Necesario para facturación en agencias.</p>
+                                        </div>
+
+                                        <CameraUpload 
+                                            label="Cédula de Identificación Fiscal (CIF)"
+                                            description="Sube tu CIF en formato PDF o imagen"
+                                            category="DOCUMENT"
+                                            onUpload={(url) => setProfile({ ...profile, cif_url: url })}
+                                            className="bg-zinc-50/50 dark:bg-zinc-900/30 p-4 rounded-2xl border border-border/50"
+                                        />
                                     </div>
                                 </div>
                             </div>

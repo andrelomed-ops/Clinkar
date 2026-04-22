@@ -80,8 +80,8 @@ export default function SellOnboardingPage() {
         const selectedDate = new Date(date);
         const hours = selectedDate.getHours();
         
-        if (hours < 10 || hours >= 16) {
-            toast.warning("El horario de inspección es únicamente entre las 10:00 y las 16:00 horas.");
+        if (hours < 10 || hours >= 17) {
+            toast.warning("El horario de inspección es únicamente entre las 10:00 y las 17:00 horas.");
             return;
         }
 
@@ -182,7 +182,7 @@ export default function SellOnboardingPage() {
 
     return (
         <div className="min-h-screen bg-zinc-50 dark:bg-zinc-950 font-sans">
-            <Navbar variant="sell" showBack backHref="/sell" />
+            <Navbar variant="sell" />
             
             <main className="pt-32 pb-20 px-6 max-w-2xl mx-auto">
                 {success ? (
@@ -245,7 +245,7 @@ export default function SellOnboardingPage() {
                                         />
                                     </div>
                                     <p className="mt-2 text-[10px] uppercase font-bold text-zinc-400 tracking-tighter">
-                                        * Horario de atención: Lunes a Sábado de 10:00 a 16:00 hrs.
+                                        * Horario de atención: Lunes a Sábado de 10:00 a 17:00 hrs. (Formato 24h)
                                     </p>
                                 </div>
 

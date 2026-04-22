@@ -1,10 +1,9 @@
-
 "use client";
 
 import { createBrowserClient } from "@/lib/supabase/client";
 import { InspectorService } from "@/services/InspectorService";
 import { DocumentAnalysisService } from "@/services/DocumentAnalysisService";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useState, useEffect } from "react";
 import { ArrowLeft, Camera, CheckCircle2, ChevronRight, Save, XCircle } from "lucide-react";
 import { ProcessingOverlay } from "@/components/ui/ProcessingOverlay";
@@ -17,7 +16,9 @@ import { cn } from "@/lib/utils";
 export default function ChecklistPage({ params }: { params: Promise<{ id: string }> }) {
     const [carId, setCarId] = useState<string>("");
     const [loading, setLoading] = useState(false);
-    const [role, setRole] = useState<'MECHANIC' | 'LEGAL'>('MECHANIC');
+    const searchParams = useSearchParams();
+    const roleParam = searchParams.get('role') as 'MECHANIC' | 'LEGAL' | null;
+    const [role, setRole] = useState<'MECHANIC' | 'LEGAL'>(roleParam || 'MECHANIC');
     const [overallResult, setOverallResult] = useState<'APROBADO' | 'RECHAZADO'>('APROBADO');
     const [checklist, setChecklist] = useState<Record<string, { pass: boolean; note?: string; photos?: string[] }>>({});
 

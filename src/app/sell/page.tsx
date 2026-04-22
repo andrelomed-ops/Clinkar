@@ -34,9 +34,6 @@ export default function SellPage() {
 
             <Navbar
                 variant="sell"
-                showBack={true}
-                backHref="/"
-                backLabel="Volver al Inicio"
             />
 
             <main className="pt-32 pb-20 px-6">

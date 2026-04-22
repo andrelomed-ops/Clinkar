@@ -22,7 +22,10 @@ const PROCESS_KNOWLEDGE: Record<string, string> = {
 };
 
 export const generateOpsBrainResponse = (text: string, messageCount: number): OpsResponse => {
-    const lower = text.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+    const lower = text.toLowerCase()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .replace(/v/g, 'b'); // Common misspelling for Bóveda/Vobeda
 
     // Check if user is asking for cars
     const carKeywords = ['comprar', 'vendo', 'auto', 'carro', 'camioneta', 'tesla', 'bmw', 'kia', 'mazda', 'honda', 'nissan', 'toyota', 'yate', 'avion', 'barco', 'excavadora'];

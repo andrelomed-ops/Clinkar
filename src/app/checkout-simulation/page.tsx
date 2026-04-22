@@ -82,11 +82,6 @@ export default function CheckoutSimulationPage() {
 
             {/* UNIFIED HEADER */}
             <header className="fixed top-0 left-0 right-0 h-16 bg-black/80 backdrop-blur-md border-b border-zinc-800 z-50 flex items-center justify-between px-6">
-                <Link href="/buy" className="flex items-center gap-2 text-zinc-400 hover:text-white transition-colors">
-                    <ArrowLeft className="h-5 w-5" />
-                    <span className="text-sm font-medium">Volver al Mercado</span>
-                </Link>
-
                 <div className="flex items-center gap-2">
                     <ShieldCheck className="h-4 w-4 text-emerald-500" />
                     <span className="text-xs font-bold tracking-widest uppercase text-emerald-500">Checkout Seguro</span>

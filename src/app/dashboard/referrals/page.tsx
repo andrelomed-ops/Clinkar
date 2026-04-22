@@ -173,9 +173,6 @@ function ReferralsContent() {
                     <h1 className="text-2xl md:text-3xl font-black tracking-tight">Programa de Referidos</h1>
                     <p className="text-muted-foreground">Invita amigos y gana recompensas</p>
                 </div>
-                <Link href="/dashboard">
-                    <Button variant="ghost">Volver</Button>
-                </Link>
             </div>
 
             <div className="bg-gradient-to-br from-indigo-600 to-indigo-800 rounded-[2.5rem] p-8 text-white shadow-2xl relative overflow-hidden">

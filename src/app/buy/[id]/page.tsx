@@ -96,11 +96,7 @@ export default function CarDetailPage({ params }: { params: Promise<{ id: string
 
             <main className="pt-24 pb-20 px-6 max-w-7xl mx-auto">
                 {/* Header Navigation */}
-                <div className="flex justify-between items-center mb-8">
-                    <Link href="/buy" className="flex items-center gap-2 text-sm font-bold text-muted-foreground hover:text-foreground transition-colors group">
-                        <ChevronLeft className="h-4 w-4 group-hover:-translate-x-1 transition-transform" />
-                        Volver a Inventario
-                    </Link>
+                <div className="flex justify-end items-center mb-8">
                     <div className="flex gap-2">
                         <button 
                             onClick={async () => {

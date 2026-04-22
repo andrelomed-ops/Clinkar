@@ -13,6 +13,7 @@ import {
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import Link from 'next/link';
+import { useSearchParams } from 'next/navigation';
 import { useState, useEffect } from 'react';
 import { getInspectorScheduleAction } from '@/app/actions/admin';
 
@@ -40,6 +41,9 @@ export default function AdminInspectorDashboardPage() {
     const [schedule, setSchedule] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
 
+    const searchParams = useSearchParams();
+    const roleParam = searchParams.get('role');
+
     useEffect(() => {
         async function loadSchedule() {
             try {
@@ -54,6 +58,8 @@ export default function AdminInspectorDashboardPage() {
         loadSchedule();
     }, []);
 
+    const roleName = roleParam === 'MECHANIC' ? 'Mecánico' : roleParam === 'LEGAL' ? 'Legal' : 'Inspector';
+
     return (
         <div className="min-h-screen bg-[#F8FAFC] dark:bg-zinc-950 text-foreground flex flex-col">
             <Navbar variant="default" />
@@ -62,7 +68,7 @@ export default function AdminInspectorDashboardPage() {
                 {/* Saludo y Fecha */}
                 <div className="mb-10 text-center md:text-left">
                     <h1 className="text-4xl font-black tracking-tighter mb-2 text-zinc-900 dark:text-white">
-                        ¡Hola, <span className="text-indigo-600">Inspector!</span>
+                        ¡Hola, <span className="text-indigo-600">{roleName}!</span>
                     </h1>
                     <p className="text-xl font-bold text-muted-foreground italic">
                         {loading ? "Cargando agenda..." : `Hoy tienes ${schedule.length} autos por revisar.`}
@@ -114,7 +120,7 @@ export default function AdminInspectorDashboardPage() {
 
                                 {/* Botón Gigante */}
                                 <Link
-                                    href={`/inspector/report/${item.id}?carId=${item.car_id}`}
+                                    href={`/inspector/report/${item.id}?carId=${item.car_id}${roleParam ? `&role=${roleParam}` : ''}`}
                                     className="w-full md:w-auto h-24 px-10 bg-indigo-600 hover:bg-indigo-500 text-white rounded-[2rem] flex items-center justify-center gap-4 text-xl font-black uppercase tracking-widest shadow-xl shadow-indigo-600/30 transition-all hover:scale-105 active:scale-90"
                                 >
                                     EMPEZAR
