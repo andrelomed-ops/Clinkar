@@ -157,13 +157,21 @@ export default function SellOnboardingPage() {
     const handleAdminQuickFill = () => {
         if (partners.length > 0) {
             setSelectedPartner(partners[0]);
-            // Set date to tomorrow at 11 AM
+            // Set date to tomorrow at 11 AM (Valid range: 10:00 - 16:00)
             const tomorrow = new Date();
             tomorrow.setDate(tomorrow.getDate() + 1);
             tomorrow.setHours(11, 0, 0, 0);
-            const formatted = tomorrow.toISOString().slice(0, 16);
+            
+            // Format to YYYY-MM-DDTHH:mm for datetime-local input
+            const year = tomorrow.getFullYear();
+            const month = String(tomorrow.getMonth() + 1).padStart(2, '0');
+            const day = String(tomorrow.getDate()).padStart(2, '0');
+            const hours = String(tomorrow.getHours()).padStart(2, '0');
+            const minutes = String(tomorrow.getMinutes()).padStart(2, '0');
+            
+            const formatted = `${year}-${month}-${day}T${hours}:${minutes}`;
             setDate(formatted);
-            toast.info("Datos de prueba rellenados (Admin)");
+            toast.info("Datos de prueba rellenados: Mañana a las 11:00 AM");
         }
     };
 
