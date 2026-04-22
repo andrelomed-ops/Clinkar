@@ -14,8 +14,7 @@ export function CheckoutAction({ carId, carPrice, carLocation }: { carId: string
     const [deliveryType, setDeliveryType] = useState<'workshop' | 'home'>('workshop');
     const [isPending, setIsPending] = useState(false);
 
-    const HOME_DELIVERY_FEE = 500;
-    const total = carPrice + (logistics?.cost || 0) + (warranty?.cost || 0) + (deliveryType === 'home' ? HOME_DELIVERY_FEE : 0);
+    const total = carPrice + (logistics?.cost || 0) + (warranty?.cost || 0);
 
     const handleSubmit = async () => {
         setIsPending(true);

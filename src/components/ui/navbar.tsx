@@ -8,6 +8,7 @@ import { cn } from '@/lib/utils';
 import { useState, useEffect } from 'react';
 import { NotificationCenter } from './NotificationCenter';
 import { AgentModeBar } from '@/components/admin/AgentModeBar';
+import { createBrowserClient } from '@/lib/supabase/client';
 
 interface NavbarProps {
     variant?: 'default' | 'home' | 'market' | 'sell';
@@ -32,14 +33,30 @@ export function Navbar({
 }: NavbarProps) {
     const [isScrolled, setIsScrolled] = useState(false);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const [user, setUser] = useState<any>(null);
+    const supabase = createBrowserClient();
 
     useEffect(() => {
         const handleScroll = () => {
             setIsScrolled(window.scrollY > 20);
         };
         window.addEventListener('scroll', handleScroll);
-        return () => window.removeEventListener('scroll', handleScroll);
-    }, []);
+
+        // Auth listener
+        const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+            setUser(session?.user ?? null);
+        });
+
+        // Initial check
+        supabase.auth.getUser().then(({ data: { user } }) => {
+            setUser(user);
+        });
+
+        return () => {
+            window.removeEventListener('scroll', handleScroll);
+            subscription.unsubscribe();
+        };
+    }, [supabase]);
 
     const navLinks = [
         { href: '/buy', label: 'Comprar' },
@@ -117,9 +134,15 @@ export function Navbar({
                                     <Link href="/new-cars" className="text-sm font-black text-indigo-600 dark:text-indigo-400 hover:text-foreground transition-colors italic">Autos Nuevos</Link>
                                 </>
                             )}
-                            <Link href="/login" className="h-10 px-6 rounded-full bg-primary text-primary-foreground text-sm font-bold flex items-center hover:opacity-90 transition-all active:scale-95 shadow-lg shadow-primary/5 shrink-0">
-                                Acceder
-                            </Link>
+                            {user ? (
+                                <Link href="/dashboard" className="h-10 px-6 rounded-full bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 text-sm font-bold flex items-center hover:opacity-90 transition-all active:scale-95 shadow-lg shadow-primary/5 shrink-0">
+                                    Panel de Control
+                                </Link>
+                            ) : (
+                                <Link href="/login" className="h-10 px-6 rounded-full bg-primary text-primary-foreground text-sm font-bold flex items-center hover:opacity-90 transition-all active:scale-95 shadow-lg shadow-primary/5 shrink-0">
+                                    Acceder
+                                </Link>
+                            )}
                             <NotificationCenter />
                             <ThemeToggle />
                         </div>

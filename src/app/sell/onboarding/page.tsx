@@ -23,6 +23,7 @@ export default function SellOnboardingPage() {
 
     const [loading, setLoading] = useState(false);
     const [success, setSuccess] = useState(false);
+    const [isMounted, setIsMounted] = useState(false);
     
     // Partners data
     const [partners, setPartners] = useState<Partner[]>([]);

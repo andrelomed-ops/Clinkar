@@ -219,7 +219,7 @@ export default function CarDetailPage({ params }: { params: Promise<{ id: string
                                                 <div className="p-2 bg-amber-500/10 rounded-lg">
                                                     <Activity className="h-4 w-4 text-amber-600" />
                                                 </div>
-                                                <span className="text-sm font-bold">Ajustes sugeridos (Reparaciones/Adeudos)</span>
+                                                <span className="text-sm font-bold">Inversión Mecánica Sugerida</span>
                                             </div>
                                             <span className="font-black text-amber-600">
                                                 - ${car.priceEquation.deductions.filter((d: any) => d.type === 'mechanical').reduce((acc: number, d: any) => acc + d.amount, 0).toLocaleString()}

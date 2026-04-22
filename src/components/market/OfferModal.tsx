@@ -88,7 +88,7 @@ export function OfferModal({ id, carPrice, repairCost, carName, hasSeal }: Offer
                             <div className="flex justify-between items-center text-sm font-bold text-red-500">
                                 <span className="flex items-center gap-2">
                                     <Calculator className="h-4 w-4" />
-                                    Descuento Estimado por Puesta a Punto
+                                    Inversión Mecánica Sugerida
                                 </span>
                                 <span>- ${repairCost.toLocaleString()} MXN</span>
                             </div>

@@ -80,15 +80,15 @@ export default function AdminInspectorDashboardPage() {
                                     </div>
 
                                     <div className="flex flex-col gap-2">
-                                        <div className="flex items-center justify-center md:justify-start gap-2 text-lg font-bold">
+                                        <div className="flex items-center justify-center md:justify-start gap-2 text-lg font-bold text-zinc-900 dark:text-zinc-100">
                                             <Clock className="h-5 w-5 text-indigo-500" />
                                             <span>{item.hora}</span>
                                         </div>
-                                        <div className="flex items-center justify-center md:justify-start gap-2 text-lg font-bold text-muted-foreground">
+                                        <div className="flex items-center justify-center md:justify-start gap-2 text-lg font-bold text-zinc-600 dark:text-zinc-400">
                                             <User className="h-5 w-5" />
                                             <span>{item.vendedor}</span>
                                         </div>
-                                        <div className="flex items-center justify-center md:justify-start gap-2 text-lg font-bold text-muted-foreground">
+                                        <div className="flex items-center justify-center md:justify-start gap-2 text-lg font-bold text-zinc-600 dark:text-zinc-400">
                                             <MapPin className="h-5 w-5" />
                                             <span>{item.lugar}</span>
                                         </div>

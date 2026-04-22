@@ -50,14 +50,24 @@ export const InstantQuote = () => {
                 basePrice = selectedVersionData.basePrice;
             } else {
                 // 2. Fallback to Segment Estimation or Inventory Average
-                const brandCars = ALL_CARS.filter(c => c.make === make);
-                basePrice = brandCars.length > 0
-                    ? brandCars.reduce((acc, c) => acc + c.price, 0) / brandCars.length
-                    : 350000;
+                const segmentKey = (model.toLowerCase().includes('suv') || model.toLowerCase().includes('cr-v') || model.toLowerCase().includes('seltos')) ? "SUV Compacta" : "Sedan Mediano";
+                const segmentBase = SEGMENT_PRICING[segmentKey] || 350000;
                 
-                // Adjustment for old years if using avg
+                const brandCars = ALL_CARS.filter(c => c.make === make);
+                const brandAvg = brandCars.length > 0
+                    ? brandCars.reduce((acc, c) => acc + c.price, 0) / brandCars.length
+                    : segmentBase;
+                
+                // Use a weighted average of segment and brand (favor segment if brand average is too high/low)
+                basePrice = (brandAvg > segmentBase * 1.5 || brandAvg < segmentBase * 0.5) 
+                    ? (segmentBase * 0.7 + brandAvg * 0.3)
+                    : (segmentBase * 0.4 + brandAvg * 0.6);
+                
+                // Adjustment for old years if using reference (2024 as base)
                 const age = 2024 - parseInt(year);
-                basePrice = basePrice * Math.pow(0.92, age); // 8% depreciation
+                // Aggressive depreciation for older cars (11%) vs newer (8%)
+                const depreciationRate = age > 5 ? 0.89 : 0.92;
+                basePrice = basePrice * Math.pow(depreciationRate, age);
                 isEstimate = true;
             }
 
@@ -223,7 +233,7 @@ export const InstantQuote = () => {
                     <div className="p-4 bg-amber-50 dark:bg-amber-900/10 rounded-xl border border-dashed border-amber-200 dark:border-amber-800/40 text-xs text-amber-700 dark:text-amber-400 leading-relaxed font-medium">
                         {quote.isEstimate ? 
                             "⚠️ El valor real se determinará en la revisión. Esta calculadora es solo un estimado. Si tu automóvil no está en el catálogo, requeriremos la valuación de nuestro equipo de expertos." :
-                            "✅ Valuación basada en parámetros de Libro Negro. El valor real final se determinará en la revisión física de 150 puntos."
+                            "✅ Valuación basada en parámetros de mercado y estado reportado. El valor real final se determinará en la revisión física de 150 puntos."
                         }
                     </div>
 

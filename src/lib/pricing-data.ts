@@ -99,6 +99,14 @@ export const PRICING_DATABASE: Record<string, PricingModel> = {
           { name: "i Grand Touring", basePrice: 455000 },
           { name: "Signature", basePrice: 525000 }
         ]
+      },
+      2014: {
+        versions: [
+          { name: "i", basePrice: 155000 },
+          { name: "i Touring", basePrice: 175000 },
+          { name: "S Grand Touring", basePrice: 195000 },
+          { name: "Sport", basePrice: 185000 }
+        ]
       }
     }
   }
