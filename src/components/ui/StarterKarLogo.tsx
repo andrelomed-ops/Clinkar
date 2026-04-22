@@ -11,12 +11,17 @@ interface StarterKarLogoProps {
 }
 
 /**
- * StarterKarLogo — Letras SK efecto acrílico retroiluminado 3D.
- * 
- * S = acrílico negro mate sólido con extrusion depth
- * K = acrílico índigo retroiluminado (luz azul interna filtrándose)
- * 
- * 100% CSS — sin imagen, sin fondo — flota sobre cualquier superficie.
+ * StarterKarLogo — Letras SK efecto acrílico retroiluminado 3D (Opción C).
+ *
+ * Técnica: la imagen Option C (S negro mate + K azul retroiluminado) se renderiza
+ * con mix-blend-mode: multiply.
+ *
+ * Matemática: pixel_blanco × fondo_navbar = fondo_navbar → desaparece.
+ *             pixel_negro × fondo = negro → se mantiene.
+ *             pixel_azul × fondo_claro = azul → se mantiene.
+ *
+ * Resultado: letras hiperrealistas flotando directamente sobre la superficie,
+ * sin ningún marco, borde ni fondo visible. Idénticas a la imagen generada.
  */
 export function StarterKarLogo({
     size = "md",
@@ -24,91 +29,57 @@ export function StarterKarLogo({
     href = "/",
     showWordmark = true,
 }: StarterKarLogoProps) {
-    const sizes = {
-        xs: { letter: "text-xl",   wordmark: "text-[10px]", gap: "gap-1.5" },
-        sm: { letter: "text-3xl",  wordmark: "text-[11px]", gap: "gap-2"   },
-        md: { letter: "text-4xl",  wordmark: "text-xs",     gap: "gap-2.5" },
-        lg: { letter: "text-6xl",  wordmark: "text-sm",     gap: "gap-3"   },
-        xl: { letter: "text-8xl",  wordmark: "text-base",   gap: "gap-4"   },
+    const imgSizes = {
+        xs: "h-8",
+        sm: "h-12",
+        md: "h-16",
+        lg: "h-20",
+        xl: "h-28",
     };
 
-    const s = sizes[size];
+    const wordmarkSizes = {
+        xs: { title: "text-[9px]",  sub: "text-[6px]"  },
+        sm: { title: "text-[11px]", sub: "text-[7px]"  },
+        md: { title: "text-xs",     sub: "text-[8px]"  },
+        lg: { title: "text-sm",     sub: "text-[9px]"  },
+        xl: { title: "text-base",   sub: "text-[10px]" },
+    };
 
     const mark = (
-        <div className={cn("flex items-center", s.gap, className)}>
-            {/* === SK Monogram — Efecto Acrílico 3D === */}
-            <div className="relative flex items-baseline leading-none select-none">
-                {/* Letra S — Acrílico negro mate, extrusión profunda */}
-                <span
-                    className={cn("font-black tracking-tighter", s.letter)}
-                    style={{
-                        fontFamily: "'Outfit', 'Geist', sans-serif",
-                        color: "#0f0f0f",
-                        /* Extrusion negra: capas escalonadas simulando profundidad */
-                        textShadow: [
-                            /* Face highlight — borde superior levemente más claro */
-                            "0 -1px 0 rgba(255,255,255,0.08)",
-                            /* Extrusion layers — las "paredes" de la letra */
-                            "0 1px 0 #080808",
-                            "0 2px 0 #060606",
-                            "0 3px 0 #040404",
-                            "0 4px 0 #020202",
-                            /* Shadow ambiental en el suelo */
-                            "0 6px 8px rgba(0,0,0,0.5)",
-                            "0 12px 24px rgba(0,0,0,0.2)",
-                        ].join(", "),
-                        WebkitFontSmoothing: "antialiased",
-                    }}
-                >
-                    S
-                </span>
+        <div className={cn("flex items-center gap-1", className)}>
+            {/* SK Monogram — imagen Option C con fondo eliminado via multiply */}
+            <img
+                src="/logo_sk_3d.png"
+                alt="SK"
+                className={cn(
+                    "w-auto object-contain select-none",
+                    imgSizes[size],
+                    // Light mode: multiply elimina el blanco del fondo
+                    "mix-blend-multiply",
+                    // Dark mode: invert + screen para mantener visibilidad en fondos oscuros
+                    "dark:invert dark:mix-blend-screen"
+                )}
+                draggable={false}
+            />
 
-                {/* Letra K — Acrílico índigo retroiluminado */}
-                <span
-                    className={cn("font-black tracking-tighter", s.letter)}
-                    style={{
-                        fontFamily: "'Outfit', 'Geist', sans-serif",
-                        /* El color de la cara frontal del acrílico azul */
-                        color: "#4f46e5",
-                        textShadow: [
-                            /* Glow interno — luz filtrándose desde atrás */
-                            "0 0 6px rgba(129,140,248,0.9)",
-                            "0 0 12px rgba(99,102,241,0.8)",
-                            "0 0 24px rgba(79,70,229,0.6)",
-                            "0 0 48px rgba(79,70,229,0.3)",
-                            /* Extrusion layers en tono azul profundo */
-                            "0 1px 0 #3730a3",
-                            "0 2px 0 #312e81",
-                            "0 3px 0 #2d2a78",
-                            "0 4px 0 #29266f",
-                            /* Shadow ambiental + glow azul en el suelo */
-                            "0 6px 10px rgba(79,70,229,0.4)",
-                            "0 12px 28px rgba(79,70,229,0.2)",
-                            "0 20px 40px rgba(0,0,0,0.15)",
-                        ].join(", "),
-                        WebkitFontSmoothing: "antialiased",
-                    }}
-                >
-                    K
-                </span>
-            </div>
-
-            {/* Wordmark "StarterKar" */}
+            {/* Wordmark */}
             {showWordmark && (
-                <div className="flex flex-col justify-center leading-tight">
+                <div className="flex flex-col justify-center leading-tight ml-1">
                     <span
-                        className={cn("font-black uppercase tracking-[0.15em]", s.wordmark)}
-                        style={{
-                            fontFamily: "'Outfit', 'Geist', sans-serif",
-                            color: "#0f0f0f",
-                            textShadow: "0 1px 2px rgba(0,0,0,0.2)",
-                        }}
+                        className={cn(
+                            "font-black uppercase tracking-[0.12em] text-zinc-900 dark:text-white",
+                            wordmarkSizes[size].title
+                        )}
+                        style={{ fontFamily: "'Outfit', 'Geist', sans-serif" }}
                     >
-                        Starter<span style={{ color: "#4f46e5" }}>Kar</span>
+                        Starter<span className="text-indigo-600 dark:text-indigo-400">Kar</span>
                     </span>
                     <span
-                        className="text-[7px] uppercase tracking-[0.3em] font-bold"
-                        style={{ color: "rgba(79,70,229,0.6)" }}
+                        className={cn(
+                            "font-bold uppercase tracking-[0.25em] text-indigo-400 dark:text-indigo-500",
+                            wordmarkSizes[size].sub
+                        )}
+                        style={{ fontFamily: "'Outfit', 'Geist', sans-serif" }}
                     >
                         Bóveda Digital
                     </span>
@@ -120,13 +91,21 @@ export function StarterKarLogo({
     if (!href) return mark;
 
     return (
-        <Link href={href} className="flex items-center group">
+        <Link href={href} className="flex items-center group transition-opacity hover:opacity-90">
             {mark}
         </Link>
     );
 }
 
 /** Versión compacta — solo las letras SK sin wordmark */
-export function StarterKarMonogram({ size = "sm", className }: { size?: "xs" | "sm" | "md" | "lg", className?: string }) {
-    return <StarterKarLogo size={size} showWordmark={false} href="/" className={className} />;
+export function StarterKarMonogram({
+    size = "sm",
+    className,
+}: {
+    size?: "xs" | "sm" | "md" | "lg";
+    className?: string;
+}) {
+    return (
+        <StarterKarLogo size={size} showWordmark={false} href="/" className={className} />
+    );
 }
