@@ -46,6 +46,7 @@ export function IntakeWizard({ isAdminMode = false }: Props) {
         if (step === 1) return !!category;
         if (step === 2) return vehicleData.make && vehicleData.model && vehicleData.year && vehicleData.km;
         if (step === 3) {
+            if (isAdminMode) return true; // Bypass for testing/admin
             const config = VEHICLE_CATEGORIES.find(c => c.id === category);
             if (!config) return false;
             return config.documents.every(docId => !!docs[docId]);

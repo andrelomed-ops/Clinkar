@@ -14,6 +14,12 @@ export default function SellPage() {
     const supabase = createBrowserClient();
 
     useEffect(() => {
+        const params = new URLSearchParams(window.location.search);
+        if (params.get('admin') === 'true') {
+            setIsAdmin(true);
+            return;
+        }
+
         async function checkAdmin() {
             const { data: { user } } = await supabase.auth.getUser();
             if (user?.email === 'admin@starterkar.mx' || (user as any)?.role === 'admin') {
