@@ -84,11 +84,10 @@ export function Navbar({
                             </Link>
                         ) : (
                             <Link href="/" className="flex items-center gap-2 group">
-                                {/* Logo B: image on light bg, inverted on dark */}
                                 <img
                                     src="/logo_official.png"
                                     alt="StarterKar"
-                                    className="h-8 w-auto object-contain dark:brightness-0 dark:invert dark:contrast-200 transition-all"
+                                    className="h-12 w-auto object-contain dark:brightness-0 dark:invert transition-all"
                                 />
                             </Link>
                         )}
