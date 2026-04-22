@@ -47,4 +47,5 @@ create table if not exists public.partners (
 );
 
 alter table public.partners enable row level security;
+drop policy if exists "Public can view partners" on public.partners;
 create policy "Public can view partners" on public.partners for select using (true);
