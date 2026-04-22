@@ -2,29 +2,34 @@
 
 import { useState, useEffect } from "react";
 import { Search, Filter, MoreHorizontal, CheckCircle2, AlertCircle, Clock, Ban, ShieldAlert, ExternalLink, Users, DollarSign, Loader2 } from "lucide-react";
+import { cn } from "@/lib/utils";
 import { getPendingReferralPayouts, processReferralPayout } from "@/app/actions/admin";
+import { getLegalTransactionsAction } from "@/app/actions/transaction";
 import { toast } from "sonner";
 
 export default function AdminLegalDashboard() {
-    const [transactions, setTransactions] = useState([
-        { id: "TX-9982", car: "Mazda CX-5 2022", seller: "Juan Pérez", buyer: "Carlos Demo", status: "PENDIENTE", stage: "Verificación de Fondos", amount: 385000 },
-        { id: "TX-9983", car: "Tesla Model 3 2021", seller: "Ana García", buyer: "N/A (Publicado)", status: "INSPECCIÓN", stage: "Inspección Programada", amount: 550000 },
-        { id: "TX-9984", car: "Toyota RAV4 2020", seller: "Pedro L.", buyer: "Roberto M.", status: "FONDOS EN BÓVEDA", stage: "Liberación Pendiente", amount: 410000 },
-    ]);
+    const [transactions, setTransactions] = useState<any[]>([]);
+    const [loading, setLoading] = useState(true);
 
     const [referralPayouts, setReferralPayouts] = useState<any[]>([]);
     const [payoutLoading, setPayoutLoading] = useState<string | null>(null);
 
     useEffect(() => {
-        async function loadPayouts() {
+        async function loadData() {
             try {
+                setLoading(true);
                 const payouts = await getPendingReferralPayouts();
                 setReferralPayouts(payouts || []);
+                
+                const txs = await getLegalTransactionsAction();
+                setTransactions(txs || []);
             } catch (err) {
-                console.error("Error al cargar pagos:", err);
+                console.error("Error loading legal data:", err);
+            } finally {
+                setLoading(false);
             }
         }
-        loadPayouts();
+        loadData();
     }, []);
 
     const handlePayout = async (referralId: string, amount: number) => {
@@ -212,14 +217,19 @@ export default function AdminLegalDashboard() {
                         <tbody className="divide-y divide-zinc-800/50">
                             {transactions.map((tx) => (
                                 <tr key={tx.id} className="hover:bg-zinc-800/30 transition-colors">
-                                    <td className="px-6 py-4 font-mono text-zinc-400">{tx.id}</td>
-                                    <td className="px-6 py-4 font-bold">{tx.car}</td>
-                                    <td className="px-6 py-4 text-zinc-300">{tx.seller}</td>
+                                    <td className="px-6 py-4 font-mono text-zinc-400 text-xs">{tx.id.substring(0, 8)}...</td>
+                                    <td className="px-6 py-4 font-bold">
+                                        {tx.car?.make} {tx.car?.model} {tx.car?.year}
+                                    </td>
+                                    <td className="px-6 py-4 text-zinc-300">Usuario #{tx.seller_id?.substring(0, 5)}</td>
                                     <td className="px-6 py-4">
-                                        <span className="px-2 py-1 rounded bg-zinc-800 text-xs">{tx.status}</span>
+                                        <span className={cn("px-2 py-1 rounded text-[10px] font-bold uppercase", 
+                                            tx.status === 'RELEASED' ? "bg-emerald-500/10 text-emerald-500" : "bg-amber-500/10 text-amber-500")}>
+                                            {tx.status}
+                                        </span>
                                     </td>
                                     <td className="px-6 py-4 text-right font-mono text-zinc-300">
-                                        ${tx.amount.toLocaleString()}
+                                        ${tx.total_amount?.toLocaleString()}
                                     </td>
                                 </tr>
                             ))}

@@ -102,3 +102,29 @@ export async function startTransaction(carId: string, addOns?: {
     console.log(`[StartTransaction] Redirecting to: /dashboard/handover/${transactionId}`);
     redirect(`/dashboard/handover/${transactionId}`);
 }
+
+export async function getLegalTransactionsAction() {
+    const supabase = await createClient();
+
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) throw new Error("Unauthorized");
+
+    const { data: profile } = await supabase
+        .from("profiles")
+        .select("role")
+        .eq("id", user.id)
+        .single();
+
+    if (profile?.role !== 'admin') {
+        throw new Error("Forbidden");
+    }
+
+    const { data: txs, error } = await supabase
+        .from("transactions")
+        .select("*, car:cars(make, model, year)")
+        .order("created_at", { ascending: false });
+
+    if (error) throw new Error(error.message);
+
+    return txs;
+}

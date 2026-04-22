@@ -12,6 +12,8 @@ import {
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import Link from 'next/link';
+import { useState, useEffect } from 'react';
+import { getInspectorScheduleAction } from '@/app/actions/admin';
 
 // Datos simplificados para el tablero
 const LISTA_HOY = [
@@ -34,6 +36,23 @@ const LISTA_HOY = [
 ];
 
 export default function AdminInspectorDashboardPage() {
+    const [schedule, setSchedule] = useState<any[]>([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        async function loadSchedule() {
+            try {
+                const data = await getInspectorScheduleAction();
+                setSchedule(data || []);
+            } catch (err) {
+                console.error("Error loading schedule:", err);
+            } finally {
+                setLoading(false);
+            }
+        }
+        loadSchedule();
+    }, []);
+
     return (
         <div className="min-h-screen bg-[#F8FAFC] dark:bg-zinc-950 text-foreground flex flex-col">
             <Navbar variant="default" />
@@ -45,7 +64,7 @@ export default function AdminInspectorDashboardPage() {
                         ¡Hola, <span className="text-indigo-600">Inspector!</span>
                     </h1>
                     <p className="text-xl font-bold text-muted-foreground italic">
-                        Hoy tienes {LISTA_HOY.length} autos por revisar.
+                        {loading ? "Cargando agenda..." : `Hoy tienes ${schedule.length} autos por revisar.`}
                     </p>
                 </div>
 
@@ -53,12 +72,12 @@ export default function AdminInspectorDashboardPage() {
                 <div className="space-y-6">
                     <h2 className="text-sm font-black uppercase tracking-widest text-muted-foreground ml-2">Mi Trabajo de Hoy</h2>
 
-                    {LISTA_HOY.map((item, idx) => (
+                    {schedule.map((item, idx) => (
                         <div
                             key={item.id}
                             className={cn(
                                 "group bg-white dark:bg-zinc-900 rounded-[2.5rem] border-4 p-8 shadow-2xl transition-all active:scale-95 animate-reveal",
-                                item.urgente ? "border-indigo-500/20" : "border-transparent",
+                                "border-transparent",
                                 `stagger-${idx + 1}`
                             )}
                         >
@@ -71,33 +90,30 @@ export default function AdminInspectorDashboardPage() {
                                 {/* Información Directa */}
                                 <div className="flex-1 text-center md:text-left space-y-4">
                                     <div>
-                                        {item.urgente && (
-                                            <span className="bg-indigo-600 text-white text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-full mb-3 inline-block">
-                                                🚨 Cita Prioritaria
-                                            </span>
-                                        )}
-                                        <h3 className="text-3xl font-black tracking-tighter leading-tight">{item.auto}</h3>
+                                        <span className={cn("text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-full mb-3 inline-block", 
+                                            item.status === 'PAID_PENDING_VISIT' ? "bg-amber-100 text-amber-600" : "bg-indigo-600 text-white")}>
+                                            {item.status === 'PAID_PENDING_VISIT' ? "⏳ Visita Pendiente" : "✅ Confirmado"}
+                                        </span>
+                                        <h3 className="text-3xl font-black tracking-tighter leading-tight">
+                                            {item.car?.make} {item.car?.model} {item.car?.year}
+                                        </h3>
                                     </div>
 
                                     <div className="flex flex-col gap-2">
                                         <div className="flex items-center justify-center md:justify-start gap-2 text-lg font-bold text-zinc-900 dark:text-zinc-100">
                                             <Clock className="h-5 w-5 text-indigo-500" />
-                                            <span>{item.hora}</span>
+                                            <span>{new Date(item.scheduled_date).toLocaleDateString()} - {new Date(item.scheduled_date).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
                                         </div>
                                         <div className="flex items-center justify-center md:justify-start gap-2 text-lg font-bold text-zinc-600 dark:text-zinc-400">
-                                            <User className="h-5 w-5" />
-                                            <span>{item.vendedor}</span>
-                                        </div>
-                                        <div className="flex items-center justify-center md:justify-start gap-2 text-lg font-bold text-zinc-600 dark:text-zinc-400">
-                                            <MapPin className="h-5 w-5" />
-                                            <span>{item.lugar}</span>
+                                            <Warehouse className="h-5 w-5" />
+                                            <span>{item.workshop_name}</span>
                                         </div>
                                     </div>
                                 </div>
 
                                 {/* Botón Gigante */}
                                 <Link
-                                    href={`/inspector/report/${item.id}`}
+                                    href={`/inspector/report/${item.id}?carId=${item.car_id}`}
                                     className="w-full md:w-auto h-24 px-10 bg-indigo-600 hover:bg-indigo-500 text-white rounded-[2rem] flex items-center justify-center gap-4 text-xl font-black uppercase tracking-widest shadow-xl shadow-indigo-600/30 transition-all hover:scale-105 active:scale-90"
                                 >
                                     EMPEZAR
@@ -106,6 +122,13 @@ export default function AdminInspectorDashboardPage() {
                             </div>
                         </div>
                     ))}
+
+                    {schedule.length === 0 && !loading && (
+                        <div className="text-center py-20 bg-zinc-50 dark:bg-zinc-900/50 rounded-[3rem] border-4 border-dashed border-zinc-200 dark:border-zinc-800">
+                            <Car className="h-20 w-20 text-zinc-300 mx-auto mb-4" />
+                            <p className="text-xl font-bold text-zinc-500">No hay inspecciones programadas para hoy.</p>
+                        </div>
+                    )}
                 </div>
 
                 {/* Ayuda Rápida */}

@@ -63,4 +63,14 @@ export class ServiceTicketService {
         if (error) throw error;
         return data as any as ServiceTicket | null;
     }
+
+    static async getInspectorSchedule(supabase: SupabaseClient<Database>) {
+        const { data, error } = await supabase
+            .from('service_tickets' as any)
+            .select('*, car:cars(make, model, year)')
+            .order('scheduled_date', { ascending: true });
+
+        if (error) throw error;
+        return data as any[];
+    }
 }

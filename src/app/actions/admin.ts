@@ -4,6 +4,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
 import { ReferralPayoutService } from "@/services/ReferralPayoutService";
+import { ServiceTicketService } from "@/services/ServiceTicketService";
 
 export async function updateUserRole(targetUserId: string, newRole: 'admin' | 'inspector' | 'seller' | 'buyer') {
     const supabase = await createClient();
@@ -93,4 +94,23 @@ export async function getPendingReferralPayouts() {
     }
 
     return await ReferralPayoutService.getPendingPayouts(supabase);
+}
+
+export async function getInspectorScheduleAction() {
+    const supabase = await createClient();
+
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) throw new Error("Unauthorized");
+
+    const { data: profile } = await supabase
+        .from("profiles")
+        .select("role")
+        .eq("id", user.id)
+        .single();
+
+    if (profile?.role !== 'inspector' && profile?.role !== 'admin') {
+        throw new Error("Forbidden");
+    }
+
+    return await ServiceTicketService.getInspectorSchedule(supabase);
 }
