@@ -60,8 +60,8 @@ export default function Home() {
               </div>
 
               <h1 className="text-6xl md:text-9xl font-black tracking-tighter leading-[0.85] text-foreground animate-in fade-in slide-in-from-bottom-8 duration-1000">
-                CONFIANZA<br />
-                <span className="text-indigo-600 italic">TRANSPARENTE</span>
+                ARRANCA TU AUTO.<br />
+                <span className="text-indigo-600 italic uppercase">FRENA EL RIESGO.</span>
               </h1>
 
               <p className="text-lg md:text-xl text-muted-foreground max-w-2xl leading-relaxed font-medium animate-in fade-in slide-in-from-bottom-6 duration-1000 delay-200">
