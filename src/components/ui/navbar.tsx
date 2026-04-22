@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { Menu, Heart, ArrowLeft, ArrowDownWideNarrow } from 'lucide-react';
-import { StarterKarSeal } from '@/components/market/StarterKarSeal';
+import { StarterKarLogo } from '@/components/ui/StarterKarLogo';
 import { ThemeToggle } from '@/components/layout/ThemeToggle';
 import { cn } from '@/lib/utils';
 import { useState, useEffect } from 'react';
@@ -83,13 +83,7 @@ export function Navbar({
                                 <span className="font-semibold text-sm hidden sm:inline">{backLabel}</span>
                             </Link>
                         ) : (
-                            <Link href="/" className="flex items-center gap-2 group">
-                                <img
-                                    src="/logo_official.png"
-                                    alt="StarterKar"
-                                    className="h-12 w-auto object-contain dark:brightness-0 dark:invert transition-all"
-                                />
-                            </Link>
+                            <StarterKarLogo size="sm" href="/" />
                         )}
                     </div>
 
