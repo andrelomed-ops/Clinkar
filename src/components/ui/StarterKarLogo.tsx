@@ -47,22 +47,14 @@ export function StarterKarLogo({
 
     const mark = (
         <div className={cn("flex items-center gap-1", className)}>
-            {/* SK Monogram — imagen Option C con fondo eliminado via multiply */}
+            {/* SK Monogram — PNG con alpha transparente, sin fondo cuadrado */}
             <img
-                src="/logo_sk_3d.png"
+                src="/logo_sk_transparent.png"
                 alt="SK"
                 className={cn(
                     "w-auto object-contain select-none",
                     imgSizes[size]
                 )}
-                style={{
-                    // 1. Subir brillo empuja grises residuales → blanco puro
-                    // 2. multiply: blanco × fondo = fondo (desaparece)
-                    //    negro × fondo = negro (S se mantiene)
-                    //    azul × blanco = azul (K se mantiene)
-                    filter: "brightness(1.15) contrast(1.05)",
-                    mixBlendMode: "multiply",
-                }}
                 draggable={false}
             />
 
