@@ -8,6 +8,7 @@ import { ShieldCheck, Calendar, MapPin, CheckCircle2, Warehouse, Clock, ChevronD
 import { Navbar } from "@/components/ui/navbar";
 import { VEHICLE_CATEGORIES } from "@/lib/vehicle-intake-config";
 import { cn } from "@/lib/utils";
+import { toast } from "sonner";
 
 interface Partner {
     id: string;
@@ -62,12 +63,17 @@ export default function SellOnboardingPage() {
         fetchPartners();
     }, [supabase]);
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
+    const handleSubmit = async (e?: React.FormEvent) => {
+        if (e) e.preventDefault();
         
         // Validation
         if (inspectionType === 'workshop' && !selectedPartner) {
-            alert("Por favor selecciona un Taller Aliado para la revisión.");
+            toast.error("Por favor selecciona un Taller Aliado para la revisión.");
+            return;
+        }
+
+        if (!date) {
+            toast.error("Por favor selecciona una fecha y hora para la revisión.");
             return;
         }
 
@@ -75,7 +81,7 @@ export default function SellOnboardingPage() {
         const hours = selectedDate.getHours();
         
         if (hours < 10 || hours >= 16) {
-            alert("El horario de inspección es únicamente entre las 10:00 y las 16:00 horas. Por favor selecciona un horario válido.");
+            toast.warning("El horario de inspección es únicamente entre las 10:00 y las 16:00 horas.");
             return;
         }
 
@@ -134,16 +140,30 @@ export default function SellOnboardingPage() {
             });
 
             setSuccess(true);
+            toast.success("¡Inspección agendada con éxito!");
             
             setTimeout(() => {
                 router.push('/dashboard');
             }, 3000);
 
-        } catch (err) {
+        } catch (err: any) {
             console.error("Error en onboarding completo:", err);
-            alert("Ocurrió un error al agendar la revisión. Por favor intenta de nuevo.");
+            toast.error(err.message || "Error al agendar la revisión");
         } finally {
             setLoading(false);
+        }
+    };
+
+    const handleAdminQuickFill = () => {
+        if (partners.length > 0) {
+            setSelectedPartner(partners[0]);
+            // Set date to tomorrow at 11 AM
+            const tomorrow = new Date();
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            tomorrow.setHours(11, 0, 0, 0);
+            const formatted = tomorrow.toISOString().slice(0, 16);
+            setDate(formatted);
+            toast.info("Datos de prueba rellenados (Admin)");
         }
     };
 
@@ -180,7 +200,11 @@ export default function SellOnboardingPage() {
                             </p>
                         </div>
 
-                        <form onSubmit={handleSubmit} className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-3xl p-8 shadow-sm space-y-8">
+                        <form 
+                            onSubmit={handleSubmit} 
+                            noValidate
+                            className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-3xl p-8 shadow-sm space-y-8"
+                        >
                             <div className="space-y-8">
                                 <div className="p-6 rounded-2xl border-2 border-indigo-600 bg-indigo-50 dark:bg-indigo-900/10 text-left flex flex-col gap-3 group">
                                     <Warehouse className="h-6 w-6 text-indigo-600" />
@@ -263,6 +287,16 @@ export default function SellOnboardingPage() {
                                     </p>
                                 </div>
                             </div>
+
+                            {isAdmin && (
+                                <button
+                                    type="button"
+                                    onClick={handleAdminQuickFill}
+                                    className="w-full py-3 rounded-xl border border-dashed border-indigo-300 text-indigo-600 font-bold text-xs uppercase tracking-widest hover:bg-indigo-50 transition-colors"
+                                >
+                                    ⚡ Llenado Rápido (Prueba)
+                                </button>
+                            )}
 
                             <button 
                                 type="submit"
