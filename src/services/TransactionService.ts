@@ -26,6 +26,7 @@ export class TransactionService extends BaseService {
         gestoriaQuote?: { active: boolean, cost: number };
         insuranceQuote?: { provider: string, cost: number };
         appliedPerkId?: string;
+        metadata?: any;
     }): Promise<Transaction | null> {
         Logger.info(`[GATEKEEPER] Iniciando creación de transacción para ${data.sellerId} (Monto: $${data.amount})`);
 
@@ -118,7 +119,10 @@ export class TransactionService extends BaseService {
                 status: 'PENDING',
                 pld_status: pldResult.riskLevel === 'CLEAN' ? 'APPROVED' : 'PENDING',
                 risk_metadata: pldResult as any,
-                metadata: appliedPerk ? { used_perk_id: (appliedPerk as any).id } : {}
+                metadata: {
+                    ...(appliedPerk ? { used_perk_id: (appliedPerk as any).id } : {}),
+                    ...(data.metadata || {})
+                }
             })
             .select()
             .single();
