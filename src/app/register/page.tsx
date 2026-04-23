@@ -47,11 +47,11 @@ export default function RegisterPage() {
                 setLoading(false);
             } else {
                 // Background: Assign Referral if code exists
-                const finalRefCode = refCode || localStorage.getItem("clinkar_ref_code");
+                const finalRefCode = refCode || localStorage.getItem("starterkar_ref_code");
                 if (finalRefCode && data.user) {
                     try {
                         await ReferralService.assignReferral(supabase, data.user.id, finalRefCode);
-                        localStorage.removeItem("clinkar_ref_code");
+                        localStorage.removeItem("starterkar_ref_code");
                         console.log(`[REFERRAL] Successfully assigned code ${finalRefCode} to user ${data.user.id}`);
                     } catch (refErr) {
                         console.error("[REFERRAL] Failed to assign code:", refErr);

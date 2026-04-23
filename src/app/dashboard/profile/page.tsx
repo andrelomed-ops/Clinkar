@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { createBrowserClient } from "@/lib/supabase/client";
-import { User, Mail, Phone, MapPin, Shield, Loader2, Camera, Save, FileCheck } from "lucide-react";
+import { User, Mail, Phone, MapPin, Shield, Loader2, Camera, Save, FileCheck, ChevronLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -64,6 +64,11 @@ export default function ProfilePage() {
         }
     };
 
+    const handleSignOut = async () => {
+        await supabase.auth.signOut();
+        window.location.href = "/";
+    };
+
     if (loading) return (
         <div className="min-h-screen bg-background flex flex-col items-center justify-center">
             <Loader2 className="h-10 w-10 animate-spin text-indigo-600 mb-4" />
@@ -73,13 +78,22 @@ export default function ProfilePage() {
 
     return (
         <div className="min-h-screen bg-background">
-            <div className="border-b border-border bg-background/80 backdrop-blur-md px-6 h-16 shrink-0 flex items-center justify-between z-50">
+            <div className="border-b border-border bg-background/80 backdrop-blur-md px-6 h-16 shrink-0 flex items-center justify-between z-50 sticky top-0">
                 <div className="flex items-center gap-4">
+                    <Link href="/dashboard" className="p-2 hover:bg-secondary rounded-full transition-colors">
+                        <ChevronLeft className="h-5 w-5" />
+                    </Link>
                     <User className="h-5 w-5 text-indigo-600" />
                     <span className="font-bold text-lg">Mi Perfil StarterKar</span>
                 </div>
                 <div className="flex items-center gap-4">
-                     <span className="text-[10px] font-black bg-emerald-100 text-emerald-700 px-3 py-1 rounded-full uppercase">Cuenta Verificada</span>
+                     <span className="hidden md:inline-block text-[10px] font-black bg-emerald-100 text-emerald-700 px-3 py-1 rounded-full uppercase">Cuenta Verificada</span>
+                     <button 
+                        onClick={handleSignOut}
+                        className="text-xs font-black uppercase tracking-widest text-zinc-400 hover:text-red-500 transition-colors ml-4"
+                     >
+                        Cerrar Sesión
+                     </button>
                 </div>
             </div>
 
@@ -100,11 +114,11 @@ export default function ProfilePage() {
                                 </div>
                             )}
                             
-                            <div className="absolute -bottom-2 -right-2">
+                            <div className="absolute bottom-0 right-0">
                                 <CameraUpload 
                                     onUpload={(url) => setProfile({ ...profile, avatar_url: url })}
-                                    label=""
-                                    className="scale-75 origin-bottom-right"
+                                    variant="circle-trigger"
+                                    className="z-[60]"
                                 />
                             </div>
                         </div>

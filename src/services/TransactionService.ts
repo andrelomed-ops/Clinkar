@@ -23,6 +23,8 @@ export class TransactionService extends BaseService {
         // Optional Services
         logisticsQuote?: { cost: number; distance: number; origin: string; dest: string };
         warrantyQuote?: { cost: number; type: 'STANDARD' | 'EXTENDED' };
+        gestoriaQuote?: { active: boolean, cost: number };
+        insuranceQuote?: { provider: string, cost: number };
         appliedPerkId?: string;
     }): Promise<Transaction | null> {
         Logger.info(`[GATEKEEPER] Iniciando creación de transacción para ${data.sellerId} (Monto: $${data.amount})`);
@@ -92,7 +94,11 @@ export class TransactionService extends BaseService {
         }
 
         const sellerSuccessFee = (data.amount * sellerFeePercent) / 100;
-        const totalAmount = data.amount + (data.logisticsQuote?.cost || 0) + (data.warrantyQuote?.cost || 0);
+        const totalAmount = data.amount + 
+            (data.logisticsQuote?.cost || 0) + 
+            (data.warrantyQuote?.cost || 0) + 
+            (data.gestoriaQuote?.cost || 0) + 
+            (data.insuranceQuote?.cost || 0);
 
         // 4. Create Transaction
         const { data: transaction, error } = await (supabase
@@ -106,6 +112,8 @@ export class TransactionService extends BaseService {
                 seller_success_fee: sellerSuccessFee,
                 logistics_cost: data.logisticsQuote?.cost || 0,
                 warranty_cost: data.warrantyQuote?.cost || 0,
+                insurance_cost: data.insuranceQuote?.cost || 0,
+                gestoria_cost: data.gestoriaQuote?.cost || 0,
                 stripe_session_id: data.stripeSessionId,
                 status: 'PENDING',
                 pld_status: pldResult.riskLevel === 'CLEAN' ? 'APPROVED' : 'PENDING',

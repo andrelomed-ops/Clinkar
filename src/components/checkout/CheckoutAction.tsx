@@ -3,6 +3,8 @@
 import { useState } from "react";
 import { LogisticsWidget } from "./LogisticsWidget";
 import { WarrantySelector, WarrantyType } from "./WarrantySelector";
+import { GestoriaAdvisor } from "./GestoriaAdvisor";
+import { InsuranceSelector } from "../dashboard/InsuranceSelector";
 import { startTransaction } from "@/app/actions/transaction";
 import { Loader2, ShieldCheck, MapPin, Home, Warehouse, Smartphone, Zap } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -11,11 +13,13 @@ export function CheckoutAction({ carId, carPrice, carLocation }: { carId: string
 
     const [logistics, setLogistics] = useState<any>(null);
     const [warranty, setWarranty] = useState<{ type: WarrantyType, cost: number } | null>(null);
+    const [gestoria, setGestoria] = useState(false);
+    const [insurance, setInsurance] = useState<{ provider: string, cost: number } | null>(null);
     const [deliveryType, setDeliveryType] = useState<'workshop' | 'home'>('workshop');
     const [remoteMode, setRemoteMode] = useState(false);
     const [isPending, setIsPending] = useState(false);
 
-    const total = carPrice + (logistics?.cost || 0) + (warranty?.cost || 0);
+    const total = carPrice + (logistics?.cost || 0) + (warranty?.cost || 0) + (gestoria ? 1250 : 0) + (insurance?.cost || 0);
 
     const handleSubmit = async () => {
         setIsPending(true);
@@ -23,6 +27,8 @@ export function CheckoutAction({ carId, carPrice, carLocation }: { carId: string
         await startTransaction(carId, {
             logistics: logistics ? { ...logistics } : undefined,
             warranty: warranty ? { type: warranty.type, cost: warranty.cost } : undefined,
+            gestoria: gestoria ? { active: true, cost: 1250 } : undefined,
+            insurance: insurance ? { ...insurance } : undefined,
             deliveryType
         });
     };
@@ -43,6 +49,16 @@ export function CheckoutAction({ carId, carPrice, carLocation }: { carId: string
                 carPrice={carPrice}
                 onSelect={(w) => setWarranty(w)}
             />
+
+            <div className="space-y-4">
+                <label className="text-sm font-bold text-zinc-500 uppercase tracking-widest">Gestoría Vehicular</label>
+                <GestoriaAdvisor onSelect={(active) => setGestoria(active)} />
+            </div>
+
+            <div className="space-y-4">
+                <label className="text-sm font-bold text-zinc-500 uppercase tracking-widest">Seguro Automotriz</label>
+                <InsuranceSelector carValue={carPrice} onSelectOption={(provider, cost) => setInsurance({ provider, cost })} />
+            </div>
 
             {/* Delivery Method Selection */}
             <div className="space-y-4">
@@ -162,9 +178,21 @@ export function CheckoutAction({ carId, carPrice, carLocation }: { carId: string
                         <span className="font-medium">+${warranty.cost.toLocaleString()}</span>
                     </div>
                 )}
+                {gestoria && (
+                    <div className="flex justify-between items-center mb-2 text-sm">
+                        <span className="text-amber-400">Gestoría de Legalización</span>
+                        <span className="font-medium">+$1,250</span>
+                    </div>
+                )}
+                {insurance && (
+                    <div className="flex justify-between items-center mb-2 text-sm">
+                        <span className="text-blue-400">Seguro ({insurance.provider})</span>
+                        <span className="font-medium">+${insurance.cost.toLocaleString()}</span>
+                    </div>
+                )}
                 <div className="flex justify-between items-baseline mb-2">
                     <span className="font-bold text-lg">Total Plataforma</span>
-                    <span className="font-black text-3xl">${(carPrice + (logistics?.cost || 0) + (warranty?.cost || 0)).toLocaleString()}</span>
+                    <span className="font-black text-3xl">${total.toLocaleString()}</span>
                 </div>
 
                 <div className="text-xs text-zinc-400 mb-6 text-center leading-relaxed bg-zinc-800/50 p-3 rounded-xl border border-zinc-700">

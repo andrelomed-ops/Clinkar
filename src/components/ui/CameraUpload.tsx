@@ -12,12 +12,14 @@ interface CameraUploadProps {
     category?: 'PHOTO' | 'DOCUMENT';
     className?: string;
     transactionId?: string;
+    variant?: 'default' | 'circle-trigger';
 }
 
-export function CameraUpload({ onUpload, label = "Capturar", description, category = 'PHOTO', className, transactionId }: CameraUploadProps) {
+export function CameraUpload({ onUpload, label = "Capturar", description, category = 'PHOTO', className, transactionId, variant = 'default' }: CameraUploadProps) {
     const [isUploading, setIsUploading] = useState(false);
     const [uploadedFileName, setUploadedFileName] = useState<string | null>(null);
     const [isPdf, setIsPdf] = useState(false);
+    const [isMenuOpen, setIsMenuOpen] = useState(false);
 
     const galleryInputRef = useRef<HTMLInputElement>(null);
     const cameraInputRef = useRef<HTMLInputElement>(null);
@@ -118,6 +120,60 @@ export function CameraUpload({ onUpload, label = "Capturar", description, catego
     };
 
     const isSuccess = !!uploadedFileName && !isUploading;
+
+    if (variant === 'circle-trigger') {
+        return (
+            <div className={cn("relative", className)}>
+                <button
+                    type="button"
+                    onClick={() => setIsMenuOpen(true)}
+                    className="h-10 w-10 rounded-full bg-indigo-600 text-white flex items-center justify-center shadow-lg hover:scale-110 active:scale-95 transition-all"
+                >
+                    {isUploading ? <Loader2 className="h-5 w-5 animate-spin" /> : <Camera className="h-5 w-5" />}
+                </button>
+
+                {isMenuOpen && (
+                    <div className="absolute bottom-full right-0 mb-4 w-64 glass-card p-4 rounded-3xl shadow-2xl z-[60] animate-in slide-in-from-bottom-2 duration-300">
+                        <div className="flex justify-between items-center mb-4">
+                            <span className="text-[10px] font-black uppercase tracking-widest text-zinc-400">Cambiar Foto</span>
+                            <button onClick={() => setIsMenuOpen(false)}><X className="h-4 w-4" /></button>
+                        </div>
+                        <div className="grid grid-cols-3 gap-2">
+                            <button
+                                type="button"
+                                onClick={() => { galleryInputRef.current?.click(); setIsMenuOpen(false); }}
+                                className="flex flex-col items-center gap-1.5 py-3 rounded-xl bg-secondary/50 hover:bg-indigo-50 transition-all"
+                            >
+                                <Upload className="h-4 w-4 text-zinc-400" />
+                                <span className="text-[8px] font-bold uppercase">Galería</span>
+                            </button>
+                            <button
+                                type="button"
+                                onClick={() => { cameraInputRef.current?.click(); setIsMenuOpen(false); }}
+                                className="flex flex-col items-center gap-1.5 py-3 rounded-xl bg-secondary/50 hover:bg-indigo-50 transition-all"
+                            >
+                                <Camera className="h-4 w-4 text-zinc-400" />
+                                <span className="text-[8px] font-bold uppercase">Cámara</span>
+                            </button>
+                            <button
+                                type="button"
+                                onClick={() => { pdfInputRef.current?.click(); setIsMenuOpen(false); }}
+                                className="flex flex-col items-center gap-1.5 py-3 rounded-xl bg-secondary/50 hover:bg-indigo-50 transition-all"
+                            >
+                                <FileText className="h-4 w-4 text-zinc-400" />
+                                <span className="text-[8px] font-bold uppercase">PDF</span>
+                            </button>
+                        </div>
+                    </div>
+                )}
+
+                {/* Hidden inputs */}
+                <input ref={galleryInputRef} type="file" accept="image/*" onChange={handleImageChange} className="hidden" />
+                <input ref={cameraInputRef} type="file" accept="image/*" capture="environment" onChange={handleImageChange} className="hidden" />
+                <input ref={pdfInputRef} type="file" accept="application/pdf" onChange={handlePdfChange} className="hidden" />
+            </div>
+        );
+    }
 
     return (
         <div className={cn("space-y-3", className)}>

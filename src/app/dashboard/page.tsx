@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Shield, CreditCard, Clock, CheckCircle2, QrCode, ArrowRight, MapPin, Wrench, Car, CarFront, Smartphone, Heart } from "lucide-react";
+import { Shield, CreditCard, Clock, CheckCircle2, QrCode, ArrowRight, MapPin, Wrench, Car, CarFront, Smartphone, Heart, LogOut, LayoutDashboard } from "lucide-react";
 import { StarterKarLogo } from "@/components/ui/StarterKarLogo";
 import confetti from "canvas-confetti";
 import { toast } from "sonner";
@@ -21,7 +21,7 @@ import { RecommendedSection } from "@/components/dashboard/RecommendedSection";
 import Image from "next/image";
 import { FavoriteService } from "@/services/FavoriteService";
 import { CarCard } from "@/components/market/CarCard";
-import { ALL_CARS } from "@/data/cars";
+import { ALL_CARS, Vehicle } from "@/data/cars";
 import { CarService } from "@/services/CarService";
 import { ReferralPromoCard } from "@/components/dashboard/ReferralPromoCard";
 
@@ -177,18 +177,19 @@ export default function DashboardPage() {
                     if (carsError) throw carsError;
                     if (cars) setOwnedCars(cars);
                     
-                    // Fetch Favorites
-                    const favIds = await FavoriteService.getFavorites(supabase);
-                    if (favIds.length > 0) {
-                        const dbCars = await Promise.all(favIds.map(id => CarService.getCarById(supabase, id)));
-                        const validDbCars = dbCars.filter(c => c !== null);
-                        const mockFavs = favIds
-                            .filter(id => !validDbCars.find(c => c.id === id))
-                            .map(id => ALL_CARS.find(c => c.id === id))
-                            .filter(c => c !== undefined);
+                // Fetch Favorites
+                const favIds = await FavoriteService.getFavorites(supabase);
+                if (favIds.length > 0) {
+                    const dbCars = await Promise.all(favIds.map(id => CarService.getCarById(supabase, id)));
+                    const validDbCars = dbCars.filter(c => c !== null);
+                    const mockFavs = favIds
+                        .map(id => ALL_CARS.find(c => c.id === id))
+                        .filter((c): c is Vehicle => c !== undefined && !validDbCars.find(dbc => dbc.id === c.id));
 
-                        setFavoriteCars([...validDbCars, ...mockFavs]);
-                    }
+                    setFavoriteCars([...validDbCars, ...mockFavs]);
+                } else {
+                    setFavoriteCars([]);
+                }
 
                     // Fetch Investor Application
                     const { data: invData } = await supabase
@@ -294,28 +295,49 @@ export default function DashboardPage() {
                             </div>
 
                             {/* Role-gated admin tools — solo admin/inspector */}
-                            {(userProfile?.role === 'admin' || userProfile?.role === 'inspector') && (
-                                <div className="w-full md:w-auto flex flex-wrap gap-3">
-                                    {userProfile?.role === 'inspector' || userProfile?.role === 'admin' ? (
-                                        <Link href="/admin/inspector" className="h-14 px-6 bg-secondary rounded-2xl flex items-center gap-3 font-bold text-sm hover:bg-secondary/80 transition-all">
-                                            <Smartphone className="h-5 w-5 text-blue-500" />
-                                            Inspector
-                                        </Link>
-                                    ) : null}
-                                    {userProfile?.role === 'admin' && (
-                                        <>
-                                            <Link href="/admin/legal" className="h-14 px-6 bg-emerald-500/10 text-emerald-600 rounded-2xl flex items-center gap-3 font-bold text-sm hover:bg-emerald-500/20 transition-all border border-emerald-500/20">
-                                                <Shield className="h-5 w-5" />
-                                                Admin Legal
+                            <div className="w-full md:w-auto flex flex-wrap gap-3">
+                                {userProfile?.role === 'admin' && (
+                                    <Link href="/admin" className="h-14 px-6 bg-zinc-900 text-white rounded-2xl flex items-center gap-3 font-bold text-sm hover:bg-zinc-800 transition-all border border-zinc-700">
+                                        <LayoutDashboard className="h-5 w-5 text-indigo-400" />
+                                        Control Maestro
+                                    </Link>
+                                )}
+                                
+                                {(userProfile?.role === 'admin' || userProfile?.role === 'inspector') && (
+                                    <>
+                                        {userProfile?.role === 'inspector' || userProfile?.role === 'admin' ? (
+                                            <Link href="/admin/inspector" className="h-14 px-6 bg-secondary rounded-2xl flex items-center gap-3 font-bold text-sm hover:bg-secondary/80 transition-all">
+                                                <Smartphone className="h-5 w-5 text-blue-500" />
+                                                Inspector
                                             </Link>
-                                            <Link href="/sell?admin=true" className="h-14 px-6 bg-indigo-600 text-white rounded-2xl flex items-center gap-3 font-black text-sm hover:bg-indigo-700 transition-all shadow-xl shadow-indigo-600/20">
-                                                <CarFront className="h-5 w-5" />
-                                                Publicar Auto
-                                            </Link>
-                                        </>
-                                    )}
-                                </div>
-                            )}
+                                        ) : null}
+                                        {userProfile?.role === 'admin' && (
+                                            <>
+                                                <Link href="/admin/legal" className="h-14 px-6 bg-emerald-500/10 text-emerald-600 rounded-2xl flex items-center gap-3 font-bold text-sm hover:bg-emerald-500/20 transition-all border border-emerald-500/20">
+                                                    <Shield className="h-5 w-5" />
+                                                    Admin Legal
+                                                </Link>
+                                                <Link href="/sell?admin=true" className="h-14 px-6 bg-indigo-600 text-white rounded-2xl flex items-center gap-3 font-black text-sm hover:bg-indigo-700 transition-all shadow-xl shadow-indigo-600/20">
+                                                    <CarFront className="h-5 w-5" />
+                                                    Publicar Auto
+                                                </Link>
+                                            </>
+                                        )}
+                                    </>
+                                )}
+
+                                <button 
+                                    onClick={async () => {
+                                        await supabase.auth.signOut();
+                                        router.push('/');
+                                        router.refresh();
+                                    }}
+                                    className="h-14 px-6 bg-red-500/10 text-red-600 rounded-2xl flex items-center gap-3 font-bold text-sm hover:bg-red-500/20 transition-all border border-red-500/20"
+                                >
+                                    <LogOut className="h-5 w-5" />
+                                    Cerrar Sesión
+                                </button>
+                            </div>
 
                         </div>
                     </div>

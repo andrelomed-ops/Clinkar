@@ -8,7 +8,8 @@ import { useState, useEffect } from "react";
 import { ArrowLeft, Camera, CheckCircle2, ChevronRight, Save, XCircle } from "lucide-react";
 import { ProcessingOverlay } from "@/components/ui/ProcessingOverlay";
 import { CameraUpload } from "@/components/ui/CameraUpload";
-import { INSPECTION_SECTIONS } from "@/lib/inspection-data";
+import { getInspectionSectionsByCategory } from "@/lib/inspection-data";
+import { CarService } from "@/services/CarService";
 import { cn } from "@/lib/utils";
 
 // We now use the list from INSPECTION_SECTIONS
@@ -16,6 +17,7 @@ import { cn } from "@/lib/utils";
 export default function ChecklistPage({ params }: { params: Promise<{ id: string }> }) {
     const [carId, setCarId] = useState<string>("");
     const [loading, setLoading] = useState(false);
+    const [vehicle, setVehicle] = useState<any>(null);
     const searchParams = useSearchParams();
     const roleParam = searchParams.get('role') as 'MECHANIC' | 'LEGAL' | null;
     const [role, setRole] = useState<'MECHANIC' | 'LEGAL'>(roleParam || 'MECHANIC');
@@ -26,13 +28,20 @@ export default function ChecklistPage({ params }: { params: Promise<{ id: string
     const [analyzing, setAnalyzing] = useState(false);
     const [showScanner, setShowScanner] = useState(false);
 
-    // Unwrap params
-    useEffect(() => {
-        params.then(p => setCarId(p.id));
-    }, [params]);
-
     const supabase = createBrowserClient();
     const router = useRouter();
+
+    // Unwrap params and fetch vehicle
+    useEffect(() => {
+        const init = async () => {
+            const p = await params;
+            setCarId(p.id);
+            
+            const data = await CarService.getCarById(supabase, p.id);
+            if (data) setVehicle(data);
+        };
+        init();
+    }, [params, supabase]);
 
     const handleToggle = (item: string, pass: boolean) => {
         setChecklist(prev => ({
@@ -162,7 +171,7 @@ export default function ChecklistPage({ params }: { params: Promise<{ id: string
                     </div>
                 )}
 
-                {INSPECTION_SECTIONS
+                {getInspectionSectionsByCategory(vehicle?.category || 'car')
                     .filter(sec => role === 'MECHANIC' ? sec.id !== 'legal' : sec.id === 'legal')
                     .map(cat => (
                     <section key={cat.id} className="bg-white dark:bg-zinc-900 rounded-3xl border p-6 shadow-sm">

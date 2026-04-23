@@ -5,6 +5,9 @@ import { ALL_CARS, Vehicle } from "@/data/cars";
 import { Navbar } from "@/components/ui/navbar";
 import { CheckoutAction } from "@/components/checkout/CheckoutAction";
 import { OfferModal } from "@/components/market/OfferModal";
+import { CreditSimulator } from "@/components/checkout/CreditSimulator";
+import { GestoriaAdvisor } from "@/components/checkout/GestoriaAdvisor";
+import { InsuranceSelector } from "@/components/dashboard/InsuranceSelector";
 import { supabase } from "@/lib/supabase";
 import { 
     ChevronLeft, 
@@ -249,8 +252,9 @@ export default function CarDetailPage({ params }: { params: Promise<{ id: string
                                 </div>
                             )}
                             
-                                    {/* Embedded Manual Offer Modal */}
-                                    <div className="pt-8 space-y-8">
+                                     {/* Embedded Services & Options */}
+                                    <div className="pt-8 space-y-12">
+                                        {/* 1. Negociación y Oferta */}
                                         <div className="w-full">
                                             <OfferModal 
                                                 id={car.id}
@@ -261,27 +265,55 @@ export default function CarDetailPage({ params }: { params: Promise<{ id: string
                                             />
                                         </div>
 
-                                        {/* Restoration of Repair Request Flow */}
-                                        <div className="bg-white dark:bg-zinc-900 border border-indigo-200 dark:border-indigo-900/30 rounded-3xl p-8 shadow-xl shadow-indigo-500/5">
+                                        {/* 2. Financiamiento StarterKar */}
+                                        <div className="space-y-4">
+                                            <h3 className="text-sm font-black uppercase tracking-[0.2em] text-zinc-400">Financiamiento</h3>
+                                            <CreditSimulator 
+                                                carPrice={car.price} 
+                                                carName={`${car.make} ${car.model}`}
+                                                carId={car.id}
+                                            />
+                                        </div>
+
+                                        {/* 3. Garantía y Reparación */}
+                                        <div className="bg-white dark:bg-zinc-900 border border-indigo-200 dark:border-indigo-900/30 rounded-[2.5rem] p-10 shadow-xl shadow-indigo-500/5">
                                             <div className="flex items-center gap-4 mb-6">
                                                 <div className="h-12 w-12 bg-indigo-600 rounded-2xl flex items-center justify-center text-white">
-                                                    <Activity className="h-6 w-6" />
+                                                    <ShieldCheck className="h-6 w-6" />
                                                 </div>
                                                 <div>
-                                                    <h3 className="text-xl font-black">Solicitar Reparación Integral</h3>
-                                                    <p className="text-xs text-muted-foreground font-bold uppercase tracking-widest">Garantía Certificada StarterKar</p>
+                                                    <h3 className="text-xl font-black">Garantía Certificada StarterKar</h3>
+                                                    <p className="text-xs text-muted-foreground font-bold uppercase tracking-widest">Protección Mecánica P2P</p>
                                                 </div>
                                             </div>
-                                            <p className="text-sm text-muted-foreground mb-6 leading-relaxed">
-                                                Para que la **Garantía Mecánica** tenga validez absoluta, recomendamos solicitar que el vehículo sea reparado integralmente en el Taller Aliado antes de tu entrega física. Así garantizamos que tu nuevo auto salga en condiciones óptimas.
-                                            </p>
-                                            <div className="p-4 bg-zinc-50 dark:bg-zinc-800/50 rounded-2xl border border-dashed border-zinc-300 dark:border-zinc-700 text-center">
+                                            <div className="space-y-4 text-sm text-muted-foreground leading-relaxed">
+                                                <p>
+                                                    La **Garantía Mecánica de 90 días** de StarterKar es un beneficio exclusivo para las unidades que pasan por una reparación integral preventiva.
+                                                </p>
+                                                <p className="bg-amber-50 dark:bg-amber-900/10 p-4 rounded-xl border border-amber-200 dark:border-amber-900/20 text-amber-800 dark:text-amber-400 font-medium italic">
+                                                    Nota: Para que la garantía tenga validez absoluta, el vehículo debe ser reparado en un Taller Aliado antes de la entrega física. Esto asegura que tu nuevo auto salga en condiciones óptimas y certificadas.
+                                                </p>
+                                            </div>
+                                            <div className="mt-8 p-4 bg-zinc-50 dark:bg-zinc-800/50 rounded-2xl border border-dashed border-zinc-300 dark:border-zinc-700 text-center">
                                                 <Link 
                                                     href={`/dashboard/repair-request?carId=${car.id}`}
                                                     className="inline-flex items-center gap-2 text-indigo-600 dark:text-indigo-400 font-black text-sm hover:underline"
                                                 >
                                                     Explorar Reporte Técnico y Solicitar Presupuesto →
                                                 </Link>
+                                            </div>
+                                        </div>
+
+                                        {/* 4. Gestoría y Seguros (Solución Integral) */}
+                                        <div className="grid gap-8">
+                                            <div className="space-y-4">
+                                                <h3 className="text-sm font-black uppercase tracking-[0.2em] text-zinc-400">Trámites y Gestoría</h3>
+                                                <GestoriaAdvisor />
+                                            </div>
+                                            
+                                            <div className="space-y-4">
+                                                <h3 className="text-sm font-black uppercase tracking-[0.2em] text-zinc-400">Seguros Aliados</h3>
+                                                <InsuranceSelector carValue={car.price} onSelectOption={() => {}} />
                                             </div>
                                         </div>
                                     </div>

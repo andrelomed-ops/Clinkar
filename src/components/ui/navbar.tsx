@@ -137,9 +137,9 @@ export function Navbar({
                             {user && (
                                 <button 
                                     onClick={handleSignOut}
-                                    className="text-[10px] font-black uppercase tracking-widest text-zinc-400 hover:text-red-500 transition-colors"
+                                    className="flex items-center gap-2 px-3 py-1.5 rounded-full border border-zinc-200 dark:border-zinc-800 text-[10px] font-black uppercase tracking-widest text-zinc-500 hover:bg-red-50 hover:text-red-600 hover:border-red-100 transition-all"
                                 >
-                                    Salir
+                                    Cerrar Sesión
                                 </button>
                             )}
                             <NotificationCenter />

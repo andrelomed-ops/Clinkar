@@ -7,41 +7,41 @@ import { Wrench, ShieldCheck, FileCheck, ChevronRight, UserPlus, Search, CheckCi
 const STEPS = [
     {
         id: "01",
-        title: "PUBLICACIÓN O SELECCIÓN",
-        description: "El proceso inicia con la intención. Si eres vendedor, subes tu auto con fotos y datos reales. Si eres comprador, eliges una unidad que ya cuenta con nuestro pre-filtro de calidad.",
+        title: "EL PRECIO JUSTO",
+        description: "Revisamos el valor de mercado para que vendas o compres al mejor precio, sin regateos innecesarios. Tú eliges el monto final de publicación.",
         icon: Search,
         color: "bg-blue-600",
         shadow: "shadow-blue-600/20",
         details: [
-            "Validación de identidad del vendedor",
-            "Pre-verificación de documentos básicos",
-            "Publicación en el Marketplace Premium"
+            "Valuación sugerida profesional",
+            "Tú decides el precio final",
+            "Publicación en StarterKar"
         ]
     },
     {
         id: "02",
-        title: "TRIPLE CERTIFICACIÓN",
-        description: "Nuestros expertos entran en acción. Realizamos una inspección mecánica de 150 puntos y una auditoría legal exhaustiva con autoridades. Solo lo impecable entra a la Bóveda.",
+        title: "CHEQUEO MAESTRO",
+        description: "Nuestros mecánicos revisan 150 puntos clave de pies a cabeza. Solo publicamos autos que pasan la prueba con su certificado de confianza.",
         icon: Wrench,
         color: "bg-indigo-600",
         shadow: "shadow-indigo-600/20",
         details: [
-            "Inspección mecánica profunda (150 pts)",
-            "Blindaje legal (REPUVE & Fiscalía)",
-            "Dictamen técnico detallado"
+            "Visita de mecánico experto",
+            "Revisión de 150 puntos críticos",
+            "Certificado de confianza StarterKar"
         ]
     },
     {
         id: "03",
-        title: "CIERRE 'CLINK-CLINK'",
-        description: "La magia de la seguridad. Firmas digitalmente con validez jurídica. Tu dinero viaja a la Bóveda Digital (Escrow) y solo se libera al vendedor cuando confirmas la entrega en un taller aliado.",
+        title: "TRATO SEGURO",
+        description: "Validamos que los pagos se realicen correctamente (SPEI, CoDi o Stripe). Tu dinero no se mueve hasta que confirmas que el auto está en tus manos.",
         icon: FileCheck,
         color: "bg-emerald-600",
         shadow: "shadow-emerald-600/20",
         details: [
-            "Contrato digital con firma electrónica",
-            "Pago seguro vía Bóveda Digital",
-            "Entrega protegida en punto de control"
+            "Validación de pago garantizada",
+            "Acompañamiento en todo el proceso",
+            "Entrega y firma digital segura"
         ]
     }
 ];

@@ -37,9 +37,9 @@ export function OfferModal({ id, carPrice, repairCost, carName, hasSeal }: Offer
                     onClick={() => setIsOpen(true)}
                     disabled={!hasSeal}
                     className={cn(
-                        "w-full h-16 rounded-[2rem] font-black text-lg transition-all flex items-center justify-center gap-3 shadow-xl",
+                        "w-full h-16 rounded-[2rem] font-black text-lg transition-all flex items-center justify-center gap-3 shadow-2xl",
                         hasSeal
-                            ? "bg-primary text-primary-foreground hover:scale-[1.02] shadow-primary/20"
+                            ? "bg-gradient-to-r from-indigo-600 to-violet-600 text-white hover:scale-[1.02] active:scale-95 shadow-indigo-500/25 animate-pulse-subtle"
                             : "bg-secondary text-muted-foreground cursor-not-allowed border border-border"
                     )}
                 >

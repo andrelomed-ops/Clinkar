@@ -13,10 +13,10 @@ function ReferralLogic() {
     
     useEffect(() => {
         try {
-            const ref = searchParams.get("ref");
-            if (ref) {
-                localStorage.setItem("clinkar_ref_code", ref);
-                console.log(`[REFERRAL] Code persisted: ${ref}`);
+            const urlRef = searchParams.get('ref');
+            if (urlRef) {
+                localStorage.setItem('starterkar_ref_code', urlRef);
+                console.log(`[REFERRAL] Code persisted: ${urlRef}`);
             }
         } catch (e) {
             console.error("[REFERRAL] Error persisting code:", e);
