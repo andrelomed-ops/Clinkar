@@ -17,8 +17,12 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
+import { GestoriaAdvisor } from "../checkout/GestoriaAdvisor";
+import { InsuranceSelector } from "./InsuranceSelector";
 import { LogisticsWidget } from "../checkout/LogisticsWidget";
 import { WarrantySelector, WarrantyType } from "../checkout/WarrantySelector";
+import { updateTransactionServicesAction } from "@/app/actions/transaction";
+import { toast } from "sonner";
 import { 
     Warehouse, 
     Home, 
