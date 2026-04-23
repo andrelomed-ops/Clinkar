@@ -22,7 +22,7 @@ export function StarterKarLogo({
     showMonogram = true,
     orientation = "horizontal",
     label,
-    hideSubmark = false,
+    hideSubmark = true,
 }: StarterKarLogoProps) {
     const shieldSizes = {
         xs: "h-6 w-6",
