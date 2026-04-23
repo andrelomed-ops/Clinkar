@@ -21,49 +21,46 @@ export function HandoverSafeCheck({ onComplete, onNegotiate, isProcessing }: Han
     const allPassed = Object.values(checks).every(v => v);
 
     return (
-        <div className="bg-white dark:bg-zinc-900 rounded-[2.5rem] border border-border p-8 shadow-sm">
-            <div className="flex items-start justify-between mb-8">
-                <div className="flex items-center gap-3">
-                    <div className="h-10 w-10 bg-indigo-500/10 rounded-xl flex items-center justify-center text-indigo-600">
-                        <ClipboardCheck className="h-6 w-6" />
+        <div className="bg-white dark:bg-zinc-900 rounded-[3rem] border border-zinc-100 dark:border-white/5 p-10 shadow-2xl shadow-zinc-200/50 dark:shadow-none">
+            <div className="flex flex-col sm:flex-row items-start justify-between gap-6 mb-10 pb-8 border-b border-zinc-50 dark:border-white/5">
+                <div className="flex items-center gap-4">
+                    <div className="h-14 w-14 bg-indigo-600 rounded-2xl flex items-center justify-center text-white shadow-xl shadow-indigo-600/20">
+                        <ClipboardCheck className="h-7 w-7" />
                     </div>
                     <div>
-                        <h3 className="font-black text-lg italic tracking-tight uppercase">SafeHandover Checklist</h3>
-                        <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-widest leading-none">Protocolo de Entrega en Taller Aliado</p>
+                        <h3 className="font-black text-2xl italic tracking-tighter uppercase leading-none mb-1">Checklist <span className="text-indigo-600">Protocol</span></h3>
+                        <p className="text-[10px] text-zinc-400 font-black uppercase tracking-[0.2em] leading-none">Validación de activos en Taller Aliado</p>
                     </div>
                 </div>
-                <div className="flex flex-col items-end">
-                    <div className="flex items-center gap-2 text-[10px] font-black text-indigo-600 bg-indigo-50 px-3 py-1.5 rounded-full border border-indigo-100">
+                <div className="flex flex-col items-start sm:items-end">
+                    <div className="flex items-center gap-2 text-[9px] font-black text-indigo-600 bg-indigo-50 dark:bg-indigo-950/30 px-4 py-2 rounded-xl border border-indigo-100 dark:border-indigo-800/50 uppercase tracking-widest">
                         <MapPin className="h-3 w-3" /> Punto de Control: Taller de Mecánico Aliado
                     </div>
-                    <p className="text-[9px] text-muted-foreground mt-1 text-right italic leading-tight">
-                        El mecánico validará esta lista antes de que firmes el contrato final.
-                    </p>
                 </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                 <CheckItem
-                    title="Kilometraje (Odómetro)"
-                    desc="Debe coincidir con el reporte (max. +100km de traslado)."
+                    title="Odómetro & Kilometraje"
+                    desc="Verificación visual del odómetro contra reporte de inspección inicial."
                     checked={checks.odometer}
                     onChange={(v) => setChecks(s => ({ ...s, odometer: v }))}
                 />
                 <CheckItem
-                    title="Testigos del Tablero"
-                    desc="Sin Check Engine, ABS o Airbags encendidos ahora."
+                    title="Testigos & Electrónica"
+                    desc="Escaneo de testigos de motor, ABS y bolsas de aire activos."
                     checked={checks.fluids}
                     onChange={(v) => setChecks(s => ({ ...s, fluids: v }))}
                 />
                 <CheckItem
-                    title="Integridad Estética"
-                    desc="Sin golpes, rayones o cristales rotos nuevos."
+                    title="Condición Física"
+                    desc="Evaluación de daños cosméticos, cristales y pintura post-traslado."
                     checked={checks.physical}
                     onChange={(v) => setChecks(s => ({ ...s, physical: v }))}
                 />
                 <CheckItem
-                    title="Validación del Mecánico"
-                    desc="El experto confirma que el auto es el mismo reportado."
+                    title="Certificación Mecánica"
+                    desc="Firma del experto aliado validando el estado del activo."
                     checked={checks.lights}
                     onChange={(v) => setChecks(s => ({ ...s, lights: v }))}
                 />
@@ -125,19 +122,27 @@ function CheckItem({ title, desc, checked, onChange }: { title: string, desc: st
         <button
             onClick={() => onChange(!checked)}
             className={cn(
-                "p-4 rounded-2xl border-2 text-left transition-all duration-300 flex items-start gap-3",
-                checked ? "border-emerald-500 bg-emerald-500/5 shadow-sm" : "border-zinc-100 bg-zinc-50 hover:border-zinc-200"
+                "p-6 rounded-[2rem] border-2 text-left transition-all duration-500 flex items-start gap-4",
+                checked 
+                    ? "border-emerald-600 bg-emerald-50 shadow-xl shadow-emerald-500/10" 
+                    : "border-zinc-100 bg-zinc-50/50 hover:border-zinc-200 dark:border-white/5 dark:bg-white/5"
             )}
         >
             <div className={cn(
-                "h-5 w-5 rounded-full border-2 flex items-center justify-center shrink-0 transition-colors",
-                checked ? "bg-emerald-500 border-emerald-500 text-white" : "border-zinc-300"
+                "h-6 w-6 rounded-lg border-2 flex items-center justify-center shrink-0 transition-all duration-500",
+                checked ? "bg-emerald-600 border-emerald-600 text-white rotate-0 scale-110" : "border-zinc-300 rotate-45"
             )}>
-                {checked && <CheckCircle2 className="h-3 w-3" />}
+                {checked && <CheckCircle2 className="h-4 w-4" />}
             </div>
             <div>
-                <h4 className="font-bold text-xs text-zinc-900 leading-tight mb-1">{title}</h4>
-                <p className="text-[10px] text-zinc-500 leading-tight">{desc}</p>
+                <h4 className={cn(
+                    "font-black text-xs uppercase tracking-widest mb-1 transition-colors",
+                    checked ? "text-emerald-900" : "text-zinc-800 dark:text-zinc-200"
+                )}>{title}</h4>
+                <p className={cn(
+                    "text-[10px] leading-relaxed text-justify font-medium",
+                    checked ? "text-emerald-700/80" : "text-zinc-400"
+                )}>{desc}</p>
             </div>
         </button>
     );

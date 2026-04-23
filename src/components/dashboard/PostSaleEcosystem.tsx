@@ -158,50 +158,68 @@ export function PostSaleEcosystem({
     ];
 
     return (
-        <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-1000">
-            <div className="bg-white dark:bg-zinc-900 border border-indigo-100 dark:border-zinc-800 rounded-[2.5rem] p-8 shadow-2xl shadow-indigo-500/5">
-                <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8">
+        <div className="space-y-8 animate-in fade-in slide-in-from-bottom-6 duration-1000">
+            <div className="relative bg-white/70 dark:bg-zinc-900/70 backdrop-blur-2xl border border-indigo-100/50 dark:border-white/5 rounded-[3rem] p-10 shadow-[0_20px_50px_rgba(79,70,229,0.05)] overflow-hidden">
+                {/* Decorative Elements */}
+                <div className="absolute -top-24 -right-24 w-64 h-64 bg-indigo-500/5 rounded-full blur-[80px]" />
+                <div className="absolute -bottom-24 -left-24 w-64 h-64 bg-emerald-500/5 rounded-full blur-[80px]" />
+
+                <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-8 mb-10">
                     <div>
-                        <h2 className="text-2xl font-black text-zinc-900 dark:text-white tracking-tight italic uppercase">Ecosistema Post-Venta y Entrega</h2>
-                        <p className="text-zinc-500 text-xs font-bold uppercase tracking-widest">Personaliza tu logística y trámites • Ref: {transactionId.split('-')[0].toUpperCase()}</p>
+                        <div className="flex items-center gap-3 mb-2">
+                            <div className="h-1 w-12 bg-indigo-600 rounded-full" />
+                            <span className="text-[10px] font-black text-indigo-600 uppercase tracking-[0.3em]">Servicios Elite</span>
+                        </div>
+                        <h2 className="text-3xl font-black text-zinc-900 dark:text-white tracking-tighter italic uppercase leading-none">
+                            Ecosistema <span className="text-indigo-600">Post-Venta</span>
+                        </h2>
+                        <p className="text-zinc-400 text-[10px] font-bold uppercase tracking-widest mt-2">Personalización de logística y trámites • Ref: {transactionId.split('-')[0].toUpperCase()}</p>
                     </div>
-                    <div className="flex items-center gap-3 bg-indigo-50 dark:bg-zinc-950 p-2.5 rounded-2xl border border-indigo-100 dark:border-zinc-800">
+                    <div className="flex items-center gap-4 bg-white dark:bg-zinc-950/50 p-3 rounded-2xl border border-zinc-100 dark:border-white/5 shadow-sm">
                         <div className="flex flex-col px-4 text-right">
-                            <span className="text-[10px] font-black uppercase text-indigo-400 tracking-[0.2em] mb-0.5">Estado de Operación</span>
-                            <span className="text-xs font-bold text-emerald-600 uppercase tracking-tighter">Activo en Bóveda Digital</span>
+                            <span className="text-[9px] font-black uppercase text-zinc-400 tracking-[0.2em] mb-1">Estatus Legal</span>
+                            <div className="flex items-center gap-2 justify-end">
+                                <div className="h-1.5 w-1.5 bg-emerald-500 rounded-full animate-pulse" />
+                                <span className="text-xs font-black text-emerald-600 uppercase tracking-tighter">Bóveda Activa</span>
+                            </div>
                         </div>
                     </div>
                 </div>
 
-                {/* Grid de Servicios */}
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-5 mb-8">
+                               <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-10">
                     {services.map((service) => (
                         <button
                             key={service.id}
                             onClick={() => setRequestedService(service.id)}
                             className={cn(
-                                "group relative p-6 rounded-[2rem] border-2 text-left transition-all duration-300",
+                                "group relative p-6 rounded-[2.5rem] border-2 text-left transition-all duration-500 overflow-hidden",
                                 requestedService === service.id
-                                    ? "border-indigo-600 bg-indigo-50/50 dark:bg-indigo-500/10 shadow-xl shadow-indigo-500/10"
-                                    : "border-zinc-100 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-950/50 hover:border-indigo-200 dark:hover:border-zinc-700"
+                                    ? "border-indigo-600 bg-white dark:bg-zinc-800 shadow-2xl shadow-indigo-500/20 scale-[1.02]"
+                                    : "border-zinc-100 dark:border-white/5 bg-zinc-50/30 dark:bg-white/5 hover:border-indigo-200 hover:scale-[1.01]"
                             )}
                         >
-                            <div className="flex items-start justify-between mb-5">
+                            {/* Hover Background Glow */}
+                            <div className={cn(
+                                "absolute inset-0 bg-gradient-to-br from-indigo-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500",
+                                requestedService === service.id && "opacity-100"
+                            )} />
+
+                            <div className="relative z-10 flex items-start justify-between mb-6">
                                 <div className={cn(
-                                    "p-3.5 rounded-2xl transition-all duration-300",
+                                    "p-4 rounded-2xl transition-all duration-500 transform group-hover:rotate-6",
                                     requestedService === service.id 
-                                        ? "bg-indigo-600 text-white shadow-lg shadow-indigo-600/30" 
+                                        ? "bg-indigo-600 text-white shadow-xl shadow-indigo-600/40" 
                                         : "bg-white dark:bg-zinc-800 text-zinc-400 group-hover:text-indigo-600 shadow-sm border border-zinc-100 dark:border-zinc-700"
                                 )}>
                                     {service.icon}
                                 </div>
                             </div>
-                            <div>
+                            <div className="relative z-10">
                                 <h4 className={cn(
-                                    "font-black text-xs uppercase tracking-widest mb-2 transition-colors",
-                                    requestedService === service.id ? "text-indigo-700 dark:text-white" : "text-zinc-800 dark:text-zinc-200"
+                                    "font-black text-[10px] uppercase tracking-[0.2em] mb-2 transition-colors",
+                                    requestedService === service.id ? "text-indigo-700 dark:text-white" : "text-zinc-800 dark:text-zinc-300"
                                 )}>{service.title}</h4>
-                                <p className="text-[10px] text-zinc-500 leading-normal text-justify">
+                                <p className="text-[10px] text-zinc-400 leading-relaxed text-justify font-medium">
                                     {service.desc}
                                 </p>
                             </div>
@@ -353,29 +371,30 @@ export function PostSaleEcosystem({
                 </div>
 
                 {/* Notificaciones Avanzadas */}
-                <div className="mt-8 bg-indigo-50 dark:bg-indigo-500/5 border border-indigo-100 dark:border-indigo-500/10 rounded-3xl p-6 flex flex-col sm:flex-row items-center justify-between gap-6 group">
-                    <div className="flex items-center gap-4">
+                <div className="mt-10 bg-gradient-to-r from-indigo-600 to-indigo-800 rounded-[2.5rem] p-8 flex flex-col sm:flex-row items-center justify-between gap-8 group shadow-2xl shadow-indigo-600/30 relative overflow-hidden">
+                    <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-10" />
+                    <div className="relative z-10 flex items-center gap-6">
                         <div className={cn(
-                            "h-12 w-12 rounded-2xl flex items-center justify-center transition-all duration-500",
-                            remindersEnabled ? "bg-indigo-600 text-white shadow-[0_0_20px_rgba(79,70,229,0.4)]" : "bg-white dark:bg-zinc-800 text-zinc-400 border border-zinc-100 dark:border-zinc-700"
+                            "h-16 w-16 rounded-[1.5rem] flex items-center justify-center transition-all duration-700 border-2",
+                            remindersEnabled ? "bg-white text-indigo-600 border-white shadow-xl shadow-white/20 scale-110" : "bg-white/10 text-white border-white/20"
                         )}>
-                            <BellRing className={cn("h-6 w-6", remindersEnabled && "animate-bounce")} />
+                            <BellRing className={cn("h-8 w-8", remindersEnabled && "animate-bounce")} />
                         </div>
                         <div>
-                            <h3 className="font-bold text-zinc-900 dark:text-white text-sm">Recordatorios Inteligentes</h3>
-                            <p className="text-xs text-zinc-500">Tenencias, verificaciones y servicios preventivos.</p>
+                            <h3 className="font-black text-white text-lg italic uppercase tracking-tighter">Concierge Inteligente</h3>
+                            <p className="text-indigo-100/70 text-[10px] font-bold uppercase tracking-[0.2em]">Mantenimiento • Tenencias • Notificaciones</p>
                         </div>
                     </div>
                     <button
                         onClick={() => setRemindersEnabled(!remindersEnabled)}
                         className={cn(
-                            "w-full sm:w-auto px-8 h-11 rounded-full font-bold text-xs transition-all shadow-lg",
+                            "relative z-10 w-full sm:w-auto px-10 h-14 rounded-2xl font-black text-xs uppercase tracking-[0.2em] transition-all shadow-2xl",
                             remindersEnabled 
-                                ? "bg-indigo-600 text-white shadow-indigo-600/20" 
-                                : "bg-white dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 border border-zinc-200 dark:border-zinc-700 hover:bg-zinc-50"
+                                ? "bg-white text-indigo-600 hover:bg-indigo-50" 
+                                : "bg-indigo-500/20 text-white border-2 border-white/20 hover:bg-white/10"
                         )}
                     >
-                        {remindersEnabled ? "Activados" : "Activar"}
+                        {remindersEnabled ? "Sincronizado" : "Activar"}
                     </button>
                 </div>
             </div>
