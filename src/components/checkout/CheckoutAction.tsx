@@ -6,17 +6,46 @@ import { WarrantySelector, WarrantyType } from "./WarrantySelector";
 import { startTransaction } from "@/app/actions/transaction";
 import { Loader2, ShieldCheck, MapPin, Home, Warehouse, Smartphone, Zap } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
+import { startTransition } from "react";
 
 export function CheckoutAction({ carId, carPrice, carLocation }: { carId: string, carPrice: number, carLocation: string }) {
 
+    const router = useRouter();
     const [isPending, setIsPending] = useState(false);
 
     const handleSubmit = async () => {
-        setIsPending(true);
-        // Start transaction with base values. Services will be added in post-sale.
-        await startTransaction(carId, {
-            deliveryType: 'workshop' // Default to workshop, can be changed in post-sale
-        });
+        console.log("[CheckoutAction] Iniciando proceso de bloqueo para carId:", carId);
+        toast.info("Iniciando bloqueo seguro...");
+        
+        try {
+            setIsPending(true);
+            
+            startTransition(async () => {
+                try {
+                    const result = await startTransaction(carId, {
+                        deliveryType: 'workshop'
+                    });
+
+                    if (result.success && result.transactionId) {
+                        toast.success("¡Auto Bloqueado! Redirigiendo a la Bóveda...");
+                        router.push(`/dashboard/handover/${result.transactionId}`);
+                    } else {
+                        toast.error(result.error || "Error al procesar el bloqueo");
+                        setIsPending(false);
+                    }
+                } catch (err) {
+                    console.error("Error in transition:", err);
+                    toast.error("Error al procesar la transacción");
+                    setIsPending(false);
+                }
+            });
+        } catch (error) {
+            console.error("Error starting transaction:", error);
+            toast.error("Ocurrió un error inesperado");
+            setIsPending(false);
+        }
     };
 
     return (

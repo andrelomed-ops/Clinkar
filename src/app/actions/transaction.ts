@@ -73,12 +73,11 @@ export async function startTransaction(carId: string, addOns?: {
             await CarService.updateCarStatus(supabase, car.id, 'RESERVED');
         }
 
+        return { success: true, transactionId };
     } catch (error) {
         console.error("Transaction Error:", error);
-        throw error;
+        return { success: false, error: error instanceof Error ? error.message : 'Unknown error' };
     }
-
-    redirect(`/dashboard/handover/${transactionId}`);
 }
 
 export async function getLegalTransactionsAction() {
