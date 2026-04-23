@@ -85,141 +85,146 @@ export function PostSaleEcosystem({
     const services = [
         {
             id: "logistica",
-            title: "Envío a Domicilio",
-            desc: "Cotizar traslado en grúa",
-            type: "Logistics",
-            icon: <Truck className="h-5 w-5" />,
-            monetization: "Varía por distancia",
-            delivery: "Grúa Aliada"
+            title: "Logística Élite",
+            desc: "Cotización de traslado en grúa plataforma especializada.",
+            icon: <Truck className="h-6 w-6" />,
+            color: "from-blue-600 to-indigo-600",
+            badge: "A DOMICILIO"
         },
         {
             id: "garantia",
-            title: "Protección Mecánica",
-            desc: "90 días o 1 año de garantía",
-            type: "Warranty",
-            icon: <ShieldAlert className="h-5 w-5" />,
-            monetization: "Desde $2,500 MXN",
-            delivery: "Certificado"
+            title: "Protección Total",
+            desc: "Extensión de garantía mecánica hasta por 12 meses.",
+            icon: <ShieldAlert className="h-6 w-6" />,
+            color: "from-emerald-600 to-teal-600",
+            badge: "CERTIFICADO"
         },
         {
             id: "entrega",
-            title: "Método de Entrega",
-            desc: "Taller vs Entrega en casa",
-            type: "Logistics",
-            icon: <Package className="h-5 w-5" />,
-            monetization: "Seleccionable",
-            delivery: "Personalizado"
+            title: "Protocolo Entrega",
+            desc: "Gestión de cita en taller aliado o entrega VIP en casa.",
+            icon: <Package className="h-6 w-6" />,
+            color: "from-amber-500 to-orange-600",
+            badge: "SEGURO"
         },
         {
             id: "operacion",
-            title: "Modalidad",
-            desc: "Presencial o Remota",
-            type: "Process",
-            icon: <Zap className="h-5 w-5" />,
-            monetization: "Sin costo extra",
-            delivery: "Híbrido"
+            title: "Modalidad Híbrida",
+            desc: "Compra remota con videollamada HD o presencial.",
+            icon: <Zap className="h-6 w-6" />,
+            color: "from-purple-600 to-pink-600",
+            badge: "REMOTA OK"
         },
         {
             id: "cambio_propietario",
-            title: "Gestoría Legal",
-            desc: "Cambio de Propietario SCT",
-            type: "Premium Service",
-            icon: <UserCog className="h-5 w-5" />,
-            monetization: "$1,250 MXN + Derechos",
-            delivery: "Aliado Humano"
+            title: "Gestoría VIP",
+            desc: "Trámites de cambio de propietario ante SCT/SEMOVI.",
+            icon: <UserCog className="h-6 w-6" />,
+            color: "from-zinc-800 to-zinc-950",
+            badge: "SIN FILAS"
         },
         {
             id: "seguro_aliado",
-            title: "Seguro Automotriz",
-            desc: "Protección inmediata",
-            type: "Insurance",
-            icon: <Briefcase className="h-5 w-5" />,
-            monetization: "Desde 2.9% valor auto",
-            delivery: "Digital"
+            title: "Blindaje Seguro",
+            desc: "Póliza de cobertura amplia con partners certificados.",
+            icon: <Briefcase className="h-6 w-6" />,
+            color: "from-red-600 to-rose-700",
+            badge: "INMEDIATO"
         },
         {
             id: "aviso_venta",
-            title: "Aviso de Venta",
-            desc: state === "CDMX" ? "Notificación SEMOVI CDMX" : "Notificación Estatal",
-            type: "Automatic/PDF",
-            icon: <FileText className="h-5 w-5" />,
-            monetization: "Gratis",
-            delivery: "IA"
+            title: "Notificación IA",
+            desc: "Aviso de enajenación automático ante autoridades.",
+            icon: <FileText className="h-6 w-6" />,
+            color: "from-indigo-400 to-blue-500",
+            badge: "OBLIGATORIO"
         },
         {
             id: "carta_responsiva",
-            title: "Carta Responsiva",
-            desc: "Deslinde legal",
-            type: "Legal Document",
-            icon: <ShieldCheck className="h-5 w-5" />,
-            monetization: "Incluido",
-            delivery: "PDF"
+            title: "Blindaje Legal",
+            desc: "Carta responsiva digital con validez jurídica.",
+            icon: <ShieldCheck className="h-6 w-6" />,
+            color: "from-slate-700 to-slate-900",
+            badge: "PDF FIRMADO"
         },
     ];
 
     return (
-        <div className="space-y-8 animate-in fade-in slide-in-from-bottom-6 duration-1000">
-            <div className="relative bg-white/70 dark:bg-zinc-900/70 backdrop-blur-2xl border border-indigo-100/50 dark:border-white/5 rounded-[3rem] p-10 shadow-[0_20px_50px_rgba(79,70,229,0.05)] overflow-hidden">
-                {/* Decorative Elements */}
-                <div className="absolute -top-24 -right-24 w-64 h-64 bg-indigo-500/5 rounded-full blur-[80px]" />
-                <div className="absolute -bottom-24 -left-24 w-64 h-64 bg-emerald-500/5 rounded-full blur-[80px]" />
+        <div className="space-y-8 animate-in fade-in slide-in-from-bottom-12 duration-1000">
+            <div className="relative bg-white/40 dark:bg-zinc-900/40 backdrop-blur-3xl border border-white/20 dark:border-white/5 rounded-[3.5rem] p-10 shadow-[0_32px_64px_-16px_rgba(0,0,0,0.1)] overflow-hidden">
+                {/* Premium Background Effects */}
+                <div className="absolute top-0 right-0 w-96 h-96 bg-indigo-600/10 rounded-full blur-[120px] -translate-y-1/2 translate-x-1/2" />
+                <div className="absolute bottom-0 left-0 w-96 h-96 bg-emerald-600/10 rounded-full blur-[120px] translate-y-1/2 -translate-x-1/2" />
 
-                <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-8 mb-10">
+                <div className="relative z-10 flex flex-col lg:flex-row lg:items-end justify-between gap-8 mb-12">
                     <div>
-                        <div className="flex items-center gap-3 mb-2">
-                            <div className="h-1 w-12 bg-indigo-600 rounded-full" />
-                            <span className="text-[10px] font-black text-indigo-600 uppercase tracking-[0.3em]">Servicios Elite</span>
+                        <div className="flex items-center gap-3 mb-3">
+                            <div className="h-1.5 w-16 bg-gradient-to-r from-indigo-600 to-transparent rounded-full" />
+                            <span className="text-[10px] font-black text-indigo-600 dark:text-indigo-400 uppercase tracking-[0.4em]">Ecosistema StarterKar</span>
                         </div>
-                        <h2 className="text-3xl font-black text-zinc-900 dark:text-white tracking-tighter italic uppercase leading-none">
-                            Ecosistema <span className="text-indigo-600">Post-Venta</span>
+                        <h2 className="text-5xl font-black text-zinc-900 dark:text-white tracking-tighter italic uppercase leading-none">
+                            Post-Venta <span className="text-indigo-600 underline decoration-indigo-600/20 underline-offset-8">Élite</span>
                         </h2>
-                        <p className="text-zinc-400 text-[10px] font-bold uppercase tracking-widest mt-2">Personalización de logística y trámites • Ref: {transactionId.split('-')[0].toUpperCase()}</p>
+                        <p className="text-zinc-500 text-xs font-bold uppercase tracking-widest mt-6 max-w-sm">
+                            Logística, trámites y servicios de valor agregado personalizados para tu nueva unidad.
+                        </p>
                     </div>
-                    <div className="flex items-center gap-4 bg-white dark:bg-zinc-950/50 p-3 rounded-2xl border border-zinc-100 dark:border-white/5 shadow-sm">
-                        <div className="flex flex-col px-4 text-right">
-                            <span className="text-[9px] font-black uppercase text-zinc-400 tracking-[0.2em] mb-1">Estatus Legal</span>
-                            <div className="flex items-center gap-2 justify-end">
-                                <div className="h-1.5 w-1.5 bg-emerald-500 rounded-full animate-pulse" />
-                                <span className="text-xs font-black text-emerald-600 uppercase tracking-tighter">Bóveda Activa</span>
-                            </div>
+                    
+                    <div className="bg-zinc-900 dark:bg-zinc-950 px-8 py-6 rounded-[2rem] border border-white/10 shadow-2xl flex items-center gap-6">
+                        <div className="h-12 w-12 bg-emerald-500/10 rounded-2xl flex items-center justify-center text-emerald-500 border border-emerald-500/20">
+                            <Zap className="h-6 w-6 animate-pulse" />
+                        </div>
+                        <div>
+                            <p className="text-[10px] font-black uppercase text-zinc-500 tracking-[0.2em] mb-1">Estatus Bóveda</p>
+                            <p className="text-lg font-black text-white italic tracking-tight uppercase">Sincronizado</p>
                         </div>
                     </div>
                 </div>
 
-                               <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-10">
+                {/* Service Grid - Premium Tiles */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6 mb-12">
                     {services.map((service) => (
                         <button
                             key={service.id}
                             onClick={() => setRequestedService(service.id)}
                             className={cn(
-                                "group relative p-6 rounded-[2.5rem] border-2 text-left transition-all duration-500 overflow-hidden",
+                                "group relative p-8 rounded-[2.5rem] border-2 text-left transition-all duration-700 overflow-hidden flex flex-col h-full",
                                 requestedService === service.id
-                                    ? "border-indigo-600 bg-white dark:bg-zinc-800 shadow-2xl shadow-indigo-500/20 scale-[1.02]"
-                                    : "border-zinc-100 dark:border-white/5 bg-zinc-50/30 dark:bg-white/5 hover:border-indigo-200 hover:scale-[1.01]"
+                                    ? "border-indigo-600 bg-white dark:bg-zinc-800 shadow-3xl shadow-indigo-500/30 scale-[1.02]"
+                                    : "border-zinc-100 dark:border-white/5 bg-white/50 dark:bg-white/5 hover:border-indigo-300 hover:scale-[1.01] hover:shadow-xl"
                             )}
                         >
-                            {/* Hover Background Glow */}
+                            {/* Accent Glow */}
                             <div className={cn(
-                                "absolute inset-0 bg-gradient-to-br from-indigo-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500",
-                                requestedService === service.id && "opacity-100"
+                                "absolute -top-12 -right-12 w-32 h-32 rounded-full blur-[40px] transition-opacity duration-700",
+                                requestedService === service.id ? "bg-indigo-600/20 opacity-100" : "bg-indigo-600/5 opacity-0 group-hover:opacity-100"
                             )} />
 
-                            <div className="relative z-10 flex items-start justify-between mb-6">
+                            <div className="mb-8 flex justify-between items-start relative z-10">
                                 <div className={cn(
-                                    "p-4 rounded-2xl transition-all duration-500 transform group-hover:rotate-6",
+                                    "h-14 w-14 rounded-2xl flex items-center justify-center transition-all duration-700 shadow-lg",
                                     requestedService === service.id 
-                                        ? "bg-indigo-600 text-white shadow-xl shadow-indigo-600/40" 
-                                        : "bg-white dark:bg-zinc-800 text-zinc-400 group-hover:text-indigo-600 shadow-sm border border-zinc-100 dark:border-zinc-700"
+                                        ? "bg-indigo-600 text-white scale-110 rotate-6" 
+                                        : "bg-zinc-100 dark:bg-zinc-800 text-zinc-500 group-hover:bg-indigo-50 group-hover:text-indigo-600"
                                 )}>
                                     {service.icon}
                                 </div>
+                                <span className={cn(
+                                    "text-[8px] font-black px-3 py-1.5 rounded-full border transition-all",
+                                    requestedService === service.id 
+                                        ? "bg-indigo-50 text-indigo-600 border-indigo-100" 
+                                        : "bg-zinc-50 dark:bg-zinc-900 text-zinc-400 border-zinc-100 dark:border-zinc-800"
+                                )}>
+                                    {service.badge}
+                                </span>
                             </div>
-                            <div className="relative z-10">
+
+                            <div className="relative z-10 mt-auto">
                                 <h4 className={cn(
-                                    "font-black text-[10px] uppercase tracking-[0.2em] mb-2 transition-colors",
-                                    requestedService === service.id ? "text-indigo-700 dark:text-white" : "text-zinc-800 dark:text-zinc-300"
+                                    "font-black text-sm uppercase tracking-tight mb-2 italic transition-colors",
+                                    requestedService === service.id ? "text-indigo-900 dark:text-white" : "text-zinc-900 dark:text-zinc-200"
                                 )}>{service.title}</h4>
-                                <p className="text-[10px] text-zinc-400 leading-relaxed text-justify font-medium tracking-tight" style={{ textAlign: 'justify' }}>
+                                <p className="text-[10px] text-zinc-500 dark:text-zinc-400 leading-relaxed font-bold uppercase tracking-widest opacity-80 group-hover:opacity-100 transition-opacity">
                                     {service.desc}
                                 </p>
                             </div>
@@ -227,184 +232,199 @@ export function PostSaleEcosystem({
                     ))}
                 </div>
 
-                {/* Detail Area */}
-                <div className="space-y-6">
-                    {requestedService === 'logistica' && (
-                        <div className="bg-white dark:bg-zinc-950 p-8 rounded-[2.5rem] border border-zinc-200 dark:border-zinc-800 animate-in slide-in-from-top-4 duration-500">
-                             <LogisticsWidget
-                                carLocation={carLocation}
-                                onQuote={(q) => {
-                                    setLogistics(q);
-                                    if(q) toast.success(`Cotización de traslado: $${q.cost.toLocaleString()}`);
-                                }}
-                            />
+                {/* Detailed Action Area - Focus on Content */}
+                {requestedService && (
+                    <div className="relative bg-zinc-900 dark:bg-black rounded-[3rem] p-10 border border-white/10 shadow-3xl animate-in slide-in-from-top-8 duration-700 mb-10 overflow-hidden">
+                        <div className="absolute top-0 right-0 p-8 opacity-5">
+                            <Zap className="h-64 w-64" />
                         </div>
-                    )}
-
-                    {requestedService === 'garantia' && (
-                        <div className="bg-white dark:bg-zinc-950 p-8 rounded-[2.5rem] border border-zinc-200 dark:border-zinc-800 animate-in slide-in-from-top-4 duration-500">
-                            <WarrantySelector
-                                carPrice={carPrice}
-                                onSelect={(w) => {
-                                    setWarranty(w);
-                                    if(w) toast.success(`Garantía ${w.type} añadida`);
-                                }}
-                            />
-                        </div>
-                    )}
-
-                    {requestedService === 'entrega' && (
-                        <div className="bg-white dark:bg-zinc-950 p-8 rounded-[2.5rem] border border-zinc-200 dark:border-zinc-800 animate-in slide-in-from-top-4 duration-500">
-                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <button
-                                    onClick={() => {setDeliveryType('workshop'); toast.info("Entrega en Taller Aliado seleccionada");}}
-                                    className={cn(
-                                        "p-6 rounded-3xl border-2 text-left transition-all",
-                                        deliveryType === 'workshop' 
-                                            ? "border-indigo-600 bg-indigo-50 dark:bg-indigo-900/10" 
-                                            : "border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 opacity-60"
-                                    )}
-                                >
-                                    <Warehouse className={cn("h-6 w-6 mb-3", deliveryType === 'workshop' ? "text-indigo-600" : "text-zinc-400")} />
-                                    <span className="font-bold text-sm block">Taller Aliado (Zona Segura)</span>
-                                    <span className="text-xs text-zinc-500">Sin costo de envío local.</span>
-                                </button>
-
-                                <button
-                                    onClick={() => {setDeliveryType('home'); toast.info("Envío a domicilio seleccionado");}}
-                                    className={cn(
-                                        "p-6 rounded-3xl border-2 text-left transition-all",
-                                        deliveryType === 'home' 
-                                            ? "border-indigo-600 bg-indigo-50 dark:bg-indigo-900/10" 
-                                            : "border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 opacity-60"
-                                    )}
-                                >
-                                    <Home className={cn("h-6 w-6 mb-3", deliveryType === 'home' ? "text-indigo-600" : "text-zinc-400")} />
-                                    <span className="font-bold text-sm block">Envío a Domicilio</span>
-                                    <span className="text-xs text-zinc-500">Entrega en Grúa Especializada.</span>
-                                </button>
-                            </div>
-                        </div>
-                    )}
-
-                    {requestedService === 'operacion' && (
-                        <div className="bg-white dark:bg-zinc-950 p-8 rounded-[2.5rem] border border-zinc-200 dark:border-zinc-800 animate-in slide-in-from-top-4 duration-500">
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <button
-                                    onClick={() => {setRemoteMode(false); toast.info("Cita Presencial confirmada");}}
-                                    className={cn(
-                                        "p-6 rounded-3xl border-2 text-left transition-all",
-                                        !remoteMode 
-                                            ? "border-indigo-600 bg-indigo-50 dark:bg-indigo-900/10" 
-                                            : "border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 opacity-60"
-                                    )}
-                                >
-                                    <MapPin className={cn("h-6 w-6 mb-3", !remoteMode ? "text-indigo-600" : "text-zinc-400")} />
-                                    <span className="font-bold text-sm block">Presencial</span>
-                                    <span className="text-xs text-zinc-500">Cita en punto físico con inspector.</span>
-                                </button>
-
-                                <button
-                                    onClick={() => {setRemoteMode(true); toast.info("Compra Remota activada");}}
-                                    className={cn(
-                                        "p-6 rounded-3xl border-2 text-left transition-all",
-                                        remoteMode 
-                                            ? "border-indigo-600 bg-indigo-50 dark:bg-indigo-900/10" 
-                                            : "border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 opacity-60"
-                                    )}
-                                >
-                                    <Zap className={cn("h-6 w-6 mb-3", remoteMode ? "text-indigo-600" : "text-zinc-400")} />
-                                    <span className="font-bold text-sm block">Remota</span>
-                                    <span className="text-xs text-zinc-500">Videollamada HD & Entrega vía QR.</span>
-                                </button>
-                            </div>
-                        </div>
-                    )}
-
-                    {requestedService === 'cambio_propietario' && (
-                        <div className="animate-in slide-in-from-top-4 duration-500">
-                            <GestoriaAdvisor onSelect={handleGestoriaSelect} />
-                        </div>
-                    )}
-
-                    {requestedService === 'seguro_aliado' && (
-                        <div className="bg-white dark:bg-zinc-950 p-8 rounded-[2.5rem] border border-zinc-200 dark:border-zinc-800 animate-in slide-in-from-top-4 duration-500">
-                            <InsuranceSelector carValue={carPrice} onSelectOption={handleInsuranceSelect} />
-                        </div>
-                    )}
-
-                    {requestedService === 'aviso_venta' && (
-                        <div className="p-6 bg-zinc-950 border border-amber-500/20 rounded-3xl animate-in slide-in-from-top-4">
-                            <div className="flex items-center gap-3 mb-4">
-                                <AlertTriangle className="h-5 w-5 text-amber-500" />
-                                <h4 className="font-bold text-white text-sm uppercase tracking-widest">Aviso de Venta Obligatorio</h4>
-                            </div>
-                            <p className="text-xs text-zinc-400 leading-relaxed mb-4">
-                                Tu estado (<span className="text-white font-bold">{state}</span>) requiere un aviso de venta manual.
-                                Hemos pre-llenado el formato oficial para ti.
-                            </p>
-                             <button 
-                                onClick={() => toast.success("Descargando formato SEMOVI pre-llenado...")}
-                                className="flex items-center gap-2 bg-white text-black h-11 px-6 rounded-full font-bold text-xs transition-transform hover:scale-105"
-                            >
-                                <Download className="h-4 w-4" />
-                                Descargar Formato SEMOVI
-                            </button>
-                        </div>
-                    )}
-
-                    {requestedService === 'carta_responsiva' && (
-                        <div className="p-6 bg-zinc-950 border border-indigo-500/20 rounded-3xl animate-in slide-in-from-top-4">
-                            <div className="flex items-center gap-3 mb-4">
-                                <ShieldCheck className="h-5 w-5 text-indigo-400" />
-                                <h4 className="font-bold text-white text-sm uppercase tracking-widest">Generar Carta Responsiva</h4>
-                            </div>
-                            <p className="text-xs text-zinc-400 leading-relaxed mb-4">
-                                Documento legal que te protege de cualquier incidente ocurrido después de la entrega.
-                            </p>
-                            <Link
-                                href={`/dashboard/release-letter/${transactionId}`}
-                                className="inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-500 text-white h-11 px-6 rounded-full font-bold text-xs transition-transform hover:scale-105"
-                            >
-                                <Download className="h-4 w-4" />
-                                Generar PDF Oficial
-                            </Link>
-                        </div>
-                    )}
-                </div>
-
-                {/* Notificaciones Avanzadas */}
-                <div className="mt-10 bg-gradient-to-r from-indigo-600 to-indigo-800 rounded-[2.5rem] p-8 flex flex-col sm:flex-row items-center justify-between gap-8 group shadow-2xl shadow-indigo-600/30 relative overflow-hidden">
-                    <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-10" />
-                    <div className="relative z-10 flex items-center gap-6">
-                        <div className={cn(
-                            "h-16 w-16 rounded-[1.5rem] flex items-center justify-center transition-all duration-700 border-2",
-                            remindersEnabled ? "bg-white text-indigo-600 border-white shadow-xl shadow-white/20 scale-110" : "bg-white/10 text-white border-white/20"
-                        )}>
-                            <BellRing className={cn("h-8 w-8", remindersEnabled && "animate-bounce")} />
-                        </div>
-                        <div>
-                            <h3 className="font-black text-white text-lg italic uppercase tracking-tighter">Concierge Inteligente</h3>
-                            <p className="text-indigo-100/70 text-[10px] font-bold uppercase tracking-[0.2em]">Mantenimiento • Tenencias • Notificaciones</p>
+                        <div className="relative z-10">
+                            {requestedService === 'logistica' && (
+                                <LogisticsWidget
+                                    carLocation={carLocation}
+                                    onQuote={(q) => {
+                                        setLogistics(q);
+                                        if(q) toast.success(`Cotización de traslado: $${q.cost.toLocaleString()}`);
+                                    }}
+                                />
+                            )}
+                            {requestedService === 'garantia' && (
+                                <WarrantySelector
+                                    carPrice={carPrice}
+                                    onSelect={(w) => {
+                                        setWarranty(w);
+                                        if(w) toast.success(`Garantía ${w.type} añadida`);
+                                    }}
+                                />
+                            )}
+                            {requestedService === 'entrega' && (
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <button
+                                        onClick={() => {setDeliveryType('workshop'); toast.info("Protocolo Taller Aliado activado");}}
+                                        className={cn(
+                                            "group p-10 rounded-[2.5rem] border-2 text-left transition-all duration-500",
+                                            deliveryType === 'workshop' 
+                                                ? "border-indigo-600 bg-white/5 shadow-2xl" 
+                                                : "border-zinc-800 bg-transparent opacity-40 hover:opacity-100"
+                                        )}
+                                    >
+                                        <Warehouse className={cn("h-12 w-12 mb-6 transition-all", deliveryType === 'workshop' ? "text-indigo-500 scale-110" : "text-zinc-600")} />
+                                        <h5 className="font-black text-xl text-white italic uppercase tracking-tighter mb-2">Taller Aliado</h5>
+                                        <p className="text-xs text-zinc-500 font-medium">Recepción en Punto Seguro StarterKar. Sin costo de logística local.</p>
+                                    </button>
+                                    <button
+                                        onClick={() => {setDeliveryType('home'); toast.info("Envío a Domicilio activado");}}
+                                        className={cn(
+                                            "group p-10 rounded-[2.5rem] border-2 text-left transition-all duration-500",
+                                            deliveryType === 'home' 
+                                                ? "border-indigo-600 bg-white/5 shadow-2xl" 
+                                                : "border-zinc-800 bg-transparent opacity-40 hover:opacity-100"
+                                        )}
+                                    >
+                                        <Home className={cn("h-12 w-12 mb-6 transition-all", deliveryType === 'home' ? "text-indigo-500 scale-110" : "text-zinc-600")} />
+                                        <h5 className="font-black text-xl text-white italic uppercase tracking-tighter mb-2">Entrega VIP</h5>
+                                        <p className="text-xs text-zinc-500 font-medium">Traslado en grúa plataforma hasta tu puerta. Protocolo de firma remoto.</p>
+                                    </button>
+                                </div>
+                            )}
+                            {requestedService === 'operacion' && (
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <button
+                                        onClick={() => {setRemoteMode(false); toast.info("Modalidad Presencial confirmada");}}
+                                        className={cn(
+                                            "group p-10 rounded-[2.5rem] border-2 text-left transition-all duration-500",
+                                            !remoteMode 
+                                                ? "border-indigo-600 bg-white/5 shadow-2xl" 
+                                                : "border-zinc-800 bg-transparent opacity-40 hover:opacity-100"
+                                        )}
+                                    >
+                                        <MapPin className={cn("h-12 w-12 mb-6 transition-all", !remoteMode ? "text-indigo-500 scale-110" : "text-zinc-600")} />
+                                        <h5 className="font-black text-xl text-white italic uppercase tracking-tighter mb-2">Cita Física</h5>
+                                        <p className="text-xs text-zinc-500 font-medium">Intercambio de llaves y documentos en presencia de inspector.</p>
+                                    </button>
+                                    <button
+                                        onClick={() => {setRemoteMode(true); toast.info("Venta Remota 100% Digital activada");}}
+                                        className={cn(
+                                            "group p-10 rounded-[2.5rem] border-2 text-left transition-all duration-500",
+                                            remoteMode 
+                                                ? "border-indigo-600 bg-white/5 shadow-2xl" 
+                                                : "border-zinc-800 bg-transparent opacity-40 hover:opacity-100"
+                                        )}
+                                    >
+                                        <Smartphone className={cn("h-12 w-12 mb-6 transition-all", remoteMode ? "text-indigo-500 scale-110" : "text-zinc-600")} />
+                                        <h5 className="font-black text-xl text-white italic uppercase tracking-tighter mb-2">Remoto IA</h5>
+                                        <p className="text-xs text-zinc-500 font-medium">Validación vía videollamada HD y liberación de fondos con QR.</p>
+                                    </button>
+                                </div>
+                            )}
+                            {requestedService === 'cambio_propietario' && <GestoriaAdvisor onSelect={handleGestoriaSelect} />}
+                            {requestedService === 'seguro_aliado' && <InsuranceSelector carValue={carPrice} onSelectOption={handleInsuranceSelect} />}
+                            {requestedService === 'aviso_venta' && (
+                                <div className="flex flex-col md:flex-row items-center gap-8">
+                                    <div className="h-20 w-20 bg-amber-500/10 rounded-3xl flex items-center justify-center text-amber-500 border border-amber-500/20">
+                                        <AlertTriangle className="h-10 w-10" />
+                                    </div>
+                                    <div className="flex-1">
+                                        <h4 className="text-white font-black text-xl italic uppercase tracking-tight mb-2">Aviso de Venta SEMOVI</h4>
+                                        <p className="text-sm text-zinc-500 font-medium mb-6">Generamos tu notificación oficial para {state}. El documento está listo para descarga y firma digital.</p>
+                                        <button onClick={() => toast.success("Documento generado satisfactoriamente")} className="h-14 px-8 bg-white text-black rounded-2xl font-black text-xs uppercase tracking-widest hover:scale-105 transition-all flex items-center gap-3">
+                                            <Download className="h-5 w-5" /> Descargar Formato Oficial
+                                        </button>
+                                    </div>
+                                </div>
+                            )}
+                            {requestedService === 'carta_responsiva' && (
+                                <div className="flex flex-col md:flex-row items-center gap-8">
+                                    <div className="h-20 w-20 bg-indigo-500/10 rounded-3xl flex items-center justify-center text-indigo-500 border border-indigo-500/20">
+                                        <ShieldCheck className="h-10 w-10" />
+                                    </div>
+                                    <div className="flex-1">
+                                        <h4 className="text-white font-black text-xl italic uppercase tracking-tight mb-2">Contrato de Deslinde Legal</h4>
+                                        <p className="text-sm text-zinc-500 font-medium mb-6">Protección 360° ante multas o incidentes post-entrega. Validez jurídica ante notario.</p>
+                                        <Link href={`/dashboard/release-letter/${transactionId}`} className="inline-flex h-14 px-8 bg-indigo-600 text-white rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-indigo-500 hover:scale-105 transition-all items-center gap-3">
+                                            <FileText className="h-5 w-5" /> Generar Carta Digital
+                                        </Link>
+                                    </div>
+                                </div>
+                            )}
                         </div>
                     </div>
-                    <button
-                        onClick={() => {
-                            const newStatus = !remindersEnabled;
-                            setRemindersEnabled(newStatus);
-                            if (newStatus) {
-                                toast.success("Concierge Activado: Recibirás recordatorios de mantenimiento y trámites.");
-                            }
-                        }}
-                        className={cn(
-                            "relative z-10 w-full sm:w-auto px-10 h-14 rounded-2xl font-black text-xs uppercase tracking-[0.2em] transition-all shadow-2xl",
-                            remindersEnabled 
-                                ? "bg-white text-indigo-600 hover:bg-indigo-50" 
-                                : "bg-indigo-500/20 text-white border-2 border-white/20 hover:bg-white/10"
+                )}
+
+                {/* Concierge Inteligente - The Masterpiece */}
+                <div className="relative group mt-8">
+                    <div className={cn(
+                        "absolute -inset-1 bg-gradient-to-r from-indigo-600 via-purple-600 to-indigo-600 rounded-[3rem] blur-xl opacity-25 group-hover:opacity-50 transition-opacity duration-1000",
+                        remindersEnabled && "opacity-60 blur-2xl"
+                    )} />
+                    
+                    <div className="relative bg-zinc-900 dark:bg-black rounded-[2.5rem] p-10 flex flex-col xl:flex-row items-center justify-between gap-12 border border-white/10 shadow-3xl overflow-hidden">
+                        <div className="absolute top-0 left-0 w-full h-full bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-10" />
+                        
+                        <div className="relative z-10 flex flex-col md:flex-row items-center gap-8">
+                            <div className={cn(
+                                "h-24 w-24 rounded-[2rem] flex items-center justify-center transition-all duration-1000 border-2 relative",
+                                remindersEnabled 
+                                    ? "bg-white text-indigo-600 border-white shadow-[0_0_50px_rgba(255,255,255,0.3)] scale-110" 
+                                    : "bg-white/5 text-white border-white/10"
+                            )}>
+                                <BellRing className={cn("h-10 w-10", remindersEnabled && "animate-bounce")} />
+                                {remindersEnabled && (
+                                    <div className="absolute -top-2 -right-2 h-6 w-6 bg-emerald-500 rounded-full flex items-center justify-center text-[10px] font-black text-white animate-pulse">
+                                        ON
+                                    </div>
+                                )}
+                            </div>
+                            <div className="text-center md:text-left">
+                                <h3 className="font-black text-3xl text-white italic uppercase tracking-tighter mb-2">Concierge <span className="text-indigo-500">Inteligente</span></h3>
+                                <div className="flex flex-wrap justify-center md:justify-start gap-4">
+                                    <span className="text-[10px] font-black text-zinc-500 uppercase tracking-widest flex items-center gap-2">
+                                        <CheckCircle2 className="h-3 w-3 text-emerald-500" /> Mantenimientos
+                                    </span>
+                                    <span className="text-[10px] font-black text-zinc-500 uppercase tracking-widest flex items-center gap-2">
+                                        <CheckCircle2 className="h-3 w-3 text-emerald-500" /> Tenencias
+                                    </span>
+                                    <span className="text-[10px] font-black text-zinc-500 uppercase tracking-widest flex items-center gap-2">
+                                        <CheckCircle2 className="h-3 w-3 text-emerald-500" /> Verificaciones
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+
+                        {remindersEnabled && (
+                            <div className="relative z-10 flex-1 max-w-md animate-in fade-in slide-in-from-right-8 duration-700">
+                                <div className="bg-white/5 rounded-2xl p-6 border border-white/5 space-y-4">
+                                    <p className="text-[10px] font-black text-indigo-400 uppercase tracking-widest">Próximas Alertas</p>
+                                    <div className="flex items-center justify-between text-xs font-bold text-zinc-400">
+                                        <span className="uppercase">Cambio de Aceite (Est.)</span>
+                                        <span className="text-white italic">En 4,200 km</span>
+                                    </div>
+                                    <div className="flex items-center justify-between text-xs font-bold text-zinc-400">
+                                        <span className="uppercase">Tenencia {new Date().getFullYear() + 1}</span>
+                                        <span className="text-white italic">Enero 1st</span>
+                                    </div>
+                                </div>
+                            </div>
                         )}
-                    >
-                        {remindersEnabled ? "Sincronizado" : "Activar"}
-                    </button>
+
+                        <button
+                            onClick={() => {
+                                const newStatus = !remindersEnabled;
+                                setRemindersEnabled(newStatus);
+                                if (newStatus) {
+                                    toast.success("Concierge Élite Activado: Monitoreo 24/7 activo.");
+                                }
+                            }}
+                            className={cn(
+                                "relative z-10 w-full xl:w-auto px-12 h-16 rounded-2xl font-black text-sm uppercase tracking-widest transition-all shadow-3xl",
+                                remindersEnabled 
+                                    ? "bg-white text-indigo-600 hover:scale-105 active:scale-95" 
+                                    : "bg-indigo-600 text-white hover:bg-indigo-500 hover:scale-105 active:scale-95 shadow-xl shadow-indigo-600/20"
+                            )}
+                        >
+                            {remindersEnabled ? "Sincronizado" : "Activar Ahora"}
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>

@@ -192,7 +192,12 @@ export async function reportDiscrepancyAction(transactionId: string, details: {
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
 
-    // 1. Fetch current transaction to get seller_id and car details
+    // Handle Mocks/Demo
+    if (transactionId.startsWith('mock-') || transactionId.startsWith('demo-')) {
+        console.log(`[reportDiscrepancyAction] SIMULATION: Dispute logged for ${transactionId}`);
+        return { success: true };
+    }
+
     const { data: tx } = await supabase
         .from('transactions')
         .select('*')

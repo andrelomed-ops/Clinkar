@@ -78,9 +78,9 @@ export function HandoverSafeCheck({ onComplete, onNegotiate, isProcessing }: Han
                         {onNegotiate && (
                             <button
                                 onClick={onNegotiate}
-                                className="w-full h-12 bg-amber-100 hover:bg-amber-200 text-amber-800 font-bold rounded-xl border border-amber-200 transition-colors flex items-center justify-center gap-2 text-xs uppercase tracking-wider"
+                                className="w-full h-16 bg-amber-50 hover:bg-amber-100 text-amber-700 font-black rounded-2xl border-2 border-amber-200 transition-all flex items-center justify-center gap-3 text-xs uppercase tracking-[0.2em] shadow-lg shadow-amber-500/5 hover:scale-[1.02] active:scale-95"
                             >
-                                <AlertCircle className="h-4 w-4" />
+                                <AlertCircle className="h-5 w-5" />
                                 Reportar Discrepancia y Negociar
                             </button>
                         )}
