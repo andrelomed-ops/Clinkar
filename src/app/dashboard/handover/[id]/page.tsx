@@ -19,14 +19,39 @@ export default function HandoverPage() {
 
     useEffect(() => {
         async function fetchTransaction() {
-            const { data } = await supabase
-                .from('transactions')
-                .select('*, cars(*)')
-                .eq('id', id)
-                .single();
-            
-            setTransaction(data);
-            setLoading(false);
+            try {
+                // Try to join first
+                let { data, error } = await supabase
+                    .from('transactions')
+                    .select('*, cars(*)')
+                    .eq('id', id)
+                    .single();
+                
+                if (error || !data?.cars) {
+                    // Fallback: Fetch separately if join fails
+                    const { data: txData } = await supabase
+                        .from('transactions')
+                        .select('*')
+                        .eq('id', id)
+                        .single();
+                    
+                    if (txData) {
+                        const { data: carData } = await supabase
+                            .from('cars')
+                            .select('*')
+                            .eq('id', txData.car_id)
+                            .single();
+                        
+                        data = { ...txData, cars: carData };
+                    }
+                }
+                
+                setTransaction(data);
+            } catch (e) {
+                console.error("Error fetching transaction:", e);
+            } finally {
+                setLoading(false);
+            }
         }
         if (id) fetchTransaction();
     }, [id, supabase]);
