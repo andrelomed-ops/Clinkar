@@ -124,7 +124,7 @@ export async function getLegalTransactionsAction() {
 
     const { data: txs, error } = await supabase
         .from("transactions")
-        .select("*, car:car_id(make, model, year)")
+        .select("*")
         .order("created_at", { ascending: false });
 
     if (error) throw new Error(error.message);
@@ -195,11 +195,17 @@ export async function reportDiscrepancyAction(transactionId: string, details: {
     // 1. Fetch current transaction to get seller_id and car details
     const { data: tx } = await supabase
         .from('transactions')
-        .select('*, car:car_id(make, model, year)')
+        .select('*')
         .eq('id', transactionId)
         .single();
-
+    
     if (!tx) throw new Error("Transaction not found");
+
+    const { data: carData } = await supabase
+        .from('cars')
+        .select('make, model, year')
+        .eq('id', tx.car_id)
+        .single();
 
     // 2. Log for Audit (Statistics & Annual Reports)
     await supabase.from('audit_logs').insert({
@@ -211,7 +217,7 @@ export async function reportDiscrepancyAction(transactionId: string, details: {
             reason: details.reason,
             negotiated_amount: details.negotiatedAmount || tx.car_price,
             original_amount: tx.car_price,
-            car_info: tx.car ? `${tx.car.make} ${tx.car.model} ${tx.car.year}` : "Unknown Car"
+            car_info: carData ? `${carData.make} ${carData.model} ${carData.year}` : "Unknown Car"
         }
     });
 

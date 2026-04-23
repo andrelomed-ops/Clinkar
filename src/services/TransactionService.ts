@@ -246,10 +246,7 @@ export class TransactionService extends BaseService {
     static async getTransactionById(supabase: SupabaseClient<Database>, id: string): Promise<Transaction | null> {
         const query = (supabase
             .from('transactions') as any)
-            .select(`
-                *,
-                car_id (*)
-            `)
+            .select("*")
             .eq('id', id)
             .maybeSingle();
 
@@ -319,12 +316,7 @@ export class TransactionService extends BaseService {
     static async getAllTransactions(supabase: SupabaseClient<Database>) {
         const { data, error } = await (supabase
             .from('transactions') as any)
-            .select(`
-                *,
-                car:car_id (id, make, model, year, vin, plate, documents),
-                buyer:buyer_id (id, full_name, email),
-                seller:seller_id (id, full_name, email)
-            `)
+            .select("*")
             .order('created_at', { ascending: false });
 
         if (error) {
@@ -421,9 +413,9 @@ export class TransactionService extends BaseService {
     static async simulateSPEIDeposit(supabase: SupabaseClient<Database>, transactionId: string): Promise<boolean> {
         const { data: transaction, error: fetchError } = await (supabase
             .from('transactions') as any)
-            .select('id, buyer_id, seller_id, car_id, car_price, car_id(vin)')
+            .select('id, buyer_id, seller_id, car_id, car_price')
             .eq('id', transactionId)
-                .maybeSingle();
+            .maybeSingle();
 
         if (fetchError || !transaction) {
             Logger.error('Error fetching transaction for simulation:', fetchError);
