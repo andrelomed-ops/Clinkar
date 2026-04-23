@@ -13,6 +13,9 @@ export function CheckoutAction({ carId, carPrice, carLocation }: { carId: string
     const [scheduledDate, setScheduledDate] = useState("");
     const [scheduledTime, setScheduledTime] = useState("");
 
+    // Helper for reactive preview
+    const dateFormatted = scheduledDate ? new Date(scheduledDate + 'T00:00:00').toLocaleDateString('es-MX', { day: 'numeric', month: 'long', year: 'numeric' }) : '---';
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         
@@ -119,8 +122,8 @@ export function CheckoutAction({ carId, carPrice, carLocation }: { carId: string
                     </div>
                 </div>
 
-                <div className="text-[10px] text-zinc-400 mb-10 text-justify leading-relaxed bg-white/5 p-6 rounded-[1.5rem] border border-white/5 italic font-medium">
-                    <b className="text-indigo-400 uppercase font-black">Próximo Paso:</b> Al confirmar, bloquearemos el activo y notificaremos a logística para tu cita el día <span className="text-white font-black underline decoration-indigo-500 underline-offset-4">{scheduledDate || '---'}</span> a las <span className="text-white font-black underline decoration-indigo-500 underline-offset-4">{scheduledTime || '---'}</span>.
+                <div className="text-[10px] text-zinc-400 mb-10 text-justify leading-relaxed bg-white/5 p-6 rounded-[1.5rem] border border-white/5 italic font-medium" style={{ textAlign: 'justify', textJustify: 'inter-word' }}>
+                    <b className="text-indigo-400 uppercase font-black">Próximo Paso:</b> Al confirmar, bloquearemos el activo y notificaremos a logística para tu cita el día <span className="text-white font-black underline decoration-indigo-500 underline-offset-4">{dateFormatted}</span> a las <span className="text-white font-black underline decoration-indigo-500 underline-offset-4">{scheduledTime || '---'}</span>.
                 </div>
 
                 <button
@@ -131,7 +134,7 @@ export function CheckoutAction({ carId, carPrice, carLocation }: { carId: string
                     {loading ? (
                         <div className="flex items-center gap-3">
                             <Loader2 className="animate-spin h-5 w-5" />
-                            <span>Procesando Bóveda...</span>
+                            <span className="animate-pulse">Sincronizando Bóveda...</span>
                         </div>
                     ) : (
                         <>
@@ -141,6 +144,12 @@ export function CheckoutAction({ carId, carPrice, carLocation }: { carId: string
                     )}
                 </button>
             </div>
+            <style jsx>{`
+                .text-justify {
+                    text-align: justify !important;
+                    text-justify: inter-word !important;
+                }
+            `}</style>
         </form>
     );
 }

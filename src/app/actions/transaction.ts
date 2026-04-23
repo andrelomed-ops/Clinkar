@@ -21,16 +21,18 @@ export async function startTransaction(carId: string, addOns?: {
 
     // 1. Check Auth (Real or Demo)
     const { data: { user } } = await supabase.auth.getUser();
-    let buyerId = user?.id;
+    const buyerId = user?.id || 'demo-user-123';
 
-    if (!buyerId) {
+    console.log(`[startTransaction] Starting for Car ${carId} (Buyer: ${buyerId})`, addOns);
+
+    if (!user) {
         // Fallback: Check for Demo Cookie
         const { cookies } = await import('next/headers');
         const cookieStore = await cookies();
         const demoRole = cookieStore.get('starterkar_role')?.value;
 
         if (demoRole === 'buyer' || demoRole === 'seller') {
-            buyerId = 'demo-user-123'; // Mock ID for demo
+            // buyerId remains 'demo-user-123'
         } else {
             redirect(`/login?next=/buy/${carId}`);
         }
@@ -93,12 +95,13 @@ export async function startTransaction(carId: string, addOns?: {
                     location: car.location
                 }
             });
+            console.log(`[startTransaction] Success: Transaction ${transactionId} created.`);
         }
 
         return { success: true, transactionId };
-    } catch (error) {
-        console.error("Transaction Error:", error);
-        return { success: false, error: error instanceof Error ? error.message : 'Unknown error' };
+    } catch (error: any) {
+        console.error('[startTransaction] CRITICAL ERROR:', error);
+        return { success: false, error: error.message || "Failed to start transaction" };
     }
 }
 
