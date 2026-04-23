@@ -424,12 +424,13 @@ export const generateAIBrainResponse = async (text: string, inventory: Vehicle[]
                 recs.push(dataSource.find(c => c.model.includes('F-150')) || dataSource[0]);
             }
         } else {
-            content = `🔍 He buscado en toda la red y en mi inventario. No encontré un exacto ${desiredType || 'vehículo'} con esos filtros extremos, pero estas son las mejores coincidencias parciales:`;
-            // Safe fallback logic
-            const safeRec1 = dataSource.find(c => c.type === (desiredType || 'SUV')) || dataSource[0];
-            const safeRec2 = dataSource.find(c => c.type !== safeRec1?.type) || dataSource[1] || dataSource[0];
-            recs.push(safeRec1);
-            recs.push(safeRec2);
+            const searchContext = desiredBrand ? `un **${desiredBrand} ${desiredModel || ''}**` : `este tipo de vehículo`;
+            content = `🔍 He buscado en nuestro inventario verificado y actualmente no cuento con ${searchContext} disponible para entrega inmediata. \n\n¡Pero no te preocupes! Como tu asesor, puedo activar una **Búsqueda Maestro** para encontrarlo por ti en nuestra red nacional. ¿Te gustaría realizar una petición formal?`;
+            
+            // Return an empty recs but with a special message that the UI can handle if needed, 
+            // or just the content that guides them to the link.
+            // Actually, we can add a 'system' recommendation or just tell them to click the link.
+            content += `\n\n👉 [Realizar Petición de Auto Especial](/demand-request)`;
         }
     }
 

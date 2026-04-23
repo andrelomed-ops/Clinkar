@@ -1,6 +1,7 @@
 import { createClient } from '@supabase/supabase-js';
 import { Database } from '@/lib/database.types';
 import { Logger } from '@/lib/logger';
+import { NotificationService } from './NotificationService';
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://placeholder.supabase.co';
 const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'placeholder';
@@ -27,6 +28,18 @@ export class DemandService {
             Logger.info('[DemandService] Created demand request:', result.id);
             
             await this.notifyInterestedSellers(result);
+            
+            // 🚨 Alert Admins via Audit Logs / Notifications
+            await NotificationService.notifyAdmin(supabase, {
+                action: 'NUEVA_PETICION_AUTO',
+                entityType: 'demand_registry',
+                entityId: result.id,
+                metadata: {
+                    brand: result.brand,
+                    model: result.model,
+                    budget: `${result.budget_min} - ${result.budget_max}`
+                }
+            });
 
             return { success: true, data: result };
         } catch (error) {
