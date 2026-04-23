@@ -41,7 +41,7 @@ export const viewport = {
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://starterkar.vercel.app"),
-  title: "StarterKar [LIVE-V10] | Bóveda Digital & Transacciones Seguras de Autos",
+  title: "StarterKar | Bóveda Digital & Transacciones Seguras de Autos",
   description: "Protección legal y fiscal 360° para la compraventa de autos entre particulares. Escrow, Inspección 180 puntos y Mediación certificada.",
   manifest: "/manifest.json",
   appleWebApp: {

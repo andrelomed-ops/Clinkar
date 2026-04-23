@@ -136,25 +136,55 @@ export default function DashboardPage() {
         const loadDashboard = async () => {
             try {
                 setIsLoading(true);
-                // FORCE MOCK DATA TO RESTORE SITE VISIBILITY IMMEDIATELY
-                const mockTxs = [
-                    {
-                        id: "tx-demo-sedan",
-                        carName: "BMW 3 Series",
-                        year: 2021,
-                        price: 650000,
-                        status: "IN_VAULT",
-                        role: "buyer",
-                        location: "CDMX",
-                        image: "https://images.unsplash.com/photo-1555215695-3004980ad54e"
-                    }
-                ];
-                setTransactions(mockTxs);
-                if (mockTxs.length > 0 && !selectedId) setSelectedId(mockTxs[0].id);
-                setOwnedCars([]);
+                const { data: { user } } = await supabase.auth.getUser();
+                if (!user) return;
+
+                // Fetch transactions first with extreme safety
+                const { data: txs, error: txError } = await (supabase
+                    .from("transactions") as any)
+                    .select("*")
+                    .or(`buyer_id.eq.${user.id},seller_id.eq.${user.id}`)
+                    .order("created_at", { ascending: false });
+
+                if (!txError && txs && txs.length > 0) {
+                    // Fetch associated cars manually to avoid relationship cache errors
+                    const carIds = txs.map((tx: any) => tx.car_id);
+                    const { data: carsData } = await supabase
+                        .from("cars")
+                        .select("*")
+                        .in("id", carIds);
+
+                    const mappedTxs = txs.map((tx: any) => {
+                        const car = carsData?.find(c => c.id === tx.car_id);
+                        return {
+                            id: tx.id,
+                            carName: car ? `${car.make} ${car.model}` : "Vehículo",
+                            year: car?.year,
+                            price: tx.car_price,
+                            status: tx.status,
+                            role: tx.seller_id === user.id ? "seller" : "buyer",
+                            location: "CDMX",
+                            image: car?.images?.[0] || ""
+                        };
+                    });
+
+                    setTransactions(mappedTxs);
+                    if (mappedTxs.length > 0 && !selectedId) setSelectedId(mappedTxs[0].id);
+                } else {
+                    setTransactions([]);
+                }
+
+                // Fetch published cars
+                const { data: cars } = await supabase
+                    .from("cars")
+                    .select("*")
+                    .eq("seller_id", user.id)
+                    .eq("status", "available");
+                if (cars) setOwnedCars(cars);
+
                 setFavoriteCars([]);
             } catch (err: any) {
-                console.error("Critical Dashboard Error:", err);
+                console.error("Dashboard Fetch Error:", err);
             } finally {
                 setIsLoading(false);
                 setMounted(true);
