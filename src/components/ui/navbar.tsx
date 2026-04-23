@@ -57,10 +57,16 @@ export function Navbar({
     }, [supabase]);
 
     const handleSignOut = async () => {
-        await supabase.auth.signOut();
-        // Clear demo role cookie
-        document.cookie = "starterkar_role=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT";
-        window.location.href = '/';
+        try {
+            await supabase.auth.signOut();
+            // Clear demo role cookie
+            document.cookie = "starterkar_role=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT";
+            // Force a hard reload to clear any memory state
+            window.location.href = '/';
+        } catch (error) {
+            console.error("Logout error:", error);
+            window.location.href = '/';
+        }
     };
 
     const navLinks = [

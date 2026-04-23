@@ -280,10 +280,15 @@ export default function DashboardPage() {
                     <NotificationCenter />
                     <button 
                         onClick={async () => {
-                            await supabase.auth.signOut();
-                            // Clear demo role cookie
-                            document.cookie = "starterkar_role=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT";
-                            window.location.href = '/';
+                            try {
+                                await supabase.auth.signOut();
+                                // Clear demo role cookie
+                                document.cookie = "starterkar_role=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT";
+                                window.location.href = '/';
+                            } catch (error) {
+                                console.error("Logout error:", error);
+                                window.location.href = '/';
+                            }
                         }}
                         className="flex items-center gap-2 px-3 py-1.5 rounded-full border border-zinc-200 dark:border-zinc-800 text-[10px] font-black uppercase tracking-widest text-zinc-500 hover:bg-red-50 hover:text-red-600 hover:border-red-100 transition-all"
                     >
