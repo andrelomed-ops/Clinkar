@@ -105,14 +105,14 @@ export default function HandoverPage() {
         <div className="min-h-screen bg-zinc-50 dark:bg-zinc-950">
             <Navbar variant="market" />
             
-            <main className="max-w-7xl mx-auto px-6 py-12">
+            <main className="max-w-7xl mx-auto px-6 pt-28 pb-12">
                 <div className="mb-12 flex flex-col md:flex-row md:items-center justify-between gap-8">
                     <div>
                         <Link href="/dashboard" className="inline-flex items-center gap-2 text-zinc-500 hover:text-zinc-900 dark:hover:text-white transition-colors mb-4 group">
                             <ArrowLeft className="h-4 w-4 group-hover:-translate-x-1 transition-transform" />
                             <span className="text-xs font-black uppercase tracking-widest">Volver al Garage</span>
                         </Link>
-                        <h1 className="text-4xl font-black tracking-tighter italic">Proceso de Entrega Segura</h1>
+                        <h1 className="text-4xl md:text-5xl font-black tracking-tighter italic leading-[1.1] mb-2">Proceso de Entrega Segura</h1>
                         <p className="text-zinc-500 font-bold uppercase tracking-widest text-xs mt-1">Folio: #{transaction.id.slice(0, 8)} • {transaction.cars?.make} {transaction.cars?.model}</p>
                     </div>
                     
@@ -165,7 +165,9 @@ export default function HandoverPage() {
                                         setProcessing(false);
                                     }
                                 }}
-                                onNegotiate={() => alert("Mediación solicitada")}
+                                onNegotiate={() => {
+                                    window.open(`https://wa.me/5215512345678?text=Hola, solicito mediación para la transacción ${transaction.id}`, '_blank');
+                                }}
                             />
                         </section>
 
@@ -178,9 +180,14 @@ export default function HandoverPage() {
                                 <p className="text-indigo-100 text-sm leading-relaxed mb-8 font-medium">
                                     Nuestros agentes de entrega están listos para asistirte en el Taller Aliado. Si algo no coincide, el pago no se libera.
                                 </p>
-                                <button className="h-12 px-6 bg-white text-indigo-600 rounded-xl font-black text-xs uppercase tracking-widest hover:bg-indigo-50 transition-colors">
+                                <a 
+                                    href={`https://wa.me/5215512345678?text=Hola, necesito soporte VIP para mi entrega folio ${transaction.id}`} 
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="inline-flex items-center justify-center h-12 px-8 bg-white text-indigo-600 rounded-xl font-black text-xs uppercase tracking-widest hover:bg-indigo-50 transition-all hover:scale-105"
+                                >
                                     Llamar a Soporte VIP
-                                </button>
+                                </a>
                             </div>
                         </div>
                     </div>

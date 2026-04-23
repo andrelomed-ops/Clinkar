@@ -343,7 +343,10 @@ export function PostSaleEcosystem({
                                 Tu estado (<span className="text-white font-bold">{state}</span>) requiere un aviso de venta manual.
                                 Hemos pre-llenado el formato oficial para ti.
                             </p>
-                            <button className="flex items-center gap-2 bg-white text-black h-11 px-6 rounded-full font-bold text-xs transition-transform hover:scale-105">
+                             <button 
+                                onClick={() => toast.success("Descargando formato SEMOVI pre-llenado...")}
+                                className="flex items-center gap-2 bg-white text-black h-11 px-6 rounded-full font-bold text-xs transition-transform hover:scale-105"
+                            >
                                 <Download className="h-4 w-4" />
                                 Descargar Formato SEMOVI
                             </button>
@@ -386,7 +389,13 @@ export function PostSaleEcosystem({
                         </div>
                     </div>
                     <button
-                        onClick={() => setRemindersEnabled(!remindersEnabled)}
+                        onClick={() => {
+                            const newStatus = !remindersEnabled;
+                            setRemindersEnabled(newStatus);
+                            if (newStatus) {
+                                toast.success("Concierge Activado: Recibirás recordatorios de mantenimiento y trámites.");
+                            }
+                        }}
                         className={cn(
                             "relative z-10 w-full sm:w-auto px-10 h-14 rounded-2xl font-black text-xs uppercase tracking-[0.2em] transition-all shadow-2xl",
                             remindersEnabled 
