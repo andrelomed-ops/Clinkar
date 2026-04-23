@@ -91,20 +91,25 @@ export function Navbar({
                 <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-6">
 
                     {/* Left Section: Logo */}
-                    <div className="flex items-center gap-4">
-                        <StarterKarLogo size="sm" showMonogram={false} href="/" hideSubmark={variant === 'market'} />
+                    <div className="flex items-center gap-4 shrink-0">
+                        <StarterKarLogo size="md" showMonogram={false} href="/" hideSubmark={variant === 'market'} />
                     </div>
 
-                    {/* Center Section: Navigation Links (Home variant only) */}
-                    {variant === 'home' && (
-                        <div className="hidden lg:flex items-center gap-8 absolute left-1/2 -translate-x-1/2">
-                            <Link href="#security" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">Seguridad</Link>
-                            <Link href="#how-it-works" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">Proceso</Link>
-                        </div>
-                    )}
+                    {/* Center Section: Navigation Links */}
+                    <div className="hidden lg:flex items-center justify-center flex-1 gap-6 px-4">
+                        {variant === 'home' && (
+                            <>
+                                <Link href="#security" className="text-xs font-black uppercase tracking-widest text-muted-foreground hover:text-foreground transition-colors">Seguridad</Link>
+                                <Link href="#how-it-works" className="text-xs font-black uppercase tracking-widest text-muted-foreground hover:text-foreground transition-colors">Proceso</Link>
+                            </>
+                        )}
+                        <Link href="/buy" className="text-xs font-black uppercase tracking-widest text-muted-foreground hover:text-foreground transition-colors">Comprar</Link>
+                        <Link href="/sell" className="text-xs font-black uppercase tracking-widest text-muted-foreground hover:text-foreground transition-colors">Vender</Link>
+                        <Link href="/new-cars" className="text-xs font-black text-indigo-600 dark:text-indigo-400 hover:text-foreground transition-colors italic uppercase tracking-widest">Autos Nuevos</Link>
+                    </div>
 
                     {/* Right Section: Actions */}
-                    <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-4 shrink-0">
                         {showFavorites && (
                             <button
                                 onClick={onToggleFavorites}
@@ -123,31 +128,16 @@ export function Navbar({
                                 <span className={cn(
                                     "hidden lg:inline font-bold",
                                     favoritesCount > 0 ? "text-red-600" : "text-muted-foreground"
-                                )}>Mis Favoritos</span>
-                                {favoritesCount > 0 && (
-                                    <span className={cn(
-                                        "px-1.5 py-0.5 rounded-full text-[10px]",
-                                        showFavoritesOnly ? "bg-red-100 dark:bg-red-900/40" : "bg-zinc-100 dark:bg-zinc-800"
-                                    )}>
-                                        {favoritesCount}
-                                    </span>
-                                )}
+                                )}>Favoritos</span>
                             </button>
                         )}
 
-                        <div className="hidden lg:flex items-center gap-4">
-                            {variant !== 'market' && variant !== 'sell' && (
-                                <>
-                                    <Link href="/buy" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">Comprar</Link>
-                                    <Link href="/sell" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">Vender</Link>
-                                    <Link href="/new-cars" className="text-sm font-black text-indigo-600 dark:text-indigo-400 hover:text-foreground transition-colors italic">Autos Nuevos</Link>
-                                </>
-                            )}
+                        <div className="flex items-center gap-3">
                             <StarterKarLogo 
                                 size="sm" 
                                 showWordmark={false} 
                                 orientation="vertical" 
-                                label={user ? "Mi Garage" : "Inicio"} 
+                                label={user ? "Mi Garage" : "Entrar"} 
                                 href={user ? "/dashboard" : "/login"} 
                                 className="hover:translate-y-[-2px] transition-all"
                             />
@@ -156,13 +146,13 @@ export function Navbar({
                                     href="/investor/apply"
                                     className="hidden xl:flex items-center gap-2 px-3 py-1.5 rounded-full bg-amber-500/10 text-amber-600 border border-amber-500/20 text-[10px] font-black uppercase tracking-widest hover:bg-amber-500/20 transition-all"
                                 >
-                                    Suscripción Inversionista
+                                    Suscripción
                                 </Link>
                             )}
                             {user && (
                                 <button 
                                     onClick={handleSignOut}
-                                    className="flex items-center gap-2 px-3 py-1.5 rounded-full border border-zinc-200 dark:border-zinc-800 text-[10px] font-black uppercase tracking-widest text-zinc-500 hover:bg-red-50 hover:text-red-600 hover:border-red-100 transition-all"
+                                    className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-full border border-zinc-200 dark:border-zinc-800 text-[10px] font-black uppercase tracking-widest text-zinc-500 hover:bg-red-50 hover:text-red-600 hover:border-red-100 transition-all"
                                 >
                                     Cerrar Sesión
                                 </button>

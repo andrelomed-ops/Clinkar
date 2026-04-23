@@ -33,11 +33,11 @@ export function StarterKarLogo({
     };
 
     const wordmarkSizes = {
-        xs: { title: "text-[9px]",  sub: "text-[5px]"  },
-        sm: { title: "text-[12px]", sub: "text-[6px]"  },
-        md: { title: "text-lg",     sub: "text-[9px]"  },
-        lg: { title: "text-2xl",    sub: "text-[11px]" },
-        xl: { title: "text-4xl",    sub: "text-[14px]" },
+        xs: { title: "text-[11px]", sub: "text-[7px]"  },
+        sm: { title: "text-lg",     sub: "text-[10px]" },
+        md: { title: "text-2xl",    sub: "text-[12px]" },
+        lg: { title: "text-4xl",    sub: "text-[14px]" },
+        xl: { title: "text-6xl",    sub: "text-[18px]" },
     };
 
     const mark = (
