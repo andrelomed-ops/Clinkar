@@ -17,20 +17,29 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
-import { GestoriaAdvisor } from "../checkout/GestoriaAdvisor";
-import { InsuranceSelector } from "./InsuranceSelector";
-import { updateTransactionServicesAction } from "@/app/actions/transaction";
-import { toast } from "sonner";
+import { LogisticsWidget } from "../checkout/LogisticsWidget";
+import { WarrantySelector, WarrantyType } from "../checkout/WarrantySelector";
+import { 
+    Warehouse, 
+    Home, 
+    Smartphone, 
+    Zap, 
+    Truck, 
+    ShieldAlert,
+    Package
+} from "lucide-react";
 
 export function PostSaleEcosystem({ 
     transactionId, 
     carPrice = 350000, 
+    carLocation = "Ciudad de México",
     state = "CDMX",
     initialGestoria = false,
     initialInsurance = false
 }: { 
     transactionId: string, 
     carPrice?: number,
+    carLocation?: string,
     state?: string,
     initialGestoria?: boolean,
     initialInsurance?: boolean
@@ -39,6 +48,10 @@ export function PostSaleEcosystem({
     const [requestedService, setRequestedService] = useState<string | null>(null);
     const [hasGestoria, setHasGestoria] = useState(initialGestoria);
     const [hasInsurance, setHasInsurance] = useState(initialInsurance);
+    const [logistics, setLogistics] = useState<any>(null);
+    const [warranty, setWarranty] = useState<{ type: WarrantyType, cost: number } | null>(null);
+    const [deliveryType, setDeliveryType] = useState<'workshop' | 'home'>('workshop');
+    const [remoteMode, setRemoteMode] = useState(false);
 
     const handleGestoriaSelect = async (active: boolean) => {
         if (!active) return;
@@ -67,27 +80,45 @@ export function PostSaleEcosystem({
 
     const services = [
         {
-            id: "aviso_venta",
-            title: "Aviso de Venta",
-            desc: state === "CDMX" ? "Notificación SEMOVI CDMX" : "Notificación Estatal",
-            type: "Automatic/PDF",
-            icon: <FileText className="h-5 w-5" />,
-            monetization: "Gratis con StarterKar",
-            delivery: "IA"
+            id: "logistica",
+            title: "Envío a Domicilio",
+            desc: "Cotizar traslado en grúa",
+            type: "Logistics",
+            icon: <Truck className="h-5 w-5" />,
+            monetization: "Varía por distancia",
+            delivery: "Grúa Aliada"
         },
         {
-            id: "carta_responsiva",
-            title: "Carta Responsiva",
-            desc: "Deslinde de responsabilidad civil",
-            type: "Legal Document",
-            icon: <ShieldCheck className="h-5 w-5" />,
-            monetization: "Incluido",
-            delivery: "Digital PDF"
+            id: "garantia",
+            title: "Protección Mecánica",
+            desc: "90 días o 1 año de garantía",
+            type: "Warranty",
+            icon: <ShieldAlert className="h-5 w-5" />,
+            monetization: "Desde $2,500 MXN",
+            delivery: "Certificado"
+        },
+        {
+            id: "entrega",
+            title: "Método de Entrega",
+            desc: "Taller vs Entrega en casa",
+            type: "Logistics",
+            icon: <Package className="h-5 w-5" />,
+            monetization: "Seleccionable",
+            delivery: "Personalizado"
+        },
+        {
+            id: "operacion",
+            title: "Modalidad",
+            desc: "Presencial o Remota",
+            type: "Process",
+            icon: <Zap className="h-5 w-5" />,
+            monetization: "Sin costo extra",
+            delivery: "Híbrido"
         },
         {
             id: "cambio_propietario",
-            title: "Cambio de Propietario",
-            desc: "Gestoría completa ante SEMOVI/SCT",
+            title: "Gestoría Legal",
+            desc: "Cambio de Propietario SCT",
             type: "Premium Service",
             icon: <UserCog className="h-5 w-5" />,
             monetization: "$1,250 MXN + Derechos",
@@ -96,12 +127,30 @@ export function PostSaleEcosystem({
         {
             id: "seguro_aliado",
             title: "Seguro Automotriz",
-            desc: "Protección inmediata con aliados",
+            desc: "Protección inmediata",
             type: "Insurance",
             icon: <Briefcase className="h-5 w-5" />,
             monetization: "Desde 2.9% valor auto",
             delivery: "Digital"
-        }
+        },
+        {
+            id: "aviso_venta",
+            title: "Aviso de Venta",
+            desc: state === "CDMX" ? "Notificación SEMOVI CDMX" : "Notificación Estatal",
+            type: "Automatic/PDF",
+            icon: <FileText className="h-5 w-5" />,
+            monetization: "Gratis",
+            delivery: "IA"
+        },
+        {
+            id: "carta_responsiva",
+            title: "Carta Responsiva",
+            desc: "Deslinde legal",
+            type: "Legal Document",
+            icon: <ShieldCheck className="h-5 w-5" />,
+            monetization: "Incluido",
+            delivery: "PDF"
+        },
     ];
 
     return (
@@ -109,22 +158,19 @@ export function PostSaleEcosystem({
             <div className="bg-zinc-900 border border-zinc-800 rounded-[2.5rem] p-8 shadow-2xl">
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8">
                     <div>
-                        <h2 className="text-2xl font-black text-white tracking-tight italic">Ecosistema Post-Venta</h2>
-                        <p className="text-zinc-500 text-xs font-bold uppercase tracking-widest">Trámites y resguardo • Ref: {transactionId.split('-')[0].toUpperCase()}</p>
+                        <h2 className="text-2xl font-black text-white tracking-tight italic uppercase">Ecosistema Post-Venta y Entrega</h2>
+                        <p className="text-zinc-500 text-xs font-bold uppercase tracking-widest">Personaliza tu logística y trámites • Ref: {transactionId.split('-')[0].toUpperCase()}</p>
                     </div>
                     <div className="flex items-center gap-3 bg-zinc-950 p-2 rounded-2xl border border-zinc-800">
                         <div className="flex flex-col px-4">
                             <span className="text-[10px] font-black uppercase text-zinc-500 tracking-[0.2em]">Resguardo Legal</span>
-                            <span className="text-xs font-bold text-emerald-500">Activo (5 Años SAT)</span>
+                            <span className="text-xs font-bold text-emerald-500">Activo (Bóveda Digital)</span>
                         </div>
-                        <button className="h-10 w-10 bg-zinc-800 rounded-xl flex items-center justify-center text-white hover:bg-zinc-700 transition-colors">
-                            <Download className="h-5 w-5" />
-                        </button>
                     </div>
                 </div>
 
                 {/* Grid de Servicios */}
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
                     {services.map((service) => (
                         <button
                             key={service.id}
@@ -154,6 +200,98 @@ export function PostSaleEcosystem({
 
                 {/* Detail Area */}
                 <div className="space-y-6">
+                    {requestedService === 'logistica' && (
+                        <div className="bg-white dark:bg-zinc-950 p-8 rounded-[2.5rem] border border-zinc-200 dark:border-zinc-800 animate-in slide-in-from-top-4 duration-500">
+                             <LogisticsWidget
+                                carLocation={carLocation}
+                                onQuote={(q) => {
+                                    setLogistics(q);
+                                    if(q) toast.success(`Cotización de traslado: $${q.cost.toLocaleString()}`);
+                                }}
+                            />
+                        </div>
+                    )}
+
+                    {requestedService === 'garantia' && (
+                        <div className="bg-white dark:bg-zinc-950 p-8 rounded-[2.5rem] border border-zinc-200 dark:border-zinc-800 animate-in slide-in-from-top-4 duration-500">
+                            <WarrantySelector
+                                carPrice={carPrice}
+                                onSelect={(w) => {
+                                    setWarranty(w);
+                                    if(w) toast.success(`Garantía ${w.type} añadida`);
+                                }}
+                            />
+                        </div>
+                    )}
+
+                    {requestedService === 'entrega' && (
+                        <div className="bg-white dark:bg-zinc-950 p-8 rounded-[2.5rem] border border-zinc-200 dark:border-zinc-800 animate-in slide-in-from-top-4 duration-500">
+                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <button
+                                    onClick={() => {setDeliveryType('workshop'); toast.info("Entrega en Taller Aliado seleccionada");}}
+                                    className={cn(
+                                        "p-6 rounded-3xl border-2 text-left transition-all",
+                                        deliveryType === 'workshop' 
+                                            ? "border-indigo-600 bg-indigo-50 dark:bg-indigo-900/10" 
+                                            : "border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 opacity-60"
+                                    )}
+                                >
+                                    <Warehouse className={cn("h-6 w-6 mb-3", deliveryType === 'workshop' ? "text-indigo-600" : "text-zinc-400")} />
+                                    <span className="font-bold text-sm block">Taller Aliado (Zona Segura)</span>
+                                    <span className="text-xs text-zinc-500">Sin costo de envío local.</span>
+                                </button>
+
+                                <button
+                                    onClick={() => {setDeliveryType('home'); toast.info("Envío a domicilio seleccionado");}}
+                                    className={cn(
+                                        "p-6 rounded-3xl border-2 text-left transition-all",
+                                        deliveryType === 'home' 
+                                            ? "border-indigo-600 bg-indigo-50 dark:bg-indigo-900/10" 
+                                            : "border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 opacity-60"
+                                    )}
+                                >
+                                    <Home className={cn("h-6 w-6 mb-3", deliveryType === 'home' ? "text-indigo-600" : "text-zinc-400")} />
+                                    <span className="font-bold text-sm block">Envío a Domicilio</span>
+                                    <span className="text-xs text-zinc-500">Entrega en Grúa Especializada.</span>
+                                </button>
+                            </div>
+                        </div>
+                    )}
+
+                    {requestedService === 'operacion' && (
+                        <div className="bg-white dark:bg-zinc-950 p-8 rounded-[2.5rem] border border-zinc-200 dark:border-zinc-800 animate-in slide-in-from-top-4 duration-500">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <button
+                                    onClick={() => {setRemoteMode(false); toast.info("Cita Presencial confirmada");}}
+                                    className={cn(
+                                        "p-6 rounded-3xl border-2 text-left transition-all",
+                                        !remoteMode 
+                                            ? "border-indigo-600 bg-indigo-50 dark:bg-indigo-900/10" 
+                                            : "border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 opacity-60"
+                                    )}
+                                >
+                                    <MapPin className={cn("h-6 w-6 mb-3", !remoteMode ? "text-indigo-600" : "text-zinc-400")} />
+                                    <span className="font-bold text-sm block">Presencial</span>
+                                    <span className="text-xs text-zinc-500">Cita en punto físico con inspector.</span>
+                                </button>
+
+                                <button
+                                    onClick={() => {setRemoteMode(true); toast.info("Compra Remota activada");}}
+                                    className={cn(
+                                        "p-6 rounded-3xl border-2 text-left transition-all",
+                                        remoteMode 
+                                            ? "border-indigo-600 bg-indigo-50 dark:bg-indigo-900/10" 
+                                            : "border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 opacity-60"
+                                    )}
+                                >
+                                    <Zap className={cn("h-6 w-6 mb-3", remoteMode ? "text-indigo-600" : "text-zinc-400")} />
+                                    <span className="font-bold text-sm block">Remota</span>
+                                    <span className="text-xs text-zinc-500">Videollamada HD & Entrega vía QR.</span>
+                                </button>
+                            </div>
+                        </div>
+                    )}
+
                     {requestedService === 'cambio_propietario' && (
                         <div className="animate-in slide-in-from-top-4 duration-500">
                             <GestoriaAdvisor onSelect={handleGestoriaSelect} />

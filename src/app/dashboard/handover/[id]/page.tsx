@@ -109,7 +109,8 @@ export default function HandoverPage() {
                         <div className="sticky top-24">
                             <PostSaleEcosystem 
                                 transactionId={transaction.id} 
-                                carPrice={transaction.car_price}
+                                carPrice={transaction.cars?.price}
+                                carLocation={transaction.cars?.location}
                                 initialGestoria={transaction.gestoria_cost > 0}
                                 initialInsurance={transaction.insurance_cost > 0}
                             />
