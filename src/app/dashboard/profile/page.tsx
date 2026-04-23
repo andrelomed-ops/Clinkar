@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { createBrowserClient } from "@/lib/supabase/client";
-import { User, Mail, Phone, MapPin, Shield, Loader2, Camera, Save, FileCheck, ChevronLeft } from "lucide-react";
+import { User, Mail, Phone, MapPin, Shield, Loader2, Camera, Save, FileCheck, ChevronLeft, Pencil, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -17,6 +17,14 @@ export default function ProfilePage() {
     const [profile, setProfile] = useState<any>(null);
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
+    const [editingFields, setEditingFields] = useState<Record<string, boolean>>({});
+
+    const toggleEdit = (field: string) => {
+        setEditingFields(prev => ({
+            ...prev,
+            [field]: !prev[field]
+        }));
+    };
 
     useEffect(() => {
         async function loadProfile() {
@@ -73,6 +81,10 @@ export default function ProfilePage() {
                 console.error("Error saving profile:", error);
                 throw error;
             }
+            
+            // Reset editing states
+            setEditingFields({});
+            
             toast.success("Perfil actualizado con éxito");
         } catch (err) {
             toast.error("Error al actualizar perfil");
@@ -160,14 +172,29 @@ export default function ProfilePage() {
                         <form onSubmit={handleSave} className="space-y-8 glass-card p-8 rounded-[2.5rem] border-border/40 shadow-2xl shadow-indigo-500/5">
                             <div className="space-y-6">
                                 <div className="grid gap-2">
-                                    <Label htmlFor="name" className="text-xs font-black uppercase tracking-widest text-zinc-400">Nombre Completo</Label>
+                                    <div className="flex items-center justify-between">
+                                        <Label htmlFor="name" className="text-xs font-black uppercase tracking-widest text-zinc-400">Nombre Completo</Label>
+                                        <button 
+                                            type="button"
+                                            onClick={() => toggleEdit('full_name')}
+                                            className="text-[10px] font-black uppercase text-indigo-600 flex items-center gap-1 hover:opacity-70 transition-opacity"
+                                        >
+                                            {editingFields['full_name'] ? <><X className="h-3 w-3" /> Cancelar</> : <><Pencil className="h-3 w-3" /> Editar</>}
+                                        </button>
+                                    </div>
                                     <div className="relative">
                                         <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400" />
                                         <Input 
                                             id="name"
                                             value={profile?.full_name || ""}
                                             onChange={(e) => setProfile({ ...profile, full_name: e.target.value })}
-                                            className="pl-10 h-12 rounded-xl bg-secondary/30 border-transparent focus:bg-white transition-all"
+                                            disabled={!editingFields['full_name']}
+                                            className={cn(
+                                                "pl-10 h-12 rounded-xl transition-all",
+                                                editingFields['full_name'] 
+                                                    ? "bg-white border-indigo-200 shadow-sm" 
+                                                    : "bg-secondary/30 border-transparent cursor-not-allowed"
+                                            )}
                                             placeholder="Tu nombre legal"
                                         />
                                     </div>
@@ -188,27 +215,57 @@ export default function ProfilePage() {
 
                                 <div className="grid md:grid-cols-2 gap-6">
                                     <div className="grid gap-2">
-                                        <Label htmlFor="phone" className="text-xs font-black uppercase tracking-widest text-zinc-400">Teléfono</Label>
+                                        <div className="flex items-center justify-between">
+                                            <Label htmlFor="phone" className="text-xs font-black uppercase tracking-widest text-zinc-400">Teléfono</Label>
+                                            <button 
+                                                type="button"
+                                                onClick={() => toggleEdit('phone')}
+                                                className="text-[10px] font-black uppercase text-indigo-600 flex items-center gap-1 hover:opacity-70 transition-opacity"
+                                            >
+                                                {editingFields['phone'] ? <><X className="h-3 w-3" /> Cancelar</> : <><Pencil className="h-3 w-3" /> Editar</>}
+                                            </button>
+                                        </div>
                                         <div className="relative">
                                             <Phone className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400" />
                                             <Input 
                                                 id="phone"
                                                 value={profile?.phone || ""}
                                                 onChange={(e) => setProfile({ ...profile, phone: e.target.value })}
-                                                className="pl-10 h-12 rounded-xl bg-secondary/30 border-transparent focus:bg-white transition-all"
+                                                disabled={!editingFields['phone']}
+                                                className={cn(
+                                                    "pl-10 h-12 rounded-xl transition-all",
+                                                    editingFields['phone'] 
+                                                        ? "bg-white border-indigo-200 shadow-sm" 
+                                                        : "bg-secondary/30 border-transparent cursor-not-allowed"
+                                                )}
                                                 placeholder="+52 ..."
                                             />
                                         </div>
                                     </div>
                                     <div className="grid gap-2">
-                                        <Label htmlFor="location" className="text-xs font-black uppercase tracking-widest text-zinc-400">Ubicación</Label>
+                                        <div className="flex items-center justify-between">
+                                            <Label htmlFor="location" className="text-xs font-black uppercase tracking-widest text-zinc-400">Ubicación</Label>
+                                            <button 
+                                                type="button"
+                                                onClick={() => toggleEdit('location')}
+                                                className="text-[10px] font-black uppercase text-indigo-600 flex items-center gap-1 hover:opacity-70 transition-opacity"
+                                            >
+                                                {editingFields['location'] ? <><X className="h-3 w-3" /> Cancelar</> : <><Pencil className="h-3 w-3" /> Editar</>}
+                                            </button>
+                                        </div>
                                         <div className="relative">
                                             <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400" />
                                             <Input 
                                                 id="location"
                                                 value={profile?.location || ""}
                                                 onChange={(e) => setProfile({ ...profile, location: e.target.value })}
-                                                className="pl-10 h-12 rounded-xl bg-secondary/30 border-transparent focus:bg-white transition-all"
+                                                disabled={!editingFields['location']}
+                                                className={cn(
+                                                    "pl-10 h-12 rounded-xl transition-all",
+                                                    editingFields['location'] 
+                                                        ? "bg-white border-indigo-200 shadow-sm" 
+                                                        : "bg-secondary/30 border-transparent cursor-not-allowed"
+                                                )}
                                                 placeholder="Ciudad, Estado"
                                             />
                                         </div>
@@ -223,14 +280,29 @@ export default function ProfilePage() {
                                     
                                     <div className="grid md:grid-cols-2 gap-8">
                                         <div className="grid gap-2">
-                                            <Label htmlFor="rfc" className="text-xs font-black uppercase tracking-widest text-zinc-400">RFC (Tax ID)</Label>
+                                            <div className="flex items-center justify-between">
+                                                <Label htmlFor="rfc" className="text-xs font-black uppercase tracking-widest text-zinc-400">RFC (Tax ID)</Label>
+                                                <button 
+                                                    type="button"
+                                                    onClick={() => toggleEdit('rfc')}
+                                                    className="text-[10px] font-black uppercase text-indigo-600 flex items-center gap-1 hover:opacity-70 transition-opacity"
+                                                >
+                                                    {editingFields['rfc'] ? <><X className="h-3 w-3" /> Cancelar</> : <><Pencil className="h-3 w-3" /> Editar</>}
+                                                </button>
+                                            </div>
                                             <div className="relative">
                                                 <Shield className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400" />
                                                 <Input 
                                                     id="rfc"
                                                     value={profile?.rfc || ""}
                                                     onChange={(e) => setProfile({ ...profile, rfc: e.target.value.toUpperCase() })}
-                                                    className="pl-10 h-12 rounded-xl bg-secondary/30 border-transparent focus:bg-white transition-all font-mono"
+                                                    disabled={!editingFields['rfc']}
+                                                    className={cn(
+                                                        "pl-10 h-12 rounded-xl transition-all font-mono",
+                                                        editingFields['rfc'] 
+                                                            ? "bg-white border-indigo-200 shadow-sm" 
+                                                            : "bg-secondary/30 border-transparent cursor-not-allowed"
+                                                    )}
                                                     placeholder="ABCD123456..."
                                                     maxLength={13}
                                                 />
@@ -238,22 +310,47 @@ export default function ProfilePage() {
                                             <p className="text-[10px] text-zinc-500 font-medium italic">Necesario para facturación en agencias.</p>
                                         </div>
 
-                                        <CameraUpload 
-                                            label="Cédula de Identificación Fiscal (CIF)"
-                                            description="Sube tu CIF en formato PDF o imagen"
-                                            category="DOCUMENT"
-                                            onUpload={(url) => setProfile({ ...profile, cif_url: url })}
-                                            className="bg-zinc-50/50 dark:bg-zinc-900/30 p-4 rounded-2xl border border-border/50"
-                                        />
+                                        <div className="relative group">
+                                            {!editingFields['cif'] && (
+                                                <div className="absolute inset-0 bg-white/50 dark:bg-zinc-950/50 backdrop-blur-[1px] z-10 rounded-2xl flex items-center justify-center pointer-events-auto">
+                                                    <Button 
+                                                        variant="outline" 
+                                                        size="sm" 
+                                                        className="bg-white border-indigo-200 text-indigo-600 font-black uppercase tracking-widest text-[10px]"
+                                                        onClick={() => toggleEdit('cif')}
+                                                    >
+                                                        <Pencil className="h-3 w-3 mr-2" /> Actualizar Documento
+                                                    </Button>
+                                                </div>
+                                            )}
+                                            <CameraUpload 
+                                                label="Cédula de Identificación Fiscal (CIF)"
+                                                description="Sube tu CIF en formato PDF o imagen"
+                                                category="DOCUMENT"
+                                                onUpload={(url) => {
+                                                    setProfile({ ...profile, cif_url: url });
+                                                    toggleEdit('cif');
+                                                }}
+                                                className="bg-zinc-50/50 dark:bg-zinc-900/30 p-4 rounded-2xl border border-border/50"
+                                            />
+                                            {editingFields['cif'] && (
+                                                <button 
+                                                    onClick={() => toggleEdit('cif')}
+                                                    className="absolute top-2 right-2 p-1 bg-white dark:bg-zinc-800 rounded-full shadow-md z-20 text-zinc-400 hover:text-red-500"
+                                                >
+                                                    <X className="h-4 w-4" />
+                                                </button>
+                                            )}
+                                        </div>
                                     </div>
                                 </div>
                             </div>
 
-                            <div className="pt-6 border-t border-border flex justify-end">
+                             <div className="pt-6 border-t border-border flex justify-end">
                                 <Button 
                                     type="submit" 
-                                    disabled={saving}
-                                    className="h-12 px-8 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-black shadow-lg shadow-indigo-600/20 transition-all hover:scale-105 active:scale-95"
+                                    disabled={saving || Object.values(editingFields).every(v => !v)}
+                                    className="h-12 px-8 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-black shadow-lg shadow-indigo-600/20 transition-all hover:scale-105 active:scale-95 disabled:opacity-50 disabled:scale-100 disabled:cursor-not-allowed"
                                 >
                                     {saving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
                                     Guardar Cambios
