@@ -159,16 +159,16 @@ export function PostSaleEcosystem({
 
     return (
         <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-1000">
-            <div className="bg-zinc-900 border border-zinc-800 rounded-[2.5rem] p-8 shadow-2xl">
+            <div className="bg-white dark:bg-zinc-900 border border-indigo-100 dark:border-zinc-800 rounded-[2.5rem] p-8 shadow-2xl shadow-indigo-500/5">
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8">
                     <div>
-                        <h2 className="text-2xl font-black text-white tracking-tight italic uppercase">Ecosistema Post-Venta y Entrega</h2>
+                        <h2 className="text-2xl font-black text-zinc-900 dark:text-white tracking-tight italic uppercase">Ecosistema Post-Venta y Entrega</h2>
                         <p className="text-zinc-500 text-xs font-bold uppercase tracking-widest">Personaliza tu logística y trámites • Ref: {transactionId.split('-')[0].toUpperCase()}</p>
                     </div>
-                    <div className="flex items-center gap-3 bg-zinc-950 p-2 rounded-2xl border border-zinc-800">
+                    <div className="flex items-center gap-3 bg-indigo-50 dark:bg-zinc-950 p-2 rounded-2xl border border-indigo-100 dark:border-zinc-800">
                         <div className="flex flex-col px-4">
-                            <span className="text-[10px] font-black uppercase text-zinc-500 tracking-[0.2em]">Resguardo Legal</span>
-                            <span className="text-xs font-bold text-emerald-500">Activo (Bóveda Digital)</span>
+                            <span className="text-[10px] font-black uppercase text-indigo-400 tracking-[0.2em]">Resguardo Legal</span>
+                            <span className="text-xs font-bold text-emerald-600">Activo (Bóveda Digital)</span>
                         </div>
                     </div>
                 </div>
@@ -182,20 +182,23 @@ export function PostSaleEcosystem({
                             className={cn(
                                 "group relative p-6 rounded-3xl border-2 text-left transition-all duration-300",
                                 requestedService === service.id
-                                    ? "border-indigo-500 bg-indigo-500/5 shadow-lg shadow-indigo-500/10"
-                                    : "border-zinc-800 bg-zinc-950/50 hover:border-zinc-700"
+                                    ? "border-indigo-600 bg-indigo-50/50 dark:bg-indigo-500/10 shadow-lg shadow-indigo-500/10"
+                                    : "border-zinc-100 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-950/50 hover:border-indigo-200 dark:hover:border-zinc-700"
                             )}
                         >
                             <div className="flex items-start justify-between mb-4">
                                 <div className={cn(
                                     "p-3 rounded-2xl transition-colors",
-                                    requestedService === service.id ? "bg-indigo-500 text-white" : "bg-zinc-800 text-zinc-400 group-hover:text-white"
+                                    requestedService === service.id ? "bg-indigo-600 text-white" : "bg-white dark:bg-zinc-800 text-zinc-400 group-hover:text-indigo-600 shadow-sm border border-zinc-100 dark:border-zinc-700"
                                 )}>
                                     {service.icon}
                                 </div>
                             </div>
                             <div>
-                                <h4 className="font-bold text-white text-sm mb-1">{service.title}</h4>
+                                <h4 className={cn(
+                                    "font-bold text-sm mb-1 transition-colors",
+                                    requestedService === service.id ? "text-indigo-700 dark:text-white" : "text-zinc-700 dark:text-zinc-300"
+                                )}>{service.title}</h4>
                                 <p className="text-[10px] text-zinc-500 leading-tight">{service.desc}</p>
                             </div>
                         </button>
@@ -346,24 +349,26 @@ export function PostSaleEcosystem({
                 </div>
 
                 {/* Notificaciones Avanzadas */}
-                <div className="mt-8 bg-indigo-500/5 border border-indigo-500/10 rounded-3xl p-6 flex items-center justify-between gap-6 group">
+                <div className="mt-8 bg-indigo-50 dark:bg-indigo-500/5 border border-indigo-100 dark:border-indigo-500/10 rounded-3xl p-6 flex flex-col sm:flex-row items-center justify-between gap-6 group">
                     <div className="flex items-center gap-4">
                         <div className={cn(
                             "h-12 w-12 rounded-2xl flex items-center justify-center transition-all duration-500",
-                            remindersEnabled ? "bg-indigo-500 text-white shadow-[0_0_20px_rgba(99,102,241,0.4)]" : "bg-zinc-800 text-zinc-500"
+                            remindersEnabled ? "bg-indigo-600 text-white shadow-[0_0_20px_rgba(79,70,229,0.4)]" : "bg-white dark:bg-zinc-800 text-zinc-400 border border-zinc-100 dark:border-zinc-700"
                         )}>
                             <BellRing className={cn("h-6 w-6", remindersEnabled && "animate-bounce")} />
                         </div>
                         <div>
-                            <h3 className="font-bold text-white text-sm">Recordatorios Inteligentes</h3>
+                            <h3 className="font-bold text-zinc-900 dark:text-white text-sm">Recordatorios Inteligentes</h3>
                             <p className="text-xs text-zinc-500">Tenencias, verificaciones y servicios preventivos.</p>
                         </div>
                     </div>
                     <button
                         onClick={() => setRemindersEnabled(!remindersEnabled)}
                         className={cn(
-                            "px-6 h-11 rounded-full font-bold text-xs transition-all",
-                            remindersEnabled ? "bg-indigo-500 text-white" : "bg-zinc-800 text-zinc-400 hover:text-white"
+                            "w-full sm:w-auto px-8 h-11 rounded-full font-bold text-xs transition-all shadow-lg",
+                            remindersEnabled 
+                                ? "bg-indigo-600 text-white shadow-indigo-600/20" 
+                                : "bg-white dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 border border-zinc-200 dark:border-zinc-700 hover:bg-zinc-50"
                         )}
                     >
                         {remindersEnabled ? "Activados" : "Activar"}
