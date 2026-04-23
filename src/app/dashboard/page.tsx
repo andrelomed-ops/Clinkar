@@ -113,41 +113,27 @@ export default function DashboardPage() {
     };
 
     useEffect(() => {
-        async function loadDashboard() {
-            try {
-                const { data: { user } } = await supabase.auth.getUser();
+        const loadProfile = async () => {
+            const { data: { user } } = await supabase.auth.getUser();
+            if (user) {
                 setUser(user);
+                const { data: profile } = await supabase.from('profiles').select('*').eq('id', user.id).maybeSingle();
+                if (profile) setUserProfile(profile);
+            } else {
                 const demoRole = document.cookie.split('; ').find(row => row.startsWith('starterkar_role='))?.split('=')[1];
-
-                if (!user && !demoRole) {
-                    window.location.href = "/login";
-                    return;
+                if (demoRole) {
+                    setUserProfile({
+                        full_name: "Usuario Demo",
+                        role: demoRole,
+                        email: "demo@starterkar.com"
+                    });
                 }
+            }
+        };
 
-                if (user) {
-                    const { data: profile } = await supabase
-                        .from("profiles")
-                        .select("*")
-                        .eq("id", user.id)
-                        .single();
+        loadProfile();
 
-                    if (profile) setUserProfile(profile);
-                }
-
-                if (!user) {
-                    // Mock profile for demo mode
-                    if (demoRole) {
-                        setUserProfile({
-                            full_name: "Usuario Demo",
-                            role: demoRole,
-                            email: "demo@starterkar.com"
-                        });
-                    }
-                    setIsLoading(false);
-                    setMounted(true);
-                    return;
-                }
-
+        const loadDashboard = async () => {
             try {
                 setIsLoading(true);
                 // FORCE MOCK DATA TO RESTORE SITE VISIBILITY IMMEDIATELY
