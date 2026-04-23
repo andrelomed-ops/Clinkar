@@ -26,14 +26,16 @@ export default function HandoverPage() {
     useEffect(() => {
         async function fetchTransaction() {
             try {
-                // Try to join first
-                let { data, error } = await supabase
+                // Fetch separately to avoid relationship cache errors
+                const { data: txData, error: txError } = await supabase
                     .from('transactions')
-                    .select('*, cars(*)')
+                    .select('*')
                     .eq('id', id)
                     .single();
                 
-                if (error || !data?.cars) {
+                let data = txData;
+
+                if (txError || !txData) {
                     // Fallback for simulation/demo
                     if (id?.toString().startsWith('mock-tx') || id?.toString().startsWith('demo-tx')) {
                         data = {
@@ -51,24 +53,15 @@ export default function HandoverPage() {
                             insurance_cost: 0,
                             status: 'IN_VAULT'
                         };
-                    } else {
-                        // Fallback: Fetch separately if join fails
-                        const { data: txData } = await supabase
-                            .from('transactions')
-                            .select('*')
-                            .eq('id', id)
-                            .single();
-                        
-                        if (txData) {
-                            const { data: carData } = await supabase
-                                .from('cars')
-                                .select('*')
-                                .eq('id', txData.car_id)
-                                .single();
-                            
-                            data = { ...txData, cars: carData };
-                        }
                     }
+                } else if (txData) {
+                    const { data: carData } = await supabase
+                        .from('cars')
+                        .select('*')
+                        .eq('id', txData.car_id)
+                        .single();
+                    
+                    data = { ...txData, cars: carData };
                 }
                 
                 setTransaction(data);

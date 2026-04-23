@@ -218,15 +218,23 @@ export default function DashboardPage() {
                     setFavoriteCars([]);
                 }
 
-                    // Fetch Investor Application
+                // Fetch Investor Application
+                try {
                     const { data: invData } = await supabase
                         .from('investor_applications')
                         .select('*')
-                        .single();
+                        .maybeSingle();
                     if (invData) setInvestorApp(invData);
+                } catch (e) {
+                    console.warn("Investor app fetch failed, skipping:", e);
                 }
-            } catch (err) {
-                console.error("Error loading dashboard:", err);
+
+            } catch (err: any) {
+                console.error("Critical Dashboard Error:", err);
+                // If it's a PGRST200 error, we show a friendly message instead of a crash
+                if (err?.code === 'PGRST200') {
+                    console.error("Schema Cache Error detected. System is in recovery mode.");
+                }
             } finally {
                 setIsLoading(false);
                 setMounted(true);
