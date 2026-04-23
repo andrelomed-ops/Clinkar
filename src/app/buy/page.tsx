@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useMemo, useEffect } from "react";
-import { Shield, Search, Filter, MapPin, Tag, Menu, SlidersHorizontal, ArrowDownWideNarrow, Heart, ChevronLeft, ChevronRight, CarFront } from "lucide-react";
+import { Shield, Search, Filter, MapPin, Tag, Menu, SlidersHorizontal, ArrowDownWideNarrow, Heart, ChevronLeft, ChevronRight, CarFront, ArrowRight } from "lucide-react";
 import Link from "next/link";
 import dynamic from "next/dynamic";
 import { MarketFilters } from "@/components/market/MarketFilters";
@@ -10,6 +10,7 @@ import { cn } from "@/lib/utils";
 import { ALL_CARS } from "@/data/cars";
 import { createBrowserClient } from "@/lib/supabase/client";
 import { FavoriteService } from "@/services/FavoriteService";
+import { CarService } from "@/services/CarService";
 import { CarCard } from "@/components/market/CarCard";
 
 import { Navbar } from "@/components/ui/navbar";
@@ -28,7 +29,7 @@ const StarterKarAIBot = dynamic(
 const ITEMS_PER_PAGE = 24;
 
 export default function BuyPage() {
-    const supabase = createBrowserClient();
+    const supabase = useMemo(() => createBrowserClient(), []);
     const [filters, setFilters] = useState<any>({
         location: [],
         minPrice: '',
@@ -70,36 +71,40 @@ export default function BuyPage() {
 
     useEffect(() => {
         async function fetchCars() {
+            setIsLoading(true);
             try {
-                const { data, error } = await supabase
-                    .from('cars')
-                    .select('*')
-                    .eq('status', 'AVAILABLE');
-
-                if (error) throw error;
+                const data = await CarService.getAllCars(supabase);
 
                 if (data && data.length > 0) {
                     const mappedCars = (data as any[]).map(dbCar => ({
                         ...dbCar,
-                        features: [],
-                        distance: (dbCar.mileage || 0) / 1000,
-                        tags: dbCar.description ? dbCar.description.split(", ") : [],
-                        category: 'Car',
-                        type: 'Sedan',
-                        transmission: 'Automática',
-                        fuel: 'Gasolina',
-                        condition: 'Seminuevo',
+                        features: dbCar.features || [],
+                        distance: dbCar.mileage || 0,
+                        fuel: dbCar.fuel_type || 'Gasolina',
+                        transmission: dbCar.transmission || 'Automática',
+                        condition: dbCar.condition || 'Seminuevo',
+                        category: dbCar.category || 'Car',
+                        tags: dbCar.description ? dbCar.description.split(", ") : (dbCar.tags || []),
+                        // Ensure price is always a number
+                        price: Number(dbCar.price) || 0,
+                        marketValue: Number(dbCar.market_data?.marketValue) || Number(dbCar.price) || 0,
                     }));
                     setCars(mappedCars);
+                } else {
+                    // Fallback to ALL_CARS if DB is empty
+                    console.log("[BuyPage] DB returned no cars, using mock data.");
+                    setCars(ALL_CARS);
                 }
             } catch (e) {
                 console.error("Error fetching cars:", e);
+                setCars(ALL_CARS);
             } finally {
                 setIsLoading(false);
             }
         }
         fetchCars();
     }, [supabase]);
+
 
     useEffect(() => {
         setCurrentPage(1);
@@ -259,7 +264,10 @@ export default function BuyPage() {
                             </div>
                         </div>
 
-                        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-8">
+                        <div className={cn(
+                            "grid gap-8",
+                            paginatedCars.length > 0 ? "grid-cols-1 sm:grid-cols-2 xl:grid-cols-3" : "grid-cols-1"
+                        )}>
                             {isLoading ? (
                                 Array.from({ length: 6 }).map((_, i) => (
                                     <div key={i} className="space-y-4">
@@ -270,7 +278,7 @@ export default function BuyPage() {
                                         </div>
                                     </div>
                                 ))
-                            ) : (
+                            ) : paginatedCars.length > 0 ? (
                                 paginatedCars.map((car) => (
                                     <CarCard
                                         key={car.id}
@@ -279,6 +287,56 @@ export default function BuyPage() {
                                         onToggleFavorite={() => toggleFavorite(car.id)}
                                     />
                                 ))
+                            ) : (
+                                <div className="col-span-full py-20 flex flex-col items-center text-center animate-reveal">
+                                    <div className="h-24 w-24 bg-indigo-50 dark:bg-indigo-500/10 rounded-full flex items-center justify-center mb-8">
+                                        <Search className="h-10 w-10 text-indigo-600 dark:text-indigo-400" />
+                                    </div>
+                                    <h3 className="text-3xl font-black mb-4 tracking-tight uppercase italic">No encontramos lo que buscas</h3>
+                                    <p className="text-muted-foreground max-w-md mb-10 font-medium">
+                                        No tenemos ese auto exacto en el inventario actual, pero podemos buscarlo por ti a través de nuestra red de aliados.
+                                    </p>
+                                    
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full max-w-xl">
+                                        <Link 
+                                            href="/demand-request" 
+                                            className="h-16 px-8 bg-indigo-600 text-white rounded-2xl flex items-center justify-center gap-3 font-black text-sm hover:bg-indigo-700 transition-all shadow-xl shadow-indigo-500/20 active:scale-95 group"
+                                        >
+                                            <CarFront className="h-5 w-5" />
+                                            SOLICITAR UN AUTO
+                                            <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                                        </Link>
+                                        <button 
+                                            onClick={() => {
+                                                setSearchTerm("");
+                                                setFilters({
+                                                    location: [],
+                                                    minPrice: '',
+                                                    maxPrice: '',
+                                                    makes: [],
+                                                    category: [],
+                                                    investorOnly: false,
+                                                    certifiedOnly: false,
+                                                });
+                                            }}
+                                            className="h-16 px-8 bg-secondary text-foreground rounded-2xl flex items-center justify-center gap-3 font-bold text-sm hover:bg-secondary/80 transition-all active:scale-95"
+                                        >
+                                            LIMPIAR FILTROS
+                                        </button>
+                                    </div>
+                                    
+                                    <div className="mt-16 p-8 glass-card border-indigo-500/10 rounded-[2.5rem] max-w-2xl w-full flex flex-col md:flex-row items-center gap-6">
+                                        <div className="h-16 w-16 bg-indigo-600 rounded-2xl flex items-center justify-center shrink-0 shadow-lg shadow-indigo-600/20">
+                                            <Shield className="h-8 w-8 text-white" />
+                                        </div>
+                                        <div className="text-left">
+                                            <h4 className="font-black text-lg mb-1 tracking-tight uppercase italic">¿Sabías que?</h4>
+                                            <p className="text-sm text-muted-foreground font-medium">
+                                                Cualquier auto que solicites pasa por la misma inspección de 150 puntos y garantía de StarterKar.
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
                             )}
                         </div>
 

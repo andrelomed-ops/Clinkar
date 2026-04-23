@@ -45,17 +45,21 @@ export default function ProfilePage() {
         try {
             const { error } = await supabase
                 .from("profiles")
-                .update({
+                .upsert({
+                    id: profile.id,
                     full_name: profile.full_name,
                     phone: profile.phone,
                     location: profile.location,
                     avatar_url: profile.avatar_url,
                     rfc: profile.rfc,
-                    cif_url: profile.cif_url
-                })
-                .eq("id", user.id);
+                    cif_url: profile.cif_url,
+                    updated_at: new Date().toISOString()
+                });
 
-            if (error) throw error;
+            if (error) {
+                console.error("Error saving profile:", error);
+                throw error;
+            }
             toast.success("Perfil actualizado con éxito");
         } catch (err) {
             toast.error("Error al actualizar perfil");

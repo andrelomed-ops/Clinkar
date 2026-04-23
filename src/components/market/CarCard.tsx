@@ -130,7 +130,7 @@ export function CarCard({ car, isFavorite = false, onToggleFavorite }: CarCardPr
                     <div className="grid grid-cols-2 gap-y-2 gap-x-4 mb-6 pt-4 border-t border-zinc-100 dark:border-zinc-800">
                         <div className="flex items-center gap-2 text-xs text-zinc-600 dark:text-zinc-400">
                             <Gauge className="h-3.5 w-3.5 text-zinc-400" />
-                            {car.distance.toLocaleString()} km
+                            {car.distance ? car.distance.toLocaleString() : '0'} km
                         </div>
                         <div className="flex items-center gap-2 text-xs text-zinc-600 dark:text-zinc-400">
                             <Fuel className="h-3.5 w-3.5 text-zinc-400" />
@@ -151,7 +151,7 @@ export function CarCard({ car, isFavorite = false, onToggleFavorite }: CarCardPr
                                 </p>
                             )}
                             <p className="text-xl font-bold text-zinc-900 dark:text-white tracking-tight">
-                                ${car.price.toLocaleString()}
+                                ${car.price ? car.price.toLocaleString() : '0'}
                             </p>
                         </div>
                         <div className="h-8 w-8 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center group-hover:bg-zinc-900 dark:group-hover:bg-white group-hover:text-white dark:group-hover:text-black transition-all duration-300 group-hover:scale-110 group-hover:-rotate-45">

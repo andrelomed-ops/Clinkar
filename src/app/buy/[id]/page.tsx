@@ -1,17 +1,14 @@
 "use client";
 
-import { use, useEffect, useState } from "react";
+import React, { use, useEffect, useState, useMemo } from "react";
 import { ALL_CARS, Vehicle } from "@/data/cars";
 import { Navbar } from "@/components/ui/navbar";
 import { CheckoutAction } from "@/components/checkout/CheckoutAction";
 import { OfferModal } from "@/components/market/OfferModal";
 import { CreditSimulator } from "@/components/checkout/CreditSimulator";
-import { GestoriaAdvisor } from "@/components/checkout/GestoriaAdvisor";
-import { InsuranceSelector } from "@/components/dashboard/InsuranceSelector";
 import { supabase } from "@/lib/supabase";
 import { 
     ChevronLeft, 
-    Share2, 
     Heart, 
     MapPin, 
     Gauge, 
@@ -21,8 +18,12 @@ import {
     ShieldCheck, 
     CarFront,
     Activity,
-    Info
+    Info,
+    LayoutDashboard,
+    Share2
 } from "lucide-react";
+import { FavoriteService } from "@/services/FavoriteService";
+import { createBrowserClient } from "@/lib/supabase/client";
 import Link from "next/link";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
@@ -33,13 +34,32 @@ export default function CarDetailPage({ params }: { params: Promise<{ id: string
     const [car, setCar] = useState<Vehicle | null>(null);
     const [loading, setLoading] = useState(true);
     const [isFavorite, setIsFavorite] = useState(false);
+    const [userProfile, setUserProfile] = useState<any>(null);
+    
+    // Explicitly use React.useMemo to avoid any scope issues
+    const supabaseBrowser = React.useMemo(() => createBrowserClient(), []);
 
     useEffect(() => {
         async function fetchCar() {
             setLoading(true);
             try {
+                // Fetch User Profile for role-gated content
+                const { data: { user } } = await supabaseBrowser.auth.getUser();
+                if (user) {
+                    const { data: profile } = await supabaseBrowser
+                        .from('profiles')
+                        .select('*')
+                        .eq('id', user.id)
+                        .single();
+                    if (profile) setUserProfile(profile);
+
+                    // Fetch Favorite status
+                    const favs = await FavoriteService.getFavorites(supabaseBrowser);
+                    setIsFavorite(favs.includes(id));
+                }
+
                 // 1. Try Supabase
-                const { data, error } = await supabase
+                const { data, error } = await supabaseBrowser
                     .from('cars')
                     .select('*')
                     .eq('id', id)
@@ -73,7 +93,7 @@ export default function CarDetailPage({ params }: { params: Promise<{ id: string
         return (
             <div className="min-h-screen bg-background flex flex-col items-center justify-center">
                 <div className="h-12 w-12 border-4 border-primary border-t-transparent rounded-full animate-spin mb-4" />
-                <p className="text-zinc-500 font-bold animate-pulse">Sincronizando con la Bóveda...</p>
+                <p className="text-zinc-500 font-bold animate-pulse">Sincronizando activo...</p>
             </div>
         );
     }
@@ -95,7 +115,7 @@ export default function CarDetailPage({ params }: { params: Promise<{ id: string
 
     return (
         <div className="min-h-screen bg-background">
-            <Navbar />
+            <Navbar variant="market" />
 
             <main className="pt-24 pb-20 px-6 max-w-7xl mx-auto">
                 {/* Header Navigation */}
@@ -120,10 +140,20 @@ export default function CarDetailPage({ params }: { params: Promise<{ id: string
                             <Share2 className="h-5 w-5" />
                         </button>
                         <button 
-                            onClick={() => setIsFavorite(!isFavorite)}
+                            onClick={async () => {
+                                const newStatus = !isFavorite;
+                                setIsFavorite(newStatus);
+                                try {
+                                    await FavoriteService.toggleFavorite(supabaseBrowser, id);
+                                    toast.success(newStatus ? "Agregado a favoritos" : "Eliminado de favoritos");
+                                } catch (err) {
+                                    setIsFavorite(!newStatus);
+                                    toast.error("Error al actualizar favoritos");
+                                }
+                            }}
                             className={cn(
                                 "p-2.5 rounded-full border border-border bg-background transition-all",
-                                isFavorite ? "text-red-500 bg-red-50 dark:bg-red-900/20" : "hover:bg-secondary"
+                                isFavorite ? "text-red-500 bg-red-50 dark:bg-red-900/20 border-red-200" : "hover:bg-secondary"
                             )}
                         >
                             <Heart className={cn("h-5 w-5", isFavorite && "fill-current")} />
@@ -304,18 +334,6 @@ export default function CarDetailPage({ params }: { params: Promise<{ id: string
                                             </div>
                                         </div>
 
-                                        {/* 4. Gestoría y Seguros (Solución Integral) */}
-                                        <div className="grid gap-8">
-                                            <div className="space-y-4">
-                                                <h3 className="text-sm font-black uppercase tracking-[0.2em] text-zinc-400">Trámites y Gestoría</h3>
-                                                <GestoriaAdvisor />
-                                            </div>
-                                            
-                                            <div className="space-y-4">
-                                                <h3 className="text-sm font-black uppercase tracking-[0.2em] text-zinc-400">Seguros Aliados</h3>
-                                                <InsuranceSelector carValue={car.price} onSelectOption={() => {}} />
-                                            </div>
-                                        </div>
                                     </div>
                         </div>
                     </div>

@@ -11,6 +11,7 @@ interface StarterKarLogoProps {
     showMonogram?: boolean;
     orientation?: "horizontal" | "vertical";
     label?: string;
+    hideSubmark?: boolean;
 }
 
 export function StarterKarLogo({
@@ -21,6 +22,7 @@ export function StarterKarLogo({
     showMonogram = true,
     orientation = "horizontal",
     label,
+    hideSubmark = false,
 }: StarterKarLogoProps) {
     const shieldSizes = {
         xs: "h-6 w-6",
@@ -95,15 +97,17 @@ export function StarterKarLogo({
                     >
                         Starter<span className="text-indigo-600">Kar</span>
                     </span>
-                    <span
-                        className={cn(
-                            "font-bold uppercase tracking-[0.3em] text-indigo-400 dark:text-indigo-500 mt-0.5",
-                            wordmarkSizes[size].sub
-                        )}
-                        style={{ fontFamily: "'Outfit', sans-serif" }}
-                    >
-                        Bóveda Digital
-                    </span>
+                    {!hideSubmark && (
+                        <span
+                            className={cn(
+                                "font-bold uppercase tracking-[0.3em] text-indigo-400 dark:text-indigo-500 mt-0.5",
+                                wordmarkSizes[size].sub
+                            )}
+                            style={{ fontFamily: "'Outfit', sans-serif" }}
+                        >
+                            Bóveda Digital
+                        </span>
+                    )}
                 </div>
             )}
         </div>

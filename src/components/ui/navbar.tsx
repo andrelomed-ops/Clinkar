@@ -5,7 +5,7 @@ import { Menu, Heart, ArrowLeft, ArrowDownWideNarrow } from 'lucide-react';
 import { StarterKarLogo } from '@/components/ui/StarterKarLogo';
 import { ThemeToggle } from '@/components/layout/ThemeToggle';
 import { cn } from '@/lib/utils';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { NotificationCenter } from './NotificationCenter';
 import { AgentModeBar } from '@/components/admin/AgentModeBar';
 import { createBrowserClient } from '@/lib/supabase/client';
@@ -28,7 +28,8 @@ export function Navbar({
     const [isScrolled, setIsScrolled] = useState(false);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [user, setUser] = useState<any>(null);
-    const supabase = createBrowserClient();
+    const [userProfile, setUserProfile] = useState<any>(null);
+    const supabase = useMemo(() => createBrowserClient(), []);
 
     useEffect(() => {
         const handleScroll = () => {
@@ -40,8 +41,16 @@ export function Navbar({
             setUser(session?.user ?? null);
         });
 
-        supabase.auth.getUser().then(({ data: { user } }) => {
+        supabase.auth.getUser().then(async ({ data: { user } }) => {
             setUser(user);
+            if (user) {
+                const { data: profile } = await supabase
+                    .from('profiles')
+                    .select('role')
+                    .eq('id', user.id)
+                    .single();
+                if (profile) setUserProfile(profile);
+            }
         });
 
         return () => subscription.unsubscribe();
@@ -49,6 +58,8 @@ export function Navbar({
 
     const handleSignOut = async () => {
         await supabase.auth.signOut();
+        // Clear demo role cookie
+        document.cookie = "starterkar_role=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT";
         window.location.href = '/';
     };
 
@@ -75,7 +86,7 @@ export function Navbar({
 
                     {/* Left Section: Logo */}
                     <div className="flex items-center gap-4">
-                        <StarterKarLogo size="sm" showMonogram={false} href="/" />
+                        <StarterKarLogo size="sm" showMonogram={false} href="/" hideSubmark={variant === 'market'} />
                     </div>
 
                     {/* Center Section: Navigation Links (Home variant only) */}
@@ -134,6 +145,14 @@ export function Navbar({
                                 href={user ? "/dashboard" : "/login"} 
                                 className="hover:translate-y-[-2px] transition-all"
                             />
+                            {user && userProfile?.role?.toLowerCase() !== 'investor' && (
+                                <Link 
+                                    href="/investor/apply"
+                                    className="hidden xl:flex items-center gap-2 px-3 py-1.5 rounded-full bg-amber-500/10 text-amber-600 border border-amber-500/20 text-[10px] font-black uppercase tracking-widest hover:bg-amber-500/20 transition-all"
+                                >
+                                    Suscripción Inversionista
+                                </Link>
+                            )}
                             {user && (
                                 <button 
                                     onClick={handleSignOut}

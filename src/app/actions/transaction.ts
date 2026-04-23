@@ -125,3 +125,17 @@ export async function overrideTransactionStatusAction(transactionId: string, sta
 
     return await TransactionService.overrideTransactionStatus(supabase, transactionId, status);
 }
+
+export async function updateTransactionServicesAction(transactionId: string, services: {
+    insuranceId?: string;
+    insuranceCost?: number;
+    gestoriaCost?: number;
+}) {
+    const supabase = await createClient();
+    
+    // Auth check
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) throw new Error("Unauthorized");
+
+    return await TransactionService.updateTransactionServices(supabase, transactionId, services);
+}

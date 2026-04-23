@@ -57,7 +57,7 @@ export class CarService {
         const { data, error } = await supabase
             .from('cars')
             .select('*')
-            .eq('status', 'PUBLISHED'); // Only show published cars
+            .in('status', ['available', 'PUBLISHED', 'CERTIFIED', 'AVAILABLE', 'certified']); // Show all active/ready cars
 
         if (error) {
             Logger.error('Error fetching cars:', error);

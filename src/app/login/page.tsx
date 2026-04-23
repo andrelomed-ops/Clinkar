@@ -2,7 +2,7 @@
 
 import { useState, Suspense } from "react";
 import { createBrowserClient } from "@/lib/supabase/client";
-import { Shield, Loader2, ArrowRight } from "lucide-react";
+import { ShieldCheck, Loader2, ArrowRight } from "lucide-react";
 import { StarterKarLogo } from "@/components/ui/StarterKarLogo";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -21,12 +21,13 @@ export default function LoginPage() {
     );
 }
 
+const supabase = createBrowserClient();
+
 function LoginForm() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
-    const supabase = createBrowserClient();
     const router = useRouter();
     const searchParams = useSearchParams();
     const message = searchParams.get("message");
@@ -47,7 +48,6 @@ function LoginForm() {
         } else {
             const next = searchParams.get("next");
             router.push(next || "/dashboard");
-            router.refresh();
         }
     };
 

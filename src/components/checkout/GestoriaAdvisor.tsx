@@ -24,31 +24,33 @@ export function GestoriaAdvisor({ onSelect }: GestoriaAdvisorProps) {
 
     return (
         <div className={cn(
-            "glass-card rounded-[2.5rem] p-8 transition-all duration-500 border-2",
+            "glass-card rounded-[2.5rem] p-6 md:p-10 transition-all duration-500 border-2",
             active
                 ? "border-emerald-500/50 bg-emerald-500/5"
                 : "border-indigo-500/10 hover:border-indigo-500/30 shadow-2xl shadow-indigo-500/5"
         )}>
-            <div className="flex items-start justify-between gap-6">
-                <div className="flex items-start gap-4 flex-1">
+            <div className="flex flex-col md:flex-row items-center md:items-start justify-between gap-8 text-center md:text-left">
+                <div className="flex flex-col md:flex-row items-center md:items-start gap-6 flex-1">
                     <div className={cn(
-                        "h-14 w-14 rounded-2xl flex items-center justify-center transition-colors shadow-lg",
+                        "h-16 w-16 rounded-3xl flex items-center justify-center transition-colors shadow-lg shrink-0",
                         active ? "bg-emerald-500 text-white shadow-emerald-500/20" : "bg-indigo-600 text-white shadow-indigo-500/20"
                     )}>
-                        <Scale className="h-7 w-7" />
+                        <Scale className="h-8 w-8" />
                     </div>
-                    <div>
-                        <h3 className="text-2xl font-black tracking-tight">Gestoría de Legalización</h3>
-                        <p className="text-xs text-muted-foreground font-bold uppercase tracking-widest mb-4">Revisión de Pedimento y Factura</p>
+                    <div className="space-y-4">
+                        <div>
+                            <h3 className="text-2xl font-black tracking-tight leading-none mb-2">Gestoría de Legalización</h3>
+                            <p className="text-[10px] text-muted-foreground font-black uppercase tracking-[0.2em]">Revisión de Pedimento y Factura</p>
+                        </div>
 
-                        <p className="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed mb-6">
+                        <p className="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed max-w-md">
                             ¿El auto es importado o fronterizo? Nuestros gestores certificados validan el **Pedimento A1** y el historial de nacionalización e impagos antes de liberar tus fondos.
                         </p>
 
-                        <div className="flex items-center gap-6">
-                            <div className="text-2xl font-black text-indigo-600">$1,250 <span className="text-[10px] text-zinc-400 font-bold uppercase ml-1">Pago único</span></div>
-                            <div className="flex items-center gap-2 text-[10px] font-black text-emerald-600 uppercase tracking-tighter bg-emerald-50 dark:bg-emerald-950/20 px-2 py-1 rounded">
-                                <CheckCircle2 className="h-3 w-3" /> Protección Legal 100%
+                        <div className="flex flex-col sm:flex-row items-center gap-4 pt-2">
+                            <div className="text-3xl font-black text-indigo-600">$1,250 <span className="text-[10px] text-zinc-400 font-bold uppercase ml-1 tracking-widest">Pago único</span></div>
+                            <div className="flex items-center gap-2 text-[10px] font-black text-emerald-600 uppercase tracking-widest bg-emerald-500/10 px-3 py-1.5 rounded-full border border-emerald-500/20">
+                                <CheckCircle2 className="h-3.5 w-3.5" /> Protección Legal 100%
                             </div>
                         </div>
                     </div>
@@ -59,8 +61,8 @@ export function GestoriaAdvisor({ onSelect }: GestoriaAdvisorProps) {
                     onClick={handleToggle}
                     disabled={loading}
                     className={cn(
-                        "h-14 rounded-2xl px-8 font-black transition-all active:scale-95 shrink-0",
-                        active ? "bg-emerald-100 text-emerald-700 hover:bg-emerald-200 border-emerald-200" : "bg-zinc-900 text-white shadow-xl"
+                        "h-16 w-full md:w-auto rounded-2xl px-10 font-black transition-all active:scale-95 shrink-0 shadow-xl",
+                        active ? "bg-emerald-100 text-emerald-700 hover:bg-emerald-200 border-emerald-200" : "bg-zinc-900 text-white hover:bg-zinc-800"
                     )}
                 >
                     {loading ? <Loader2 className="animate-spin h-5 w-5" /> : active ? "Servicio Añadido" : "Añadir Asesoría"}

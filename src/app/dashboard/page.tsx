@@ -1,9 +1,9 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Shield, CreditCard, Clock, CheckCircle2, QrCode, ArrowRight, MapPin, Wrench, Car, CarFront, Smartphone, Heart, LogOut, LayoutDashboard } from "lucide-react";
+import { ShieldCheck, CreditCard, Clock, CheckCircle2, QrCode, ArrowRight, MapPin, Wrench, Car, CarFront, Smartphone, Heart, LogOut, LayoutDashboard } from "lucide-react";
 import { StarterKarLogo } from "@/components/ui/StarterKarLogo";
 import confetti from "canvas-confetti";
 import { toast } from "sonner";
@@ -43,7 +43,7 @@ export default function DashboardPage() {
     const [activeTab, setActiveTab] = useState<"buying" | "selling">("buying");
     const [investorApp, setInvestorApp] = useState<any>(null);
 
-    const supabase = createBrowserClient();
+    const supabase = useMemo(() => createBrowserClient(), []);
 
     useEffect(() => {
         if (searchParams.get("verified") === "true") {
@@ -179,14 +179,22 @@ export default function DashboardPage() {
                     
                 // Fetch Favorites
                 const favIds = await FavoriteService.getFavorites(supabase);
-                if (favIds.length > 0) {
-                    const dbCars = await Promise.all(favIds.map(id => CarService.getCarById(supabase, id)));
+                if (favIds && favIds.length > 0) {
+                    const dbCars = await Promise.all(favIds.map(async (id) => {
+                        const car = await CarService.getCarById(supabase, id);
+                        return car;
+                    }));
+                    
                     const validDbCars = dbCars.filter(c => c !== null);
+                    
+                    // Fallback to ALL_CARS for mock data
                     const mockFavs = favIds
                         .map(id => ALL_CARS.find(c => c.id === id))
                         .filter((c): c is Vehicle => c !== undefined && !validDbCars.find(dbc => dbc.id === c.id));
 
-                    setFavoriteCars([...validDbCars, ...mockFavs]);
+                    const combined = [...validDbCars, ...mockFavs];
+                    console.log("[Dashboard] Favorites loaded:", combined.length);
+                    setFavoriteCars(combined);
                 } else {
                     setFavoriteCars([]);
                 }
@@ -270,6 +278,17 @@ export default function DashboardPage() {
                         <span>CDMX</span>
                     </div>
                     <NotificationCenter />
+                    <button 
+                        onClick={async () => {
+                            await supabase.auth.signOut();
+                            // Clear demo role cookie
+                            document.cookie = "starterkar_role=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT";
+                            window.location.href = '/';
+                        }}
+                        className="flex items-center gap-2 px-3 py-1.5 rounded-full border border-zinc-200 dark:border-zinc-800 text-[10px] font-black uppercase tracking-widest text-zinc-500 hover:bg-red-50 hover:text-red-600 hover:border-red-100 transition-all"
+                    >
+                        Cerrar Sesión
+                    </button>
                     <Link
                         href="/dashboard/profile"
                         className="h-10 w-10 rounded-full bg-indigo-100 hover:bg-indigo-200 flex items-center justify-center text-xs font-bold text-indigo-700 border border-indigo-200 transition-all hover:scale-110 active:scale-95"
@@ -296,25 +315,25 @@ export default function DashboardPage() {
 
                             {/* Role-gated admin tools — solo admin/inspector */}
                             <div className="w-full md:w-auto flex flex-wrap gap-3">
-                                {userProfile?.role === 'admin' && (
-                                    <Link href="/admin" className="h-14 px-6 bg-zinc-900 text-white rounded-2xl flex items-center gap-3 font-bold text-sm hover:bg-zinc-800 transition-all border border-zinc-700">
+                                {(userProfile?.role?.toLowerCase() === 'admin') && (
+                                    <Link href="/admin" className="h-14 px-6 bg-zinc-900 text-white rounded-2xl flex items-center gap-3 font-bold text-sm hover:bg-zinc-800 transition-all border border-zinc-700 shadow-xl shadow-indigo-500/10">
                                         <LayoutDashboard className="h-5 w-5 text-indigo-400" />
                                         Control Maestro
                                     </Link>
                                 )}
                                 
-                                {(userProfile?.role === 'admin' || userProfile?.role === 'inspector') && (
+                                {(userProfile?.role?.toLowerCase() === 'admin' || userProfile?.role?.toLowerCase() === 'inspector') && (
                                     <>
-                                        {userProfile?.role === 'inspector' || userProfile?.role === 'admin' ? (
+                                        {(userProfile?.role?.toLowerCase() === 'inspector' || userProfile?.role?.toLowerCase() === 'admin') ? (
                                             <Link href="/admin/inspector" className="h-14 px-6 bg-secondary rounded-2xl flex items-center gap-3 font-bold text-sm hover:bg-secondary/80 transition-all">
                                                 <Smartphone className="h-5 w-5 text-blue-500" />
                                                 Inspector
                                             </Link>
                                         ) : null}
-                                        {userProfile?.role === 'admin' && (
+                                        {userProfile?.role?.toLowerCase() === 'admin' && (
                                             <>
                                                 <Link href="/admin/legal" className="h-14 px-6 bg-emerald-500/10 text-emerald-600 rounded-2xl flex items-center gap-3 font-bold text-sm hover:bg-emerald-500/20 transition-all border border-emerald-500/20">
-                                                    <Shield className="h-5 w-5" />
+                                                    <ShieldCheck className="h-5 w-5" />
                                                     Admin Legal
                                                 </Link>
                                                 <Link href="/sell?admin=true" className="h-14 px-6 bg-indigo-600 text-white rounded-2xl flex items-center gap-3 font-black text-sm hover:bg-indigo-700 transition-all shadow-xl shadow-indigo-600/20">
@@ -325,20 +344,7 @@ export default function DashboardPage() {
                                         )}
                                     </>
                                 )}
-
-                                <button 
-                                    onClick={async () => {
-                                        await supabase.auth.signOut();
-                                        router.push('/');
-                                        router.refresh();
-                                    }}
-                                    className="h-14 px-6 bg-red-500/10 text-red-600 rounded-2xl flex items-center gap-3 font-bold text-sm hover:bg-red-500/20 transition-all border border-red-500/20"
-                                >
-                                    <LogOut className="h-5 w-5" />
-                                    Cerrar Sesión
-                                </button>
                             </div>
-
                         </div>
                     </div>
 
@@ -698,7 +704,7 @@ export default function DashboardPage() {
                                                 "flex items-center gap-3 mb-6",
                                                 investorApp?.status === 'pending' ? "text-amber-600" : "text-indigo-400"
                                             )}>
-                                                <Shield className="h-5 w-5" />
+                                                <ShieldCheck className="h-5 w-5" />
                                                 <span className="text-[10px] font-black uppercase tracking-[0.2em]">StarterKar Inversionista</span>
                                             </div>
                                             

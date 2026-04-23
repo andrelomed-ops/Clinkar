@@ -567,6 +567,64 @@ export type Database = {
                     updated_at?: string
                 }
             }
+            profiles: {
+                Row: {
+                    id: string
+                    full_name: string | null
+                    avatar_url: string | null
+                    role: string
+                    phone: string | null
+                    location: string | null
+                    rfc: string | null
+                    cif_url: string | null
+                    created_at: string
+                    updated_at: string
+                }
+                Insert: {
+                    id: string
+                    full_name?: string | null
+                    avatar_url?: string | null
+                    role?: string
+                    phone?: string | null
+                    location?: string | null
+                    rfc?: string | null
+                    cif_url?: string | null
+                    created_at?: string
+                    updated_at?: string
+                }
+                Update: {
+                    id?: string
+                    full_name?: string | null
+                    avatar_url?: string | null
+                    role?: string
+                    phone?: string | null
+                    location?: string | null
+                    rfc?: string | null
+                    cif_url?: string | null
+                    created_at?: string
+                    updated_at?: string
+                }
+            }
+            user_favorites: {
+                Row: {
+                    id: string
+                    user_id: string
+                    car_id: string
+                    created_at: string
+                }
+                Insert: {
+                    id?: string
+                    user_id: string
+                    car_id: string
+                    created_at?: string
+                }
+                Update: {
+                    id?: string
+                    user_id?: string
+                    car_id?: string
+                    created_at?: string
+                }
+            }
         }
         Views: {
             [_ in never]: never

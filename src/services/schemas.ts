@@ -6,11 +6,11 @@ import { z } from "zod";
  */
 
 export const CarSchema = z.object({
-    id: z.string().uuid(),
-    make: z.string(),
-    model: z.string(),
-    year: z.number().int().min(1900).max(new Date().getFullYear() + 1),
-    price: z.number().positive(),
+    id: z.string(),
+    make: z.string().default("Vehículo"),
+    model: z.string().default("Desconocido"),
+    year: z.number().int().default(new Date().getFullYear()),
+    price: z.number().default(0),
     description: z.string().optional().nullable(),
     images: z.array(z.string()).default([]).nullable(),
     status: z.string().optional().nullable(),
