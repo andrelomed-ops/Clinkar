@@ -165,41 +165,45 @@ export function PostSaleEcosystem({
                         <h2 className="text-2xl font-black text-zinc-900 dark:text-white tracking-tight italic uppercase">Ecosistema Post-Venta y Entrega</h2>
                         <p className="text-zinc-500 text-xs font-bold uppercase tracking-widest">Personaliza tu logística y trámites • Ref: {transactionId.split('-')[0].toUpperCase()}</p>
                     </div>
-                    <div className="flex items-center gap-3 bg-indigo-50 dark:bg-zinc-950 p-2 rounded-2xl border border-indigo-100 dark:border-zinc-800">
-                        <div className="flex flex-col px-4">
-                            <span className="text-[10px] font-black uppercase text-indigo-400 tracking-[0.2em]">Resguardo Legal</span>
-                            <span className="text-xs font-bold text-emerald-600">Activo (Bóveda Digital)</span>
+                    <div className="flex items-center gap-3 bg-indigo-50 dark:bg-zinc-950 p-2.5 rounded-2xl border border-indigo-100 dark:border-zinc-800">
+                        <div className="flex flex-col px-4 text-right">
+                            <span className="text-[10px] font-black uppercase text-indigo-400 tracking-[0.2em] mb-0.5">Estado de Operación</span>
+                            <span className="text-xs font-bold text-emerald-600 uppercase tracking-tighter">Activo en Bóveda Digital</span>
                         </div>
                     </div>
                 </div>
 
                 {/* Grid de Servicios */}
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-5 mb-8">
                     {services.map((service) => (
                         <button
                             key={service.id}
                             onClick={() => setRequestedService(service.id)}
                             className={cn(
-                                "group relative p-6 rounded-3xl border-2 text-left transition-all duration-300",
+                                "group relative p-6 rounded-[2rem] border-2 text-left transition-all duration-300",
                                 requestedService === service.id
-                                    ? "border-indigo-600 bg-indigo-50/50 dark:bg-indigo-500/10 shadow-lg shadow-indigo-500/10"
+                                    ? "border-indigo-600 bg-indigo-50/50 dark:bg-indigo-500/10 shadow-xl shadow-indigo-500/10"
                                     : "border-zinc-100 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-950/50 hover:border-indigo-200 dark:hover:border-zinc-700"
                             )}
                         >
-                            <div className="flex items-start justify-between mb-4">
+                            <div className="flex items-start justify-between mb-5">
                                 <div className={cn(
-                                    "p-3 rounded-2xl transition-colors",
-                                    requestedService === service.id ? "bg-indigo-600 text-white" : "bg-white dark:bg-zinc-800 text-zinc-400 group-hover:text-indigo-600 shadow-sm border border-zinc-100 dark:border-zinc-700"
+                                    "p-3.5 rounded-2xl transition-all duration-300",
+                                    requestedService === service.id 
+                                        ? "bg-indigo-600 text-white shadow-lg shadow-indigo-600/30" 
+                                        : "bg-white dark:bg-zinc-800 text-zinc-400 group-hover:text-indigo-600 shadow-sm border border-zinc-100 dark:border-zinc-700"
                                 )}>
                                     {service.icon}
                                 </div>
                             </div>
                             <div>
                                 <h4 className={cn(
-                                    "font-bold text-sm mb-1 transition-colors",
-                                    requestedService === service.id ? "text-indigo-700 dark:text-white" : "text-zinc-700 dark:text-zinc-300"
+                                    "font-black text-xs uppercase tracking-widest mb-2 transition-colors",
+                                    requestedService === service.id ? "text-indigo-700 dark:text-white" : "text-zinc-800 dark:text-zinc-200"
                                 )}>{service.title}</h4>
-                                <p className="text-[10px] text-zinc-500 leading-tight">{service.desc}</p>
+                                <p className="text-[10px] text-zinc-500 leading-normal text-justify">
+                                    {service.desc}
+                                </p>
                             </div>
                         </button>
                     ))}

@@ -6,7 +6,7 @@ import { createBrowserClient } from "@/lib/supabase/client";
 import { Navbar } from "@/components/ui/navbar";
 import { HandoverSafeCheck } from "@/components/dashboard/HandoverSafeCheck";
 import { PostSaleEcosystem } from "@/components/dashboard/PostSaleEcosystem";
-import { Loader2, ShieldCheck, MapPin, Car, ArrowLeft } from "lucide-react";
+import { Loader2, ShieldCheck, MapPin, Car, ArrowLeft, Zap } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { releaseVaultFundsAction } from "@/app/actions/transaction";
@@ -106,7 +106,7 @@ export default function HandoverPage() {
             <Navbar variant="market" />
             
             <main className="max-w-7xl mx-auto px-6 py-12">
-                <div className="mb-12 flex items-center justify-between">
+                <div className="mb-12 flex flex-col md:flex-row md:items-center justify-between gap-8">
                     <div>
                         <Link href="/dashboard" className="inline-flex items-center gap-2 text-zinc-500 hover:text-zinc-900 dark:hover:text-white transition-colors mb-4 group">
                             <ArrowLeft className="h-4 w-4 group-hover:-translate-x-1 transition-transform" />
@@ -116,13 +116,29 @@ export default function HandoverPage() {
                         <p className="text-zinc-500 font-bold uppercase tracking-widest text-xs mt-1">Folio: #{transaction.id.slice(0, 8)} • {transaction.cars?.make} {transaction.cars?.model}</p>
                     </div>
                     
-                    <div className="hidden md:flex items-center gap-4 bg-white dark:bg-zinc-900 p-4 rounded-3xl border border-zinc-200 dark:border-zinc-800 shadow-sm">
-                        <div className="h-12 w-12 bg-emerald-500/10 rounded-2xl flex items-center justify-center text-emerald-600">
-                            <ShieldCheck className="h-6 w-6" />
-                        </div>
-                        <div>
-                            <p className="text-[10px] font-black uppercase text-zinc-400 leading-none mb-1">Estatus de Bóveda</p>
-                            <p className="text-sm font-black text-emerald-600 uppercase">Fondos Resguardados</p>
+                    <div className="flex flex-wrap items-center gap-4">
+                        {transaction.metadata?.scheduled_delivery_date && (
+                            <div className="flex items-center gap-4 bg-indigo-50 dark:bg-indigo-900/10 px-6 py-4 rounded-[2rem] border border-indigo-100 dark:border-indigo-800 shadow-sm animate-in slide-in-from-right-4">
+                                <div className="h-10 w-10 bg-indigo-600 rounded-xl flex items-center justify-center text-white">
+                                    <Zap className="h-5 w-5" />
+                                </div>
+                                <div>
+                                    <p className="text-[10px] font-black uppercase text-indigo-400 leading-none mb-1">Cita Programada</p>
+                                    <p className="text-sm font-black text-indigo-900 dark:text-indigo-200">
+                                        {new Date(transaction.metadata.scheduled_delivery_date).toLocaleDateString('es-MX', { weekday: 'long', day: 'numeric', month: 'long' })} • {transaction.metadata.scheduled_delivery_time}
+                                    </p>
+                                </div>
+                            </div>
+                        )}
+
+                        <div className="flex items-center gap-4 bg-white dark:bg-zinc-900 px-6 py-4 rounded-[2rem] border border-zinc-200 dark:border-zinc-800 shadow-sm">
+                            <div className="h-10 w-10 bg-emerald-500/10 rounded-xl flex items-center justify-center text-emerald-600">
+                                <ShieldCheck className="h-5 w-5" />
+                            </div>
+                            <div>
+                                <p className="text-[10px] font-black uppercase text-zinc-400 leading-none mb-1">Estatus de Bóveda</p>
+                                <p className="text-sm font-black text-emerald-600 uppercase">Fondos Resguardados</p>
+                            </div>
                         </div>
                     </div>
                 </div>

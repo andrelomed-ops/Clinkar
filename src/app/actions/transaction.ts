@@ -6,6 +6,7 @@ import { CarService } from '@/services/CarService';
 import { ALL_CARS } from '@/data/cars';
 import { emails } from '@/lib/emails';
 import { redirect } from 'next/navigation';
+import { NotificationService } from '@/services/NotificationService';
 
 export async function startTransaction(carId: string, addOns?: {
     logistics?: any;
@@ -13,6 +14,8 @@ export async function startTransaction(carId: string, addOns?: {
     gestoria?: { active: boolean, cost: number };
     insurance?: { provider: string, cost: number };
     deliveryType?: 'workshop' | 'home';
+    scheduledDate?: string;
+    scheduledTime?: string;
 }) {
     const supabase = await createClient();
 
@@ -64,13 +67,32 @@ export async function startTransaction(carId: string, addOns?: {
                 logisticsQuote: addOns?.logistics,
                 warrantyQuote: addOns?.warranty,
                 gestoriaQuote: addOns?.gestoria,
-                insuranceQuote: addOns?.insurance
+                insuranceQuote: addOns?.insurance,
+                // Pass scheduling in metadata
+                metadata: {
+                    scheduled_delivery_date: addOns?.scheduledDate,
+                    scheduled_delivery_time: addOns?.scheduledTime,
+                    delivery_type: addOns?.deliveryType || 'workshop'
+                }
             });
 
             if (!transaction) throw new Error("Failed to create transaction record");
             transactionId = transaction.id;
 
             await CarService.updateCarStatus(supabase, car.id, 'RESERVED');
+
+            // Trigger Admin Alert for Coordination
+            await NotificationService.notifyAdmin(supabase, {
+                action: 'NUEVA_ENTREGA_PROGRAMADA',
+                entityType: 'TRANSACTION',
+                entityId: transaction.id,
+                metadata: {
+                    car: `${car.make} ${car.model}`,
+                    date: addOns?.scheduledDate,
+                    time: addOns?.scheduledTime,
+                    location: car.location
+                }
+            });
         }
 
         return { success: true, transactionId };
