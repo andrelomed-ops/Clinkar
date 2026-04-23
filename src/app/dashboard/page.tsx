@@ -361,12 +361,33 @@ export default function DashboardPage() {
                         </div>
                     </div>
 
+                    <div className="flex border-b border-border mb-8">
+                        <button 
+                            onClick={() => setActiveTab("buying")}
+                            className={cn(
+                                "px-6 py-3 text-sm font-black uppercase tracking-widest transition-all border-b-2",
+                                activeTab === "buying" ? "border-indigo-600 text-indigo-600" : "border-transparent text-muted-foreground hover:text-foreground"
+                            )}
+                        >
+                            Comprando
+                        </button>
+                        <button 
+                            onClick={() => setActiveTab("selling")}
+                            className={cn(
+                                "px-6 py-3 text-sm font-black uppercase tracking-widest transition-all border-b-2",
+                                activeTab === "selling" ? "border-indigo-600 text-indigo-600" : "border-transparent text-muted-foreground hover:text-foreground"
+                            )}
+                        >
+                            Vendiendo
+                        </button>
+                    </div>
+
                     {activeTab === "buying" ? (
                         <div className="space-y-6 animate-in slide-in-from-left-4 duration-300">
                             {transactions.filter(tx => tx.role === 'buyer').length > 0 ? (
                                 <div className="grid gap-6">
                                     {transactions.filter(tx => tx.role === 'buyer').map((tx, idx) => (
-                                        <Link href={`/transaction/${tx.id}`} key={tx.id} className={cn(
+                                        <Link href={`/dashboard/handover/${tx.id}`} key={tx.id} className={cn(
                                             "glass-card rounded-3xl p-6 flex items-center justify-between hover:shadow-2xl hover:shadow-indigo-500/10 transition-all group animate-reveal",
                                             idx === 0 ? "stagger-1" : idx === 1 ? "stagger-2" : "stagger-3"
                                         )}>
@@ -547,7 +568,7 @@ export default function DashboardPage() {
                                                         </Button>
                                                     ) : (
                                                         <Button asChild variant="secondary" className="w-full md:w-auto rounded-xl h-12 px-6 font-black active:scale-95">
-                                                            <Link href={`/transaction/${tx.id}`}>
+                                                            <Link href={`/dashboard/handover/${tx.id}`}>
                                                                 Ver Detalles
                                                             </Link>
                                                         </Button>

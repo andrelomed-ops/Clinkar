@@ -238,7 +238,7 @@ export default function CarDetailPage({ params }: { params: Promise<{ id: string
                         </div>
 
                         {/* Description & AI Advisor Integration */}
-                        <div className="space-y-4">
+                        <div className="space-y-4" id="checklist">
                             <h3 className="text-xl font-bold">Resumen de Inspección</h3>
                             <p className="text-muted-foreground leading-relaxed">
                                 Este vehículo ha sido auditado por la Mesa de Control de StarterKar. Se verificó la autenticidad de la factura nacional, el historial de tenencias sin adeudos y se realizó un escaneo computarizado de 150 puntos críticos.

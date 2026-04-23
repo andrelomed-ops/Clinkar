@@ -56,11 +56,11 @@ export function ActiveOperationView({ transaction, role }: ActiveOperationViewPr
                 <UnifiedVehicleStatusView carId={transaction.id} role={role} location={transaction.location || "CDMX"} />
 
                 {/* Handover Action Button - Show when funds are secured */}
-                {(transaction.status === 'FUNDS_HELD' || transaction.status === 'PENDING') && (
+                {(transaction.status === 'FUNDS_HELD' || transaction.status === 'PENDING' || transaction.status === 'IN_VAULT') && (
                     <div className="flex justify-end animate-in fade-in slide-in-from-bottom-4 duration-700 delay-300">
                         <Link
                             href={`/dashboard/handover/${transaction.id}`}
-                            className="bg-primary text-primary-foreground px-8 py-4 rounded-2xl font-black text-lg shadow-xl shadow-primary/20 hover:scale-[1.02] transition-transform flex items-center gap-2"
+                            className="bg-indigo-600 text-white px-8 py-4 rounded-2xl font-black text-lg shadow-xl shadow-indigo-500/20 hover:scale-[1.02] transition-transform flex items-center gap-2"
                         >
                             <span className="relative flex h-3 w-3 mr-2">
                                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
@@ -75,7 +75,7 @@ export function ActiveOperationView({ transaction, role }: ActiveOperationViewPr
                 {(transaction.status === 'RELEASED' || transaction.status === 'DELIVERED') && (
                     <div className="flex justify-end animate-in fade-in slide-in-from-bottom-4 duration-700 delay-300">
                         <Link
-                            href={`/dashboard/contract/${transaction.id}`}
+                            href={`/dashboard/handover/${transaction.id}`}
                             className="bg-emerald-600 text-white px-8 py-4 rounded-2xl font-black text-lg shadow-xl shadow-emerald-500/20 hover:scale-[1.02] transition-transform flex items-center gap-2"
                         >
                             <Shield className="h-5 w-5" />
