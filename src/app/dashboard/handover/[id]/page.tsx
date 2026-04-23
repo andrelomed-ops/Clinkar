@@ -9,9 +9,10 @@ import { PostSaleEcosystem } from "@/components/dashboard/PostSaleEcosystem";
 import { Loader2, ShieldCheck, MapPin, Car, ArrowLeft, Zap } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { releaseVaultFundsAction } from "@/app/actions/transaction";
+import { releaseVaultFundsAction, reportDiscrepancyAction } from "@/app/actions/transaction";
 import { toast } from "sonner";
 import { StarterKarSeal } from "@/components/market/StarterKarSeal";
+import { cn } from "@/lib/utils";
 import { PartyPopper, CheckCircle } from "lucide-react";
 
 export default function HandoverPage() {
@@ -137,7 +138,12 @@ export default function HandoverPage() {
                             </div>
                             <div>
                                 <p className="text-[10px] font-black uppercase text-zinc-400 leading-none mb-1">Estatus de Bóveda</p>
-                                <p className="text-sm font-black text-emerald-600 uppercase">Fondos Resguardados</p>
+                                <p className={cn(
+                                    "text-sm font-black uppercase transition-all",
+                                    transaction.status === 'DISPUTED' ? "text-amber-500 animate-pulse" : "text-emerald-600"
+                                )}>
+                                    {transaction.status === 'DISPUTED' ? "Operación en Disputa" : "Fondos Resguardados"}
+                                </p>
                             </div>
                         </div>
                     </div>
@@ -165,8 +171,23 @@ export default function HandoverPage() {
                                         setProcessing(false);
                                     }
                                 }}
-                                onNegotiate={() => {
-                                    window.open(`https://wa.me/5215512345678?text=Hola, solicito mediación para la transacción ${transaction.id}`, '_blank');
+                                onNegotiate={async () => {
+                                    setProcessing(true);
+                                    try {
+                                        const res = await reportDiscrepancyAction(transaction.id, {
+                                            reason: "Discrepancia en checklist de entrega física",
+                                        });
+                                        if (res.success) {
+                                            setTransaction({ ...transaction, status: 'DISPUTED' });
+                                            toast.warning("Disputa iniciada. Un agente de StarterKar se pondrá en contacto.");
+                                            // Fallback to WhatsApp for human intervention as requested
+                                            window.open(`https://wa.me/5215512345678?text=Hola, solicito mediación para la transacción ${transaction.id}. El vehículo no cumple con el checklist.`, '_blank');
+                                        }
+                                    } catch (e) {
+                                        toast.error("Error al reportar discrepancia");
+                                    } finally {
+                                        setProcessing(false);
+                                    }
                                 }}
                             />
                         </section>

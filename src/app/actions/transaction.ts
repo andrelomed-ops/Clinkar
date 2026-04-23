@@ -184,3 +184,72 @@ export async function releaseVaultFundsAction(transactionId: string) {
 
     return await TransactionService.releaseVaultFunds(supabase, transactionId);
 }
+
+export async function reportDiscrepancyAction(transactionId: string, details: {
+    reason: string;
+    negotiatedAmount?: number;
+}) {
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+
+    // 1. Fetch current transaction to get seller_id and car details
+    const { data: tx } = await supabase
+        .from('transactions')
+        .select('*, cars(make, model, year)')
+        .eq('id', transactionId)
+        .single();
+
+    if (!tx) throw new Error("Transaction not found");
+
+    // 2. Log for Audit (Statistics & Annual Reports)
+    await supabase.from('audit_logs').insert({
+        actor_id: user?.id || 'demo-user',
+        action: 'DISPUTE_REPORTED',
+        entity_type: 'TRANSACTION',
+        entity_id: transactionId,
+        metadata: {
+            reason: details.reason,
+            negotiated_amount: details.negotiatedAmount || tx.car_price,
+            original_amount: tx.car_price,
+            car_info: `${tx.cars.make} ${tx.cars.model} ${tx.cars.year}`
+        }
+    });
+
+    // 3. Update Transaction Metadata & Status
+    const newMetadata = {
+        ...(tx.metadata || {}),
+        dispute: {
+            reported_at: new Date().toISOString(),
+            reason: details.reason,
+            requested_negotiation: details.negotiatedAmount
+        }
+    };
+
+    await supabase.from('transactions').update({
+        status: 'DISPUTED',
+        metadata: newMetadata
+    }).eq('id', transactionId);
+
+    // 4. Notify Seller (Real-time alert)
+    await NotificationService.notify(supabase, {
+        userId: tx.seller_id,
+        title: "¡ALERTA! Discrepancia en Entrega",
+        message: `El comprador ha reportado un problema: "${details.reason}". StarterKar está mediando la operación.`,
+        type: 'WARNING',
+        link: `/dashboard/transactions/${transactionId}`
+    });
+
+    // 5. Notify Admin (For statistics and support intervention)
+    await NotificationService.notifyAdmin(supabase, {
+        action: 'DISPUTE_OPENED',
+        entityType: 'TRANSACTION',
+        entityId: transactionId,
+        metadata: {
+            reason: details.reason,
+            buyer_id: tx.buyer_id,
+            seller_id: tx.seller_id
+        }
+    });
+
+    return { success: true };
+}
