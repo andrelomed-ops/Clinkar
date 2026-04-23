@@ -26,7 +26,7 @@ export default function HandoverPage() {
         async function fetchTransaction() {
             try {
                 // Try to join first
-                const { data, error } = await supabase
+                let { data, error } = await supabase
                     .from('transactions')
                     .select('*, cars(*)')
                     .eq('id', id)

@@ -10,6 +10,7 @@ import { toast } from "sonner";
 import { Navbar } from "@/components/ui/navbar";
 import { CameraUpload } from "@/components/ui/CameraUpload";
 import Link from "next/link";
+import { cn } from "@/lib/utils";
 
 export default function ProfilePage() {
     const supabase = createBrowserClient();

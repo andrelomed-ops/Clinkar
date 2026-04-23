@@ -97,14 +97,23 @@ export default function DemandRequestPage() {
                         </ul>
                     </div>
 
-                    <div className="grid grid-cols-1 gap-3">
-                        <Button asChild size="lg" className="h-14 rounded-2xl font-black text-sm uppercase tracking-widest bg-indigo-600 hover:bg-indigo-500 shadow-xl shadow-indigo-500/20 transition-all active:scale-95">
-                            <Link href="/buy">Explorar Inventario Actual</Link>
-                        </Button>
-                        <Button variant="ghost" asChild className="font-bold text-xs uppercase tracking-widest">
-                            <Link href="/">Volver al Portal</Link>
-                        </Button>
-                    </div>
+                        <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+                            <Button asChild className="w-full sm:w-auto h-12 px-8 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold">
+                                <Link href="/dashboard">Ir al Dashboard</Link>
+                            </Button>
+                            <Button asChild variant="outline" className="w-full sm:w-auto h-12 px-8 rounded-xl border-emerald-500 text-emerald-600 hover:bg-emerald-50 font-bold gap-2">
+                                <a 
+                                    href={`https://wa.me/525522120249?text=${encodeURIComponent(
+                                        `Hola StarterKar 👋 Acabo de realizar una Búsqueda Maestro para un ${formData.brand} ${formData.model}. ¿Me podrían dar seguimiento?`
+                                    )}`}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                >
+                                    <MessageSquare className="h-4 w-4" />
+                                    Confirmar por WhatsApp
+                                </a>
+                            </Button>
+                        </div>
                 </div>
             </div>
         );
