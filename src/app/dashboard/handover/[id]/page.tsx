@@ -33,45 +33,46 @@ export default function HandoverPage() {
                     .single();
                 
                 if (error || !data?.cars) {
-                    // Fallback: Fetch separately if join fails
-                    const { data: txData } = await supabase
-                        .from('transactions')
-                        .select('*')
-                        .eq('id', id)
-                        .single();
-                    
-                    if (txData) {
-                        const { data: carData } = await supabase
-                            .from('cars')
+                    // Fallback for simulation/demo
+                    if (id?.toString().startsWith('mock-tx') || id?.toString().startsWith('demo-tx')) {
+                        data = {
+                            id: id.toString(),
+                            car_id: 'demo-car',
+                            cars: {
+                                make: 'BYD',
+                                model: 'Dolphin Mini',
+                                year: 2024,
+                                price: 358000,
+                                location: 'CDMX',
+                                images: ['https://upload.wikimedia.org/wikipedia/commons/e/ea/BYD_Dolphin_IAA_2023_1X7A0634.jpg']
+                            },
+                            gestoria_cost: 0,
+                            insurance_cost: 0,
+                            status: 'IN_VAULT'
+                        };
+                    } else {
+                        // Fallback: Fetch separately if join fails
+                        const { data: txData } = await supabase
+                            .from('transactions')
                             .select('*')
-                            .eq('id', txData.car_id)
+                            .eq('id', id)
                             .single();
                         
-                        data = { ...txData, cars: carData };
+                        if (txData) {
+                            const { data: carData } = await supabase
+                                .from('cars')
+                                .select('*')
+                                .eq('id', txData.car_id)
+                                .single();
+                            
+                            data = { ...txData, cars: carData };
+                        }
                     }
                 }
                 
                 setTransaction(data);
             } catch (e) {
                 console.error("Error fetching transaction:", e);
-                // Fallback for simulation/demo
-                if (id?.toString().startsWith('mock-tx') || id?.toString().startsWith('demo-tx')) {
-                    setTransaction({
-                        id: id.toString(),
-                        car_id: 'demo-car',
-                        cars: {
-                            make: 'BYD',
-                            model: 'Dolphin Mini',
-                            year: 2024,
-                            price: 358000,
-                            location: 'CDMX',
-                            images: ['/demo-car.jpg']
-                        },
-                        gestoria_cost: 0,
-                        insurance_cost: 0,
-                        status: 'IN_VAULT'
-                    });
-                }
             } finally {
                 setLoading(false);
             }
