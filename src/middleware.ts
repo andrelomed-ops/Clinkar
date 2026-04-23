@@ -72,7 +72,9 @@ export async function middleware(request: NextRequest) {
                           request.nextUrl.pathname.startsWith('/admin') ||
                           request.nextUrl.pathname.startsWith('/sell');
 
-  if (isProtectedPath && !user) {
+  const demoRole = request.cookies.get('starterkar_role')?.value
+
+  if (isProtectedPath && !user && !demoRole) {
     const url = request.nextUrl.clone()
     url.pathname = '/login'
     return NextResponse.redirect(url)

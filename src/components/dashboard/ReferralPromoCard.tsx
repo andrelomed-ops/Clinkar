@@ -18,7 +18,7 @@ export function ReferralPromoCard() {
                 </div>
                 <h3 className="text-3xl font-black mb-3 tracking-tighter italic uppercase underline decoration-emerald-400 decoration-4 underline-offset-4">Gana con StarterKar</h3>
                 <p className="text-emerald-100/80 mb-8 font-bold text-sm leading-snug max-w-[240px]">
-                    Refiere a un amigo y obtén <span className="text-white">Inspecciones Gratis</span> o <span className="text-white italic">50% de descuento</span> en tu próxima comisión.
+                    Refiere a un amigo y gana <span className="text-white">$500 MXN</span> en efectivo por cada operación cerrada.
                 </p>
             </div>
 

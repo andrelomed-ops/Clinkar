@@ -481,4 +481,69 @@ export class TransactionService extends BaseService {
     static getVirtualClabe(transactionId: string): string {
         return SpeiService.generateVirtualClabe(transactionId);
     }
+
+    static async releaseVaultFunds(supabase: SupabaseClient<Database>, transactionId: string): Promise<{ success: boolean; error?: any }> {
+        Logger.info(`[VAULT] Invocando liberación de fondos para transacción ${transactionId}`);
+
+        // 1. Fetch transaction details
+        const { data: transaction, error: fetchError } = await (supabase
+            .from('transactions') as any)
+            .select('id, buyer_id, seller_id, status, car_price')
+            .eq('id', transactionId)
+            .single();
+
+        if (fetchError || !transaction) {
+            Logger.error('Error fetching transaction for release:', fetchError);
+            return { success: false, error: 'TRANSACCION_NO_ENCONTRADA' };
+        }
+
+        // 2. Validate status (Must be IN_VAULT)
+        if (transaction.status !== 'IN_VAULT') {
+            Logger.warn(`[Security] Attempt to release funds for tx ${transactionId} in status ${transaction.status}`);
+            return { success: false, error: 'ESTADO_INVALIDO: Los fondos no están en bóveda.' };
+        }
+
+        // 3. Update status to RELEASED
+        const { error: updateError } = await (supabase
+            .from('transactions') as any)
+            .update({ 
+                status: 'RELEASED',
+                updated_at: new Date().toISOString()
+            })
+            .eq('id', transactionId);
+
+        if (updateError) {
+            Logger.error('Error updating transaction status to RELEASED:', updateError);
+            return { success: false, error: updateError.message };
+        }
+
+        // 4. Trigger Referral Rewards
+        try {
+            await ReferralService.markOperationAsClosed(supabase, transactionId);
+            Logger.info(`[REFERRAL] Recompensas procesadas para tx ${transactionId}`);
+        } catch (err) {
+            Logger.error(`[REFERRAL] Error procesando recompensas de referido:`, err);
+            // We don't fail the whole operation if referral fails, but we log it
+        }
+
+        // 5. Notify both parties
+        await NotificationService.notifyMultiple(supabase, [
+            {
+                userId: transaction.buyer_id,
+                title: "Operación Finalizada",
+                message: "Has liberado los fondos. ¡Felicidades por tu nuevo auto!",
+                type: 'FINANCIAL',
+                link: `/dashboard/transactions/${transactionId}`
+            },
+            {
+                userId: transaction.seller_id,
+                title: "¡Pago Liberado!",
+                message: `El comprador ha liberado $${Number(transaction.car_price).toLocaleString()} MXN a tu cuenta.`,
+                type: 'FINANCIAL',
+                link: `/dashboard/transactions/${transactionId}`
+            }
+        ]);
+
+        return { success: true };
+    }
 }

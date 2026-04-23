@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, Suspense } from "react";
+import { useState, useEffect, Suspense, useCallback } from "react";
 import { createBrowserClient } from "@/lib/supabase/client";
 import { Database } from "@/lib/database.types";
 import { Users, Gift, Share2, Copy, Check, ArrowRight, Zap, TrendingUp, DollarSign, UserPlus, Clock, CheckCircle2, XCircle } from "lucide-react";
@@ -52,7 +52,7 @@ function ReferralsContent() {
     const searchParams = useSearchParams();
     const refCode = searchParams.get("ref");
 
-    const applyReferralCode = async (code: string) => {
+    const applyReferralCode = useCallback(async (code: string) => {
         if (!user) return;
 
         try {
@@ -92,7 +92,7 @@ function ReferralsContent() {
         } catch (err) {
             console.error(err);
         }
-    };
+    }, [user, supabase]);
 
     useEffect(() => {
         async function loadData() {
@@ -143,7 +143,7 @@ function ReferralsContent() {
         }
 
         loadData();
-    }, [supabase, refCode]);
+    }, [supabase, refCode, applyReferralCode]);
 
     const handleCopy = () => {
         if (!referralLink) return;
@@ -153,8 +153,6 @@ function ReferralsContent() {
     };
 
     const totalGenerated = referrals.reduce((sum, r) => sum + (r.actual_reward || 0), 0);
-    const pendingCount = referrals.filter(r => r.status === "PENDING_OPERATION").length;
-    const closedCount = referrals.filter(r => r.status === "OPERATION_CLOSED").length;
     const paidCount = referrals.filter(r => r.status === "PAID").length;
 
     if (loading) {
@@ -243,9 +241,56 @@ function ReferralsContent() {
                         </div>
                         <div className="text-center space-y-1">
                             <Zap className="h-4 w-4 mx-auto text-indigo-300" />
-                            <div className="text-lg font-black tracking-tighter">{paidCount > 0 ? "Paid" : "New"}</div>
+                            <div className="text-lg font-black tracking-tighter">{referrals.length >= 5 ? "Silver" : "Bronze"}</div>
                             <div className="text-[8px] font-black uppercase text-indigo-300/70 tracking-widest">Nivel</div>
                         </div>
+                    </div>
+                </div>
+            </div>
+
+            {/* Milestones / Progress */}
+            <div className="bg-white dark:bg-zinc-900 rounded-[2.5rem] border border-zinc-200 dark:border-zinc-800 p-8 shadow-sm">
+                <div className="flex items-center justify-between mb-6">
+                    <div>
+                        <h3 className="font-black text-lg italic tracking-tight uppercase">Próximo Hito</h3>
+                        <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-widest">Completa 5 referidos para subir a Nivel Plata</p>
+                    </div>
+                    <div className="h-12 w-12 bg-amber-500/10 rounded-2xl flex items-center justify-center text-amber-600">
+                        <Zap className="h-6 w-6" />
+                    </div>
+                </div>
+
+                <div className="space-y-4">
+                    <div className="h-4 w-full bg-zinc-100 dark:bg-zinc-800 rounded-full overflow-hidden">
+                        <div 
+                            className="h-full bg-gradient-to-r from-indigo-500 to-purple-500 transition-all duration-1000 ease-out"
+                            style={{ width: `${Math.min((referrals.length / 5) * 100, 100)}%` }}
+                        />
+                    </div>
+                    <div className="flex justify-between text-[10px] font-black uppercase tracking-widest text-zinc-400">
+                        <span>{referrals.length} Referidos</span>
+                        <span>Meta: 5 Referidos</span>
+                    </div>
+                </div>
+
+                <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="p-4 rounded-2xl bg-zinc-50 dark:bg-zinc-950 border border-zinc-100 dark:border-zinc-800">
+                        <div className="flex items-center gap-3 mb-2">
+                            <div className="h-8 w-8 bg-indigo-500/10 rounded-lg flex items-center justify-center text-indigo-600">
+                                <DollarSign className="h-4 w-4" />
+                            </div>
+                            <span className="text-[10px] font-black uppercase tracking-widest">Bono Nivel Plata</span>
+                        </div>
+                        <p className="text-xs text-zinc-500 leading-tight">Al llegar a 5 referidos, tu comisión sube a <span className="text-zinc-900 dark:text-white font-bold">$750 MXN</span> por cada uno.</p>
+                    </div>
+                    <div className="p-4 rounded-2xl bg-zinc-50 dark:bg-zinc-950 border border-zinc-100 dark:border-zinc-800">
+                        <div className="flex items-center gap-3 mb-2">
+                            <div className="h-8 w-8 bg-purple-500/10 rounded-lg flex items-center justify-center text-purple-600">
+                                <Gift className="h-4 w-4" />
+                            </div>
+                            <span className="text-[10px] font-black uppercase tracking-widest">Soporte VIP</span>
+                        </div>
+                        <p className="text-xs text-zinc-500 leading-tight">Canal directo con el equipo de operaciones para agilizar tus cierres.</p>
                     </div>
                 </div>
             </div>

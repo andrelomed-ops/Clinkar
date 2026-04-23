@@ -135,6 +135,14 @@ export default function DashboardPage() {
                 }
 
                 if (!user) {
+                    // Mock profile for demo mode
+                    if (demoRole) {
+                        setUserProfile({
+                            full_name: "Usuario Demo",
+                            role: demoRole,
+                            email: "demo@starterkar.com"
+                        });
+                    }
                     setIsLoading(false);
                     setMounted(true);
                     return;

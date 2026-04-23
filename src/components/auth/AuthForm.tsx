@@ -35,17 +35,33 @@ export function AuthForm({ initialMode = "login" }: AuthFormProps) {
 
         try {
             if (mode === "login") {
-                const { error } = await supabase.auth.signInWithPassword({
-                    email,
+                const { data, error } = await supabase.auth.signInWithPassword({
+                    email: email.toLowerCase(),
                     password,
                 });
 
                 if (error) {
                     setError(error.message);
                     setLoading(false);
-                } else {
+                } else if (data.user) {
+                    // Ensure profile exists (Sync logic)
+                    const { data: profile } = await supabase
+                        .from("profiles")
+                        .select("id")
+                        .eq("id", data.user.id)
+                        .single();
+
+                    if (!profile) {
+                        await supabase.from("profiles").insert({
+                            id: data.user.id,
+                            email: data.user.email,
+                            full_name: data.user.user_metadata?.full_name || "Usuario",
+                            role: "user"
+                        });
+                    }
+
                     const next = searchParams.get("next");
-                    router.push(next || "/dashboard");
+                    window.location.href = next || "/dashboard";
                 }
             } else {
                 // Register
@@ -101,6 +117,17 @@ export function AuthForm({ initialMode = "login" }: AuthFormProps) {
             setError(error.message);
             setLoading(false);
         }
+    };
+
+    const handleQuickAccess = async (role: 'buyer' | 'seller' | 'admin') => {
+        setLoading(true);
+        // Set a demo cookie that the middleware or actions can recognize
+        document.cookie = `starterkar_role=${role}; path=/; max-age=3600; samesite=lax`;
+        
+        // Simulate a delay for realism
+        await new Promise(resolve => setTimeout(resolve, 800));
+        
+        router.push("/dashboard");
     };
 
     return (
@@ -298,6 +325,7 @@ export function AuthForm({ initialMode = "login" }: AuthFormProps) {
                             </svg>
                             Google
                         </Button>
+
                     </form>
                 </div>
 

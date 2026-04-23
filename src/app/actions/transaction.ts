@@ -139,3 +139,23 @@ export async function updateTransactionServicesAction(transactionId: string, ser
 
     return await TransactionService.updateTransactionServices(supabase, transactionId, services);
 }
+
+export async function releaseVaultFundsAction(transactionId: string) {
+    const supabase = await createClient();
+    
+    // Auth check
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+        // Allow demo users
+        const { cookies } = await import('next/headers');
+        const cookieStore = await cookies();
+        const demoRole = cookieStore.get('starterkar_role')?.value;
+        if (!demoRole) throw new Error("Unauthorized");
+        
+        if (transactionId.startsWith('mock-') || transactionId.startsWith('demo-')) {
+            return { success: true };
+        }
+    }
+
+    return await TransactionService.releaseVaultFunds(supabase, transactionId);
+}

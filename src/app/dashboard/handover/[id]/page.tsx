@@ -3,25 +3,30 @@
 import { useEffect, useState, useMemo } from "react";
 import { useParams } from "next/navigation";
 import { createBrowserClient } from "@/lib/supabase/client";
-import { TransactionService } from "@/services/TransactionService";
 import { Navbar } from "@/components/ui/navbar";
 import { HandoverSafeCheck } from "@/components/dashboard/HandoverSafeCheck";
 import { PostSaleEcosystem } from "@/components/dashboard/PostSaleEcosystem";
 import { Loader2, ShieldCheck, MapPin, Car, ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { releaseVaultFundsAction } from "@/app/actions/transaction";
+import { toast } from "sonner";
+import { StarterKarSeal } from "@/components/market/StarterKarSeal";
+import { PartyPopper, CheckCircle } from "lucide-react";
 
 export default function HandoverPage() {
     const { id } = useParams();
     const [transaction, setTransaction] = useState<any>(null);
     const [loading, setLoading] = useState(true);
+    const [processing, setProcessing] = useState(false);
+    const [completed, setCompleted] = useState(false);
     const supabase = useMemo(() => createBrowserClient(), []);
 
     useEffect(() => {
         async function fetchTransaction() {
             try {
                 // Try to join first
-                let { data, error } = await supabase
+                const { data, error } = await supabase
                     .from('transactions')
                     .select('*, cars(*)')
                     .eq('id', id)
@@ -126,7 +131,23 @@ export default function HandoverPage() {
                     <div className="lg:col-span-7 space-y-8">
                         <section>
                             <HandoverSafeCheck 
-                                onComplete={() => alert("Entrega finalizada (Simulación)")}
+                                isProcessing={processing}
+                                onComplete={async () => {
+                                    setProcessing(true);
+                                    try {
+                                        const result = await releaseVaultFundsAction(transaction.id);
+                                        if (result.success) {
+                                            setCompleted(true);
+                                            toast.success("¡Operación completada con éxito!");
+                                        } else {
+                                            toast.error(result.error || "Error al liberar fondos");
+                                        }
+                                    } catch {
+                                        toast.error("Error de conexión");
+                                    } finally {
+                                        setProcessing(false);
+                                    }
+                                }}
                                 onNegotiate={() => alert("Mediación solicitada")}
                             />
                         </section>
@@ -161,6 +182,46 @@ export default function HandoverPage() {
                     </div>
                 </div>
             </main>
+
+            {/* Success Modal / Overlay */}
+            {completed && (
+                <div className="fixed inset-0 z-[100] flex items-center justify-center bg-white/80 dark:bg-zinc-950/80 backdrop-blur-xl animate-in fade-in duration-500">
+                    <div className="max-w-md w-full p-10 bg-white dark:bg-zinc-900 rounded-[3rem] border border-zinc-200 dark:border-zinc-800 shadow-2xl text-center space-y-8 animate-in zoom-in-95 duration-500">
+                        <div className="relative">
+                            <div className="absolute inset-0 bg-indigo-500/20 blur-3xl rounded-full" />
+                            <div className="relative h-24 w-24 bg-indigo-600 rounded-[2rem] flex items-center justify-center mx-auto text-white shadow-xl shadow-indigo-500/40">
+                                <PartyPopper className="h-12 w-12" />
+                            </div>
+                        </div>
+                        
+                        <div className="space-y-2">
+                            <h2 className="text-3xl font-black italic tracking-tighter">¡Felicidades!</h2>
+                            <p className="text-zinc-500 font-medium">Has completado tu compra de forma segura.</p>
+                        </div>
+
+                        <StarterKarSeal variant="holographic" score={98} className="mx-auto" />
+
+                        <div className="bg-emerald-50 dark:bg-emerald-500/10 p-6 rounded-3xl border border-emerald-100 dark:border-emerald-500/20 text-left">
+                            <div className="flex items-center gap-3 mb-2">
+                                <CheckCircle className="h-5 w-5 text-emerald-600" />
+                                <span className="text-sm font-black text-emerald-900 dark:text-emerald-400 uppercase">Fondos Liberados</span>
+                            </div>
+                            <p className="text-[10px] text-emerald-800 dark:text-emerald-500/80 font-medium leading-relaxed">
+                                El vendedor ha recibido la notificación de pago. Tu garantía de 90 días comienza a partir de este momento.
+                            </p>
+                        </div>
+
+                        <div className="grid grid-cols-1 gap-3">
+                            <Button asChild size="lg" rounded-2xl className="h-14 font-black text-sm uppercase tracking-widest bg-indigo-600 hover:bg-indigo-500 shadow-xl shadow-indigo-500/20">
+                                <Link href="/dashboard">Ir a mi Garage</Link>
+                            </Button>
+                            <Button asChild variant="outline" size="lg" rounded-2xl className="h-14 font-black text-sm uppercase tracking-widest border-2">
+                                <Link href={`/dashboard/referrals`}>Invitar Amigos & Ganar $500</Link>
+                            </Button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

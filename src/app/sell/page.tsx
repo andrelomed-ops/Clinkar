@@ -10,16 +10,16 @@ import { cn } from "@/lib/utils";
 
 export default function SellPage() {
     const [view, setView] = useState<'quote' | 'documents'>('quote');
-    const [isAdmin, setIsAdmin] = useState(false);
+    const [isAdmin, setIsAdmin] = useState(() => {
+        if (typeof window !== 'undefined') {
+            const params = new URLSearchParams(window.location.search);
+            return params.get('admin') === 'true';
+        }
+        return false;
+    });
     const supabase = createBrowserClient();
 
     useEffect(() => {
-        const params = new URLSearchParams(window.location.search);
-        if (params.get('admin') === 'true') {
-            setIsAdmin(true);
-            return;
-        }
-
         async function checkAdmin() {
             const { data: { user } } = await supabase.auth.getUser();
             if (user?.email === 'admin@starterkar.mx' || (user as any)?.role === 'admin') {
