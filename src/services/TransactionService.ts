@@ -248,7 +248,7 @@ export class TransactionService extends BaseService {
             .from('transactions') as any)
             .select(`
                 *,
-                cars (*)
+                car_id (*)
             `)
             .eq('id', id)
             .maybeSingle();
@@ -321,7 +321,7 @@ export class TransactionService extends BaseService {
             .from('transactions') as any)
             .select(`
                 *,
-                cars (id, make, model, year, vin, plate, documents),
+                car:car_id (id, make, model, year, vin, plate, documents),
                 buyer:buyer_id (id, full_name, email),
                 seller:seller_id (id, full_name, email)
             `)
@@ -421,7 +421,7 @@ export class TransactionService extends BaseService {
     static async simulateSPEIDeposit(supabase: SupabaseClient<Database>, transactionId: string): Promise<boolean> {
         const { data: transaction, error: fetchError } = await (supabase
             .from('transactions') as any)
-            .select('id, buyer_id, seller_id, car_id, car_price, cars(vin)')
+            .select('id, buyer_id, seller_id, car_id, car_price, car_id(vin)')
             .eq('id', transactionId)
                 .maybeSingle();
 

@@ -3,7 +3,7 @@
 import { useState, useEffect, useMemo } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { ShieldCheck, CreditCard, Clock, CheckCircle2, QrCode, ArrowRight, MapPin, Wrench, Car, CarFront, Smartphone, Heart, LogOut, LayoutDashboard } from "lucide-react";
+import { ShieldCheck, CreditCard, Clock, CheckCircle2, QrCode, ArrowRight, MapPin, Wrench, Car, CarFront, Smartphone, Heart, LogOut, LayoutDashboard, Search, User } from "lucide-react";
 import { StarterKarLogo } from "@/components/ui/StarterKarLogo";
 import confetti from "canvas-confetti";
 import { toast } from "sonner";
@@ -150,7 +150,7 @@ export default function DashboardPage() {
 
                 const { data: txs, error } = await supabase
                     .from("transactions")
-                    .select("*, cars(make, model, year, images)")
+                    .select("*, car_id(make, model, year, images)")
                     .or(`buyer_id.eq.${user.id},seller_id.eq.${user.id}`)
                     .order("created_at", { ascending: false });
 
@@ -159,13 +159,13 @@ export default function DashboardPage() {
                 if (txs) {
                     const mappedTxs = txs.map(tx => ({
                         id: tx.id,
-                        carName: `${tx.cars.make} ${tx.cars.model}`,
-                        year: tx.cars.year,
+                        carName: tx.car_id ? `${tx.car_id.make} ${tx.car_id.model}` : "Vehículo",
+                        year: tx.car_id?.year,
                         price: tx.car_price,
                         status: tx.status,
                         role: tx.seller_id === user.id ? "seller" : "buyer",
                         location: "CDMX",
-                        image: tx.cars.images?.[0] || ""
+                        image: tx.car_id?.images?.[0] || ""
                     }));
 
                     if (mappedTxs.length > 0 && !selectedId) {
@@ -713,7 +713,7 @@ export default function DashboardPage() {
                                             </div>
                                             <div className="flex items-center gap-4 text-xs">
                                                 <div className="h-10 w-10 rounded-xl bg-secondary flex items-center justify-center">
-                                                    <UserSearch className="h-5 w-5 text-indigo-600/50" />
+                                                    <Search className="h-5 w-5 text-indigo-600/50" />
                                                 </div>
                                                 <div>
                                                     <p className="text-[10px] text-muted-foreground font-black uppercase tracking-widest">Mecánico Asignado</p>
