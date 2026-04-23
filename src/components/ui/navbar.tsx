@@ -91,48 +91,48 @@ export function Navbar({
                 <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-6">
 
                     {/* Left Section: Logo */}
-                    <div className="flex items-center gap-4 shrink-0">
-                        <StarterKarLogo size="md" showMonogram={false} href="/" hideSubmark={variant === 'market'} />
+                    <div className="flex items-center shrink-0 pr-4">
+                        <StarterKarLogo size="lg" showMonogram={false} href="/" hideSubmark={true} />
                     </div>
 
                     {/* Center Section: Navigation Links */}
-                    <div className="hidden lg:flex items-center justify-center flex-1 gap-6 px-4">
-                        {variant === 'home' && (
-                            <>
-                                <Link href="#security" className="text-xs font-black uppercase tracking-widest text-muted-foreground hover:text-foreground transition-colors">Seguridad</Link>
-                                <Link href="#how-it-works" className="text-xs font-black uppercase tracking-widest text-muted-foreground hover:text-foreground transition-colors">Proceso</Link>
-                            </>
-                        )}
-                        <Link href="/buy" className="text-xs font-black uppercase tracking-widest text-muted-foreground hover:text-foreground transition-colors">Comprar</Link>
-                        <Link href="/sell" className="text-xs font-black uppercase tracking-widest text-muted-foreground hover:text-foreground transition-colors">Vender</Link>
-                        <Link href="/new-cars" className="text-xs font-black text-indigo-600 dark:text-indigo-400 hover:text-foreground transition-colors italic uppercase tracking-widest">Autos Nuevos</Link>
+                    <div className="hidden lg:flex items-center justify-center flex-1 gap-8 px-4 overflow-hidden">
+                        {navLinks.map((link) => (
+                            <Link
+                                key={link.href}
+                                href={link.href}
+                                className={cn(
+                                    "text-[11px] font-black uppercase tracking-[0.2em] text-muted-foreground hover:text-indigo-600 transition-all shrink-0 whitespace-nowrap",
+                                    link.className
+                                )}
+                            >
+                                {link.label}
+                            </Link>
+                        ))}
                     </div>
 
                     {/* Right Section: Actions */}
-                    <div className="flex items-center gap-4 shrink-0">
+                    <div className="flex items-center gap-3 shrink-0 pl-4">
                         {showFavorites && (
                             <button
                                 onClick={onToggleFavorites}
                                 className={cn(
-                                    "flex items-center gap-2 px-3 py-1.5 rounded-full border transition-all text-xs font-bold",
+                                    "flex items-center gap-2 px-3 py-1.5 rounded-full border transition-all text-[10px] font-black uppercase tracking-widest",
                                     showFavoritesOnly
                                         ? "bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-900 text-red-600 dark:text-red-400"
                                         : "border-transparent hover:bg-secondary text-muted-foreground"
                                 )}
                             >
                                 <Heart className={cn(
-                                    "h-4 w-4 transition-all",
+                                    "h-3.5 w-3.5 transition-all",
                                     favoritesCount > 0 ? "fill-red-500 text-red-500 animate-heartbeat" : "text-muted-foreground",
                                     showFavoritesOnly && "fill-current"
                                 )} />
-                                <span className={cn(
-                                    "hidden lg:inline font-bold",
-                                    favoritesCount > 0 ? "text-red-600" : "text-muted-foreground"
-                                )}>Favoritos</span>
+                                <span className="hidden xl:inline">Favoritos</span>
                             </button>
                         )}
 
-                        <div className="flex items-center gap-3">
+                        <div className="flex items-center gap-2">
                             <StarterKarLogo 
                                 size="sm" 
                                 showWordmark={false} 
@@ -144,7 +144,7 @@ export function Navbar({
                             {user && userProfile?.role?.toLowerCase() !== 'investor' && (
                                 <Link 
                                     href="/investor/apply"
-                                    className="hidden xl:flex items-center gap-2 px-3 py-1.5 rounded-full bg-amber-500/10 text-amber-600 border border-amber-500/20 text-[10px] font-black uppercase tracking-widest hover:bg-amber-500/20 transition-all"
+                                    className="hidden xl:flex items-center gap-2 px-3 py-1.5 rounded-full bg-amber-500/10 text-amber-600 border border-amber-500/20 text-[10px] font-black uppercase tracking-widest hover:bg-amber-500/20 transition-all whitespace-nowrap"
                                 >
                                     Suscripción
                                 </Link>
@@ -152,13 +152,15 @@ export function Navbar({
                             {user && (
                                 <button 
                                     onClick={handleSignOut}
-                                    className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-full border border-zinc-200 dark:border-zinc-800 text-[10px] font-black uppercase tracking-widest text-zinc-500 hover:bg-red-50 hover:text-red-600 hover:border-red-100 transition-all"
+                                    className="hidden lg:flex items-center gap-2 px-3 py-1.5 rounded-full border border-zinc-200 dark:border-zinc-800 text-[10px] font-black uppercase tracking-widest text-zinc-500 hover:bg-red-50 hover:text-red-600 hover:border-red-100 transition-all"
                                 >
                                     Cerrar Sesión
                                 </button>
                             )}
-                            <NotificationCenter />
-                            <ThemeToggle />
+                            <div className="flex items-center gap-1">
+                                <NotificationCenter />
+                                <ThemeToggle />
+                            </div>
                         </div>
 
                         <button
