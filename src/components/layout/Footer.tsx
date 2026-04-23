@@ -30,7 +30,6 @@ export function Footer() {
                             <ul role="list" className="space-y-4">
                                 <FooterLink href="/buy">Comprar Auto</FooterLink>
                                 <FooterLink href="/sell">Vender Auto</FooterLink>
-                                <FooterLink href="/reports">Informe Anual</FooterLink>
                                 <FooterLink href="/#how-it-works">Cómo Funciona</FooterLink>
                                 <FooterLink href="/dashboard">Mi Cuenta</FooterLink>
                             </ul>

@@ -19,8 +19,52 @@ import {
     Download
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { createBrowserClient } from "@/lib/supabase/client";
+import { useRouter } from "next/navigation";
+import { useEffect, useState, useMemo } from "react";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export default function AnnualReportPage() {
+    const [isLoading, setIsLoading] = useState(true);
+    const [isAdmin, setIsAdmin] = useState(false);
+    const supabase = useMemo(() => createBrowserClient(), []);
+    const router = useRouter();
+
+    useEffect(() => {
+        async function checkAdmin() {
+            const { data: { user } } = await supabase.auth.getUser();
+            if (!user) {
+                router.push("/login");
+                return;
+            }
+
+            const { data: profile } = await supabase
+                .from("profiles")
+                .select("role")
+                .eq("id", user.id)
+                .single();
+
+            if (profile?.role?.toLowerCase() === "admin") {
+                setIsAdmin(true);
+            } else {
+                router.push("/dashboard");
+            }
+            setIsLoading(false);
+        }
+        checkAdmin();
+    }, [supabase, router]);
+
+    if (isLoading) {
+        return (
+            <div className="min-h-screen bg-zinc-50 dark:bg-zinc-950 flex flex-col items-center justify-center space-y-4">
+                <Skeleton className="h-12 w-64 rounded-xl" />
+                <Skeleton className="h-4 w-48" />
+            </div>
+        );
+    }
+
+    if (!isAdmin) return null;
+
     return (
         <div className="min-h-screen bg-zinc-50 dark:bg-zinc-950">
             <Navbar variant="market" />
