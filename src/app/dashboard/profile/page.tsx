@@ -27,13 +27,26 @@ export default function ProfilePage() {
             }
             setUser(user);
 
-            const { data: profile } = await supabase
+            const { data: profileData, error } = await supabase
                 .from("profiles")
                 .select("*")
                 .eq("id", user.id)
-                .single();
+                .maybeSingle();
 
-            if (profile) setProfile(profile);
+            if (profileData) {
+                setProfile(profileData);
+            } else {
+                // Initialize empty profile with user ID for new users
+                setProfile({
+                    id: user.id,
+                    full_name: "",
+                    phone: "",
+                    location: "",
+                    avatar_url: null,
+                    rfc: "",
+                    cif_url: null
+                });
+            }
             setLoading(false);
         }
         loadProfile();

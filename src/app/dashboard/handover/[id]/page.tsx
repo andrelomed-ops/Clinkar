@@ -49,6 +49,24 @@ export default function HandoverPage() {
                 setTransaction(data);
             } catch (e) {
                 console.error("Error fetching transaction:", e);
+                // Fallback for simulation/demo
+                if (id?.toString().startsWith('mock-tx') || id?.toString().startsWith('demo-tx')) {
+                    setTransaction({
+                        id: id.toString(),
+                        car_id: 'demo-car',
+                        cars: {
+                            make: 'BYD',
+                            model: 'Dolphin Mini',
+                            year: 2024,
+                            price: 358000,
+                            location: 'CDMX',
+                            images: ['/demo-car.jpg']
+                        },
+                        gestoria_cost: 0,
+                        insurance_cost: 0,
+                        status: 'IN_VAULT'
+                    });
+                }
             } finally {
                 setLoading(false);
             }
