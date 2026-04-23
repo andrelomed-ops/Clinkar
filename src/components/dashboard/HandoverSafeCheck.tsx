@@ -71,7 +71,7 @@ export function HandoverSafeCheck({ onComplete, onNegotiate, isProcessing }: Han
                     <div className="space-y-4">
                         <div className="flex items-center gap-3 bg-amber-500/5 p-4 rounded-2xl border border-amber-500/10">
                             <AlertCircle className="h-5 w-5 text-amber-600 shrink-0" />
-                            <p className="text-[10px] text-amber-800 leading-tight italic font-medium">
+                            <p className="text-[10px] text-amber-800 leading-relaxed text-justify font-medium">
                                 Si algún punto no se cumple, tienes derecho a negociar antes de liberar el pago.
                             </p>
                         </div>
@@ -142,7 +142,7 @@ function CheckItem({ title, desc, checked, onChange }: { title: string, desc: st
                 <p className={cn(
                     "text-[10px] leading-relaxed text-justify font-medium",
                     checked ? "text-emerald-700/80" : "text-zinc-400"
-                )}>{desc}</p>
+                )} style={{ textAlign: 'justify' }}>{desc}</p>
             </div>
         </button>
     );

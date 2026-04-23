@@ -219,7 +219,7 @@ export function PostSaleEcosystem({
                                     "font-black text-[10px] uppercase tracking-[0.2em] mb-2 transition-colors",
                                     requestedService === service.id ? "text-indigo-700 dark:text-white" : "text-zinc-800 dark:text-zinc-300"
                                 )}>{service.title}</h4>
-                                <p className="text-[10px] text-zinc-400 leading-relaxed text-justify font-medium">
+                                <p className="text-[10px] text-zinc-400 leading-relaxed text-justify font-medium tracking-tight" style={{ textAlign: 'justify' }}>
                                     {service.desc}
                                 </p>
                             </div>
