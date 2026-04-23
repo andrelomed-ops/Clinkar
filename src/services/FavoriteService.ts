@@ -33,12 +33,14 @@ export class FavoriteService {
         const dbFavorites = dbData.map(f => f.car_id);
 
         // 4. Sincronización Perezosa (Lazy Sync): Si hay locales que no están en DB, subirlos.
-        const missingInDb = localFavorites.filter(fid => !dbFavorites.includes(fid));
+        // Solo sincronizar carIds que sean UUID válidos
+        const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+        const missingInDb = localFavorites.filter(fid => 
+            !dbFavorites.includes(fid) && uuidRegex.test(fid)
+        );
 
         if (missingInDb.length > 0) {
             await this.syncFavoritesToDb(supabase, user.id, missingInDb);
-            // Limpiar localStorage después de sincronizar para evitar duplicados futuros o dejarlo como caché?
-            // Mejor dejarlo como caché y fusionar.
             return [...new Set([...dbFavorites, ...missingInDb])];
         }
 
@@ -57,6 +59,12 @@ export class FavoriteService {
         }
 
         // Modo Usuario: DB
+        // Solo interactuar con DB si carId es UUID
+        const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+        if (!uuidRegex.test(carId)) {
+            return this.toggleLocalFavorite(carId);
+        }
+
         // Primero verificamos si ya existe
         const { data: existing } = await supabase
             .from('user_favorites')
@@ -79,7 +87,7 @@ export class FavoriteService {
                 .insert({ user_id: user.id, car_id: carId });
         }
 
-        // Devolver lista actualizada (optimista o fetch real)
+        // Devolver lista actualizada
         return this.getFavorites(supabase);
     }
 
