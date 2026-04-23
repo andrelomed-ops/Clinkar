@@ -21,21 +21,18 @@ export async function startTransaction(carId: string, addOns?: {
 
     // 1. Check Auth (Real or Demo)
     const { data: { user } } = await supabase.auth.getUser();
-    const buyerId = user?.id || 'demo-user-123';
+    
+    // Check for Demo Cookie
+    const { cookies } = await import('next/headers');
+    const cookieStore = await cookies();
+    const demoRole = cookieStore.get('starterkar_role')?.value;
 
-    console.log(`[startTransaction] Starting for Car ${carId} (Buyer: ${buyerId})`, addOns);
+    const buyerId = user?.id || (demoRole ? 'demo-user-123' : null);
 
-    if (!user) {
-        // Fallback: Check for Demo Cookie
-        const { cookies } = await import('next/headers');
-        const cookieStore = await cookies();
-        const demoRole = cookieStore.get('starterkar_role')?.value;
+    console.log(`[startTransaction] Car:${carId} Buyer:${buyerId} Role:${demoRole}`);
 
-        if (demoRole === 'buyer' || demoRole === 'seller') {
-            // buyerId remains 'demo-user-123'
-        } else {
-            redirect(`/login?next=/buy/${carId}`);
-        }
+    if (!buyerId && !demoRole) {
+        redirect(`/login?next=/buy/${carId}`);
     }
 
     // 2. SECURITY CHECK: Availability
@@ -57,8 +54,9 @@ export async function startTransaction(carId: string, addOns?: {
     let transactionId;
 
     try {
-        if (buyerId === 'demo-user-123' || !dbCar) {
+        if (demoRole || !dbCar) {
             transactionId = dbCar ? "demo-tx-123" : `mock-tx-${car.id}`;
+            console.log(`[startTransaction] SIMULATION MODE: ${transactionId}`);
         } else {
             const transaction = await TransactionService.createTransaction(supabase, {
                 carId: car.id,
