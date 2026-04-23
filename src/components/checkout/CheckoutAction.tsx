@@ -4,7 +4,7 @@ import { useState } from "react";
 import { LogisticsWidget } from "./LogisticsWidget";
 import { WarrantySelector, WarrantyType } from "./WarrantySelector";
 import { startTransaction } from "@/app/actions/transaction";
-import { Loader2, ShieldCheck, MapPin, Home, Warehouse, Smartphone, Zap } from "lucide-react";
+import { Loader2, ShieldCheck, MapPin, Home, Warehouse, Smartphone, Zap, ArrowRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
