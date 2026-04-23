@@ -148,41 +148,46 @@ export default function DashboardPage() {
                     return;
                 }
 
-                // Fetch transactions first
-                const { data: txs, error: txError } = await supabase
-                    .from("transactions")
-                    .select("*")
-                    .or(`buyer_id.eq.${user.id},seller_id.eq.${user.id}`)
-                    .order("created_at", { ascending: false });
-
-                if (txError) throw txError;
-
-                if (txs && txs.length > 0) {
-                    // Fetch associated cars manually to avoid relationship cache errors
-                    const carIds = txs.map(tx => tx.car_id);
-                    const { data: carsData } = await supabase
-                        .from("cars")
+                // Fetch transactions first with extreme safety
+                let mappedTxs: any[] = [];
+                try {
+                    const { data: txs, error: txError } = await (supabase
+                        .from("transactions") as any)
                         .select("*")
-                        .in("id", carIds);
+                        .or(`buyer_id.eq.${user.id},seller_id.eq.${user.id}`)
+                        .order("created_at", { ascending: false });
 
-                    const mappedTxs = txs.map(tx => {
-                        const car = carsData?.find(c => c.id === tx.car_id);
-                        return {
-                            id: tx.id,
-                            carName: car ? `${car.make} ${car.model}` : "Vehículo",
-                            year: car?.year,
-                            price: tx.car_price,
-                            status: tx.status,
-                            role: tx.seller_id === user.id ? "seller" : "buyer",
-                            location: "CDMX",
-                            image: car?.images?.[0] || ""
-                        };
-                    });
+                    if (!txError && txs && txs.length > 0) {
+                        // Fetch associated cars manually to avoid relationship cache errors
+                        const carIds = txs.map((tx: any) => tx.car_id);
+                        const { data: carsData } = await supabase
+                            .from("cars")
+                            .select("*")
+                            .in("id", carIds);
 
-                    if (mappedTxs.length > 0 && !selectedId) {
-                        setSelectedId(mappedTxs[0].id);
+                        mappedTxs = txs.map((tx: any) => {
+                            const car = carsData?.find(c => c.id === tx.car_id);
+                            return {
+                                id: tx.id,
+                                carName: car ? `${car.make} ${car.model}` : "Vehículo",
+                                year: car?.year,
+                                price: tx.car_price,
+                                status: tx.status,
+                                role: tx.seller_id === user.id ? "seller" : "buyer",
+                                location: "CDMX",
+                                image: car?.images?.[0] || ""
+                            };
+                        });
                     }
+                } catch (e) {
+                    console.error("TRANSACTION_FETCH_FAILED: Procediendo con lista vacía.", e);
+                }
+
+                if (mappedTxs.length > 0) {
+                    if (!selectedId) setSelectedId(mappedTxs[0].id);
                     setTransactions(mappedTxs);
+                } else {
+                    setTransactions([]);
                 }
 
                 // Fetch published cars that are NOT sold and not in an active transaction
