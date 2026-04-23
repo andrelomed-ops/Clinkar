@@ -299,7 +299,7 @@ export default function DashboardPage() {
                             <div className="w-full md:w-auto flex flex-wrap gap-3">
                                 {(userProfile?.role?.toLowerCase() === 'admin') && (
                                     <>
-                                        <Link href="/reports" className="h-14 px-6 bg-indigo-600 text-white rounded-2xl flex items-center gap-3 font-bold text-sm hover:bg-indigo-500 transition-all shadow-xl shadow-indigo-600/20">
+                                        <Link href="/admin/reports/annual" className="h-14 px-6 bg-indigo-600 text-white rounded-2xl flex items-center gap-3 font-bold text-sm hover:bg-indigo-500 transition-all shadow-xl shadow-indigo-600/20">
                                             <BarChart3 className="h-5 w-5" />
                                             Informe Anual
                                         </Link>
