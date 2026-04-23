@@ -100,6 +100,9 @@ export async function startTransaction(carId: string, addOns?: {
 
         return { success: true, transactionId };
     } catch (error: any) {
+        if (error.digest?.includes('NEXT_REDIRECT')) {
+            throw error;
+        }
         console.error('[startTransaction] CRITICAL ERROR:', error);
         return { success: false, error: error.message || "Failed to start transaction" };
     }

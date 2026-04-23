@@ -41,7 +41,7 @@ export function CheckoutAction({ carId, carPrice, carLocation }: { carId: string
                 toast.error(result.error || "Error al procesar el bloqueo");
                 setLoading(false);
             }
-        } catch (err) {
+        } catch (err: any) {
             console.error("[StarterKar] Error en transacción:", err);
             toast.error("Error de conexión con el servidor");
             setLoading(false);
@@ -138,7 +138,7 @@ export function CheckoutAction({ carId, carPrice, carLocation }: { carId: string
                         </div>
                     ) : (
                         <>
-                            <span>Apartar y Agendar</span>
+                            <span>Bloquear y Agendar Entrega</span>
                             <ArrowRight className="h-5 w-5 group-hover:translate-x-2 transition-transform" />
                         </>
                     )}
