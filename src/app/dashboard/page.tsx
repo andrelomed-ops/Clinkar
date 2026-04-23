@@ -3,7 +3,7 @@
 import { useState, useEffect, useMemo } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { ShieldCheck, CreditCard, Clock, CheckCircle2, QrCode, ArrowRight, MapPin, Wrench, Car, CarFront, Smartphone, Heart, LogOut, LayoutDashboard, Search, User } from "lucide-react";
+import { ShieldCheck, CreditCard, Clock, CheckCircle2, QrCode, ArrowRight, MapPin, Wrench, Car, CarFront, Smartphone, Heart, LogOut, LayoutDashboard, Search, User, BarChart3 } from "lucide-react";
 import { StarterKarLogo } from "@/components/ui/StarterKarLogo";
 import confetti from "canvas-confetti";
 import { toast } from "sonner";
@@ -298,10 +298,16 @@ export default function DashboardPage() {
                             {/* Role-gated admin tools — solo admin/inspector */}
                             <div className="w-full md:w-auto flex flex-wrap gap-3">
                                 {(userProfile?.role?.toLowerCase() === 'admin') && (
-                                    <Link href="/admin" className="h-14 px-6 bg-zinc-900 text-white rounded-2xl flex items-center gap-3 font-bold text-sm hover:bg-zinc-800 transition-all border border-zinc-700 shadow-xl shadow-indigo-500/10">
-                                        <LayoutDashboard className="h-5 w-5 text-indigo-400" />
-                                        Control Maestro
-                                    </Link>
+                                    <>
+                                        <Link href="/reports" className="h-14 px-6 bg-indigo-600 text-white rounded-2xl flex items-center gap-3 font-bold text-sm hover:bg-indigo-500 transition-all shadow-xl shadow-indigo-600/20">
+                                            <BarChart3 className="h-5 w-5" />
+                                            Informe Anual
+                                        </Link>
+                                        <Link href="/admin" className="h-14 px-6 bg-zinc-900 text-white rounded-2xl flex items-center gap-3 font-bold text-sm hover:bg-zinc-800 transition-all border border-zinc-700 shadow-xl shadow-indigo-500/10">
+                                            <LayoutDashboard className="h-5 w-5 text-indigo-400" />
+                                            Control Maestro
+                                        </Link>
+                                    </>
                                 )}
                                 
                                 {(userProfile?.role?.toLowerCase() === 'admin' || userProfile?.role?.toLowerCase() === 'inspector') && (
