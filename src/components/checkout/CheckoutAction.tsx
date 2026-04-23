@@ -36,7 +36,8 @@ export function CheckoutAction({ carId, carPrice, carLocation }: { carId: string
 
             if (result.success && result.transactionId) {
                 toast.success("¡Auto Bloqueado Exitosamente!");
-                router.push(`/dashboard/handover/${result.transactionId}`);
+                toast.info("Redirigiendo a tu Bóveda Digital...");
+                window.location.href = `/dashboard/handover/${result.transactionId}`;
             } else {
                 toast.error(result.error || "Error al procesar el bloqueo");
                 setLoading(false);

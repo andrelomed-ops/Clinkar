@@ -326,10 +326,10 @@ export default function CarDetailPage({ params }: { params: Promise<{ id: string
                                             </div>
                                             <div className="mt-8 p-4 bg-zinc-50 dark:bg-zinc-800/50 rounded-2xl border border-dashed border-zinc-300 dark:border-zinc-700 text-center">
                                                 <Link 
-                                                    href={`/dashboard/repair-request?carId=${car.id}`}
+                                                    href={`/buy/${car.id}#checklist`}
                                                     className="inline-flex items-center gap-2 text-indigo-600 dark:text-indigo-400 font-black text-sm hover:underline"
                                                 >
-                                                    Explorar Reporte Técnico y Solicitar Presupuesto →
+                                                    Consultar Reporte de Certificación 150 Puntos →
                                                 </Link>
                                             </div>
                                         </div>
