@@ -339,15 +339,6 @@ export function AuthForm({ initialMode = "login" }: AuthFormProps) {
                     </button>
                 </p>
 
-                {/* Quick Access (Demo Only) */}
-                <div className="pt-8 border-t border-zinc-200 dark:border-zinc-800 animate-reveal stagger-3">
-                    <p className="text-center text-[9px] font-black text-zinc-400 uppercase tracking-[0.3em] mb-4">Acceso Rápido (Demo Mode)</p>
-                    <div className="grid grid-cols-3 gap-2">
-                        <button onClick={() => handleQuickAccess('buyer')} className="py-2 px-1 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl text-[9px] font-black uppercase tracking-widest hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-all">Comprador</button>
-                        <button onClick={() => handleQuickAccess('seller')} className="py-2 px-1 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl text-[9px] font-black uppercase tracking-widest hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-all">Vendedor</button>
-                        <button onClick={() => handleQuickAccess('admin')} className="py-2 px-1 bg-indigo-600 text-white border border-indigo-500 rounded-xl text-[9px] font-black uppercase tracking-widest hover:bg-indigo-500 transition-all shadow-lg shadow-indigo-600/20">Admin</button>
-                    </div>
-                </div>
             </div>
         </div>
     );
