@@ -8,7 +8,10 @@ import {
     Shield,
     ChevronRight,
     Search,
-    Loader2
+    Loader2,
+    Settings,
+    Tablet,
+    Activity
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { createBrowserClient } from '@supabase/ssr';
@@ -17,9 +20,10 @@ import { StarterKarSeal } from './StarterKarSeal';
 interface InspectionSummaryProps {
     carId: string;
     compact?: boolean;
+    category?: string;
 }
 
-export function InspectionSummary({ carId, compact = false }: InspectionSummaryProps) {
+export function InspectionSummary({ carId, compact = false, category = 'Car' }: InspectionSummaryProps) {
     const [report, setReport] = React.useState<any>(null);
     const [loading, setLoading] = React.useState(true);
 
@@ -59,13 +63,45 @@ export function InspectionSummary({ carId, compact = false }: InspectionSummaryP
     // Structure: { category: { pass: boolean, ... } }
     const reportData = report.data || report.report_data || {};
 
-    const categories = [
-        { label: 'Estructura y Chasis', key: 'EXTERIOR', icon: Shield },
-        { label: 'Motor y Transmisión', key: 'MOTOR', icon: Zap },
-        { label: 'Seguridad y Frenos', key: 'FRENOS', icon: ShieldCheck },
-        { label: 'Electrónica', key: 'ELÉCTRICO', icon: Search }
-    ].map(cat => {
-        const items = Object.values(reportData).filter((item: any) => item.category === cat.key);
+    const getCategories = () => {
+        switch (category?.toLowerCase()) {
+            case 'motorcycle':
+                return [
+                    { label: 'Planta Motriz', key: 'Planta Motriz y Escape', icon: Zap },
+                    { label: 'Transmisión', key: 'Transmisión y Cadena', icon: Settings },
+                    { label: 'Frenos y Parte Ciclista', key: 'Parte Ciclista y Frenos', icon: ShieldCheck },
+                    { label: 'Sist. Eléctricos', key: 'Sistemas Eléctricos', icon: Search }
+                ];
+            case 'marine':
+                return [
+                    { label: 'Propulsión', key: 'Propulsión y Motores Marinos', icon: Zap },
+                    { label: 'Casco', key: 'Casco y Estructura Marítima', icon: Shield },
+                    { label: 'Electrónica', key: 'Electrónica de Navegación', icon: Search },
+                    { label: 'Seguridad', key: 'Seguridad y Rescate', icon: ShieldCheck }
+                ];
+            case 'air':
+                return [
+                    { label: 'Motores', key: 'Planta de Poder (Motores y Hélices)', icon: Zap },
+                    { label: 'Aviónica', key: 'Aviónica e Instrumentación', icon: Tablet },
+                    { label: 'Fuselaje', key: 'Célula y Estructura (Airframe)', icon: Shield },
+                    { label: 'Sist. Críticos', key: 'Sistemas Críticos', icon: Activity }
+                ];
+            default:
+                return [
+                    { label: 'Motor y Caja', key: 'Motor', icon: Zap },
+                    { label: 'Transmisión', key: 'Transmisión', icon: Settings },
+                    { label: 'Suspensión', key: 'Suspensión y Frenos', icon: ShieldCheck },
+                    { label: 'Carrocería', key: 'Carrocería y Estética', icon: Shield }
+                ];
+        }
+    };
+
+    const categories = getCategories().map(cat => {
+        // En el nuevo sistema, el reporte guarda los items por su etiqueta de sección.
+        // Adaptamos la lógica de filtrado para buscar por la categoría o sección del item.
+        const items = Object.values(reportData).filter((item: any) => 
+            item.section === cat.key || item.category === cat.key
+        );
         const total = items.length;
         const passed = items.filter((item: any) => item.status === 'pass').length;
         const score = total > 0 ? Math.round((passed / total) * 100) : 100;

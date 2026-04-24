@@ -101,6 +101,11 @@ export default function AdminInspectorDashboardPage() {
                                             item.status === 'PAID_PENDING_VISIT' ? "bg-amber-100 text-amber-600" : "bg-indigo-600 text-white")}>
                                             {item.status === 'PAID_PENDING_VISIT' ? "⏳ Visita Pendiente" : "✅ Confirmado"}
                                         </span>
+                                        {item.car?.category && (
+                                            <span className="ml-2 text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-full mb-3 inline-block bg-zinc-100 dark:bg-zinc-800 text-zinc-500">
+                                                📦 {item.car.category}
+                                            </span>
+                                        )}
                                         <h3 className="text-3xl font-black tracking-tighter leading-tight text-zinc-900 dark:text-white">
                                             {item.car?.make} {item.car?.model} {item.car?.year}
                                         </h3>

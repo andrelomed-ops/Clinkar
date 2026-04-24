@@ -9,6 +9,7 @@ import { CreditSimulator } from "@/components/checkout/CreditSimulator";
 import { supabase } from "@/lib/supabase";
 import { 
     ChevronLeft, 
+    ChevronRight,
     Heart, 
     MapPin, 
     Gauge, 
@@ -20,10 +21,14 @@ import {
     Activity,
     Info,
     LayoutDashboard,
-    Share2
+    Share2,
+    Maximize2,
+    Camera as CameraIcon
 } from "lucide-react";
 import { FavoriteService } from "@/services/FavoriteService";
 import { createBrowserClient } from "@/lib/supabase/client";
+import { TechnicalSpecsSheet } from "@/components/market/TechnicalSpecsSheet";
+
 import Link from "next/link";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
@@ -35,15 +40,14 @@ export default function CarDetailPage({ params }: { params: Promise<{ id: string
     const [loading, setLoading] = useState(true);
     const [isFavorite, setIsFavorite] = useState(false);
     const [userProfile, setUserProfile] = useState<any>(null);
+    const [showWarrantyModal, setShowWarrantyModal] = useState(false);
     
-    // Explicitly use React.useMemo to avoid any scope issues
-    const supabaseBrowser = React.useMemo(() => createBrowserClient(), []);
+    const supabaseBrowser = useMemo(() => createBrowserClient(), []);
 
     useEffect(() => {
         async function fetchCar() {
             setLoading(true);
             try {
-                // Fetch User Profile for role-gated content
                 const { data: { user } } = await supabaseBrowser.auth.getUser();
                 if (user) {
                     const { data: profile } = await supabaseBrowser
@@ -53,12 +57,10 @@ export default function CarDetailPage({ params }: { params: Promise<{ id: string
                         .single();
                     if (profile) setUserProfile(profile);
 
-                    // Fetch Favorite status
                     const favs = await FavoriteService.getFavorites(supabaseBrowser);
                     setIsFavorite(favs.includes(id));
                 }
 
-                // 1. Try Supabase
                 const { data, error } = await supabaseBrowser
                     .from('cars')
                     .select('*')
@@ -74,8 +76,6 @@ export default function CarDetailPage({ params }: { params: Promise<{ id: string
                         transmission: carData.transmission || 'Automática',
                     } as any);
                 } else {
-
-                    // 2. Fallback to Mock
                     const mockCar = ALL_CARS.find(c => c.id === id);
                     if (mockCar) setCar(mockCar);
                 }
@@ -87,7 +87,7 @@ export default function CarDetailPage({ params }: { params: Promise<{ id: string
             }
         }
         fetchCar();
-    }, [id]);
+    }, [id, supabaseBrowser]);
 
     if (loading) {
         return (
@@ -118,7 +118,6 @@ export default function CarDetailPage({ params }: { params: Promise<{ id: string
             <Navbar variant="market" />
 
             <main className="pt-24 pb-20 px-6 max-w-7xl mx-auto">
-                {/* Header Navigation */}
                 <div className="flex justify-end items-center mb-8">
                     <div className="flex gap-2">
                         <button 
@@ -162,41 +161,63 @@ export default function CarDetailPage({ params }: { params: Promise<{ id: string
                 </div>
 
                 <div className="grid lg:grid-cols-12 gap-12">
-                    {/* Left Column: Visuals & Tech Info (8/12) */}
                     <div className="lg:col-span-7 space-y-8">
-                        {/* Hero Image */}
-                        <div className="relative aspect-video rounded-[2.5rem] overflow-hidden bg-zinc-100 dark:bg-zinc-800 border border-border/50 shadow-2xl">
-                            {car.images?.[0] ? (
-                                <Image
-                                    src={car.images[0]}
-                                    alt={`${car.make} ${car.model}`}
-                                    fill
-                                    className="object-cover"
-                                    priority
-                                />
-                            ) : (
-                                <div className="absolute inset-0 flex items-center justify-center text-zinc-400">
-                                    Sin Imagen Disponible
-                                </div>
-                            )}
-                            
-                            {/* Badges Overlay */}
-                            <div className="absolute top-6 left-6 flex flex-wrap gap-3">
-                                {car.status === 'CERTIFIED' && (
-                                    <div className="px-4 py-2 bg-emerald-500 text-white text-xs font-black rounded-full shadow-lg shadow-emerald-500/30 flex items-center gap-2">
-                                        <ShieldCheck className="h-4 w-4" />
-                                        CERTIFICADO 150 PUNTOS
+                        <div className="grid grid-cols-4 gap-4 aspect-[16/10]">
+                            <div className="col-span-3 row-span-2 relative rounded-[2.5rem] overflow-hidden bg-zinc-100 dark:bg-zinc-800 border border-border/50 shadow-2xl group cursor-pointer">
+                                {car.images?.[0] ? (
+                                    <Image
+                                        src={car.images[0]}
+                                        alt={`${car.make} ${car.model}`}
+                                        fill
+                                        className="object-cover group-hover:scale-105 transition-transform duration-700"
+                                        priority
+                                    />
+                                ) : (
+                                    <div className="absolute inset-0 flex items-center justify-center text-zinc-400">
+                                        Sin Imagen Disponible
                                     </div>
                                 )}
-                                {car.flashSale && (
-                                    <div className="px-4 py-2 bg-amber-500 text-black text-xs font-black rounded-full shadow-lg shadow-amber-500/30 animate-pulse">
-                                        ⚡ FLASH SALE
+                                <div className="absolute top-6 left-6 flex flex-wrap gap-3">
+                                    {car.status === 'CERTIFIED' && (
+                                        <div className="px-4 py-2 bg-emerald-500 text-white text-xs font-black rounded-full shadow-lg shadow-emerald-500/30 flex items-center gap-2">
+                                            <ShieldCheck className="h-4 w-4" />
+                                            CERTIFICADO 150 PUNTOS
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                            
+                            <div className="relative rounded-[1.5rem] overflow-hidden bg-zinc-100 dark:bg-zinc-800 border border-border/50 group cursor-pointer">
+                                {car.images?.[1] ? (
+                                    <Image src={car.images[1]} alt="Interior" fill className="object-cover group-hover:scale-110 transition-transform duration-500" />
+                                ) : (
+                                    <div className="absolute inset-0 flex items-center justify-center text-zinc-600 bg-zinc-900"><CameraIcon className="h-6 w-6" /></div>
+                                )}
+                            </div>
+                            
+                            <div className="relative rounded-[1.5rem] overflow-hidden bg-zinc-100 dark:bg-zinc-800 border border-border/50 group cursor-pointer">
+                                {car.images && car.images.length > 2 ? (
+                                    <>
+                                        <Image src={car.images[2]} alt="Detalle" fill className="object-cover group-hover:scale-110 transition-transform duration-500" />
+                                        {car.images.length > 3 && (
+                                            <div className="absolute inset-0 bg-zinc-900/70 backdrop-blur-md flex flex-col items-center justify-center text-white group-hover:bg-zinc-900/50 transition-all duration-300">
+                                                <Maximize2 className="h-8 w-8 mb-2 animate-pulse" />
+                                                <span className="text-base font-black tracking-tighter">+{car.images.length - 3}</span>
+                                                <span className="text-[10px] font-bold uppercase tracking-[0.2em] opacity-80">Fotografías</span>
+                                            </div>
+                                        )}
+                                    </>
+                                ) : (
+                                    <div className="absolute inset-0 flex items-center justify-center text-zinc-600 bg-zinc-900 flex-col gap-2">
+                                        <div className="p-3 bg-zinc-800 rounded-full">
+                                            <Maximize2 className="h-6 w-6" />
+                                        </div>
+                                        <span className="text-[10px] font-black uppercase tracking-[0.2em]">Ver más</span>
                                     </div>
                                 )}
                             </div>
                         </div>
 
-                        {/* Title & Key Stats */}
                         <div>
                             <div className="flex items-center gap-2 mb-2">
                                 <span className="text-sm font-bold text-primary uppercase tracking-widest">{car.year} • {car.condition}</span>
@@ -207,10 +228,12 @@ export default function CarDetailPage({ params }: { params: Promise<{ id: string
 
                             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                                 <div className="p-4 rounded-2xl bg-secondary/50 border border-border flex flex-col">
-                                    <span className="text-xs font-bold text-muted-foreground uppercase mb-1">Recorrido</span>
+                                    <span className="text-xs font-bold text-muted-foreground uppercase mb-1">
+                                        {car.category === 'Marine' || car.category === 'Air' || car.category === 'Heavy' ? 'Uso Acumulado' : 'Recorrido'}
+                                    </span>
                                     <div className="flex items-center gap-2 font-black text-lg">
                                         <Gauge className="h-4 w-4 text-primary" />
-                                        {car.distance.toLocaleString()} km
+                                        {car.distance.toLocaleString()} {car.category === 'Marine' || car.category === 'Air' || car.category === 'Heavy' ? 'h' : 'km'}
                                     </div>
                                 </div>
                                 <div className="p-4 rounded-2xl bg-secondary/50 border border-border flex flex-col">
@@ -237,108 +260,25 @@ export default function CarDetailPage({ params }: { params: Promise<{ id: string
                             </div>
                         </div>
 
-                        {/* Description & AI Advisor Integration */}
                         <div className="space-y-4" id="checklist">
                             <h3 className="text-xl font-bold">Resumen de Inspección</h3>
                             <p className="text-muted-foreground leading-relaxed">
-                                Este vehículo ha sido auditado por la Mesa de Control de StarterKar. Se verificó la autenticidad de la factura nacional, el historial de tenencias sin adeudos y se realizó un escaneo computarizado de 150 puntos críticos.
+                                Este activo ha sido auditado por la Mesa de Control de StarterKar. Se verificó la autenticidad de la documentación, historial de propiedad y se realizó un escaneo técnico adaptado a su categoría.
                             </p>
 
-                            {/* Transparency Window */}
-                            {car.priceEquation && (
-                                <div className="bg-secondary/30 border border-border rounded-3xl p-6 space-y-4">
-                                    <h4 className="text-sm font-black uppercase tracking-widest text-zinc-500">Transparencia de Precio</h4>
-                                    <div className="grid gap-4">
-                                        <div className="flex justify-between items-center bg-background/50 p-4 rounded-2xl border border-border/50">
-                                            <div className="flex items-center gap-3">
-                                                <div className="p-2 bg-indigo-500/10 rounded-lg">
-                                                    <Info className="h-4 w-4 text-indigo-600" />
-                                                </div>
-                                                <span className="text-sm font-bold">Valor Libro Negro</span>
-                                            </div>
-                                            <span className="font-black">${car.priceEquation.marketValue.toLocaleString()}</span>
-                                        </div>
-
-                                        <div className="flex justify-between items-center bg-background/50 p-4 rounded-2xl border border-border/50">
-                                            <div className="flex items-center gap-3">
-                                                <div className="p-2 bg-amber-500/10 rounded-lg">
-                                                    <Activity className="h-4 w-4 text-amber-600" />
-                                                </div>
-                                                <span className="text-sm font-bold">Inversión Mecánica Sugerida</span>
-                                            </div>
-                                            <span className="font-black text-amber-600">
-                                                - ${car.priceEquation.deductions.filter((d: any) => d.type === 'mechanical').reduce((acc: number, d: any) => acc + d.amount, 0).toLocaleString()}
-                                            </span>
-                                        </div>
-
-                                        <div className="flex justify-between items-center bg-primary/5 p-4 rounded-2xl border border-primary/20">
-                                            <span className="text-sm font-black text-primary uppercase italic">Precio StarterKar</span>
-                                            <span className="text-xl font-black text-primary">${car.price.toLocaleString()}</span>
-                                        </div>
-                                    </div>
-                                    <p className="text-[10px] font-medium text-muted-foreground italic leading-tight px-2">
-                                        * El precio ya ha sido ajustado considerando las mejoras preventivas y estéticas necesarias para garantizar tu seguridad y el valor de reventa futuro.
-                                    </p>
+                            <div className="pt-8 border-t border-border/50">
+                                <div className="flex items-center justify-between mb-8">
+                                    <h3 className="text-2xl font-black italic uppercase tracking-tighter">Ficha Técnica</h3>
+                                    <div className="h-px flex-1 bg-gradient-to-r from-zinc-200 dark:from-zinc-800 to-transparent ml-8" />
                                 </div>
-                            )}
-                            
-                                     {/* Embedded Services & Options */}
-                                    <div className="pt-8 space-y-12">
-                                        {/* 1. Negociación y Oferta */}
-                                        <div className="w-full">
-                                            <OfferModal 
-                                                id={car.id}
-                                                carPrice={car.price}
-                                                carName={`${car.make} ${car.model}`}
-                                                repairCost={car.priceEquation?.deductions?.filter((d: any) => d.type === 'mechanical').reduce((a: number, c: any) => a + c.amount, 0) || 0}
-                                                hasSeal={car.status === 'CERTIFIED'}
-                                            />
-                                        </div>
-
-                                        {/* 2. Financiamiento StarterKar */}
-                                        <div className="space-y-4">
-                                            <h3 className="text-sm font-black uppercase tracking-[0.2em] text-zinc-400">Financiamiento</h3>
-                                            <CreditSimulator 
-                                                carPrice={car.price} 
-                                                carName={`${car.make} ${car.model}`}
-                                                carId={car.id}
-                                            />
-                                        </div>
-
-                                        {/* 3. Garantía y Reparación */}
-                                        <div className="bg-white dark:bg-zinc-900 border border-indigo-200 dark:border-indigo-900/30 rounded-[2.5rem] p-10 shadow-xl shadow-indigo-500/5">
-                                            <div className="flex items-center gap-4 mb-6">
-                                                <div className="h-12 w-12 bg-indigo-600 rounded-2xl flex items-center justify-center text-white">
-                                                    <ShieldCheck className="h-6 w-6" />
-                                                </div>
-                                                <div>
-                                                    <h3 className="text-xl font-black">Garantía Certificada StarterKar</h3>
-                                                    <p className="text-xs text-muted-foreground font-bold uppercase tracking-widest">Protección Mecánica P2P</p>
-                                                </div>
-                                            </div>
-                                            <div className="space-y-4 text-sm text-muted-foreground leading-relaxed">
-                                                <p>
-                                                    La **Garantía Mecánica de 90 días** de StarterKar es un beneficio exclusivo para las unidades que pasan por una reparación integral preventiva.
-                                                </p>
-                                                <p className="bg-amber-50 dark:bg-amber-900/10 p-4 rounded-xl border border-amber-200 dark:border-amber-900/20 text-amber-800 dark:text-amber-400 font-medium italic">
-                                                    Nota: Para que la garantía tenga validez absoluta, el vehículo debe ser reparado en un Taller Aliado antes de la entrega física. Esto asegura que tu nuevo auto salga en condiciones óptimas y certificadas.
-                                                </p>
-                                            </div>
-                                            <div className="mt-8 p-4 bg-zinc-50 dark:bg-zinc-800/50 rounded-2xl border border-dashed border-zinc-300 dark:border-zinc-700 text-center">
-                                                <Link 
-                                                    href={`/buy/${car.id}#checklist`}
-                                                    className="inline-flex items-center gap-2 text-indigo-600 dark:text-indigo-400 font-black text-sm hover:underline"
-                                                >
-                                                    Consultar Reporte de Certificación 150 Puntos →
-                                                </Link>
-                                            </div>
-                                        </div>
-
-                                    </div>
+                                <TechnicalSpecsSheet 
+                                    specs={(car as any).market_data?.technical_specs} 
+                                    category={(car as any).category}
+                                />
+                            </div>
                         </div>
                     </div>
 
-                    {/* Right Column: Checkout & Transactional (5/12) */}
                     <div className="lg:col-span-5">
                         <div className="sticky top-24">
                             <div className="glass-card border-indigo-500/20 rounded-[2.5rem] p-8 shadow-2xl space-y-8">
@@ -349,29 +289,85 @@ export default function CarDetailPage({ params }: { params: Promise<{ id: string
                                             ${car.price.toLocaleString()}
                                         </div>
                                     </div>
-                                    {car.marketValue && (
-                                        <div className="bg-emerald-100 dark:bg-emerald-900/30 px-3 py-1.5 rounded-lg text-emerald-700 dark:text-emerald-400 text-xs font-black">
-                                            AHORRAS ${(car.marketValue - car.price).toLocaleString()}
-                                        </div>
-                                    )}
                                 </header>
 
-                                {/* The hard-coded transaction logic component */}
-                                <CheckoutAction 
-                                    carId={car.id} 
-                                    carPrice={car.price} 
-                                    carLocation={car.location} 
-                                />
+                                <div className="pt-6 border-t border-border/50">
+                                    <h4 className="text-[11px] font-black uppercase tracking-[0.3em] text-zinc-900 dark:text-zinc-100 mb-5 flex items-center gap-2">
+                                        <Zap className="h-3 w-3 text-amber-500 fill-amber-500" />
+                                        Negociación Directa
+                                    </h4>
+                                    <OfferModal 
+                                        id={car.id}
+                                        carPrice={car.price}
+                                        carName={`${car.make} ${car.model}`}
+                                        repairCost={0}
+                                        hasSeal={['CERTIFIED', 'published'].includes(car.status)}
+                                    />
+                                </div>
 
-                                <footer className="pt-6 border-t border-border flex items-center gap-3 text-xs text-muted-foreground font-medium">
-                                    <ShieldCheck className="h-5 w-5 text-emerald-500 shrink-0" />
-                                    Tu dinero está protegido bajo los términos de la Bóveda P2P de StarterKar. No se libera hasta la entrega física.
+                                <div className="space-y-5">
+                                    <h4 className="text-[11px] font-black uppercase tracking-[0.3em] text-zinc-900 dark:text-zinc-100 mb-3 flex items-center gap-2">
+                                        <ShieldCheck className="h-3 w-3 text-emerald-500" />
+                                        Trato Seguro P2P
+                                    </h4>
+                                    <CheckoutAction 
+                                        carId={car.id} 
+                                        carPrice={car.price} 
+                                        carLocation={car.location} 
+                                    />
+                                </div>
+
+                                <div className="p-8 bg-zinc-900 dark:bg-zinc-800 rounded-[2rem] border border-zinc-800 shadow-xl group">
+                                    <div className="flex items-center gap-4 mb-4">
+                                        <div className="h-10 w-10 bg-indigo-600 rounded-xl flex items-center justify-center text-white group-hover:scale-110 transition-transform">
+                                            <ShieldCheck className="h-5 w-5" />
+                                        </div>
+                                        <div>
+                                            <h4 className="text-xs font-black text-white uppercase tracking-widest">Garantía StarterKar</h4>
+                                            <p className="text-[10px] text-zinc-500 font-bold">Protección Total 90 días</p>
+                                        </div>
+                                    </div>
+                                    <button 
+                                        onClick={() => setShowWarrantyModal(true)}
+                                        className="text-[10px] font-black uppercase tracking-widest text-indigo-400 hover:text-indigo-300 transition-colors flex items-center gap-1"
+                                    >
+                                        Ver Póliza de Cobertura <ChevronRight className="h-3 w-3" />
+                                    </button>
+                                </div>
+
+                                <footer className="pt-6 flex items-start gap-4 text-[10px] text-zinc-500 font-bold italic leading-tight">
+                                    <Info className="h-5 w-5 text-zinc-400 shrink-0" />
+                                    <p>Tu dinero está protegido en la Bóveda P2P de StarterKar hasta la entrega física y conformidad del activo.</p>
                                 </footer>
                             </div>
                         </div>
                     </div>
                 </div>
             </main>
+
+            {showWarrantyModal && (
+                <div className="fixed inset-0 z-[120] flex items-center justify-center p-4 bg-zinc-950/80 backdrop-blur-md animate-in fade-in duration-300">
+                    <div className="bg-background border border-zinc-800 w-full max-w-xl rounded-[2.5rem] overflow-hidden shadow-2xl animate-in zoom-in-95 duration-300 relative">
+                        <div className="h-48 bg-gradient-to-br from-indigo-600 to-violet-700 relative flex items-center justify-center overflow-hidden">
+                            <ShieldCheck className="h-24 w-24 text-white/20 absolute -right-4 -bottom-4" />
+                            <div className="text-center text-white z-10">
+                                <ShieldCheck className="h-12 w-12 mx-auto mb-3" />
+                                <h2 className="text-2xl font-black italic uppercase tracking-tighter">Póliza de Cobertura StarterKar</h2>
+                                <p className="text-xs font-bold text-indigo-100 uppercase tracking-widest">Protección Total 90 Días</p>
+                            </div>
+                        </div>
+
+                        <div className="p-8 border-t border-border bg-zinc-50 dark:bg-zinc-900/50 flex justify-end">
+                            <button 
+                                onClick={() => setShowWarrantyModal(false)}
+                                className="px-8 py-3 bg-indigo-600 text-white font-black rounded-xl hover:bg-indigo-700 transition-all active:scale-95"
+                            >
+                                ENTENDIDO
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

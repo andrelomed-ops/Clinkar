@@ -1,0 +1,388 @@
+"use client";
+
+import { useState, useMemo } from "react";
+import { Ban, Loader2, Upload, X, Check, Save, Zap, Settings, ShieldCheck, Camera as CameraIcon, Layers } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { cn } from "@/lib/utils";
+import { ImageUpload } from "@/components/marketplace/image-upload";
+
+interface CarFormModalProps {
+    isOpen: boolean;
+    onClose: () => void;
+    onSubmit: (data: any) => Promise<void>;
+    initialData?: any;
+    isLoading: boolean;
+    mode: "create" | "edit";
+}
+
+export function CarFormModal({ isOpen, onClose, onSubmit, initialData, isLoading, mode }: CarFormModalProps) {
+    const [activeTab, setActiveTab] = useState<"general" | "specs" | "features" | "gallery">("general");
+    
+    const [formData, setFormData] = useState({
+        make: initialData?.make || "",
+        model: initialData?.model || "",
+        year: initialData?.year || 2024,
+        price: initialData?.price || 0,
+        mileage: initialData?.mileage || 0,
+        location: initialData?.location || "CDMX",
+        description: initialData?.description || "Unidad certificada por StarterKar.",
+        status: initialData?.status || "published",
+        category: initialData?.category || "Car",
+        images: initialData?.images || [],
+        technical_specs: initialData?.market_data?.technical_specs || {
+            performance: {
+                engine: "",
+                horsepower: "",
+                fuelType: "Gasoline",
+                transmission: "Automatic",
+                driveTrain: "FWD",
+                cylinders: 4,
+                consumption: ""
+            },
+            architecture: {
+                bodyType: "SUV",
+                doors: 5,
+                passengers: 5,
+                dimensions: "",
+                tankCapacity: "",
+                rims: ""
+            },
+            features: {
+                ac: true,
+                sunroof: false,
+                leatherSeats: false,
+                touchScreen: true,
+                carPlay: true,
+                androidAuto: true,
+                bluetooth: true,
+                startStopButton: true
+            },
+            security: {
+                airbags: 6,
+                abs: true,
+                discBrakes: 4,
+                reverseCamera: true,
+                parkingSensors: true
+            }
+        }
+    });
+
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        // Prepare final data structure
+        const finalData = {
+            ...formData,
+            technical_specs: formData.technical_specs, // Dedicated column
+            market_data: {
+                ...(initialData?.market_data || {}),
+                technical_specs: formData.technical_specs // Legacy support
+            }
+        };
+        await onSubmit(finalData);
+    };
+
+    if (!isOpen) return null;
+
+    return (
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-md z-[100] flex items-center justify-center p-4">
+            <div className="bg-zinc-900 border border-zinc-800 rounded-[3rem] w-full max-w-4xl max-h-[90vh] overflow-hidden flex flex-col animate-in zoom-in-95 duration-200 shadow-[0_0_100px_rgba(99,102,241,0.1)]">
+                {/* Header */}
+                <div className="p-8 pb-4 flex justify-between items-center border-b border-zinc-800">
+                    <div>
+                        <h3 className="text-2xl font-black text-white uppercase italic tracking-tighter">
+                            {mode === "create" ? "Publicar Nueva Unidad" : "Editar Expediente de Unidad"}
+                        </h3>
+                        <p className="text-zinc-500 text-xs font-bold uppercase tracking-widest mt-1">
+                            {mode === "create" ? "Configuración de inventario maestro" : `Editando: ${formData.make} ${formData.model}`}
+                        </p>
+                    </div>
+                    <button onClick={onClose} className="h-12 w-12 bg-zinc-800 rounded-full flex items-center justify-center text-zinc-400 hover:text-white transition-all hover:rotate-90">
+                        <Ban className="h-5 w-5" />
+                    </button>
+                </div>
+
+                {/* Tabs */}
+                <div className="flex px-8 pt-4 gap-2 bg-zinc-900/50">
+                    <TabButton 
+                        active={activeTab === "general"} 
+                        onClick={() => setActiveTab("general")} 
+                        icon={<Zap className="h-4 w-4" />} 
+                        label="General" 
+                    />
+                    <TabButton 
+                        active={activeTab === "specs"} 
+                        onClick={() => setActiveTab("specs")} 
+                        icon={<Settings className="h-4 w-4" />} 
+                        label="Ficha Técnica" 
+                    />
+                    <TabButton 
+                        active={activeTab === "features"} 
+                        onClick={() => setActiveTab("features")} 
+                        icon={<ShieldCheck className="h-4 w-4" />} 
+                        label="Equipamiento" 
+                    />
+                    <TabButton 
+                        active={activeTab === "gallery"} 
+                        onClick={() => setActiveTab("gallery")} 
+                        icon={<Camera className="h-4 w-4" />} 
+                        label="Galería" 
+                    />
+                </div>
+
+                {/* Form Content */}
+                <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto custom-scrollbar p-8">
+                    {activeTab === "general" && (
+                        <div className="grid grid-cols-2 gap-6 animate-in fade-in slide-in-from-bottom-4 duration-300">
+                            <FormGroup label="Marca">
+                                <input required value={formData.make} placeholder="Ej. BMW" className="form-input" onChange={e => setFormData({...formData, make: e.target.value})} />
+                            </FormGroup>
+                            <FormGroup label="Modelo">
+                                <input required value={formData.model} placeholder="Ej. M3" className="form-input" onChange={e => setFormData({...formData, model: e.target.value})} />
+                            </FormGroup>
+                            <FormGroup label="Año">
+                                <input required type="number" value={formData.year} className="form-input" onChange={e => setFormData({...formData, year: parseInt(e.target.value)})} />
+                            </FormGroup>
+                            <FormGroup label="Precio (MXN)">
+                                <input required type="number" value={formData.price} className="form-input" onChange={e => setFormData({...formData, price: parseFloat(e.target.value)})} />
+                            </FormGroup>
+                            <FormGroup label={
+                                formData.category === 'Marine' || formData.category === 'Air' || formData.category === 'Heavy' 
+                                ? "Horas de Uso" 
+                                : "Kilometraje"
+                            }>
+                                <input required type="number" value={formData.mileage} className="form-input" onChange={e => setFormData({...formData, mileage: parseInt(e.target.value)})} />
+                            </FormGroup>
+                            <FormGroup label="Categoría">
+                                <select value={formData.category} className="form-input" onChange={e => setFormData({...formData, category: e.target.value})}>
+                                    <option value="Car">Automóvil</option>
+                                    <option value="Motorcycle">Motocicleta</option>
+                                    <option value="Marine">Marítimo (Yates/Lanchas)</option>
+                                    <option value="Air">Aéreo (Aviones/Helicópteros)</option>
+                                    <option value="Heavy">Maquinaria Pesada</option>
+                                </select>
+                            </FormGroup>
+                            <FormGroup label="Ubicación">
+                                <input required value={formData.location} className="form-input" onChange={e => setFormData({...formData, location: e.target.value})} />
+                            </FormGroup>
+                            <div className="col-span-2">
+                                <FormGroup label="Descripción / Notas">
+                                    <textarea className="form-input h-24 resize-none p-4" value={formData.description} onChange={e => setFormData({...formData, description: e.target.value})} />
+                                </FormGroup>
+                            </div>
+                            <FormGroup label="Estatus">
+                                <select value={formData.status} className="form-input" onChange={e => setFormData({...formData, status: e.target.value})}>
+                                    <option value="published">PUBLICADO</option>
+                                    <option value="draft">BORRADOR</option>
+                                    <option value="archived">ARCHIVADO</option>
+                                </select>
+                            </FormGroup>
+                        </div>
+                    )}
+
+                    {activeTab === "specs" && (
+                        <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-300">
+                            {/* Dynamic Specs based on Category */}
+                            <div>
+                                <h4 className="text-indigo-400 text-[10px] font-black uppercase tracking-[0.2em] mb-4 flex items-center gap-2">
+                                    <Layers className="h-3 w-3" /> {formData.category === 'Air' || formData.category === 'Marine' ? 'Planta de Poder y Estado' : 'Motor y Desempeño'}
+                                </h4>
+                                <div className="grid grid-cols-2 gap-4">
+                                    <FormGroup label={formData.category === 'Air' ? "Motores / Turbinas" : "Motor"}>
+                                        <input value={formData.technical_specs.performance.engine} placeholder={formData.category === 'Air' ? "Ej. Pratt & Whitney" : "Ej. 2.5L Turbo"} className="form-input" onChange={e => setFormData({...formData, technical_specs: {...formData.technical_specs, performance: {...formData.technical_specs.performance, engine: e.target.value}}})} />
+                                    </FormGroup>
+                                    {formData.category === 'Air' ? (
+                                        <FormGroup label="Ciclos / TBO">
+                                            <input value={formData.technical_specs.performance.horsepower} placeholder="Ej. 1500h remanentes" className="form-input" onChange={e => setFormData({...formData, technical_specs: {...formData.technical_specs, performance: {...formData.technical_specs.performance, horsepower: e.target.value}}})} />
+                                        </FormGroup>
+                                    ) : (
+                                        <FormGroup label="Potencia (HP)">
+                                            <input value={formData.technical_specs.performance.horsepower} placeholder="Ej. 227 hp" className="form-input" onChange={e => setFormData({...formData, technical_specs: {...formData.technical_specs, performance: {...formData.technical_specs.performance, horsepower: e.target.value}}})} />
+                                        </FormGroup>
+                                    )}
+                                    <FormGroup label="Combustible">
+                                        <select value={formData.technical_specs.performance.fuelType} className="form-input" onChange={e => setFormData({...formData, technical_specs: {...formData.technical_specs, performance: {...formData.technical_specs.performance, fuelType: e.target.value}}})}>
+                                            <option value="Gasoline">Gasolina</option>
+                                            <option value="Diesel">Diesel</option>
+                                            <option value="Hybrid">Híbrido</option>
+                                            <option value="Electric">Eléctrico</option>
+                                            <option value="AvGas">AvGas (Aviación)</option>
+                                            <option value="JetA">Jet A-1</option>
+                                        </select>
+                                    </FormGroup>
+                                    <FormGroup label={formData.category === 'Marine' || formData.category === 'Air' ? 'Propulsión' : 'Transmisión'}>
+                                        <select value={formData.technical_specs.performance.transmission} className="form-input" onChange={e => setFormData({...formData, technical_specs: {...formData.technical_specs, performance: {...formData.technical_specs.performance, transmission: e.target.value}}})}>
+                                            <option value="Automatic">Automática / Hidrostática</option>
+                                            <option value="Manual">Manual</option>
+                                            <option value="Inboard">Intraborda (Marino)</option>
+                                            <option value="Outboard">Fueraborda (Marino)</option>
+                                            <option value="Direct">Direct Drive</option>
+                                        </select>
+                                    </FormGroup>
+                                </div>
+                            </div>
+
+                            <div>
+                                <h4 className="text-indigo-400 text-[10px] font-black uppercase tracking-[0.2em] mb-4 flex items-center gap-2">
+                                    <Layers className="h-3 w-3" /> {formData.category === 'Marine' ? 'Arquitectura Naval' : formData.category === 'Air' ? 'Fuselaje y Capacidad' : 'Arquitectura y Dimensiones'}
+                                </h4>
+                                <div className="grid grid-cols-3 gap-4">
+                                    <FormGroup label={formData.category === 'Marine' ? "Tipo de Casco" : formData.category === 'Air' ? "Modelo Fuselaje" : "Carrocería"}>
+                                        <input value={formData.technical_specs.architecture.bodyType} placeholder="Ej. Monocasco / SUV" className="form-input" onChange={e => setFormData({...formData, technical_specs: {...formData.technical_specs, architecture: {...formData.technical_specs.architecture, bodyType: e.target.value}}})} />
+                                    </FormGroup>
+                                    <FormGroup label={formData.category === 'Marine' ? "Eslora (Pies)" : formData.category === 'Air' ? "Carga Útil" : "Puertas"}>
+                                        <input value={formData.technical_specs.architecture.doors} placeholder="Ej. 40ft" className="form-input" onChange={e => setFormData({...formData, technical_specs: {...formData.technical_specs, architecture: {...formData.technical_specs.architecture, doors: e.target.value as any}}})} />
+                                    </FormGroup>
+                                    <FormGroup label="Pasajeros">
+                                        <input type="number" value={formData.technical_specs.architecture.passengers} className="form-input" onChange={e => setFormData({...formData, technical_specs: {...formData.technical_specs, architecture: {...formData.technical_specs.architecture, passengers: parseInt(e.target.value)}}})} />
+                                    </FormGroup>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    {activeTab === "features" && (
+                        <div className="grid grid-cols-2 gap-x-12 gap-y-8 animate-in fade-in slide-in-from-bottom-4 duration-300">
+                            <div className="space-y-4">
+                                <h4 className="text-indigo-400 text-[10px] font-black uppercase tracking-[0.2em] mb-4">Confort y Tecnología</h4>
+                                <ToggleGroup label="Aire Acondicionado" checked={formData.technical_specs.features.ac} onChange={v => setFormData({...formData, technical_specs: {...formData.technical_specs, features: {...formData.technical_specs.features, ac: v}}})} />
+                                <ToggleGroup label="Apple CarPlay" checked={formData.technical_specs.features.carPlay} onChange={v => setFormData({...formData, technical_specs: {...formData.technical_specs, features: {...formData.technical_specs.features, carPlay: v}}})} />
+                                <ToggleGroup label="Android Auto" checked={formData.technical_specs.features.androidAuto} onChange={v => setFormData({...formData, technical_specs: {...formData.technical_specs, features: {...formData.technical_specs.features, androidAuto: v}}})} />
+                                <ToggleGroup label="Pantalla Táctil" checked={formData.technical_specs.features.touchScreen} onChange={v => setFormData({...formData, technical_specs: {...formData.technical_specs, features: {...formData.technical_specs.features, touchScreen: v}}})} />
+                                <ToggleGroup label="Techo Panorámico" checked={formData.technical_specs.features.sunroof} onChange={v => setFormData({...formData, technical_specs: {...formData.technical_specs, features: {...formData.technical_specs.features, sunroof: v}}})} />
+                            </div>
+                            <div className="space-y-4">
+                                <h4 className="text-indigo-400 text-[10px] font-black uppercase tracking-[0.2em] mb-4">Seguridad</h4>
+                                <FormGroup label="Bolsas de Aire (Total)">
+                                    <input type="number" value={formData.technical_specs.security.airbags} className="form-input" onChange={e => setFormData({...formData, technical_specs: {...formData.technical_specs, security: {...formData.technical_specs.security, airbags: parseInt(e.target.value)}}})} />
+                                </FormGroup>
+                                <ToggleGroup label="Frenos ABS" checked={formData.technical_specs.security.abs} onChange={v => setFormData({...formData, technical_specs: {...formData.technical_specs, security: {...formData.technical_specs.security, abs: v}}})} />
+                                <ToggleGroup label="Cámara de Reversa" checked={formData.technical_specs.security.reverseCamera} onChange={v => setFormData({...formData, technical_specs: {...formData.technical_specs, security: {...formData.technical_specs.security, reverseCamera: v}}})} />
+                                <ToggleGroup label="Sensores de Proximidad" checked={formData.technical_specs.security.parkingSensors} onChange={v => setFormData({...formData, technical_specs: {...formData.technical_specs, security: {...formData.technical_specs.security, parkingSensors: v}}})} />
+                            </div>
+                        </div>
+                    )}
+
+                    {activeTab === "gallery" && (
+                        <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-300">
+                            <div className="p-6 bg-zinc-950 border border-zinc-800 rounded-[2rem]">
+                                <h4 className="text-sm font-bold text-white mb-4 flex items-center gap-2">
+                                    <CameraIcon className="h-5 w-5 text-indigo-500" /> Galería de Imágenes
+                                </h4>
+                                <ImageUpload onUpload={(urls) => setFormData({...formData, images: [...formData.images, ...urls]})} />
+                            </div>
+
+                            {formData.images.length > 0 && (
+                                <div className="grid grid-cols-4 gap-4 mt-8">
+                                    {formData.images.map((url, i) => (
+                                        <div key={i} className={cn(
+                                            "relative aspect-video rounded-2xl overflow-hidden border-2 transition-all",
+                                            i === 0 ? "border-indigo-500" : "border-transparent"
+                                        )}>
+                                            <img src={url} alt="Uploaded" className="w-full h-full object-cover" />
+                                            <button 
+                                                type="button"
+                                                onClick={() => setFormData({...formData, images: formData.images.filter((_, idx) => idx !== i)})}
+                                                className="absolute top-2 right-2 h-6 w-6 bg-black/50 backdrop-blur-md rounded-full flex items-center justify-center text-white hover:bg-red-500 transition-colors"
+                                            >
+                                                <X className="h-3 w-3" />
+                                            </button>
+                                            {i === 0 && (
+                                                <div className="absolute bottom-2 left-2 px-2 py-1 bg-indigo-600 text-[8px] font-black uppercase tracking-widest text-white rounded-md">
+                                                    Principal
+                                                </div>
+                                            )}
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
+                    )}
+                </form>
+
+                {/* Footer Actions */}
+                <div className="p-8 border-t border-zinc-800 bg-zinc-900/50 flex justify-end gap-4">
+                    <Button variant="ghost" onClick={onClose} disabled={isLoading} className="rounded-xl font-bold uppercase tracking-widest text-xs">
+                        Cancelar
+                    </Button>
+                    <Button 
+                        onClick={handleSubmit} 
+                        disabled={isLoading} 
+                        className="rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-black uppercase tracking-[0.2em] text-xs px-8 h-12 shadow-lg shadow-indigo-600/20"
+                    >
+                        {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : (
+                            <span className="flex items-center gap-2">
+                                <Save className="h-4 w-4" /> {mode === "create" ? "Publicar Unidad" : "Guardar Cambios"}
+                            </span>
+                        )}
+                    </Button>
+                </div>
+            </div>
+
+            <style jsx>{`
+                .form-input {
+                    width: 100%;
+                    height: 3.5rem;
+                    background-color: #09090b;
+                    border: 1px solid #27272a;
+                    border-radius: 1rem;
+                    padding-left: 1.5rem;
+                    padding-right: 1.5rem;
+                    color: white;
+                    outline: none;
+                    transition: all 0.2s;
+                    font-size: 0.875rem;
+                }
+                .form-input:focus {
+                    border-color: #4f46e5;
+                    box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.1);
+                }
+            `}</style>
+        </div>
+    );
+}
+
+function TabButton({ active, onClick, icon, label }: { active: boolean, onClick: () => void, icon: React.ReactNode, label: string }) {
+    return (
+        <button
+            type="button"
+            onClick={onClick}
+            className={cn(
+                "flex items-center gap-2 px-6 py-3 rounded-t-2xl font-black text-[10px] uppercase tracking-widest transition-all border-t-2 border-x-2",
+                active 
+                    ? "bg-zinc-900 border-zinc-800 text-indigo-400" 
+                    : "bg-transparent border-transparent text-zinc-500 hover:text-zinc-300"
+            )}
+        >
+            {icon}
+            {label}
+        </button>
+    );
+}
+
+function FormGroup({ label, children }: { label: string, children: React.ReactNode }) {
+    return (
+        <div className="space-y-2">
+            <label className="text-[10px] font-black text-zinc-500 uppercase tracking-widest ml-1">{label}</label>
+            {children}
+        </div>
+    );
+}
+
+function ToggleGroup({ label, checked, onChange }: { label: string, checked: boolean, onChange: (v: boolean) => void }) {
+    return (
+        <div className="flex items-center justify-between p-4 bg-zinc-950 border border-zinc-800 rounded-2xl hover:border-zinc-700 transition-colors">
+            <span className="text-xs font-bold text-zinc-300 uppercase tracking-wider">{label}</span>
+            <button
+                type="button"
+                onClick={() => onChange(!checked)}
+                className={cn(
+                    "h-6 w-12 rounded-full p-1 transition-all flex items-center",
+                    checked ? "bg-indigo-600 justify-end" : "bg-zinc-800 justify-start"
+                )}
+            >
+                <div className="h-4 w-4 bg-white rounded-full shadow-sm" />
+            </button>
+        </div>
+    );
+}

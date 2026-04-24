@@ -16,6 +16,7 @@ export async function startTransaction(carId: string, addOns?: {
     deliveryType?: 'workshop' | 'home';
     scheduledDate?: string;
     scheduledTime?: string;
+    workshopId?: string;
 }) {
     const supabase = await createClient();
 
@@ -72,7 +73,9 @@ export async function startTransaction(carId: string, addOns?: {
                 metadata: {
                     scheduled_delivery_date: addOns?.scheduledDate,
                     scheduled_delivery_time: addOns?.scheduledTime,
-                    delivery_type: addOns?.deliveryType || 'workshop'
+                    delivery_type: addOns?.deliveryType || 'workshop',
+                    workshop_id: addOns?.workshopId,
+                    category: car.category
                 }
             });
 
@@ -90,7 +93,9 @@ export async function startTransaction(carId: string, addOns?: {
                     car: `${car.make} ${car.model}`,
                     date: addOns?.scheduledDate,
                     time: addOns?.scheduledTime,
-                    location: car.location
+                    location: car.location,
+                    category: car.category,
+                    workshop_id: addOns?.workshopId
                 }
             });
             console.log(`[startTransaction] Success: Transaction ${transactionId} created.`);

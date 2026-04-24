@@ -21,6 +21,7 @@ interface Partner {
     city: string;
     phone: string;
     is_active: boolean;
+    specialties: string[];
 }
 
 export default function AdminPartnersPage() {
@@ -34,6 +35,15 @@ export default function AdminPartnersPage() {
     const [address, setAddress] = useState("");
     const [city, setCity] = useState("");
     const [phone, setPhone] = useState("");
+    const [specialties, setSpecialties] = useState<string[]>(["Car"]);
+
+    const AVAILABLE_SPECIALTIES = [
+        { id: "Car", label: "Automóviles" },
+        { id: "Motorcycle", label: "Motocicletas" },
+        { id: "Marine", label: "Marítimo" },
+        { id: "Air", label: "Aéreo" },
+        { id: "Heavy", label: "Maquinaria Pesada" }
+    ];
 
     const fetchPartners = async () => {
         setLoading(true);
@@ -60,7 +70,8 @@ export default function AdminPartnersPage() {
             address,
             city,
             phone,
-            is_active: true
+            is_active: true,
+            specialties
         });
 
         if (error) {
@@ -146,9 +157,35 @@ export default function AdminPartnersPage() {
                                 required
                                 value={phone}
                                 onChange={e => setPhone(e.target.value)}
-                                placeholder="55 1234 5678"
+                                placeholder="55 2212 0249"
                                 className="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-5 py-4 focus:outline-none focus:border-red-500 transition-colors"
                             />
+                        </div>
+                        <div className="md:col-span-2 space-y-2">
+                            <label className="text-[10px] font-black uppercase tracking-widest text-zinc-500 ml-1">Especialidades Técnicas</label>
+                            <div className="flex flex-wrap gap-3 p-4 bg-zinc-950 border border-zinc-800 rounded-xl">
+                                {AVAILABLE_SPECIALTIES.map(spec => (
+                                    <button
+                                        key={spec.id}
+                                        type="button"
+                                        onClick={() => {
+                                            if (specialties.includes(spec.id)) {
+                                                setSpecialties(specialties.filter(s => s !== spec.id));
+                                            } else {
+                                                setSpecialties([...specialties, spec.id]);
+                                            }
+                                        }}
+                                        className={cn(
+                                            "px-4 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all border",
+                                            specialties.includes(spec.id)
+                                                ? "bg-red-600 border-red-500 text-white shadow-lg shadow-red-600/20"
+                                                : "bg-zinc-900 border-zinc-800 text-zinc-500 hover:text-zinc-300"
+                                        )}
+                                    >
+                                        {spec.label}
+                                    </button>
+                                ))}
+                            </div>
                         </div>
                     </div>
                     <div className="flex justify-end pt-4">
@@ -206,6 +243,13 @@ export default function AdminPartnersPage() {
                                 <div className="flex items-center gap-2">
                                     <Phone className="h-4 w-4 shrink-0 text-zinc-600" />
                                     <p>{partner.phone}</p>
+                                </div>
+                                <div className="pt-4 flex flex-wrap gap-2">
+                                    {partner.specialties?.map(spec => (
+                                        <span key={spec} className="px-2 py-1 bg-zinc-800 rounded-md text-[8px] font-black uppercase tracking-widest text-zinc-400 border border-zinc-700">
+                                            {spec}
+                                        </span>
+                                    ))}
                                 </div>
                             </div>
 

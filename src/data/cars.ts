@@ -72,7 +72,13 @@ export const ALL_CARS: Vehicle[] = [
         price: 950000,
         location: 'CDMX',
         distance: 1200,
-        images: ['https://images.unsplash.com/photo-1560958089-b8a1929cea89?q=80&w=800&auto=format&fit=crop'],
+        images: [
+            'https://images.unsplash.com/photo-1560958089-b8a1929cea89?q=80&w=800&auto=format&fit=crop',
+            'https://images.unsplash.com/photo-1536700503339-1e4b06520771?q=80&w=800&auto=format&fit=crop',
+            'https://images.unsplash.com/photo-1571127236794-81c0bbfe1ce3?q=80&w=800&auto=format&fit=crop',
+            'https://images.unsplash.com/photo-1554744480-14048c8e2d36?q=80&w=800&auto=format&fit=crop'
+        ],
+
         status: 'CERTIFIED',
         category: 'Car',
         type: 'Sedan',

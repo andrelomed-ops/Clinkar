@@ -305,6 +305,89 @@ export const MARINE_INSPECTION_SECTIONS: InspectionSection[] = [
     }
 ];
 
+/**
+ * ESTÁNDAR 150 PUNTOS - AERONAVES
+ */
+export const AIR_INSPECTION_SECTIONS: InspectionSection[] = [
+    {
+        id: "airframe",
+        label: "Célula y Estructura (Airframe)",
+        items: [
+            { id: "air1", label: "Inspección de remaches y corrosión estructural" },
+            { id: "air2", label: "Estado de superficies de control (Alerones/Timón)" },
+            { id: "air3", label: "Integridad del tren de aterrizaje y neumáticos" },
+            { id: "air4", label: "Estado de parabrisas y ventanillas (sin microfisuras)" },
+            { id: "air5", label: "Revisión de luces estroboscópicas y de navegación" },
+            { id: "air6", label: "Integridad de la unión ala-fuselaje" },
+            { id: "air7", label: "Estado de pintura y sellado de juntas" }
+        ]
+    },
+    {
+        id: "avionics",
+        label: "Aviónica e Instrumentación",
+        items: [
+            { id: "air8", label: "Funcionamiento de PFD/MFD (Garmin/Avidyne)" },
+            { id: "air9", label: "Calibración de Altímetro y Variómetro" },
+            { id: "air10", label: "Radios COMM 1/2 y NAV 1/2" },
+            { id: "air11", label: "Transpondedor (Prueba de respuesta Modo S)" },
+            { id: "air12", label: "Piloto Automático (Servos y respuesta)" },
+            { id: "air13", label: "ELT (Transmisor de Localización de Emergencia)" },
+            { id: "air14", label: "Sistema Intercom y Auriculares" }
+        ]
+    },
+    {
+        id: "air_powerplant",
+        label: "Planta de Poder (Motores y Hélices)",
+        items: [
+            { id: "air15", label: "Boroscopía de cilindros (estado interno)" },
+            { id: "air16", label: "Fugas de aceite en cárter y magnetos" },
+            { id: "air17", label: "Estado de la hélice (Nick checks / Corrosión)" },
+            { id: "air18", label: "Gobernador de hélice y paso variable" },
+            { id: "air19", label: "Revisión de bujías y arnés de ignición" },
+            { id: "air20", label: "Compresión de motor (Prueba diferencial)" },
+            { id: "air21", label: "Estado de soportes de motor y bancada" }
+        ]
+    }
+];
+
+/**
+ * ESTÁNDAR 150 PUNTOS - MAQUINARIA PESADA / INDUSTRIAL
+ */
+export const HEAVY_INSPECTION_SECTIONS: InspectionSection[] = [
+    {
+        id: "hydraulics",
+        label: "Sistemas Hidráulicos",
+        items: [
+            { id: "hv1", label: "Fugas en cilindros y mangueras de alta presión" },
+            { id: "hv2", label: "Estado de la bomba hidráulica principal" },
+            { id: "hv3", label: "Nivel y pureza del aceite hidráulico" },
+            { id: "hv4", label: "Velocidad de respuesta de mandos / Joysticks" },
+            { id: "hv5", label: "Válvulas de alivio y control" }
+        ]
+    },
+    {
+        id: "structure_heavy",
+        label: "Estructura y Herramientas",
+        items: [
+            { id: "hv6", label: "Estado de la pala / horquillas" },
+            { id: "hv7", label: "Desgaste en pernos y bujes" },
+            { id: "hv8", label: "Integridad del chasis y soldaduras" },
+            { id: "hv9", label: "Contrapeso y estabilidad" },
+            { id: "hv10", label: "Estado de orugas o neumáticos industriales" }
+        ]
+    },
+    {
+        id: "cabin_heavy",
+        label: "Cabina y Seguridad (ROPS/FOPS)",
+        items: [
+            { id: "hv11", label: "Certificación de cabina contra vuelcos" },
+            { id: "hv12", label: "Alarmas de reversa y torretas" },
+            { id: "hv13", label: "Estado de la silla del operador" },
+            { id: "hv14", label: "Monitor de diagnóstico y códigos de falla" }
+        ]
+    }
+];
+
 export const getInspectionSectionsByCategory = (category: string): InspectionSection[] => {
     switch (category?.toLowerCase()) {
         case 'motorcycle':
@@ -315,6 +398,15 @@ export const getInspectionSectionsByCategory = (category: string): InspectionSec
         case 'boat':
         case 'sea':
             return MARINE_INSPECTION_SECTIONS;
+        case 'air':
+        case 'plane':
+        case 'helicopter':
+        case 'aviation':
+            return AIR_INSPECTION_SECTIONS;
+        case 'heavy':
+        case 'machinery':
+        case 'industrial':
+            return HEAVY_INSPECTION_SECTIONS;
         case 'car':
         case 'suv':
         case 'sedan':

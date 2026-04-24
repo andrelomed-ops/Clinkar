@@ -68,7 +68,7 @@ function ContactContent() {
                                 </div>
                                 <div>
                                     <h3 className="font-bold text-lg">Correo Electrónico</h3>
-                                    <p className="text-muted-foreground font-medium">soporte@starterkar.com</p>
+                                    <p className="text-muted-foreground font-medium">StarterKar@hotmail.com</p>
                                     <p className="text-xs text-indigo-500 font-bold mt-1 uppercase tracking-tighter">Respuesta rápida</p>
                                 </div>
                             </div>
@@ -79,7 +79,7 @@ function ContactContent() {
                                 </div>
                                 <div>
                                     <h3 className="font-bold text-lg">WhatsApp Business</h3>
-                                    <p className="text-muted-foreground font-medium">+52 55 1234 5678</p>
+                                    <p className="text-muted-foreground font-medium">+52 55 2212 0249</p>
                                     <p className="text-xs text-green-500 font-bold mt-1 uppercase tracking-tighter">Lunes a Viernes 9am - 6pm</p>
                                 </div>
                             </div>

@@ -197,7 +197,7 @@ export default function InvestorApplyPage() {
                 <div className="space-y-2">
                   <label className="text-[10px] font-black uppercase tracking-widest ml-1">Teléfono Directo</label>
                   <Input 
-                    placeholder="55 1234 5678" 
+                    placeholder="55 2212 0249" 
                     value={telefono} 
                     onChange={(e) => setTelefono(e.target.value)}
                     className="h-12 rounded-xl font-bold border-zinc-200"

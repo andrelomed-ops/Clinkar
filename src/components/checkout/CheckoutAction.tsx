@@ -6,14 +6,40 @@ import { Loader2, ShieldCheck, Zap, ArrowRight } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
-export function CheckoutAction({ carId, carPrice, carLocation }: { carId: string, carPrice: number, carLocation: string }) {
+import { createBrowserClient } from "@/lib/supabase/client";
+import { useEffect } from "react";
+
+export function CheckoutAction({ carId, carPrice, carLocation, category }: { carId: string, carPrice: number, carLocation: string, category: string }) {
+    const supabase = createBrowserClient();
     const [loading, setLoading] = useState(false);
+    const [partners, setPartners] = useState<any[]>([]);
+    const [selectedWorkshop, setSelectedWorkshop] = useState("");
     const [scheduledDate, setScheduledDate] = useState("");
     const [scheduledTime, setScheduledTime] = useState("");
 
+    useEffect(() => {
+        async function fetchWorkshops() {
+            const { data } = await supabase
+                .from('partners')
+                .select('*')
+                .eq('is_active', true);
+            
+            if (data) {
+                // Filter by specialty
+                const filtered = data.filter(p => 
+                    p.specialties?.includes(category) || 
+                    (category === 'Car' && (!p.specialties || p.specialties.length === 0))
+                );
+                setPartners(filtered);
+                if (filtered.length > 0) setSelectedWorkshop(filtered[0].id);
+            }
+        }
+        fetchWorkshops();
+    }, [category]);
+
     const handleAction = async () => {
-        if (!scheduledDate || !scheduledTime) {
-            toast.error("Por favor, selecciona fecha y hora para la entrega");
+        if (!scheduledDate || !scheduledTime || !selectedWorkshop) {
+            toast.error("Por favor, selecciona taller, fecha y hora");
             return;
         }
 
@@ -24,7 +50,8 @@ export function CheckoutAction({ carId, carPrice, carLocation }: { carId: string
             const result = await startTransaction(carId, {
                 deliveryType: 'workshop',
                 scheduledDate,
-                scheduledTime
+                scheduledTime,
+                workshopId: selectedWorkshop
             });
 
             console.log("[StarterKar] Resultado del servidor:", result);
@@ -71,6 +98,22 @@ export function CheckoutAction({ carId, carPrice, carLocation }: { carId: string
                     <h4 className="font-black text-[10px] uppercase tracking-[0.2em] text-zinc-500">Agendar Entrega en Taller</h4>
                 </div>
                 
+                <div className="grid grid-cols-1 gap-5">
+                    <div className="space-y-2">
+                        <label className="text-[9px] font-black text-zinc-400 uppercase ml-1">Taller Especializado ({category})</label>
+                        <select 
+                            className="w-full h-14 px-5 rounded-2xl border-2 border-zinc-100 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950 text-sm font-black focus:border-indigo-600 outline-none transition-all"
+                            value={selectedWorkshop}
+                            onChange={(e) => setSelectedWorkshop(e.target.value)}
+                        >
+                            {partners.length === 0 && <option value="">No hay talleres disponibles para esta categoría</option>}
+                            {partners.map(p => (
+                                <option key={p.id} value={p.id}>{p.name} - {p.city}</option>
+                            ))}
+                        </select>
+                    </div>
+                </div>
+
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                     <div className="space-y-2">
                         <label className="text-[9px] font-black text-zinc-400 uppercase ml-1">Fecha de Cita</label>

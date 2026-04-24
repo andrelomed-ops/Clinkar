@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef } from "react";
-import { Camera, Check, Loader2, Upload, FileText, X } from "lucide-react";
+import { Camera as CameraIcon, Check, Loader2, Upload, FileText, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { createBrowserClient } from "@/lib/supabase/client";
 
@@ -129,7 +129,7 @@ export function CameraUpload({ onUpload, label = "Capturar", description, catego
                     onClick={() => setIsMenuOpen(true)}
                     className="h-10 w-10 rounded-full bg-indigo-600 text-white flex items-center justify-center shadow-lg hover:scale-110 active:scale-95 transition-all"
                 >
-                    {isUploading ? <Loader2 className="h-5 w-5 animate-spin" /> : <Camera className="h-5 w-5" />}
+                    {isUploading ? <Loader2 className="h-5 w-5 animate-spin" /> : <CameraIcon className="h-5 w-5" />}
                 </button>
 
                 {isMenuOpen && (
@@ -152,7 +152,7 @@ export function CameraUpload({ onUpload, label = "Capturar", description, catego
                                 onClick={() => { cameraInputRef.current?.click(); setIsMenuOpen(false); }}
                                 className="flex flex-col items-center gap-1.5 py-3 rounded-xl bg-secondary/50 hover:bg-indigo-50 transition-all"
                             >
-                                <Camera className="h-4 w-4 text-zinc-400" />
+                                <CameraIcon className="h-4 w-4 text-zinc-400" />
                                 <span className="text-[8px] font-bold uppercase">Cámara</span>
                             </button>
                             <button
@@ -222,7 +222,7 @@ export function CameraUpload({ onUpload, label = "Capturar", description, catego
                             onClick={() => cameraInputRef.current?.click()}
                             className="flex flex-col items-center gap-1.5 py-3 px-2 rounded-xl bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 hover:border-indigo-400 hover:bg-indigo-50/50 dark:hover:bg-indigo-900/10 transition-all"
                         >
-                            <Camera className="h-5 w-5 text-zinc-400" />
+                            <CameraIcon className="h-5 w-5 text-zinc-400" />
                             <span className="text-[9px] font-bold text-zinc-500 uppercase tracking-wider">Cámara</span>
                         </button>
 

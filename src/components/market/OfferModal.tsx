@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Lock, AlertCircle, Info, Calculator, CheckCircle2, Shield, Clock, BadgeAlert } from "lucide-react";
+import { Lock, AlertCircle, Info, Calculator, CheckCircle2, Shield, Clock, BadgeAlert, Zap } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { SellerReliabilityBadge } from "../dashboard/SellerReliabilityBadge";
 import { BUSINESS_RULES } from "@/lib/fiscal-utils";
@@ -37,24 +37,25 @@ export function OfferModal({ id, carPrice, repairCost, carName, hasSeal }: Offer
                     onClick={() => setIsOpen(true)}
                     disabled={!hasSeal}
                     className={cn(
-                        "w-full h-16 rounded-[2rem] font-black text-lg transition-all flex items-center justify-center gap-3 shadow-2xl",
+                        "w-full h-16 rounded-2xl font-black text-base transition-all flex items-center justify-center gap-3 shadow-xl",
                         hasSeal
-                            ? "bg-gradient-to-r from-indigo-600 to-violet-600 text-white hover:scale-[1.02] active:scale-95 shadow-indigo-500/25 animate-pulse-subtle"
-                            : "bg-secondary text-muted-foreground cursor-not-allowed border border-border"
+                            ? "bg-amber-500 text-black hover:bg-amber-400 hover:scale-[1.02] active:scale-95 shadow-amber-500/20"
+                            : "bg-zinc-100 dark:bg-zinc-800/50 text-zinc-400 cursor-not-allowed border border-zinc-200 dark:border-zinc-700"
                     )}
                 >
                     {hasSeal ? (
                         <>
-                            <Lock className="h-6 w-6" />
-                            Realizar Oferta Segura
+                            <Zap className="h-5 w-5 fill-black" />
+                            NEGOCIAR PRECIO AHORA
                         </>
                     ) : (
                         <>
-                            <AlertCircle className="h-6 w-6" />
-                            Pendiente de Certificación
+                            <AlertCircle className="h-5 w-5" />
+                            CERTIFICACIÓN EN PROCESO
                         </>
                     )}
                 </button>
+
             </div>
 
             {isOpen && (

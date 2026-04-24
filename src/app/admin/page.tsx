@@ -14,6 +14,8 @@ import { approveInvestorApplicationAction, rejectInvestorApplicationAction, getI
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { createBrowserClient } from "@/lib/supabase/client";
+import { CarFormModal } from "@/components/admin/CarFormModal";
+
 
 type AdminView = 'CONTROL' | 'INVENTORY' | 'INVESTORS' | 'BILLING' | 'UPSELLS' | 'REFERRALS';
 
@@ -120,11 +122,10 @@ export default function AdminDashboard() {
     const [editingCar, setEditingCar] = useState<any>(null);
     const [cepLoading, setCepLoading] = useState<string | null>(null);
 
-    const handleUpdateCar = async (e: React.FormEvent) => {
-        e.preventDefault();
+    const handleUpdateCar = async (updatedData: any) => {
         setActionLoading(editingCar.id);
         try {
-            await updateCarAction(editingCar.id, editingCar);
+            await updateCarAction(editingCar.id, updatedData);
             toast.success("Vehículo actualizado correctamente");
             setEditingCar(null);
             await loadData();
@@ -134,6 +135,7 @@ export default function AdminDashboard() {
             setActionLoading(null);
         }
     };
+
 
     const handleDeleteCar = async (id: string) => {
         if (!confirm("¿Seguro que deseas eliminar este vehículo?")) return;
@@ -218,11 +220,10 @@ export default function AdminDashboard() {
         }
     };
 
-    const handleCreateCar = async (e: React.FormEvent) => {
-        e.preventDefault();
+    const handleCreateCar = async (carData: any) => {
         setActionLoading("CREATE");
         try {
-            await createCarAction(newCar);
+            await createCarAction(carData);
             toast.success("Vehículo publicado con éxito");
             setIsCreateModalOpen(false);
             await loadData();
@@ -232,6 +233,7 @@ export default function AdminDashboard() {
             setActionLoading(null);
         }
     };
+
 
     return (
         <div className="flex min-h-screen bg-zinc-950 text-white font-sans selection:bg-indigo-500/30">
@@ -497,107 +499,25 @@ export default function AdminDashboard() {
                             </button>
                         </div>
 
-                        {isCreateModalOpen && (
-                            <div className="fixed inset-0 bg-black/80 backdrop-blur-md z-50 flex items-center justify-center p-4">
-                                <div className="bg-zinc-900 border border-zinc-800 p-10 rounded-[3rem] w-full max-w-2xl animate-in zoom-in-95 duration-200 shadow-[0_0_100px_rgba(99,102,241,0.1)]">
-                                    <div className="flex justify-between items-center mb-8">
-                                        <h3 className="text-2xl font-black text-white uppercase italic tracking-tighter">Publicar Nueva Unidad</h3>
-                                        <button onClick={() => setIsCreateModalOpen(false)} className="h-10 w-10 bg-zinc-800 rounded-full flex items-center justify-center text-zinc-400 hover:text-white">
-                                            <Ban className="h-4 w-4" />
-                                        </button>
-                                    </div>
-                                    <form onSubmit={handleCreateCar} className="grid grid-cols-2 gap-6">
-                                        <div className="space-y-1">
-                                            <label className="text-[10px] font-black text-zinc-500 uppercase tracking-widest">Marca</label>
-                                            <input required value={newCar.make} placeholder="Ej. BMW" className="w-full h-14 bg-zinc-950 border border-zinc-800 rounded-2xl px-6 text-white outline-none focus:border-indigo-500 transition-all" onChange={e => setNewCar({...newCar, make: e.target.value})} />
-                                        </div>
-                                        <div className="space-y-1">
-                                            <label className="text-[10px] font-black text-zinc-500 uppercase tracking-widest">Modelo</label>
-                                            <input required value={newCar.model} placeholder="Ej. M3" className="w-full h-14 bg-zinc-950 border border-zinc-800 rounded-2xl px-6 text-white outline-none focus:border-indigo-500 transition-all" onChange={e => setNewCar({...newCar, model: e.target.value})} />
-                                        </div>
-                                        <div className="space-y-1">
-                                            <label className="text-[10px] font-black text-zinc-500 uppercase tracking-widest">Año</label>
-                                            <input required type="number" value={newCar.year} className="w-full h-14 bg-zinc-950 border border-zinc-800 rounded-2xl px-6 text-white outline-none focus:border-indigo-500 transition-all" onChange={e => setNewCar({...newCar, year: parseInt(e.target.value)})} />
-                                        </div>
-                                        <div className="space-y-1">
-                                            <label className="text-[10px] font-black text-zinc-500 uppercase tracking-widest">Precio (MXN)</label>
-                                            <input required type="number" value={newCar.price} className="w-full h-14 bg-zinc-950 border border-zinc-800 rounded-2xl px-6 text-white outline-none focus:border-indigo-500 transition-all" onChange={e => setNewCar({...newCar, price: parseFloat(e.target.value)})} />
-                                        </div>
-                                        <div className="space-y-1">
-                                            <label className="text-[10px] font-black text-zinc-500 uppercase tracking-widest">Kilometraje</label>
-                                            <input required type="number" value={newCar.mileage} className="w-full h-14 bg-zinc-950 border border-zinc-800 rounded-2xl px-6 text-white outline-none focus:border-indigo-500 transition-all" onChange={e => setNewCar({...newCar, mileage: parseInt(e.target.value)})} />
-                                        </div>
-                                        <div className="space-y-1">
-                                            <label className="text-[10px] font-black text-zinc-500 uppercase tracking-widest">Ubicación</label>
-                                            <input required value={newCar.location} className="w-full h-14 bg-zinc-950 border border-zinc-800 rounded-2xl px-6 text-white outline-none focus:border-indigo-500 transition-all" onChange={e => setNewCar({...newCar, location: e.target.value})} />
-                                        </div>
-                                        <div className="col-span-2 space-y-1">
-                                            <label className="text-[10px] font-black text-zinc-500 uppercase tracking-widest">Descripción / Notas</label>
-                                            <textarea className="w-full h-24 bg-zinc-950 border border-zinc-800 rounded-2xl p-6 text-white outline-none focus:border-indigo-500 transition-all resize-none" value={newCar.description} onChange={e => setNewCar({...newCar, description: e.target.value})} />
-                                        </div>
-                                        <div className="col-span-2 pt-6">
-                                            <button 
-                                                type="submit" 
-                                                disabled={actionLoading === "CREATE"}
-                                                className="w-full h-16 bg-indigo-600 text-white font-black rounded-2xl hover:bg-indigo-500 transition-all uppercase tracking-widest flex items-center justify-center gap-3 shadow-xl shadow-indigo-600/20"
-                                            >
-                                                {actionLoading === "CREATE" ? <Loader2 className="h-5 w-5 animate-spin" /> : "PUBLICAR UNIDAD"}
-                                            </button>
-                                        </div>
-                                    </form>
-                                </div>
-                            </div>
-                        ) || editingCar && (
-                            <div className="fixed inset-0 bg-black/80 backdrop-blur-md z-50 flex items-center justify-center p-4">
-                                <div className="bg-zinc-900 border border-zinc-800 p-10 rounded-[3rem] w-full max-w-2xl animate-in zoom-in-95 duration-200 shadow-[0_0_100px_rgba(99,102,241,0.1)]">
-                                    <div className="flex justify-between items-center mb-8">
-                                        <h3 className="text-2xl font-black text-white uppercase italic tracking-tighter">Editar Expediente de Unidad</h3>
-                                        <button onClick={() => setEditingCar(null)} className="h-10 w-10 bg-zinc-800 rounded-full flex items-center justify-center text-zinc-400 hover:text-white">
-                                            <Ban className="h-4 w-4" />
-                                        </button>
-                                    </div>
-                                    <form onSubmit={handleUpdateCar} className="grid grid-cols-2 gap-6">
-                                        <div className="space-y-1">
-                                            <label className="text-[10px] font-black text-zinc-500 uppercase tracking-widest">Marca</label>
-                                            <input required value={editingCar.make} className="w-full h-14 bg-zinc-950 border border-zinc-800 rounded-2xl px-6 text-white outline-none focus:border-indigo-500 transition-all" onChange={e => setEditingCar({...editingCar, make: e.target.value})} />
-                                        </div>
-                                        <div className="space-y-1">
-                                            <label className="text-[10px] font-black text-zinc-500 uppercase tracking-widest">Modelo</label>
-                                            <input required value={editingCar.model} className="w-full h-14 bg-zinc-950 border border-zinc-800 rounded-2xl px-6 text-white outline-none focus:border-indigo-500 transition-all" onChange={e => setEditingCar({...editingCar, model: e.target.value})} />
-                                        </div>
-                                        <div className="space-y-1">
-                                            <label className="text-[10px] font-black text-zinc-500 uppercase tracking-widest">Año</label>
-                                            <input required type="number" value={editingCar.year} className="w-full h-14 bg-zinc-950 border border-zinc-800 rounded-2xl px-6 text-white outline-none focus:border-indigo-500 transition-all" onChange={e => setEditingCar({...editingCar, year: parseInt(e.target.value)})} />
-                                        </div>
-                                        <div className="space-y-1">
-                                            <label className="text-[10px] font-black text-zinc-500 uppercase tracking-widest">Precio (MXN)</label>
-                                            <input required type="number" value={editingCar.price} className="w-full h-14 bg-zinc-950 border border-zinc-800 rounded-2xl px-6 text-white outline-none focus:border-indigo-500 transition-all" onChange={e => setEditingCar({...editingCar, price: parseFloat(e.target.value)})} />
-                                        </div>
-                                        <div className="col-span-2 space-y-1">
-                                            <label className="text-[10px] font-black text-zinc-500 uppercase tracking-widest">Estatus de Unidad</label>
-                                            <select 
-                                                value={editingCar.status}
-                                                className="w-full h-14 bg-zinc-950 border border-zinc-800 rounded-2xl px-6 text-white outline-none focus:border-indigo-500 transition-all"
-                                                onChange={e => setEditingCar({...editingCar, status: e.target.value})}
-                                            >
-                                                <option value="published">PUBLICADO / ACTIVO</option>
-                                                <option value="draft">BORRADOR / REVISIÓN</option>
-                                                <option value="archived">ARCHIVADO / FUERA DE STOCK</option>
-                                            </select>
-                                        </div>
-                                        <div className="col-span-2 pt-6">
-                                            <button 
-                                                type="submit" 
-                                                disabled={actionLoading === editingCar.id}
-                                                className="w-full h-16 bg-white text-black font-black rounded-2xl hover:bg-zinc-200 transition-all uppercase tracking-widest flex items-center justify-center gap-3"
-                                            >
-                                                {actionLoading === editingCar.id ? <Loader2 className="h-5 w-5 animate-spin" /> : "GUARDAR CAMBIOS"}
-                                            </button>
-                                        </div>
-                                    </form>
-                                </div>
-                            </div>
+                        <CarFormModal 
+                            isOpen={isCreateModalOpen}
+                            onClose={() => setIsCreateModalOpen(false)}
+                            onSubmit={handleCreateCar}
+                            isLoading={actionLoading === "CREATE"}
+                            mode="create"
+                        />
+
+                        {editingCar && (
+                            <CarFormModal 
+                                isOpen={!!editingCar}
+                                onClose={() => setEditingCar(null)}
+                                onSubmit={handleUpdateCar}
+                                initialData={editingCar}
+                                isLoading={actionLoading === editingCar.id}
+                                mode="edit"
+                            />
                         )}
+
 
                         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
                             {inventory.map(car => (
