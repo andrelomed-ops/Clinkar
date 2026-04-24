@@ -21,6 +21,8 @@ export const CarSchema = z.object({
     transmission: z.string().optional().nullable(),
     sensory_data: z.any().optional().nullable(),
     market_data: z.any().optional().nullable(),
+    technical_specs: z.any().optional().nullable(),
+    category: z.string().optional().nullable(),
     digital_passport_data: z.any().optional().nullable(),
     created_at: z.string().optional().nullable(),
 });
