@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import { Ban, Loader2, Upload, X, Check, Save, Zap, Settings, ShieldCheck, Camera as CameraIcon, Layers } from "lucide-react";
+import { Ban, Loader2, Upload, X, Check, Save, Zap, Settings, ShieldCheck, Camera as CameraIcon, Layers, ChevronDown, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
@@ -34,44 +34,16 @@ export function CarFormModal({ isOpen, onClose, onSubmit, initialData, isLoading
         category: initialData?.category || "Car",
         images: initialData?.images || [],
         technical_specs: initialData?.market_data?.technical_specs || {
-            performance: {
-                engine: "",
-                horsepower: "",
-                fuelType: "Gasoline",
-                transmission: "Automatic",
-                driveTrain: "FWD",
-                cylinders: 4,
-                consumption: ""
-            },
-            architecture: {
-                bodyType: "SUV",
-                doors: 5,
-                passengers: 5,
-                dimensions: "",
-                tankCapacity: "",
-                rims: ""
-            },
-            features: {
-                ac: true,
-                sunroof: false,
-                leatherSeats: false,
-                touchScreen: true,
-                carPlay: true,
-                androidAuto: true,
-                bluetooth: true,
-                startStopButton: true
-            },
-            security: {
-                airbags: 6,
-                abs: true,
-                discBrakes: 4,
-                reverseCamera: true,
-                parkingSensors: true
-            }
+            performance: { engine: "", horsepower: "", fuelType: "Gasoline", transmission: "Automatic", driveTrain: "FWD", cylinders: 4, consumption: "" },
+            architecture: { bodyType: "SUV", doors: 5, passengers: 5, dimensions: "", tankCapacity: "", rims: "" },
+            features: { ac: true, sunroof: false, leatherSeats: false, touchScreen: true, carPlay: true, androidAuto: true, bluetooth: true, startStopButton: true },
+            security: { airbags: 6, abs: true, discBrakes: 4, reverseCamera: true, parkingSensors: true }
         }
     });
 
     const [magicLoading, setMagicLoading] = useState(false);
+    const [showBrandSuggestions, setShowBrandSuggestions] = useState(false);
+    const [showModelSuggestions, setShowModelSuggestions] = useState(false);
 
     const handleMagicFill = async () => {
         if (!formData.make || !formData.model) {
@@ -92,8 +64,8 @@ export function CarFormModal({ isOpen, onClose, onSubmit, initialData, isLoading
                     icon: <Zap className="h-4 w-4 text-amber-500" />
                 });
             } else {
-                toast.error("Modelo no encontrado", {
-                    description: "No tenemos datos técnicos para esta unidad específica."
+                toast.error("Datos no encontrados", {
+                    description: "No tenemos especificaciones exactas para este modelo."
                 });
             }
         } catch (err) {
@@ -170,17 +142,73 @@ export function CarFormModal({ isOpen, onClose, onSubmit, initialData, isLoading
                     {activeTab === "general" && (
                         <div className="grid grid-cols-2 gap-6 animate-in fade-in slide-in-from-bottom-4 duration-300">
                             <FormGroup label="Marca">
-                                <input required list="brands-list" value={formData.make} placeholder="Ej. BMW" className="form-input" onChange={e => setFormData({...formData, make: e.target.value})} />
-                                <datalist id="brands-list">
-                                    {POPULAR_BRANDS.map(b => <option key={b} value={b} />)}
-                                </datalist>
+                                <div className="relative">
+                                    <input 
+                                        required 
+                                        value={formData.make} 
+                                        placeholder="Ej. BMW" 
+                                        className="form-input pr-10" 
+                                        onFocus={() => setShowBrandSuggestions(true)}
+                                        onBlur={() => setTimeout(() => setShowBrandSuggestions(false), 200)}
+                                        onChange={e => setFormData({...formData, make: e.target.value})} 
+                                    />
+                                    <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-600" />
+                                    
+                                    {showBrandSuggestions && (
+                                        <div className="absolute top-full left-0 right-0 mt-2 bg-zinc-900 border border-zinc-800 rounded-2xl shadow-2xl z-50 max-h-60 overflow-y-auto custom-scrollbar animate-in fade-in slide-in-from-top-2 duration-200">
+                                            {POPULAR_BRANDS.filter(b => b.toLowerCase().includes(formData.make.toLowerCase())).map(b => (
+                                                <button
+                                                    key={b}
+                                                    type="button"
+                                                    className="w-full px-6 py-4 text-left text-sm hover:bg-zinc-800 transition-colors border-b border-zinc-800/50 last:border-none flex items-center justify-between group"
+                                                    onClick={() => {
+                                                        setFormData({...formData, make: b});
+                                                        setShowBrandSuggestions(false);
+                                                    }}
+                                                >
+                                                    <span className="font-bold">{b}</span>
+                                                    <Search className="h-3 w-3 text-zinc-700 group-hover:text-indigo-500 transition-colors" />
+                                                </button>
+                                            ))}
+                                        </div>
+                                    )}
+                                </div>
                             </FormGroup>
                             <FormGroup label="Modelo">
                                 <div className="relative group">
-                                    <input required list="models-list" value={formData.model} placeholder="Ej. M3" className="form-input" onChange={e => setFormData({...formData, model: e.target.value})} />
-                                    <datalist id="models-list">
-                                        {(MODEL_SUGGESTIONS[formData.make] || []).map(m => <option key={m} value={m} />)}
-                                    </datalist>
+                                    <input 
+                                        required 
+                                        value={formData.model} 
+                                        placeholder="Ej. M3" 
+                                        className="form-input pr-32" 
+                                        onFocus={() => setShowModelSuggestions(true)}
+                                        onBlur={() => setTimeout(() => setShowModelSuggestions(false), 200)}
+                                        onChange={e => setFormData({...formData, model: e.target.value})} 
+                                    />
+                                    
+                                    {showModelSuggestions && formData.make && (
+                                        <div className="absolute top-full left-0 right-0 mt-2 bg-zinc-900 border border-zinc-800 rounded-2xl shadow-2xl z-50 max-h-60 overflow-y-auto custom-scrollbar animate-in fade-in slide-in-from-top-2 duration-200">
+                                            {(MODEL_SUGGESTIONS[formData.make] || []).filter(m => m.toLowerCase().includes(formData.model.toLowerCase())).map(m => (
+                                                <button
+                                                    key={m}
+                                                    type="button"
+                                                    className="w-full px-6 py-4 text-left text-sm hover:bg-zinc-800 transition-colors border-b border-zinc-800/50 last:border-none flex items-center justify-between group"
+                                                    onClick={() => {
+                                                        setFormData({...formData, model: m});
+                                                        setShowModelSuggestions(false);
+                                                    }}
+                                                >
+                                                    <span className="font-bold">{m}</span>
+                                                    <Zap className="h-3 w-3 text-zinc-700 group-hover:text-amber-500 transition-colors" />
+                                                </button>
+                                            ))}
+                                            {(!MODEL_SUGGESTIONS[formData.make] || MODEL_SUGGESTIONS[formData.make].length === 0) && (
+                                                <div className="px-6 py-4 text-[10px] font-black uppercase text-zinc-600 tracking-widest text-center italic">
+                                                    Ingresa modelo manualmente
+                                                </div>
+                                            )}
+                                        </div>
+                                    )}
                                     
                                     {formData.make && formData.model && (
                                         <button 

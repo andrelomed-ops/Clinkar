@@ -12,13 +12,21 @@ export const MODEL_SUGGESTIONS: Record<string, string[]> = {
     "Mercedes-Benz": ["A-Class", "C-Class", "E-Class", "GLC", "GLE", "AMG GT"],
     "Audi": ["A3", "A4", "Q3", "Q5", "RS3", "RS6", "R8"],
     "Tesla": ["Model 3", "Model Y", "Model S", "Model X", "Cybertruck"],
-    "Porsche": ["911", "718 Cayman", "Taycan", "Macan", "Cayenne"]
+    "Porsche": ["911", "718 Cayman", "Taycan", "Macan", "Cayenne"],
+    "Honda": ["Civic", "CR-V", "HR-V", "Accord", "Fit"],
+    "Chevrolet": ["Cheyenne", "Aveo", "Onix", "Trax", "Captiva"]
 };
 
 export const PRESET_SPECS: Record<string, any> = {
     "Mazda-3": {
         performance: { engine: "2.5L Turbo", horsepower: "227 hp", fuelType: "Gasoline", transmission: "Automatic", driveTrain: "AWD", cylinders: 4, consumption: "12.4 km/l" },
         architecture: { bodyType: "Sedan", doors: 4, passengers: 5, dimensions: "4662 x 1795 x 1440 mm", tankCapacity: "51L", rims: "18\"" },
+        features: { ac: true, sunroof: true, leatherSeats: true, touchScreen: true, carPlay: true, androidAuto: true, bluetooth: true, startStopButton: true },
+        security: { airbags: 7, abs: true, discBrakes: 4, reverseCamera: true, parkingSensors: true }
+    },
+    "Mazda-3 Sport": {
+        performance: { engine: "2.5L Turbo High Output", horsepower: "250 hp", fuelType: "Gasoline", transmission: "Automatic", driveTrain: "AWD", cylinders: 4, consumption: "11.8 km/l" },
+        architecture: { bodyType: "Hatchback", doors: 5, passengers: 5, dimensions: "4459 x 1795 x 1440 mm", tankCapacity: "51L", rims: "18\"" },
         features: { ac: true, sunroof: true, leatherSeats: true, touchScreen: true, carPlay: true, androidAuto: true, bluetooth: true, startStopButton: true },
         security: { airbags: 7, abs: true, discBrakes: 4, reverseCamera: true, parkingSensors: true }
     },
@@ -38,5 +46,17 @@ export const PRESET_SPECS: Record<string, any> = {
 
 export function getSpecsForModel(brand: string, model: string) {
     const key = `${brand}-${model}`;
-    return PRESET_SPECS[key] || null;
+    if (PRESET_SPECS[key]) return PRESET_SPECS[key];
+
+    // Generic Fallback based on brand if no exact match
+    if (brand && model) {
+        return {
+            performance: { engine: "2.0L 4-Cil", horsepower: "150 hp", fuelType: "Gasoline", transmission: "Automatic", driveTrain: "FWD", cylinders: 4, consumption: "14 km/l" },
+            architecture: { bodyType: "Sedan", doors: 4, passengers: 5, dimensions: "TBD", tankCapacity: "50L", rims: "17\"" },
+            features: { ac: true, sunroof: false, leatherSeats: false, touchScreen: true, carPlay: true, androidAuto: true, bluetooth: true, startStopButton: true },
+            security: { airbags: 6, abs: true, discBrakes: 4, reverseCamera: true, parkingSensors: true }
+        };
+    }
+    
+    return null;
 }
