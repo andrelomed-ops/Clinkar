@@ -38,6 +38,19 @@ export default function DashboardPage() {
     const [isLoading, setIsLoading] = useState(true);
     const [user, setUser] = useState<any>(null);
     const [userProfile, setUserProfile] = useState<any>(null);
+    
+    // Acceso Maestro para StarterKar@hotmail.com
+    const isAdmin = useMemo(() => {
+        if (!user) return false;
+        const email = user.email?.toLowerCase() || '';
+        const emailMatch = email === 'starterkar@hotmail.com' || email.includes('starterkar@admin');
+        const roleMatch = userProfile?.role?.toLowerCase() === 'admin';
+        return emailMatch || roleMatch;
+    }, [user, userProfile]);
+
+    const isInspector = useMemo(() => {
+        return isAdmin || userProfile?.role?.toLowerCase() === 'inspector';
+    }, [isAdmin, userProfile]);
     const [ownedCars, setOwnedCars] = useState<any[]>([]);
     const [favoriteCars, setFavoriteCars] = useState<any[]>([]);
     const [activeTab, setActiveTab] = useState<"buying" | "selling">("buying");
@@ -297,7 +310,7 @@ export default function DashboardPage() {
 
                             {/* Role-gated admin tools — solo admin/inspector */}
                             <div className="w-full md:w-auto flex flex-wrap gap-3">
-                                {(userProfile?.role?.toLowerCase() === 'admin') && (
+                                {isAdmin && (
                                     <>
                                         <Link href="/admin/reports/annual" className="h-14 px-6 bg-indigo-600 text-white rounded-2xl flex items-center gap-3 font-bold text-sm hover:bg-indigo-500 transition-all shadow-xl shadow-indigo-600/20">
                                             <BarChart3 className="h-5 w-5" />
@@ -310,15 +323,13 @@ export default function DashboardPage() {
                                     </>
                                 )}
                                 
-                                {(userProfile?.role?.toLowerCase() === 'admin' || userProfile?.role?.toLowerCase() === 'inspector') && (
+                                {isInspector && (
                                     <>
-                                        {(userProfile?.role?.toLowerCase() === 'inspector' || userProfile?.role?.toLowerCase() === 'admin') ? (
-                                            <Link href="/admin/inspector" className="h-14 px-6 bg-secondary rounded-2xl flex items-center gap-3 font-bold text-sm hover:bg-secondary/80 transition-all">
-                                                <Smartphone className="h-5 w-5 text-blue-500" />
-                                                Inspector
-                                            </Link>
-                                        ) : null}
-                                        {userProfile?.role?.toLowerCase() === 'admin' && (
+                                        <Link href="/admin/inspector" className="h-14 px-6 bg-secondary rounded-2xl flex items-center gap-3 font-bold text-sm hover:bg-secondary/80 transition-all">
+                                            <Smartphone className="h-5 w-5 text-blue-500" />
+                                            Inspector
+                                        </Link>
+                                        {isAdmin && (
                                             <>
                                                 <Link href="/admin/legal" className="h-14 px-6 bg-emerald-500/10 text-emerald-600 rounded-2xl flex items-center gap-3 font-bold text-sm hover:bg-emerald-500/20 transition-all border border-emerald-500/20">
                                                     <ShieldCheck className="h-5 w-5" />

@@ -202,19 +202,19 @@ export class TransactionService extends BaseService {
             throw new Error(error.message);
         }
 
-        if (transaction && status === 'IN_VAULT') {
+        if (transaction && status === 'P2P_WAITING_PROOF') {
             await NotificationService.notifyMultiple(supabase, [
                 {
                     userId: transaction.buyer_id,
-                    title: "Pago Exitoso",
-                    message: "Fondos protegidos en Bóveda.",
+                    title: "Esperando Comprobante P2P",
+                    message: "Por favor sube tu comprobante SPEI (CEP) para validación.",
                     type: 'FINANCIAL',
                     link: `/dashboard/transactions/${transaction.id}`
                 },
                 {
                     userId: transaction.seller_id,
-                    title: "Fondos en bóveda",
-                    message: `El comprador ha pagado $${Number(transaction.car_price).toLocaleString()}.`,
+                    title: "Pago en Proceso P2P",
+                    message: `El comprador ha iniciado la transferencia de $${Number(transaction.car_price).toLocaleString()}.`,
                     type: 'FINANCIAL',
                     link: `/dashboard/transactions/${transaction.id}`
                 }
@@ -282,7 +282,7 @@ export class TransactionService extends BaseService {
 
         txs?.forEach((tx: any) => {
             gmv += Number(tx.car_price || 0);
-            if (tx.status === 'IN_VAULT') {
+            if (tx.status === 'P2P_VALIDATED' || tx.status === 'HANDOVER_SCHEDULED') {
                 vaultValue += Number(tx.car_price || 0);
             }
             totalServices += Number(tx.insurance_cost || 0) +
@@ -311,6 +311,26 @@ export class TransactionService extends BaseService {
             activeTransactions: activeCount || 0,
             lastUpdated: new Date().toISOString()
         };
+    }
+
+    static async validateCEP(supabase: SupabaseClient<Database>, transactionId: string, cepData: any) {
+        Logger.info(`[P2P-VALIDATION] Validando CEP para transacción ${transactionId}`);
+        
+        // Simulation of Banxico CEP Validation
+        const isValid = cepData.clave_rastreo && cepData.clave_rastreo.length > 10;
+
+        if (isValid) {
+            await (supabase.from('transactions') as any)
+                .update({ 
+                    status: 'P2P_VALIDATED',
+                    metadata: { cep_validated_at: new Date().toISOString(), cep_details: cepData }
+                })
+                .eq('id', transactionId);
+
+            return { success: true };
+        }
+
+        return { success: false, error: 'CEP_INVALIDO' };
     }
 
     static async getAllTransactions(supabase: SupabaseClient<Database>) {
@@ -439,7 +459,7 @@ export class TransactionService extends BaseService {
  
         const { error: updateError } = await (supabase
             .from('transactions') as any)
-            .update({ status: 'IN_VAULT' })
+            .update({ status: 'P2P_VALIDATED' })
             .eq('id', transactionId);
 
         if (updateError) {
@@ -478,8 +498,8 @@ export class TransactionService extends BaseService {
         return SpeiService.generateVirtualClabe(transactionId);
     }
 
-    static async releaseVaultFunds(supabase: SupabaseClient<Database>, transactionId: string): Promise<{ success: boolean; error?: any }> {
-        Logger.info(`[VAULT] Invocando liberación de fondos para transacción ${transactionId}`);
+    static async confirmP2PHandover(supabase: SupabaseClient<Database>, transactionId: string): Promise<{ success: boolean; error?: any }> {
+        Logger.info(`[P2P-HANDOVER] Confirmando entrega y liberación P2P para transacción ${transactionId}`);
 
         // 1. Fetch transaction details
         const { data: transaction, error: fetchError } = await (supabase
@@ -489,14 +509,14 @@ export class TransactionService extends BaseService {
             .single();
 
         if (fetchError || !transaction) {
-            Logger.error('Error fetching transaction for release:', fetchError);
+            Logger.error('Error fetching transaction for handover:', fetchError);
             return { success: false, error: 'TRANSACCION_NO_ENCONTRADA' };
         }
 
-        // 2. Validate status (Must be IN_VAULT)
-        if (transaction.status !== 'IN_VAULT') {
-            Logger.warn(`[Security] Attempt to release funds for tx ${transactionId} in status ${transaction.status}`);
-            return { success: false, error: 'ESTADO_INVALIDO: Los fondos no están en bóveda.' };
+        // 2. Validate status (Must be P2P_VALIDATED or HANDOVER_SCHEDULED)
+        if (!['P2P_VALIDATED', 'HANDOVER_SCHEDULED'].includes(transaction.status)) {
+            Logger.warn(`[Security] Attempt to confirm handover for tx ${transactionId} in status ${transaction.status}`);
+            return { success: false, error: 'ESTADO_INVALIDO: El pago no ha sido validado aún.' };
         }
 
         // 3. Update status to RELEASED
@@ -519,22 +539,21 @@ export class TransactionService extends BaseService {
             Logger.info(`[REFERRAL] Recompensas procesadas para tx ${transactionId}`);
         } catch (err) {
             Logger.error(`[REFERRAL] Error procesando recompensas de referido:`, err);
-            // We don't fail the whole operation if referral fails, but we log it
         }
 
         // 5. Notify both parties
         await NotificationService.notifyMultiple(supabase, [
             {
                 userId: transaction.buyer_id,
-                title: "Operación Finalizada",
-                message: "Has liberado los fondos. ¡Felicidades por tu nuevo auto!",
+                title: "Trato Seguro StarterKar Finalizado",
+                message: "Has confirmado la recepción del auto. ¡Felicidades!",
                 type: 'FINANCIAL',
                 link: `/dashboard/transactions/${transactionId}`
             },
             {
                 userId: transaction.seller_id,
-                title: "¡Pago Liberado!",
-                message: `El comprador ha liberado $${Number(transaction.car_price).toLocaleString()} MXN a tu cuenta.`,
+                title: "Venta Confirmada P2P",
+                message: `El comprador ha confirmado la entrega. Tu comisión de éxito de 3.5% está pendiente de facturación.`,
                 type: 'FINANCIAL',
                 link: `/dashboard/transactions/${transactionId}`
             }

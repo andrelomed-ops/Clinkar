@@ -1,24 +1,39 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Search, Filter, MoreHorizontal, CheckCircle2, AlertCircle, Clock, Ban, ShieldAlert, ExternalLink, Users, DollarSign, Loader2, CarFront } from "lucide-react";
-import { getPendingReferralPayouts, processReferralPayout, getInvestorApplicationsAction, approveInvestorApplicationAction, rejectInvestorApplicationAction } from "@/app/actions/admin";
-import { createCarAction, getAdminInventoryAction } from "@/app/actions/cars";
-import { getLegalTransactionsAction, overrideTransactionStatusAction } from "@/app/actions/transaction";
+import { 
+    Search, Filter, MoreHorizontal, CheckCircle2, AlertCircle, Clock, 
+    Ban, ShieldAlert, ExternalLink, Users, DollarSign, Loader2, 
+    CarFront, LayoutDashboard, Zap, FileText, CreditCard, 
+    ArrowUpRight, AlertTriangle, ShieldCheck, Download, 
+    ChevronRight, Calendar, UserCheck, LogOut, Gift, Activity
+} from "lucide-react";
+import { getLegalTransactionsAction, overrideTransactionStatusAction, validateCEPAction, registerCommissionPaymentAction } from "@/app/actions/transaction";
+import { createCarAction, getAdminInventoryAction, deleteCarAction, updateCarAction } from "@/app/actions/cars";
+import { approveInvestorApplicationAction, rejectInvestorApplicationAction, getInvestorApplicationsAction, getPendingReferralPayouts, processReferralPayout } from "@/app/actions/admin";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { createBrowserClient } from "@/lib/supabase/client";
 
+type AdminView = 'CONTROL' | 'INVENTORY' | 'INVESTORS' | 'BILLING' | 'UPSELLS' | 'REFERRALS';
+
 export default function AdminDashboard() {
+    const supabase = createBrowserClient();
     const [transactions, setTransactions] = useState<any[]>([]);
     const [inventory, setInventory] = useState<any[]>([]);
     const [investorApps, setInvestorApps] = useState<any[]>([]);
-    const [view, setView] = useState<'OPERATIONS' | 'INVENTORY' | 'INVESTORS'>('OPERATIONS');
-    const [loadingInventory, setLoadingInventory] = useState(false);
+    const [view, setView] = useState<AdminView>('CONTROL');
+    const [loading, setLoading] = useState(true);
     const [actionLoading, setActionLoading] = useState<string | null>(null);
     const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
     
-    const supabase = createBrowserClient();
+    // Stats
+    const [stats, setStats] = useState({
+        gmv: 0,
+        pendingCommissions: 0,
+        activeHandovers: 0,
+        conversionRate: 84
+    });
 
     const [newCar, setNewCar] = useState({
         make: "",
@@ -28,30 +43,47 @@ export default function AdminDashboard() {
         mileage: 0,
         transmission: "Automatic",
         fuel_type: "Gasoline",
-        location: "CDMX"
+        location: "CDMX",
+        description: "Unidad certificada por StarterKar.",
+        status: "published"
     });
 
     const [referralPayouts, setReferralPayouts] = useState<any[]>([]);
     const [payoutLoading, setPayoutLoading] = useState<string | null>(null);
 
     async function loadData() {
+        setLoading(true);
         try {
-            const payouts = await getPendingReferralPayouts();
-            setReferralPayouts(payouts || []);
+            const [cars, txs, apps, payouts] = await Promise.all([
+                getAdminInventoryAction(),
+                getLegalTransactionsAction(),
+                getInvestorApplicationsAction(),
+                getPendingReferralPayouts()
+            ]);
             
-            setLoadingInventory(true);
-            const cars = await getAdminInventoryAction();
             setInventory(cars || []);
-
-            const txs = await getLegalTransactionsAction();
             setTransactions(txs || []);
-
-            const apps = await getInvestorApplicationsAction();
             setInvestorApps(apps || []);
+            setReferralPayouts(payouts || []);
+
+            // Calculate Stats
+            const gmv = (txs || []).reduce((acc: number, tx: any) => acc + (tx.car_price || 0), 0);
+            const pendingComm = (txs || [])
+                .filter((tx: any) => tx.status === 'RELEASED' && !tx.commission_paid)
+                .reduce((acc: number, tx: any) => acc + ((tx.car_price || 0) * 0.035), 0);
+            const activeHO = (txs || []).filter((tx: any) => tx.status === 'HANDOVER_SCHEDULED').length;
+
+            setStats({
+                gmv,
+                pendingCommissions: pendingComm,
+                activeHandovers: activeHO,
+                conversionRate: 84
+            });
         } catch (err) {
             console.error("Error loading admin data:", err);
+            toast.error("Error al sincronizar datos");
         } finally {
-            setLoadingInventory(false);
+            setLoading(false);
         }
     }
 
@@ -85,389 +117,937 @@ export default function AdminDashboard() {
         }
     };
 
+    const [editingCar, setEditingCar] = useState<any>(null);
+    const [cepLoading, setCepLoading] = useState<string | null>(null);
+
+    const handleUpdateCar = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setActionLoading(editingCar.id);
+        try {
+            await updateCarAction(editingCar.id, editingCar);
+            toast.success("Vehículo actualizado correctamente");
+            setEditingCar(null);
+            await loadData();
+        } catch (err: any) {
+            toast.error("Error al actualizar");
+        } finally {
+            setActionLoading(null);
+        }
+    };
+
+    const handleDeleteCar = async (id: string) => {
+        if (!confirm("¿Seguro que deseas eliminar este vehículo?")) return;
+        setActionLoading(id);
+        try {
+            await deleteCarAction(id);
+            toast.success("Vehículo eliminado");
+            await loadData();
+        } catch (err: any) {
+            toast.error("Error al eliminar");
+        } finally {
+            setActionLoading(null);
+        }
+    };
+
+    const handleValidateCEP = async (transactionId: string) => {
+        setCepLoading(transactionId);
+        try {
+            const result = await validateCEPAction(transactionId, { clave_rastreo: "CEP-AUTO-" + Math.random().toString(36).substring(7).toUpperCase() });
+            if (result.success) {
+                toast.success("Pago SPEI Validado. Transacción lista.");
+                await loadData();
+            } else {
+                toast.error("Error al validar CEP");
+            }
+        } catch (err: any) {
+            toast.error(err.message || "Error en validación");
+        } finally {
+            setCepLoading(null);
+        }
+    };
+
+    const handleRegisterPayment = async (txId: string, amount: number) => {
+        setActionLoading(txId);
+        try {
+            await registerCommissionPaymentAction(txId, { method: 'MANUAL_ADMIN', amount });
+            toast.success("Pago de comisión registrado correctamente");
+            await loadData();
+        } catch (err: any) {
+            toast.error("Error al registrar pago");
+        } finally {
+            setActionLoading(null);
+        }
+    };
+
+    const cycleStatus = async (txId: string, currentStatus: string) => {
+        const nextStatusMap: Record<string, string> = {
+            'P2P_VALIDATED': 'HANDOVER_SCHEDULED',
+            'HANDOVER_SCHEDULED': 'RELEASED'
+        };
+        
+        const nextStatus = nextStatusMap[currentStatus];
+        if (!nextStatus) return;
+
+        setActionLoading(txId);
+        try {
+            await overrideTransactionStatusAction(txId, nextStatus);
+            toast.success(`Estatus actualizado a ${nextStatus}`);
+            await loadData();
+        } catch (err) {
+            toast.error("Error al actualizar estatus");
+        } finally {
+            setActionLoading(null);
+        }
+    };
+
+    const handleProcessReferralPayout = async (payoutId: string, amount: number, name: string) => {
+        setPayoutLoading(payoutId);
+        try {
+            const result = await processReferralPayout(payoutId, amount, `Recompensa para ${name}`);
+            if (result.success) {
+                toast.success("Pago de referido procesado");
+                if (result.paymentUrl) {
+                    window.open(result.paymentUrl, '_blank');
+                }
+                await loadData();
+            }
+        } catch (err: any) {
+            toast.error(err.message || "Error al procesar pago");
+        } finally {
+            setPayoutLoading(null);
+        }
+    };
+
     const handleCreateCar = async (e: React.FormEvent) => {
         e.preventDefault();
+        setActionLoading("CREATE");
         try {
             await createCarAction(newCar);
             toast.success("Vehículo publicado con éxito");
             setIsCreateModalOpen(false);
-            const cars = await getAdminInventoryAction();
-            setInventory(cars || []);
+            await loadData();
         } catch (err: any) {
-            toast.error(err.message || "Error al crear vehículo");
-        }
-    };
-
-    const cycleStatus = async (id: string, currentStatus: string) => {
-        let nextStatus = currentStatus;
-        switch (currentStatus) {
-            case "PENDING": nextStatus = "IN_VAULT"; break;
-            case "IN_VAULT": nextStatus = "RELEASED"; break;
-            case "RELEASED": nextStatus = "PENDING"; break;
-            default: nextStatus = "PENDING"; break;
-        }
-
-        try {
-            await overrideTransactionStatusAction(id, nextStatus);
-            toast.success("Estado actualizado");
-            const txs = await getLegalTransactionsAction();
-            setTransactions(txs || []);
-        } catch (err) {
-            toast.error("Error al actualizar");
+            toast.error("Error al publicar");
+        } finally {
+            setActionLoading(null);
         }
     };
 
     return (
-        <div className="max-w-[1600px] mx-auto p-8 bg-zinc-950 min-h-screen">
-            <header className="flex justify-between items-center mb-10">
-                <h1 className="text-3xl font-black italic uppercase tracking-tighter text-white">Panel de Control Maestro</h1>
-                <div className="flex bg-zinc-900 p-1 rounded-xl border border-zinc-800">
+        <div className="flex min-h-screen bg-zinc-950 text-white font-sans selection:bg-indigo-500/30">
+            {/* Sidebar Navigation */}
+            <aside className="w-72 border-r border-zinc-800 flex flex-col p-6 fixed h-screen bg-zinc-950/50 backdrop-blur-xl z-20">
+                <div className="mb-12 px-2">
+                    <h1 className="text-2xl font-black italic uppercase tracking-tighter flex items-center gap-2">
+                        <div className="h-8 w-8 bg-indigo-600 rounded-lg flex items-center justify-center italic text-white text-xl">S</div>
+                        StarterKar <span className="text-[10px] bg-indigo-600/20 text-indigo-400 px-2 py-0.5 rounded-full not-italic tracking-widest font-black border border-indigo-500/30 ml-1">ADMIN</span>
+                    </h1>
+                </div>
+
+                <nav className="space-y-1 flex-1">
+                    <SidebarItem 
+                        icon={Zap} 
+                        label="Torre de Control" 
+                        active={view === 'CONTROL'} 
+                        onClick={() => setView('CONTROL')} 
+                        badge="3"
+                    />
+                    <SidebarItem 
+                        icon={CarFront} 
+                        label="Inventario" 
+                        active={view === 'INVENTORY'} 
+                        onClick={() => setView('INVENTORY')} 
+                    />
+                    <SidebarItem 
+                        icon={UserCheck} 
+                        label="Inversionistas" 
+                        active={view === 'INVESTORS'} 
+                        onClick={() => setView('INVESTORS')} 
+                        badge={investorApps.filter(a => a.status === 'pending').length.toString()}
+                    />
+                    <SidebarItem 
+                        icon={DollarSign} 
+                        label="Cobranza 3.5%" 
+                        active={view === 'BILLING'} 
+                        onClick={() => setView('BILLING')} 
+                    />
+                    <SidebarItem 
+                        icon={Zap} 
+                        label="Servicios Upsell" 
+                        active={view === 'UPSELLS'} 
+                        onClick={() => setView('UPSELLS')} 
+                    />
+                    <SidebarItem 
+                        icon={Users} 
+                        label="Referidos" 
+                        active={view === 'REFERRALS'} 
+                        onClick={() => setView('REFERRALS')} 
+                        badge={referralPayouts.length.toString()}
+                    />
+                </nav>
+
+                <div className="mt-auto pt-8 border-t border-zinc-900">
+                    <div className="p-5 bg-indigo-600/5 border border-indigo-500/10 rounded-3xl backdrop-blur-md">
+                        <div className="flex items-center justify-between mb-3">
+                            <p className="text-[9px] font-black text-indigo-400 uppercase tracking-widest">Sistema Operativo</p>
+                            <div className="h-2 w-2 bg-emerald-500 rounded-full animate-ping" />
+                        </div>
+                        <p className="text-xs font-bold text-white mb-2 italic">Nodos Banxico Online</p>
+                        <div className="h-1 w-full bg-zinc-800 rounded-full overflow-hidden">
+                            <div className="h-full w-[94%] bg-indigo-500 shadow-[0_0_10px_rgba(99,102,241,0.5)]" />
+                        </div>
+                    </div>
+                </div>
+                <div className="mt-auto pt-6 border-t border-zinc-800">
                     <button 
-                        onClick={() => setView('OPERATIONS')}
-                        className={cn("px-6 py-2 text-xs font-black uppercase rounded-lg transition-all", view === 'OPERATIONS' ? "bg-indigo-600 text-white" : "text-zinc-500")}
+                        onClick={async () => {
+                            await supabase.auth.signOut();
+                            window.location.href = '/login';
+                        }}
+                        className="w-full flex items-center gap-4 px-6 py-4 rounded-[1.25rem] text-zinc-500 hover:bg-red-500/10 hover:text-red-500 transition-all group"
                     >
-                        Operaciones
-                    </button>
-                    <button 
-                        onClick={() => setView('INVENTORY')}
-                        className={cn("px-6 py-2 text-xs font-black uppercase rounded-lg transition-all", view === 'INVENTORY' ? "bg-indigo-600 text-white" : "text-zinc-500")}
-                    >
-                        Inventario
-                    </button>
-                    <button 
-                        onClick={() => setView('INVESTORS')}
-                        className={cn("px-6 py-2 text-xs font-black uppercase rounded-lg transition-all", view === 'INVESTORS' ? "bg-indigo-600 text-white" : "text-zinc-500")}
-                    >
-                        Inversionistas
+                        <LogOut className="h-5 w-5 group-hover:scale-110 transition-transform" />
+                        <span className="text-xs font-black uppercase tracking-[0.1em]">Cerrar Sesión</span>
                     </button>
                 </div>
-            </header>
-            
-            {/* KPI Header */}
-            <div className="grid grid-cols-5 gap-4 mb-8">
-                <KpiCard label="Volumen Activo" value="$1.2M" trend="+12%" />
-                <KpiCard label="Riesgo PLD" value="2 ALERTAS" trend="CRÍTICO" active={false} alert={true} />
-                <KpiCard label="Inversionistas" value={investorApps.length.toString()} trend="Pendientes" />
-                <KpiCard label="Referidos Pendientes" value={referralPayouts.length.toString()} trend="Por Pagar" />
-                <KpiCard label="Tiempo Promedio" value="48h" trend="Cierre" />
-            </div>
+            </aside>
 
-            {view === 'OPERATIONS' ? (
-                <>
-                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
-                        {/* COMPLIANCE CENTER */}
-                        <div className="lg:col-span-1 space-y-6">
-                            <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6">
-                                <h3 className="text-sm font-black text-white uppercase tracking-widest mb-6 flex items-center gap-2">
-                                    <ShieldAlert className="h-4 w-4 text-red-500" />
-                                    Alertas de Cumplimiento
-                                </h3>
-                                <div className="space-y-4">
-                                    <div className="p-4 bg-red-900/10 border border-red-900/50 rounded-xl">
-                                        <p className="text-xs font-bold text-red-400 uppercase tracking-widest mb-1">Detección de Riesgo</p>
-                                        <p className="text-sm text-zinc-300 font-medium">Múltiples transacciones de alto valor desde una IP no identificada.</p>
-                                    </div>
-                                    <div className="p-4 bg-amber-900/10 border border-amber-900/50 rounded-xl">
-                                        <p className="text-xs font-bold text-amber-400 uppercase tracking-widest mb-1">Documentación Vencida</p>
-                                        <p className="text-sm text-zinc-300 font-medium">3 vehículos requieren actualización de tenencia 2024.</p>
-                                    </div>
-                                </div>
-                            </div>
+            {/* Main Content Area */}
+            <main className="flex-1 ml-72 p-12 min-h-screen">
+                <header className="flex justify-between items-center mb-16">
+                    <div className="animate-in fade-in slide-in-from-left-4 duration-700">
+                        <h2 className="text-4xl font-black uppercase italic tracking-tighter text-white">
+                            {view === 'CONTROL' && "Torre de Control"}
+                            {view === 'INVENTORY' && "Inventario Maestro"}
+                            {view === 'INVESTORS' && "Red de Capital"}
+                            {view === 'BILLING' && "Gestión de Tesorería"}
+                            {view === 'UPSELLS' && "Servicios Plus"}
+                            {view === 'REFERRALS' && "Programa de Referidos"}
+                        </h2>
+                        <div className="flex items-center gap-2 mt-2">
+                            <div className="h-1.5 w-1.5 bg-indigo-500 rounded-full" />
+                            <p className="text-zinc-500 font-black uppercase text-[9px] tracking-[0.3em]">
+                                {new Date().toLocaleDateString('es-MX', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
+                            </p>
+                        </div>
+                    </div>
+
+                    <div className="flex items-center gap-4">
+                        <div className="relative group">
+                            <div className="absolute inset-0 bg-indigo-600/20 blur-xl opacity-0 group-hover:opacity-100 transition-opacity" />
+                            <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500 group-focus-within:text-indigo-400 transition-colors" />
+                            <input 
+                                className="h-14 w-96 bg-zinc-900/50 backdrop-blur-xl border border-zinc-800 rounded-2xl pl-12 pr-4 text-sm font-medium focus:ring-2 ring-indigo-500/50 outline-none transition-all placeholder:text-zinc-600" 
+                                placeholder="Buscar Folio, VIN o Cliente..." 
+                            />
+                        </div>
+                        <button className="h-14 w-14 bg-zinc-900 border border-zinc-800 rounded-2xl flex items-center justify-center hover:bg-zinc-800 hover:border-zinc-700 transition-all active:scale-95 shadow-xl">
+                            <Filter className="h-5 w-5 text-zinc-400" />
+                        </button>
+                    </div>
+                </header>
+
+                {/* Content Views */}
+                {view === 'CONTROL' && (
+                    <div className="space-y-12 animate-in fade-in slide-in-from-bottom-6 duration-700">
+                        {/* KPI Grid */}
+                        <div className="grid grid-cols-4 gap-8">
+                            <KpiCard label="GMV Acumulado" value={`$${(stats.gmv / 1000000).toFixed(1)}M`} trend="+18%" icon={DollarSign} color="indigo" />
+                            <KpiCard label="Entregas Activas" value={stats.activeHandovers.toString()} trend="HOY" icon={Calendar} color="emerald" />
+                            <KpiCard label="Comisiones Pend." value={`$${(stats.pendingCommissions / 1000).toFixed(0)}K`} trend="RECAUDAR" icon={AlertTriangle} color="amber" alert />
+                            <KpiCard label="Tasa de Cierre" value={`${stats.conversionRate}%`} trend="+2.4%" icon={Zap} color="indigo" />
                         </div>
 
-                        {/* REFERRAL PAYOUTS */}
-                        <div className="lg:col-span-2 bg-zinc-900 border border-zinc-800 rounded-2xl p-6">
-                            <div className="flex justify-between items-center mb-6">
-                                <h3 className="text-sm font-black text-white uppercase tracking-widest flex items-center gap-2">
-                                    <DollarSign className="h-4 w-4 text-emerald-500" />
-                                    Pagos de Referidos Pendientes
-                                </h3>
-                            </div>
-                            <div className="grid gap-4">
-                                {referralPayouts.length > 0 ? referralPayouts.map(payout => (
-                                    <div key={payout.id} className="bg-zinc-950 border border-zinc-800 p-4 rounded-xl flex items-center justify-between">
-                                        <div>
-                                            <p className="text-sm font-black text-white">{payout.profiles.full_name}</p>
-                                            <p className="text-[10px] text-zinc-500 uppercase tracking-widest">{payout.profiles.email}</p>
-                                        </div>
-                                        <div className="flex items-center gap-6">
-                                            <div className="text-right">
-                                                <p className="text-sm font-black text-emerald-500">$1,000.00 MXN</p>
-                                                <p className="text-[9px] text-zinc-600 font-bold">BONO POR REFERENCIA</p>
+                        <div className="grid grid-cols-3 gap-8">
+                            {/* Action Center - Triage */}
+                            <div className="col-span-2 space-y-6">
+                                <div className="bg-zinc-900/40 backdrop-blur-3xl border border-zinc-800/50 rounded-[3rem] p-10 shadow-2xl relative overflow-hidden group">
+                                    <div className="absolute inset-0 bg-gradient-to-br from-indigo-600/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-1000" />
+                                    
+                                    <div className="flex justify-between items-center mb-10 relative z-10">
+                                        <h3 className="text-xl font-black uppercase italic flex items-center gap-4">
+                                            <div className="h-12 w-12 bg-indigo-600/20 rounded-2xl flex items-center justify-center border border-indigo-500/20">
+                                                <Zap className="h-6 w-6 text-indigo-500 animate-pulse" />
                                             </div>
-                                            <button 
-                                                onClick={async () => {
-                                                    setPayoutLoading(payout.id);
-                                                    try {
-                                                        await processReferralPayout(payout.id, 1000, "Bono StarterKar");
-                                                        toast.success("Pago procesado");
-                                                        const p = await getPendingReferralPayouts();
-                                                        setReferralPayouts(p || []);
-                                                    } catch (e) {
-                                                        toast.error("Error al procesar");
-                                                    } finally {
-                                                        setPayoutLoading(null);
-                                                    }
-                                                }}
-                                                className="h-10 px-4 bg-emerald-600 text-white text-[10px] font-black rounded-lg hover:bg-emerald-500 transition-all uppercase tracking-widest flex items-center gap-2"
-                                            >
-                                                {payoutLoading === payout.id ? <Loader2 className="h-3 w-3 animate-spin" /> : "PAGAR AHORA"}
-                                            </button>
-                                        </div>
-                                    </div>
-                                )) : (
-                                    <div className="py-12 text-center text-zinc-600 font-bold uppercase tracking-widest text-xs">No hay pagos pendientes</div>
-                                )}
-                            </div>
-                        </div>
-                    </div>
-
-                    <div className="bg-zinc-900 border border-zinc-800 rounded-2xl overflow-hidden">
-                        <table className="w-full text-left">
-                            <thead>
-                                <tr className="border-b border-zinc-800 bg-zinc-900/50">
-                                    <th className="px-6 py-4 text-[10px] font-black text-zinc-500 uppercase tracking-[0.2em]">Vehículo / ID</th>
-                                    <th className="px-6 py-4 text-[10px] font-black text-zinc-500 uppercase tracking-[0.2em]">Estatus Bóveda</th>
-                                    <th className="px-6 py-4 text-[10px] font-black text-zinc-500 uppercase tracking-[0.2em]">Monto</th>
-                                    <th className="px-6 py-4 text-[10px] font-black text-zinc-500 uppercase tracking-[0.2em]">Acciones</th>
-                                </tr>
-                            </thead>
-                            <tbody className="divide-y divide-zinc-800">
-                                {transactions.map(tx => (
-                                    <tr key={tx.id} className="hover:bg-zinc-800/30 transition-colors">
-                                        <td className="px-6 py-4">
-                                            <p className="text-sm font-black text-white italic">{tx.cars.make} {tx.cars.model} {tx.cars.year}</p>
-                                            <p className="text-[9px] text-zinc-600 font-bold">REF: {tx.id.slice(0, 8)}</p>
-                                        </td>
-                                        <td className="px-6 py-4">
-                                            <StatusBadge status={tx.status} />
-                                        </td>
-                                        <td className="px-6 py-4">
-                                            <p className="text-sm font-black text-white">${tx.car_price.toLocaleString()}</p>
-                                        </td>
-                                        <td className="px-6 py-4">
-                                            <button onClick={() => cycleStatus(tx.id, tx.status)} className="h-8 px-4 bg-zinc-800 text-zinc-400 text-[10px] font-black rounded-lg hover:text-white transition-all">MANUAL OVERRIDE</button>
-                                        </td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    </div>
-                </>
-            ) : view === 'INVESTORS' ? (
-                <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-                    <h2 className="text-xl font-bold text-white flex items-center gap-2">
-                        <ShieldAlert className="h-5 w-5 text-indigo-400" />
-                        Solicitudes de Acceso Inversionista
-                    </h2>
-                    
-                    <div className="grid gap-4">
-                        {investorApps.length > 0 ? investorApps.map(app => (
-                            <div key={app.id} className="bg-zinc-900 border border-zinc-800 p-8 rounded-[2rem] flex flex-col md:flex-row items-center justify-between gap-8">
-                                <div className="flex items-center gap-8 flex-1">
-                                    <div className="h-16 w-16 bg-zinc-950 rounded-2xl flex items-center justify-center border border-zinc-800">
-                                        <Users className="h-8 w-8 text-indigo-400" />
-                                    </div>
-                                    <div className="space-y-1 flex-1">
+                                            Centro de Triage Operativo
+                                        </h3>
                                         <div className="flex items-center gap-3">
-                                            <h4 className="text-lg font-black text-white uppercase italic tracking-tighter">{app.profiles.full_name}</h4>
-                                            <span className={cn(
-                                                "px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest",
-                                                app.tier_id === 'elite' ? "bg-zinc-800 text-white" : app.tier_id === 'pro' ? "bg-amber-500/10 text-amber-500" : "bg-indigo-500/10 text-indigo-500"
-                                            )}>
-                                                TIER {app.tier_id.toUpperCase()}
+                                            <span className="h-2 w-2 bg-emerald-500 rounded-full animate-pulse" />
+                                            <span className="text-[10px] font-black uppercase tracking-widest text-zinc-400">
+                                                {transactions.filter(tx => tx.status === 'P2P_WAITING_PROOF' || tx.status === 'HANDOVER_SCHEDULED').length} Bloqueos Detectados
                                             </span>
                                         </div>
-                                        <div className="flex flex-wrap gap-x-6 gap-y-1">
-                                            <p className="text-xs font-bold text-zinc-500 uppercase tracking-widest">RFC: <span className="text-zinc-300">{app.rfc}</span></p>
-                                            <p className="text-xs font-bold text-zinc-500 uppercase tracking-widest">TEL: <span className="text-zinc-300">{app.telefono}</span></p>
-                                            <p className="text-xs font-bold text-zinc-500 uppercase tracking-widest">PAGO: <span className="text-zinc-300">{app.payment_method.toUpperCase()}</span></p>
+                                    </div>
+
+                                    <div className="space-y-4 relative z-10">
+                                        {transactions.filter(tx => tx.status === 'P2P_WAITING_PROOF' || tx.status === 'HANDOVER_SCHEDULED').map(tx => (
+                                            <div key={tx.id} className="group bg-zinc-950/50 border border-zinc-800/50 p-8 rounded-[2rem] hover:border-indigo-500/50 transition-all hover:bg-zinc-900/50">
+                                                <div className="flex items-center justify-between">
+                                                    <div className="flex gap-8 items-center">
+                                                        <div className={cn(
+                                                            "h-16 w-16 border rounded-[1.5rem] flex items-center justify-center shadow-inner",
+                                                            tx.status === 'P2P_WAITING_PROOF' ? "bg-amber-500/5 border-amber-500/20" : "bg-emerald-500/5 border-emerald-500/20"
+                                                        )}>
+                                                            {tx.status === 'P2P_WAITING_PROOF' ? <CreditCard className="h-8 w-8 text-amber-500" /> : <ShieldCheck className="h-8 w-8 text-emerald-500" />}
+                                                        </div>
+                                                        <div>
+                                                            <div className="flex items-center gap-3 mb-1">
+                                                                <p className={cn(
+                                                                    "text-[10px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full border",
+                                                                    tx.status === 'P2P_WAITING_PROOF' ? "text-amber-500 border-amber-500/20 bg-amber-500/5" : "text-emerald-500 border-emerald-500/20 bg-emerald-500/5"
+                                                                )}>
+                                                                    {tx.status === 'P2P_WAITING_PROOF' ? "Validación CEP SPEI" : "Confirmación de Entrega"}
+                                                                </p>
+                                                                <span className="text-zinc-700 text-xs">•</span>
+                                                                <span className="text-zinc-500 text-[10px] font-bold">Folio: {tx.id.slice(0, 8)}</span>
+                                                            </div>
+                                                            <h4 className="text-xl font-black text-white italic tracking-tighter">
+                                                                {tx.cars?.make} {tx.cars?.model} <span className="text-zinc-600 font-medium not-italic ml-2">({tx.cars?.year})</span>
+                                                            </h4>
+                                                            <p className="text-xs text-zinc-500 font-medium mt-1">Transacción P2P por <span className="text-zinc-200">${tx.car_price.toLocaleString()}</span></p>
+                                                        </div>
+                                                    </div>
+                                                    <div className="flex gap-3">
+                                                        {tx.status === 'P2P_WAITING_PROOF' ? (
+                                                            <button 
+                                                                onClick={() => handleValidateCEP(tx.id)}
+                                                                disabled={cepLoading === tx.id}
+                                                                className="h-14 px-8 bg-indigo-600 text-white text-xs font-black rounded-2xl uppercase tracking-widest hover:scale-105 active:scale-95 transition-all flex items-center gap-3 shadow-xl shadow-indigo-600/20"
+                                                            >
+                                                                {cepLoading === tx.id ? <Loader2 className="h-4 w-4 animate-spin" /> : <Search className="h-4 w-4" />}
+                                                                VALIDAR CEP
+                                                            </button>
+                                                        ) : (
+                                                            <button 
+                                                                onClick={() => cycleStatus(tx.id, tx.status)}
+                                                                className="h-14 px-8 bg-emerald-600 text-white text-xs font-black rounded-2xl uppercase tracking-widest hover:scale-105 active:scale-95 transition-all flex items-center gap-3 shadow-xl shadow-emerald-600/20"
+                                                            >
+                                                                <CheckCircle2 className="h-4 w-4" />
+                                                                CONFIRMAR ENTREGA
+                                                            </button>
+                                                        )}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        ))}
+
+                                        {transactions.filter(tx => tx.status === 'P2P_WAITING_PROOF' || tx.status === 'HANDOVER_SCHEDULED').length === 0 && (
+                                            <div className="py-20 text-center border border-dashed border-zinc-800/50 rounded-[2.5rem] bg-zinc-950/30">
+                                                <Zap className="h-12 w-12 text-zinc-800 mx-auto mb-4 opacity-50" />
+                                                <p className="text-zinc-600 font-black uppercase tracking-[0.3em] text-xs italic">Cero bloqueos en el flujo actual</p>
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Validador SPEI Tool */}
+                            <div className="space-y-8">
+                                <div className="bg-zinc-900 border border-zinc-800/50 rounded-[3rem] p-10 shadow-2xl relative overflow-hidden group">
+                                    <div className="absolute inset-0 bg-indigo-600/5 blur-3xl" />
+                                    <h3 className="text-xs font-black uppercase tracking-[0.3em] text-indigo-400 mb-8 relative z-10">Validador CEP Pro</h3>
+                                    <div className="space-y-6 relative z-10">
+                                        <div className="p-6 bg-zinc-950 rounded-3xl border border-zinc-800 space-y-4">
+                                            <p className="text-[10px] text-zinc-500 font-bold uppercase tracking-widest leading-relaxed">
+                                                Herramienta de auditoría directa para comprobantes SPEI. Asegura la integridad del trato P2P.
+                                            </p>
+                                            <div className="h-px w-full bg-zinc-800" />
+                                            <input 
+                                                className="w-full bg-transparent border-none text-white font-black italic tracking-tighter text-xl placeholder:text-zinc-800 focus:ring-0" 
+                                                placeholder="FOLIO-RASTREO..." 
+                                            />
                                         </div>
-                                        <p className="text-[10px] text-zinc-600 font-medium truncate max-w-md">{app.profiles.email}</p>
+                                        <button className="w-full h-16 bg-white text-black font-black uppercase italic tracking-tighter text-xl rounded-2xl hover:bg-zinc-200 transition-all active:scale-95 shadow-2xl">
+                                            AUDITAR CEP
+                                        </button>
                                     </div>
                                 </div>
 
-                                <div className="flex items-center gap-4 shrink-0">
-                                    <a 
-                                        href={`${supabase.storage.from('investor-docs').getPublicUrl(app.constancia_fiscal_url).data.publicUrl}`}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="h-14 px-6 bg-zinc-800 text-zinc-400 font-black rounded-2xl flex items-center gap-3 hover:bg-zinc-700 transition-all uppercase tracking-widest text-[10px]"
-                                    >
-                                        <ExternalLink className="h-4 w-4" />
-                                        Ver CSF
-                                    </a>
-                                    
-                                    {app.status === 'pending' ? (
-                                        <div className="flex gap-2">
+                                {/* Network Health Card */}
+                                <div className="bg-gradient-to-br from-indigo-600 to-purple-700 rounded-[3rem] p-10 text-white shadow-2xl relative overflow-hidden group">
+                                    <div className="absolute top-0 right-0 p-8">
+                                        <ShieldCheck className="h-20 w-20 text-white/10 group-hover:scale-125 transition-transform duration-1000" />
+                                    </div>
+                                    <div className="relative z-10">
+                                        <p className="text-[10px] font-black uppercase tracking-[0.3em] mb-2 opacity-80">Seguridad StarterKar</p>
+                                        <h4 className="text-2xl font-black italic tracking-tighter mb-6 uppercase">Infraestructura Protegida</h4>
+                                        <div className="flex items-center gap-3 bg-white/10 backdrop-blur-md rounded-xl p-3 border border-white/10">
+                                            <div className="h-2 w-2 bg-emerald-400 rounded-full animate-ping" />
+                                            <p className="text-[10px] font-black tracking-widest uppercase">SSL / TLS 1.3 Online</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+                {view === 'INVENTORY' && (
+                    <div className="space-y-12 animate-in fade-in slide-in-from-bottom-6 duration-700">
+                        <div className="flex justify-between items-center bg-zinc-900/50 backdrop-blur-3xl border border-zinc-800 p-10 rounded-[3rem] shadow-2xl">
+                            <div>
+                                <h3 className="text-2xl font-black uppercase italic tracking-tighter text-white">Inventario de Activos</h3>
+                                <p className="text-sm text-zinc-500 font-medium mt-1">Control total sobre la flota certificada en plataforma.</p>
+                            </div>
+                            <button 
+                                onClick={() => setIsCreateModalOpen(true)}
+                                className="h-16 px-10 bg-indigo-600 text-white font-black rounded-2xl hover:bg-indigo-500 transition-all uppercase tracking-widest text-sm shadow-xl shadow-indigo-600/30"
+                            >
+                                + AGREGAR UNIDAD
+                            </button>
+                        </div>
+
+                        {isCreateModalOpen && (
+                            <div className="fixed inset-0 bg-black/80 backdrop-blur-md z-50 flex items-center justify-center p-4">
+                                <div className="bg-zinc-900 border border-zinc-800 p-10 rounded-[3rem] w-full max-w-2xl animate-in zoom-in-95 duration-200 shadow-[0_0_100px_rgba(99,102,241,0.1)]">
+                                    <div className="flex justify-between items-center mb-8">
+                                        <h3 className="text-2xl font-black text-white uppercase italic tracking-tighter">Publicar Nueva Unidad</h3>
+                                        <button onClick={() => setIsCreateModalOpen(false)} className="h-10 w-10 bg-zinc-800 rounded-full flex items-center justify-center text-zinc-400 hover:text-white">
+                                            <Ban className="h-4 w-4" />
+                                        </button>
+                                    </div>
+                                    <form onSubmit={handleCreateCar} className="grid grid-cols-2 gap-6">
+                                        <div className="space-y-1">
+                                            <label className="text-[10px] font-black text-zinc-500 uppercase tracking-widest">Marca</label>
+                                            <input required value={newCar.make} placeholder="Ej. BMW" className="w-full h-14 bg-zinc-950 border border-zinc-800 rounded-2xl px-6 text-white outline-none focus:border-indigo-500 transition-all" onChange={e => setNewCar({...newCar, make: e.target.value})} />
+                                        </div>
+                                        <div className="space-y-1">
+                                            <label className="text-[10px] font-black text-zinc-500 uppercase tracking-widest">Modelo</label>
+                                            <input required value={newCar.model} placeholder="Ej. M3" className="w-full h-14 bg-zinc-950 border border-zinc-800 rounded-2xl px-6 text-white outline-none focus:border-indigo-500 transition-all" onChange={e => setNewCar({...newCar, model: e.target.value})} />
+                                        </div>
+                                        <div className="space-y-1">
+                                            <label className="text-[10px] font-black text-zinc-500 uppercase tracking-widest">Año</label>
+                                            <input required type="number" value={newCar.year} className="w-full h-14 bg-zinc-950 border border-zinc-800 rounded-2xl px-6 text-white outline-none focus:border-indigo-500 transition-all" onChange={e => setNewCar({...newCar, year: parseInt(e.target.value)})} />
+                                        </div>
+                                        <div className="space-y-1">
+                                            <label className="text-[10px] font-black text-zinc-500 uppercase tracking-widest">Precio (MXN)</label>
+                                            <input required type="number" value={newCar.price} className="w-full h-14 bg-zinc-950 border border-zinc-800 rounded-2xl px-6 text-white outline-none focus:border-indigo-500 transition-all" onChange={e => setNewCar({...newCar, price: parseFloat(e.target.value)})} />
+                                        </div>
+                                        <div className="space-y-1">
+                                            <label className="text-[10px] font-black text-zinc-500 uppercase tracking-widest">Kilometraje</label>
+                                            <input required type="number" value={newCar.mileage} className="w-full h-14 bg-zinc-950 border border-zinc-800 rounded-2xl px-6 text-white outline-none focus:border-indigo-500 transition-all" onChange={e => setNewCar({...newCar, mileage: parseInt(e.target.value)})} />
+                                        </div>
+                                        <div className="space-y-1">
+                                            <label className="text-[10px] font-black text-zinc-500 uppercase tracking-widest">Ubicación</label>
+                                            <input required value={newCar.location} className="w-full h-14 bg-zinc-950 border border-zinc-800 rounded-2xl px-6 text-white outline-none focus:border-indigo-500 transition-all" onChange={e => setNewCar({...newCar, location: e.target.value})} />
+                                        </div>
+                                        <div className="col-span-2 space-y-1">
+                                            <label className="text-[10px] font-black text-zinc-500 uppercase tracking-widest">Descripción / Notas</label>
+                                            <textarea className="w-full h-24 bg-zinc-950 border border-zinc-800 rounded-2xl p-6 text-white outline-none focus:border-indigo-500 transition-all resize-none" value={newCar.description} onChange={e => setNewCar({...newCar, description: e.target.value})} />
+                                        </div>
+                                        <div className="col-span-2 pt-6">
                                             <button 
-                                                onClick={() => handleRejectInvestor(app.id)}
-                                                disabled={actionLoading === app.id}
-                                                className="h-14 px-6 border border-red-900/50 text-red-500 font-black rounded-2xl hover:bg-red-500/10 transition-all uppercase tracking-widest text-[10px]"
+                                                type="submit" 
+                                                disabled={actionLoading === "CREATE"}
+                                                className="w-full h-16 bg-indigo-600 text-white font-black rounded-2xl hover:bg-indigo-500 transition-all uppercase tracking-widest flex items-center justify-center gap-3 shadow-xl shadow-indigo-600/20"
                                             >
-                                                {actionLoading === app.id ? <Loader2 className="h-4 w-4 animate-spin" /> : "Rechazar"}
-                                            </button>
-                                            <button 
-                                                onClick={() => handleApproveInvestor(app.id)}
-                                                disabled={actionLoading === app.id}
-                                                className="h-14 px-8 bg-indigo-600 text-white font-black rounded-2xl hover:bg-indigo-500 transition-all uppercase tracking-widest text-[10px] shadow-xl shadow-indigo-600/20"
-                                            >
-                                                {actionLoading === app.id ? <Loader2 className="h-4 w-4 animate-spin" /> : "Aprobar Acceso"}
+                                                {actionLoading === "CREATE" ? <Loader2 className="h-5 w-5 animate-spin" /> : "PUBLICAR UNIDAD"}
                                             </button>
                                         </div>
-                                    ) : (
-                                        <div className={cn(
-                                            "px-6 py-4 rounded-2xl border font-black uppercase tracking-widest text-[10px]",
-                                            app.status === 'approved' ? "bg-emerald-500/10 text-emerald-500 border-emerald-500/20" : "bg-red-500/10 text-red-500 border-red-500/20"
-                                        )}>
-                                            {app.status === 'approved' ? 'Acceso Autorizado' : 'Solicitud Rechazada'}
+                                    </form>
+                                </div>
+                            </div>
+                        ) || editingCar && (
+                            <div className="fixed inset-0 bg-black/80 backdrop-blur-md z-50 flex items-center justify-center p-4">
+                                <div className="bg-zinc-900 border border-zinc-800 p-10 rounded-[3rem] w-full max-w-2xl animate-in zoom-in-95 duration-200 shadow-[0_0_100px_rgba(99,102,241,0.1)]">
+                                    <div className="flex justify-between items-center mb-8">
+                                        <h3 className="text-2xl font-black text-white uppercase italic tracking-tighter">Editar Expediente de Unidad</h3>
+                                        <button onClick={() => setEditingCar(null)} className="h-10 w-10 bg-zinc-800 rounded-full flex items-center justify-center text-zinc-400 hover:text-white">
+                                            <Ban className="h-4 w-4" />
+                                        </button>
+                                    </div>
+                                    <form onSubmit={handleUpdateCar} className="grid grid-cols-2 gap-6">
+                                        <div className="space-y-1">
+                                            <label className="text-[10px] font-black text-zinc-500 uppercase tracking-widest">Marca</label>
+                                            <input required value={editingCar.make} className="w-full h-14 bg-zinc-950 border border-zinc-800 rounded-2xl px-6 text-white outline-none focus:border-indigo-500 transition-all" onChange={e => setEditingCar({...editingCar, make: e.target.value})} />
+                                        </div>
+                                        <div className="space-y-1">
+                                            <label className="text-[10px] font-black text-zinc-500 uppercase tracking-widest">Modelo</label>
+                                            <input required value={editingCar.model} className="w-full h-14 bg-zinc-950 border border-zinc-800 rounded-2xl px-6 text-white outline-none focus:border-indigo-500 transition-all" onChange={e => setEditingCar({...editingCar, model: e.target.value})} />
+                                        </div>
+                                        <div className="space-y-1">
+                                            <label className="text-[10px] font-black text-zinc-500 uppercase tracking-widest">Año</label>
+                                            <input required type="number" value={editingCar.year} className="w-full h-14 bg-zinc-950 border border-zinc-800 rounded-2xl px-6 text-white outline-none focus:border-indigo-500 transition-all" onChange={e => setEditingCar({...editingCar, year: parseInt(e.target.value)})} />
+                                        </div>
+                                        <div className="space-y-1">
+                                            <label className="text-[10px] font-black text-zinc-500 uppercase tracking-widest">Precio (MXN)</label>
+                                            <input required type="number" value={editingCar.price} className="w-full h-14 bg-zinc-950 border border-zinc-800 rounded-2xl px-6 text-white outline-none focus:border-indigo-500 transition-all" onChange={e => setEditingCar({...editingCar, price: parseFloat(e.target.value)})} />
+                                        </div>
+                                        <div className="col-span-2 space-y-1">
+                                            <label className="text-[10px] font-black text-zinc-500 uppercase tracking-widest">Estatus de Unidad</label>
+                                            <select 
+                                                value={editingCar.status}
+                                                className="w-full h-14 bg-zinc-950 border border-zinc-800 rounded-2xl px-6 text-white outline-none focus:border-indigo-500 transition-all"
+                                                onChange={e => setEditingCar({...editingCar, status: e.target.value})}
+                                            >
+                                                <option value="published">PUBLICADO / ACTIVO</option>
+                                                <option value="draft">BORRADOR / REVISIÓN</option>
+                                                <option value="archived">ARCHIVADO / FUERA DE STOCK</option>
+                                            </select>
+                                        </div>
+                                        <div className="col-span-2 pt-6">
+                                            <button 
+                                                type="submit" 
+                                                disabled={actionLoading === editingCar.id}
+                                                className="w-full h-16 bg-white text-black font-black rounded-2xl hover:bg-zinc-200 transition-all uppercase tracking-widest flex items-center justify-center gap-3"
+                                            >
+                                                {actionLoading === editingCar.id ? <Loader2 className="h-5 w-5 animate-spin" /> : "GUARDAR CAMBIOS"}
+                                            </button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        )}
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
+                            {inventory.map(car => (
+                                <div key={car.id} className="bg-zinc-900/50 backdrop-blur-xl border border-zinc-800 rounded-[2.5rem] overflow-hidden hover:border-indigo-500/40 transition-all group shadow-xl">
+                                    <div className="h-60 bg-zinc-950 flex items-center justify-center relative group-hover:bg-zinc-900 transition-colors">
+                                        <CarFront className="h-24 w-24 text-zinc-800/50 group-hover:scale-110 group-hover:text-indigo-500/20 transition-all duration-700" />
+                                        <div className="absolute top-6 left-6">
+                                            <span className={cn(
+                                                "px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest border backdrop-blur-md",
+                                                car.status === 'published' ? "bg-emerald-500/10 text-emerald-500 border-emerald-500/20" : "bg-amber-500/10 text-amber-500 border-amber-500/20"
+                                            )}>
+                                                {car.status?.toUpperCase() || 'STOCK'}
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div className="p-10">
+                                        <div className="flex justify-between items-start mb-6">
+                                            <div>
+                                                <h4 className="text-2xl font-black text-white italic tracking-tighter uppercase">{car.make} {car.model}</h4>
+                                                <p className="text-zinc-500 font-black uppercase text-[10px] tracking-widest mt-1 italic">{car.year} • {car.location}</p>
+                                            </div>
+                                            <div className="text-right">
+                                                <p className="text-[9px] font-black text-zinc-600 uppercase tracking-widest">Valor de Mercado</p>
+                                                <p className="text-xl font-black text-white italic">${car.price?.toLocaleString()}</p>
+                                            </div>
+                                        </div>
+                                        
+                                        <div className="flex gap-3 mt-8">
+                                            <button 
+                                                onClick={() => setEditingCar(car)}
+                                                className="flex-1 h-12 bg-zinc-800 text-white text-[10px] font-black rounded-xl hover:bg-zinc-700 transition-all uppercase tracking-widest"
+                                            >
+                                                EDITAR FICHA
+                                            </button>
+                                            <button 
+                                                onClick={() => handleDeleteCar(car.id)}
+                                                className="h-12 w-12 bg-red-900/10 border border-red-900/30 text-red-500 rounded-xl flex items-center justify-center hover:bg-red-500 hover:text-white transition-all"
+                                            >
+                                                <Ban className="h-5 w-5" />
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                )}
+
+                {view === 'INVESTORS' && (
+                    <div className="space-y-12 animate-in fade-in slide-in-from-bottom-6 duration-700">
+                        <div className="bg-zinc-900/50 backdrop-blur-3xl border border-zinc-800 p-10 rounded-[3rem] shadow-2xl flex items-center justify-between">
+                            <div className="flex items-center gap-8">
+                                <div className="h-20 w-20 bg-indigo-500/10 rounded-3xl flex items-center justify-center border border-indigo-500/20">
+                                    <Users className="h-10 w-10 text-indigo-500" />
+                                </div>
+                                <div>
+                                    <h3 className="text-2xl font-black uppercase italic tracking-tighter text-white">Red de Capital (Inversionistas)</h3>
+                                    <p className="text-sm text-zinc-500 font-medium mt-1">Gestión de solicitudes para el programa de inversión StarterKar.</p>
+                                </div>
+                            </div>
+                            <div className="text-right">
+                                <p className="text-[10px] font-black text-zinc-600 uppercase tracking-widest mb-1">Solicitudes Pendientes</p>
+                                <p className="text-4xl font-black text-white italic tracking-tighter">{investorApps.filter(a => a.status === 'pending').length}</p>
+                            </div>
+                        </div>
+
+                        <div className="grid gap-6">
+                            {investorApps.map(app => (
+                                <div key={app.id} className="group bg-zinc-900/50 backdrop-blur-2xl border border-zinc-800 p-10 rounded-[3rem] flex items-center justify-between hover:border-indigo-500/40 transition-all shadow-xl relative overflow-hidden">
+                                    <div className={cn(
+                                        "absolute left-0 top-0 bottom-0 w-2",
+                                        app.status === 'pending' ? "bg-amber-500/50" : app.status === 'approved' ? "bg-emerald-500/50" : "bg-red-500/50"
+                                    )} />
+                                    <div className="flex items-center gap-10">
+                                        <div className="h-20 w-20 bg-zinc-950 rounded-2xl flex items-center justify-center border border-zinc-800 group-hover:border-indigo-500/20 transition-colors">
+                                            <UserCheck className="h-10 w-10 text-zinc-800 group-hover:text-indigo-500/50 transition-colors" />
+                                        </div>
+                                        <div>
+                                            <h4 className="text-2xl font-black text-white italic tracking-tighter uppercase">
+                                                {app.profiles?.full_name || "Candidato Inversionista"}
+                                            </h4>
+                                            <div className="flex items-center gap-4 mt-2">
+                                                <p className="text-[10px] font-black text-zinc-500 uppercase tracking-widest">Email: <span className="text-zinc-300">{app.profiles?.email}</span></p>
+                                                <span className="h-1 w-1 bg-zinc-800 rounded-full" />
+                                                <p className="text-[10px] font-black text-zinc-500 uppercase tracking-widest">Tier: <span className="text-indigo-400">{app.tier?.name} (${app.tier?.price?.toLocaleString()})</span></p>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div className="flex items-center gap-8">
+                                        {app.status === 'pending' ? (
+                                            <div className="flex gap-3">
+                                                <button 
+                                                    onClick={() => handleRejectInvestor(app.id)}
+                                                    disabled={actionLoading === app.id}
+                                                    className="h-14 px-8 bg-zinc-800 text-zinc-300 text-xs font-black rounded-2xl hover:bg-red-500/10 hover:text-red-500 transition-all uppercase tracking-widest border border-zinc-700"
+                                                >
+                                                    RECHAZAR
+                                                </button>
+                                                <button 
+                                                    onClick={() => handleApproveInvestor(app.id)}
+                                                    disabled={actionLoading === app.id}
+                                                    className="h-14 px-10 bg-indigo-600 text-white text-xs font-black rounded-2xl hover:bg-indigo-500 transition-all uppercase tracking-widest shadow-xl shadow-indigo-600/30 flex items-center gap-3"
+                                                >
+                                                    {actionLoading === app.id ? <Loader2 className="h-4 w-4 animate-spin" /> : <CheckCircle2 className="h-4 w-4" />}
+                                                    APROBAR
+                                                </button>
+                                            </div>
+                                        ) : (
+                                            <div className="text-right">
+                                                <p className="text-[10px] font-black text-zinc-500 uppercase tracking-widest mb-1">Estatus</p>
+                                                <p className={cn(
+                                                    "text-xl font-black italic tracking-tighter uppercase",
+                                                    app.status === 'approved' ? "text-emerald-500" : "text-red-500"
+                                                )}>
+                                                    {app.status === 'approved' ? "APROBADO" : "RECHAZADO"}
+                                                </p>
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+                            ))}
+                            {investorApps.length === 0 && (
+                                <div className="py-32 text-center border-2 border-dashed border-zinc-800 rounded-[3rem] bg-zinc-900/20">
+                                    <UserCheck className="h-12 w-12 text-zinc-800 mx-auto mb-4 opacity-50" />
+                                    <p className="text-zinc-600 font-black uppercase tracking-[0.4em] italic">No hay solicitudes de inversionistas</p>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                )}
+
+                {view === 'BILLING' && (
+                    <div className="space-y-12 animate-in fade-in slide-in-from-bottom-6 duration-700">
+                        <div className="bg-zinc-900/50 backdrop-blur-3xl border border-zinc-800 p-10 rounded-[3rem] shadow-2xl flex items-center justify-between">
+                            <div className="flex items-center gap-8">
+                                <div className="h-20 w-20 bg-amber-500/10 rounded-3xl flex items-center justify-center border border-amber-500/20">
+                                    <DollarSign className="h-10 w-10 text-amber-500" />
+                                </div>
+                                <div>
+                                    <h3 className="text-2xl font-black uppercase italic tracking-tighter text-white">Tesorería de Comisiones</h3>
+                                    <p className="text-sm text-zinc-500 font-medium mt-1">Recaudación de Success Fees (3.5%) tras cierre P2P.</p>
+                                </div>
+                            </div>
+                            <div className="text-right">
+                                <p className="text-[10px] font-black text-zinc-600 uppercase tracking-widest mb-1">Cuentas por Cobrar</p>
+                                <p className="text-4xl font-black text-amber-500 italic tracking-tighter">${stats.pendingCommissions.toLocaleString()} MXN</p>
+                            </div>
+                        </div>
+
+                        <div className="grid gap-6">
+                            {transactions.filter(tx => tx.status === 'RELEASED' && !tx.commission_paid).map(tx => (
+                                <div key={tx.id} className="group bg-zinc-900/50 backdrop-blur-2xl border border-zinc-800 p-10 rounded-[3rem] flex items-center justify-between hover:border-amber-500/40 transition-all shadow-xl relative overflow-hidden">
+                                    <div className="absolute left-0 top-0 bottom-0 w-2 bg-amber-500/50" />
+                                    <div className="flex items-center gap-10">
+                                        <div className="h-20 w-20 bg-zinc-950 rounded-2xl flex items-center justify-center border border-zinc-800 group-hover:border-amber-500/20 transition-colors">
+                                            <CreditCard className="h-10 w-10 text-zinc-800 group-hover:text-amber-500/50 transition-colors" />
+                                        </div>
+                                        <div>
+                                            <h4 className="text-2xl font-black text-white italic tracking-tighter uppercase">{tx.cars?.make} {tx.cars?.model}</h4>
+                                            <div className="flex items-center gap-4 mt-2">
+                                                <p className="text-[10px] font-black text-zinc-500 uppercase tracking-widest">Vendedor ID: <span className="text-zinc-300">{tx.seller_id.slice(0,8)}</span></p>
+                                                <span className="h-1 w-1 bg-zinc-800 rounded-full" />
+                                                <p className="text-[10px] font-black text-zinc-500 uppercase tracking-widest">Valor Venta: <span className="text-emerald-500">${tx.car_price.toLocaleString()}</span></p>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div className="flex items-center gap-16">
+                                        <div className="text-right">
+                                            <p className="text-[10px] font-black text-amber-500 uppercase tracking-widest mb-1">Comisión Pendiente</p>
+                                            <p className="text-3xl font-black text-white italic tracking-tighter">${(tx.car_price * 0.035).toLocaleString()} MXN</p>
+                                        </div>
+                                        <div className="flex gap-3">
+                                            <button className="h-14 px-8 bg-zinc-800 text-zinc-300 text-xs font-black rounded-2xl hover:bg-zinc-700 transition-all uppercase tracking-widest border border-zinc-700">RECORDAR</button>
+                                            <button 
+                                                onClick={() => handleRegisterPayment(tx.id, tx.car_price * 0.035)}
+                                                className="h-14 px-10 bg-amber-600 text-white text-xs font-black rounded-2xl hover:bg-amber-500 transition-all uppercase tracking-widest shadow-xl shadow-amber-600/30"
+                                            >
+                                                REGISTRAR PAGO
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
+                            {transactions.filter(tx => tx.status === 'RELEASED' && !tx.commission_paid).length === 0 && (
+                                <div className="py-32 text-center border-2 border-dashed border-zinc-800 rounded-[3rem] bg-zinc-900/20">
+                                    <DollarSign className="h-12 w-12 text-zinc-800 mx-auto mb-4 opacity-50" />
+                                    <p className="text-zinc-600 font-black uppercase tracking-[0.4em] italic">Cartera al corriente • 100% Recaudado</p>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                )}
+
+                {view === 'UPSELLS' && (
+                    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                        <div className="bg-zinc-900 border border-zinc-800 p-8 rounded-[2.5rem] flex items-center justify-between">
+                            <div className="flex items-center gap-6">
+                                <div className="h-16 w-16 bg-indigo-600/10 rounded-2xl flex items-center justify-center">
+                                    <Zap className="h-8 w-8 text-indigo-500" />
+                                </div>
+                                <div>
+                                    <h3 className="text-lg font-black uppercase italic">Despacho de Servicios VIP (Upsells)</h3>
+                                    <p className="text-sm text-zinc-500 font-bold mt-1">Activación de garantías, seguros y gestoría administrativa.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                            {/* Gestoría VIP Column */}
+                            <div className="bg-zinc-900 border border-zinc-800 rounded-[3rem] p-10">
+                                <h4 className="text-xs font-black uppercase tracking-[0.3em] text-indigo-400 mb-10 flex items-center gap-4">
+                                    <div className="h-10 w-10 bg-indigo-500/10 rounded-xl flex items-center justify-center border border-indigo-500/20">
+                                        <FileText className="h-5 w-5 text-indigo-500" />
+                                    </div>
+                                    Gestoría VIP (Trámites)
+                                </h4>
+                                <div className="space-y-4">
+                                    {transactions.filter(tx => tx.gestoria_cost > 0).map(tx => (
+                                        <div key={tx.id} className="p-6 bg-zinc-950 border border-zinc-800 rounded-3xl hover:border-indigo-500/30 transition-all group">
+                                            <div className="flex justify-between items-start mb-4">
+                                                <div>
+                                                    <p className="text-[10px] font-black text-indigo-400 uppercase mb-1 tracking-widest">{tx.id.slice(0,8)} • PAGO RECIBIDO</p>
+                                                    <h5 className="text-lg font-black text-white italic uppercase tracking-tighter">{tx.cars?.make} {tx.cars?.model}</h5>
+                                                </div>
+                                                <span className="px-3 py-1 bg-zinc-900 text-zinc-500 text-[9px] font-black rounded-lg border border-zinc-800">PENDIENTE</span>
+                                            </div>
+                                            <button className="w-full h-12 bg-indigo-600 text-white text-[10px] font-black rounded-xl uppercase tracking-widest hover:bg-indigo-500 transition-all shadow-lg shadow-indigo-600/20">ASIGNAR GESTOR</button>
+                                        </div>
+                                    ))}
+                                    {transactions.filter(tx => tx.gestoria_cost > 0).length === 0 && (
+                                        <div className="py-12 text-center border border-dashed border-zinc-800 rounded-3xl opacity-30">
+                                            <p className="text-[10px] font-black uppercase tracking-widest">Sin trámites pendientes</p>
                                         </div>
                                     )}
                                 </div>
                             </div>
-                        )) : (
-                            <div className="py-24 text-center border-2 border-dashed border-zinc-800 rounded-[3rem]">
-                                <p className="text-zinc-600 font-black uppercase tracking-[0.3em] italic">Sin solicitudes pendientes</p>
-                            </div>
-                        )}
-                    </div>
-                </div>
-            ) : (
-                <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
-                    <div className="flex justify-between items-center">
-                        <h2 className="text-xl font-bold text-white flex items-center gap-2">
-                            <CarFront className="h-5 w-5 text-indigo-400" />
-                            Listado de Vehículos en Plataforma
-                        </h2>
-                        <button 
-                            onClick={() => setIsCreateModalOpen(true)}
-                            className="h-12 px-6 bg-white text-black font-black rounded-xl hover:scale-105 transition-all"
-                        >
-                            + ALTA DE VEHÍCULO
-                        </button>
-                    </div>
 
-                    {isCreateModalOpen && (
-                        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-                            <div className="bg-zinc-900 border border-zinc-800 p-8 rounded-[2rem] w-full max-w-2xl animate-in zoom-in-95 duration-200">
-                                <h3 className="text-2xl font-black text-white mb-6 uppercase italic">Nuevo Vehículo en Inventario</h3>
-                                <form onSubmit={handleCreateCar} className="grid grid-cols-2 gap-4">
-                                    <div className="space-y-1">
-                                        <label className="text-[10px] font-black text-zinc-500 uppercase tracking-widest">Marca</label>
-                                        <input required className="w-full h-12 bg-zinc-950 border border-zinc-800 rounded-xl px-4 text-white" placeholder="Toyota" onChange={e => setNewCar({...newCar, make: e.target.value})} />
+                            {/* Warranties & Insurance Column */}
+                            <div className="bg-zinc-900 border border-zinc-800 rounded-[3rem] p-10">
+                                <h4 className="text-xs font-black uppercase tracking-[0.3em] text-emerald-400 mb-10 flex items-center gap-4">
+                                    <div className="h-10 w-10 bg-emerald-500/10 rounded-xl flex items-center justify-center border border-emerald-500/20">
+                                        <ShieldCheck className="h-5 w-5 text-emerald-500" />
                                     </div>
-                                    <div className="space-y-1">
-                                        <label className="text-[10px] font-black text-zinc-500 uppercase tracking-widest">Modelo</label>
-                                        <input required className="w-full h-12 bg-zinc-950 border border-zinc-800 rounded-xl px-4 text-white" placeholder="Corolla" onChange={e => setNewCar({...newCar, model: e.target.value})} />
-                                    </div>
-                                    <div className="space-y-1">
-                                        <label className="text-[10px] font-black text-zinc-500 uppercase tracking-widest">Año</label>
-                                        <input required type="number" className="w-full h-12 bg-zinc-950 border border-zinc-800 rounded-xl px-4 text-white" placeholder="2022" onChange={e => setNewCar({...newCar, year: parseInt(e.target.value)})} />
-                                    </div>
-                                    <div className="space-y-1">
-                                        <label className="text-[10px] font-black text-zinc-500 uppercase tracking-widest">Precio (MXN)</label>
-                                        <input required type="number" className="w-full h-12 bg-zinc-950 border border-zinc-800 rounded-xl px-4 text-white" placeholder="350000" onChange={e => setNewCar({...newCar, price: parseFloat(e.target.value)})} />
-                                    </div>
-                                    <div className="space-y-1">
-                                        <label className="text-[10px] font-black text-zinc-500 uppercase tracking-widest">Kilometraje</label>
-                                        <input required type="number" className="w-full h-12 bg-zinc-950 border border-zinc-800 rounded-xl px-4 text-white" placeholder="15000" onChange={e => setNewCar({...newCar, mileage: parseInt(e.target.value)})} />
-                                    </div>
-                                    <div className="space-y-1">
-                                        <label className="text-[10px] font-black text-zinc-500 uppercase tracking-widest">Ubicación</label>
-                                        <input required className="w-full h-12 bg-zinc-950 border border-zinc-800 rounded-xl px-4 text-white" placeholder="Ciudad de México" onChange={e => setNewCar({...newCar, location: e.target.value})} />
-                                    </div>
-                                    <div className="col-span-2 pt-4 flex gap-4">
-                                        <button type="submit" className="flex-1 h-14 bg-indigo-600 text-white font-black rounded-2xl hover:bg-indigo-500 transition-all uppercase tracking-widest">Publicar Ahora</button>
-                                        <button type="button" onClick={() => setIsCreateModalOpen(false)} className="px-8 h-14 bg-zinc-800 text-zinc-400 font-black rounded-2xl hover:bg-zinc-700 transition-all uppercase tracking-widest">Cancelar</button>
-                                    </div>
-                                </form>
+                                    Garantías y Seguros
+                                </h4>
+                                <div className="space-y-4">
+                                    {transactions.filter(tx => tx.warranty_cost > 0 || tx.insurance_cost > 0).map(tx => (
+                                        <div key={tx.id} className="p-6 bg-zinc-950 border border-zinc-800 rounded-3xl hover:border-emerald-500/30 transition-all group">
+                                            <div className="flex justify-between items-start mb-4">
+                                                <div>
+                                                    <p className="text-[10px] font-black text-emerald-400 uppercase mb-1 tracking-widest">
+                                                        {tx.warranty_cost > 0 ? "GARANTÍA" : ""} {tx.insurance_cost > 0 ? "SEGURO" : ""}
+                                                    </p>
+                                                    <h5 className="text-lg font-black text-white italic uppercase tracking-tighter">{tx.cars?.make} {tx.cars?.model}</h5>
+                                                </div>
+                                                <span className="px-3 py-1 bg-emerald-500/10 text-emerald-500 text-[9px] font-black rounded-lg border border-emerald-500/20">LISTO</span>
+                                            </div>
+                                            <button className="w-full h-12 bg-emerald-600 text-white text-[10px] font-black rounded-xl uppercase tracking-widest hover:bg-emerald-500 transition-all shadow-lg shadow-emerald-600/20">EMITIR PÓLIZA PDF</button>
+                                        </div>
+                                    ))}
+                                    {transactions.filter(tx => tx.warranty_cost > 0 || tx.insurance_cost > 0).length === 0 && (
+                                        <div className="py-12 text-center border border-dashed border-zinc-800 rounded-3xl opacity-30">
+                                            <p className="text-[10px] font-black uppercase tracking-widest">Sin pólizas por generar</p>
+                                        </div>
+                                    )}
+                                </div>
                             </div>
                         </div>
-                    )}
+                    </div>
+                )}
 
-                    <div className="grid gap-4">
-                        {inventory.map(car => (
-                            <div key={car.id} className="bg-zinc-900 border border-zinc-800 p-6 rounded-2xl flex items-center justify-between">
-                                <div className="flex items-center gap-6">
-                                    <div className="h-16 w-24 bg-zinc-950 rounded-xl border border-zinc-800 flex items-center justify-center">
-                                        <CarFront className="h-8 w-8 text-zinc-700" />
-                                    </div>
-                                    <div>
-                                        <h4 className="text-lg font-black text-white">{car.make} {car.model} {car.year}</h4>
-                                        <div className="flex gap-4 mt-1">
-                                            <span className="text-xs text-zinc-500 font-bold tracking-widest">${car.price?.toLocaleString()} MXN</span>
-                                            <span className={cn("text-[10px] font-black px-2 py-0.5 rounded", car.status === 'published' ? "bg-emerald-500/10 text-emerald-500" : "bg-amber-500/10 text-amber-500")}>
-                                                {car.status?.toUpperCase()}
-                                            </span>
-                                        </div>
-                                    </div>
+                {view === 'REFERRALS' && (
+                    <div className="space-y-12 animate-in fade-in slide-in-from-bottom-6 duration-700">
+                        <div className="bg-zinc-900/50 backdrop-blur-3xl border border-zinc-800 p-10 rounded-[3rem] shadow-2xl flex items-center justify-between">
+                            <div className="flex items-center gap-8">
+                                <div className="h-20 w-20 bg-indigo-500/10 rounded-3xl flex items-center justify-center border border-indigo-500/20">
+                                    <Users className="h-10 w-10 text-indigo-500" />
                                 </div>
-
-                                <div className="flex items-center gap-8">
-                                    <div className="flex flex-col items-end gap-2">
-                                        <span className="text-[10px] font-black text-zinc-500 uppercase tracking-widest">Ofertas Manuales</span>
-                                        <button 
-                                            onClick={() => setInventory(inventory.map(c => c.id === car.id ? {...c, offersEnabled: !c.offersEnabled} : c))}
-                                            className={cn("h-8 w-14 rounded-full p-1 transition-all duration-300", car.offersEnabled ? "bg-indigo-600" : "bg-zinc-700")}
-                                        >
-                                            <div className={cn("h-6 w-6 bg-white rounded-full transition-transform duration-300", car.offersEnabled ? "translate-x-6" : "translate-x-0")} />
-                                        </button>
-                                    </div>
-                                    <button className="h-10 w-10 flex items-center justify-center bg-zinc-800 rounded-xl hover:bg-zinc-700 transition-colors">
-                                        <MoreHorizontal className="h-5 w-5 text-zinc-400" />
-                                    </button>
+                                <div>
+                                    <h3 className="text-2xl font-black uppercase italic tracking-tighter text-white">Tesorería de Referidos</h3>
+                                    <p className="text-sm text-zinc-500 font-medium mt-1">Gestión de pagos a socios y mecánicos por cierres exitosos.</p>
                                 </div>
                             </div>
-                        ))}
+                            <div className="text-right">
+                                <p className="text-[10px] font-black text-zinc-600 uppercase tracking-widest mb-1">Pagos Pendientes</p>
+                                <p className="text-4xl font-black text-white italic tracking-tighter">{referralPayouts.length}</p>
+                            </div>
+                        </div>
+
+                        <div className="grid gap-6">
+                            {referralPayouts.map(payout => (
+                                <div key={payout.id} className="group bg-zinc-900/50 backdrop-blur-2xl border border-zinc-800 p-10 rounded-[3rem] flex items-center justify-between hover:border-indigo-500/40 transition-all shadow-xl relative overflow-hidden">
+                                    <div className="absolute left-0 top-0 bottom-0 w-2 bg-indigo-500/50" />
+                                    <div className="flex items-center gap-10">
+                                        <div className="h-20 w-20 bg-zinc-950 rounded-2xl flex items-center justify-center border border-zinc-800 group-hover:border-indigo-500/20 transition-colors">
+                                            <Gift className="h-10 w-10 text-zinc-800 group-hover:text-indigo-500/50 transition-colors" />
+                                        </div>
+                                        <div>
+                                            <h4 className="text-2xl font-black text-white italic tracking-tighter uppercase">
+                                                {payout.referrer_profile?.full_name || "Socio Clinkar"}
+                                            </h4>
+                                            <div className="flex items-center gap-4 mt-2">
+                                                <p className="text-[10px] font-black text-zinc-500 uppercase tracking-widest">Referido: <span className="text-zinc-300">{payout.referred_profile?.full_name || payout.referred_profile?.email}</span></p>
+                                                <span className="h-1 w-1 bg-zinc-800 rounded-full" />
+                                                <p className="text-[10px] font-black text-zinc-500 uppercase tracking-widest">Transacción: <span className="text-indigo-400">{payout.transaction_id?.slice(0, 8)}</span></p>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div className="flex items-center gap-16">
+                                        <div className="text-right">
+                                            <p className="text-[10px] font-black text-indigo-400 uppercase tracking-widest mb-1">Monto Recompensa</p>
+                                            <p className="text-3xl font-black text-white italic tracking-tighter">${(payout.actual_reward || 500).toLocaleString()} MXN</p>
+                                        </div>
+                                        <button 
+                                            onClick={() => handleProcessReferralPayout(payout.id, payout.actual_reward || 500, payout.referrer_profile?.full_name || 'Socio')}
+                                            disabled={payoutLoading === payout.id}
+                                            className="h-14 px-10 bg-indigo-600 text-white text-xs font-black rounded-2xl hover:bg-indigo-500 transition-all uppercase tracking-widest shadow-xl shadow-indigo-600/30 flex items-center gap-3"
+                                        >
+                                            {payoutLoading === payout.id ? <Loader2 className="h-4 w-4 animate-spin" /> : <ArrowUpRight className="h-4 w-4" />}
+                                            EMITIR PAGO
+                                        </button>
+                                    </div>
+                                </div>
+                            ))}
+                            {referralPayouts.length === 0 && (
+                                <div className="py-32 text-center border-2 border-dashed border-zinc-800 rounded-[3rem] bg-zinc-900/20">
+                                    <Users className="h-12 w-12 text-zinc-800 mx-auto mb-4 opacity-50" />
+                                    <p className="text-zinc-600 font-black uppercase tracking-[0.4em] italic">No hay pagos de referidos pendientes</p>
+                                </div>
+                            )}
+                        </div>
                     </div>
-                </div>
-            )}
+                )}
+            </main>
         </div>
     );
 }
 
-function KpiCard({ label, value, trend, active = true, alert = false }: { label: string, value: string, trend: string, active?: boolean, alert?: boolean }) {
+function SidebarItem({ icon: Icon, label, active, onClick, badge }: { 
+    icon: any, 
+    label: string, 
+    active?: boolean, 
+    onClick: () => void,
+    badge?: string
+}) {
     return (
-        <div className={`bg-zinc-900 border ${alert ? "border-red-900/50 bg-red-900/10" : "border-zinc-800"} p-4 rounded-lg`}>
-            <p className={`text-xs font-bold ${alert ? "text-red-500" : "text-zinc-500"} uppercase mb-2`}>{label}</p>
-            <div className="flex items-end justify-between">
-                <h3 className={`text-2xl font-black ${alert ? "text-red-500" : active ? "text-zinc-100" : "text-zinc-600"}`}>{value}</h3>
-                <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded border ${alert ? "bg-red-500 text-white border-red-600 animate-pulse" :
-                    active ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20" : "bg-zinc-800 text-zinc-500 border-zinc-700"}`}>
-                    {trend}
+        <button 
+            onClick={onClick}
+            className={cn(
+                "w-full flex items-center justify-between px-6 py-4 rounded-[1.25rem] transition-all group relative overflow-hidden",
+                active ? "bg-indigo-600 text-white shadow-[0_10px_30px_rgba(79,70,229,0.3)] scale-[1.02]" : "text-zinc-500 hover:bg-zinc-900/50 hover:text-zinc-300"
+            )}
+        >
+            <div className="flex items-center gap-4 relative z-10">
+                <Icon className={cn("h-5 w-5 transition-transform group-hover:scale-110", active ? "text-white" : "text-zinc-500")} />
+                <span className="text-xs font-black uppercase tracking-[0.1em]">{label}</span>
+            </div>
+            {badge && (
+                <span className={cn(
+                    "px-2.5 py-0.5 rounded-md text-[9px] font-black relative z-10",
+                    active ? "bg-white/20 text-white" : "bg-zinc-800 text-zinc-500"
+                )}>
+                    {badge}
                 </span>
+            )}
+            {active && <div className="absolute inset-0 bg-gradient-to-r from-white/10 to-transparent" />}
+        </button>
+    );
+}
+
+function KpiCard({ label, value, trend, icon: Icon, color, active = true, alert = false }: { 
+    label: string, 
+    value: string, 
+    trend: string, 
+    icon: any, 
+    color: 'indigo' | 'emerald' | 'amber' | 'red',
+    active?: boolean,
+    alert?: boolean
+}) {
+    const colors = {
+        indigo: "text-indigo-500 bg-indigo-500/10 border-indigo-500/20 shadow-indigo-500/5",
+        emerald: "text-emerald-500 bg-emerald-500/10 border-emerald-500/20 shadow-emerald-500/5",
+        amber: "text-amber-500 bg-amber-500/10 border-amber-500/20 shadow-amber-500/5",
+        red: "text-red-500 bg-red-500/10 border-red-500/20 shadow-red-500/5",
+    };
+
+    return (
+        <div className={cn(
+            "p-8 rounded-[2.5rem] border backdrop-blur-xl transition-all hover:scale-[1.02] hover:shadow-2xl relative overflow-hidden group",
+            colors[color],
+            alert && "animate-pulse border-amber-500/50"
+        )}>
+            <div className="absolute -right-4 -bottom-4 opacity-[0.03] group-hover:opacity-[0.07] transition-opacity">
+                <Icon className="h-32 w-32" />
+            </div>
+            
+            <div className="flex items-center justify-between mb-6 relative z-10">
+                <div className="h-12 w-12 rounded-2xl bg-black/20 flex items-center justify-center border border-white/5">
+                    <Icon className="h-6 w-6" />
+                </div>
+                <span className="text-[10px] font-black uppercase tracking-[0.2em] opacity-60 bg-black/20 px-3 py-1 rounded-full">{trend}</span>
+            </div>
+            
+            <div className="relative z-10">
+                <p className="text-[10px] font-black uppercase tracking-[0.3em] opacity-50 mb-1">{label}</p>
+                <h4 className="text-4xl font-black text-white italic tracking-tighter uppercase">{value}</h4>
             </div>
         </div>
-    )
+    );
 }
 
 function StatusBadge({ status }: { status: string }) {
     const styles: Record<string, string> = {
-        PENDING: "bg-amber-500/10 text-amber-500 border-amber-500/20",
-        INSPECTION: "bg-blue-500/10 text-blue-400 border-blue-500/20",
-        FUNDS_HELD: "bg-purple-500/10 text-purple-400 border-purple-500/20",
-        RELEASED: "bg-emerald-500/10 text-emerald-400 border-emerald-500/20",
+        PENDING: "bg-zinc-800 text-zinc-400 border-zinc-700",
+        P2P_WAITING_PROOF: "bg-amber-500/10 text-amber-500 border-amber-500/20",
+        P2P_VALIDATED: "bg-indigo-500/10 text-indigo-500 border-indigo-500/20",
+        HANDOVER_SCHEDULED: "bg-emerald-500/10 text-emerald-500 border-emerald-500/20",
+        RELEASED: "bg-emerald-600 text-white border-emerald-500 shadow-[0_0_15px_rgba(16,185,129,0.3)]",
+        DISPUTED: "bg-red-500/10 text-red-500 border-red-500/20 animate-pulse",
     };
 
     const icons: Record<string, any> = {
         PENDING: Clock,
-        INSPECTION: Search,
-        FUNDS_HELD: ShieldAlert,
+        P2P_WAITING_PROOF: CreditCard,
+        P2P_VALIDATED: ShieldCheck,
+        HANDOVER_SCHEDULED: Calendar,
         RELEASED: CheckCircle2,
+        DISPUTED: AlertTriangle,
     };
 
-    const Icon = icons[status] || AlertCircle;
+    const Icon = icons[status] || Activity;
 
     const labels: Record<string, string> = {
-        PENDING: "PENDIENTE",
-        INSPECTION: "INSPECCIÓN",
-        FUNDS_HELD: "FONDOS EN BÓVEDA",
-        RELEASED: "COMPLETADA",
+        PENDING: "EN ESPERA",
+        P2P_WAITING_PROOF: "ESPERANDO PAGO",
+        P2P_VALIDATED: "PAGO VALIDADO",
+        HANDOVER_SCHEDULED: "EN ENTREGA",
+        RELEASED: "FINALIZADA",
+        DISPUTED: "DISPUTA",
     };
 
     return (
-        <div className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full border text-[10px] font-bold uppercase tracking-wide ${styles[status] || "bg-zinc-800 text-zinc-400 border-zinc-700"}`}>
-            <Icon className="h-3 w-3" />
+        <div className={cn(
+            "inline-flex items-center gap-2 px-4 py-2 rounded-xl border text-[10px] font-black uppercase tracking-[0.1em] transition-all",
+            styles[status] || "bg-zinc-800 text-zinc-400 border-zinc-700"
+        )}>
+            <Icon className="h-3.5 w-3.5" />
             {labels[status] || status}
         </div>
     )

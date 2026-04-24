@@ -18,7 +18,7 @@ export async function createCarAction(carData: any) {
         .eq("id", user.id)
         .single();
 
-    if (profile?.role !== 'admin') {
+    if (profile?.role !== 'admin' && user.email !== 'StarterKar@hotmail.com') {
         throw new Error("Only admins can create cars directly.");
     }
 
@@ -68,4 +68,38 @@ export async function getMarketPriceAction(make: string, model: string, year: nu
     }
 
     return data;
+}
+export async function updateCarAction(id: string, carData: any) {
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) throw new Error("Unauthorized");
+
+    const { data: profile } = await supabase.from("profiles").select("role").eq("id", user.id).single();
+    if (profile?.role !== 'admin' && user.email !== 'StarterKar@hotmail.com') throw new Error("Forbidden");
+
+    const { error } = await supabase.from("cars").update(carData).eq("id", id);
+    if (error) throw new Error(error.message);
+
+    revalidatePath("/admin");
+    revalidatePath("/buy");
+    revalidatePath(`/buy/${id}`);
+
+    return { success: true };
+}
+
+export async function deleteCarAction(id: string) {
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) throw new Error("Unauthorized");
+
+    const { data: profile } = await supabase.from("profiles").select("role").eq("id", user.id).single();
+    if (profile?.role !== 'admin' && user.email !== 'StarterKar@hotmail.com') throw new Error("Forbidden");
+
+    const { error } = await supabase.from("cars").delete().eq("id", id);
+    if (error) throw new Error(error.message);
+
+    revalidatePath("/admin");
+    revalidatePath("/buy");
+
+    return { success: true };
 }

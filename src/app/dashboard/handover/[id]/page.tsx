@@ -21,7 +21,7 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { StarterKarSeal } from "@/components/market/StarterKarSeal";
 import { 
-    releaseVaultFundsAction, 
+    confirmP2PHandoverAction, 
     reportDiscrepancyAction 
 } from "@/app/actions/transaction";
 
@@ -81,12 +81,12 @@ export default function HandoverPage() {
     const handleReleaseFunds = async () => {
         setProcessing(true);
         try {
-            const result = await releaseVaultFundsAction(transaction.id);
+            const result = await confirmP2PHandoverAction(transaction.id);
             if (result.success) {
                 setCompleted(true);
                 toast.success("¡Operación completada con éxito!");
             } else {
-                toast.error(result.error || "Error al liberar fondos");
+                toast.error(result.error || "Error al confirmar entrega");
             }
         } catch {
             toast.error("Error de conexión");
@@ -134,12 +134,12 @@ export default function HandoverPage() {
                                 <ShieldCheck className="h-5 w-5" />
                             </div>
                             <div>
-                                <p className="text-[10px] font-black uppercase text-zinc-400 leading-none mb-1">Bóveda Digital</p>
+                                <p className="text-[10px] font-black uppercase text-zinc-400 leading-none mb-1">Trato Seguro P2P</p>
                                 <p className={cn(
                                     "text-sm font-black uppercase transition-all",
                                     transaction.status === 'DISPUTED' ? "text-amber-500 animate-pulse" : "text-emerald-600"
                                 )}>
-                                    {transaction.status === 'DISPUTED' ? "En Mediación" : "Resguardado"}
+                                    {transaction.status === 'DISPUTED' ? "En Mediación" : "Pago Validado"}
                                 </p>
                             </div>
                         </div>
@@ -150,8 +150,7 @@ export default function HandoverPage() {
                     {/* 1. Vault Status Hero */}
                     <div className="animate-in fade-in slide-in-from-top-12 duration-1000">
                     <VaultStatus 
-                        status={transaction.status === 'IN_VAULT' ? 'FUNDS_HELD' : 
-                               transaction.status === 'COMPLETED' ? 'RELEASED' : 'PENDING'} 
+                        status={transaction.status === 'RELEASED' ? 'RELEASED' : 'FUNDS_HELD'} 
                         carPrice={transaction.car_price} 
                         carYear={transaction.cars?.year || 2024}
                         role={user?.id === transaction?.seller_id ? 'seller' : 'buyer'}
@@ -179,7 +178,7 @@ export default function HandoverPage() {
                             </div>
                             <h2 className="text-4xl font-black text-zinc-900 italic uppercase tracking-tighter italic">Checklist de Entrega Física</h2>
                             <p className="text-zinc-500 text-sm font-medium mt-4 leading-relaxed">
-                                Una vez revisados los servicios adicionales, valida el estado físico. **No liberes los fondos hasta estar satisfecho.** Si detectas anomalías, activa la Mediación Élite.
+                                Una vez revisados los servicios adicionales, valida el estado físico. **Al confirmar la entrega, notificas a StarterKar que la transacción P2P ha sido satisfactoria.**
                             </p>
                         </div>
 
@@ -247,10 +246,10 @@ export default function HandoverPage() {
                         <div className="bg-emerald-50 p-6 rounded-3xl border border-emerald-100 text-left">
                             <div className="flex items-center gap-3 mb-2">
                                 <CheckCircle className="h-5 w-5 text-emerald-600" />
-                                <span className="text-sm font-black text-emerald-900 uppercase">Fondos Liberados</span>
+                                <span className="text-sm font-black text-emerald-900 uppercase">Transacción P2P Exitosa</span>
                             </div>
                             <p className="text-[10px] text-emerald-800 font-medium leading-relaxed">
-                                <strong>Acuse de Recibo:</strong> El vendedor confirma la recepción íntegra de los recursos. El comprador acepta la unidad en las condiciones físicas y legales validadas.
+                                <strong>Acuse de Recibo:</strong> Se confirma la entrega física y legal del vehículo. StarterKar certifica que la transferencia bancaria fue validada y el trato se ha cerrado bajo el protocolo de Trato Seguro.
                             </p>
                         </div>
                         <div className="grid grid-cols-1 gap-3">
