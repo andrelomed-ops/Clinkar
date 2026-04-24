@@ -348,35 +348,41 @@ export function CarFormModal({ isOpen, onClose, onSubmit, initialData, isLoading
 
                     {activeTab === "gallery" && (
                         <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-300">
-                            <div className="p-6 bg-zinc-950 border border-zinc-800 rounded-[2rem]">
-                                <h4 className="text-sm font-bold text-white mb-4 flex items-center gap-2">
-                                    <CameraIcon className="h-5 w-5 text-indigo-500" /> Galería de Imágenes
-                                </h4>
-                                <ImageUpload onUpload={(urls) => setFormData({...formData, images: [...formData.images, ...urls]})} />
-                            </div>
+                            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                                {/* Upload Button as first item */}
+                                <div className="aspect-video">
+                                    <ImageUpload onUpload={(urls) => setFormData({...formData, images: [...formData.images, ...urls]})} />
+                                </div>
 
-                            {formData.images.length > 0 && (
-                                <div className="grid grid-cols-4 gap-4 mt-8">
-                                    {formData.images.map((url, i) => (
-                                        <div key={i} className={cn(
-                                            "relative aspect-video rounded-2xl overflow-hidden border-2 transition-all",
-                                            i === 0 ? "border-indigo-500" : "border-transparent"
-                                        )}>
-                                            <img src={url} alt="Uploaded" className="w-full h-full object-cover" />
+                                {/* Uploaded Images */}
+                                {formData.images.map((url, i) => (
+                                    <div key={i} className={cn(
+                                        "relative aspect-video rounded-2xl overflow-hidden border-2 transition-all group",
+                                        i === 0 ? "border-indigo-500 ring-2 ring-indigo-500/20" : "border-zinc-800"
+                                    )}>
+                                        <img src={url} alt="Uploaded" className="w-full h-full object-cover transition-transform group-hover:scale-110 duration-500" />
+                                        <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
                                             <button 
                                                 type="button"
                                                 onClick={() => setFormData({...formData, images: formData.images.filter((_, idx) => idx !== i)})}
-                                                className="absolute top-2 right-2 h-6 w-6 bg-black/50 backdrop-blur-md rounded-full flex items-center justify-center text-white hover:bg-red-500 transition-colors"
+                                                className="h-8 w-8 bg-red-500 rounded-lg flex items-center justify-center text-white hover:bg-red-600 transition-colors shadow-lg"
                                             >
-                                                <X className="h-3 w-3" />
+                                                <X className="h-4 w-4" />
                                             </button>
-                                            {i === 0 && (
-                                                <div className="absolute bottom-2 left-2 px-2 py-1 bg-indigo-600 text-[8px] font-black uppercase tracking-widest text-white rounded-md">
-                                                    Principal
-                                                </div>
-                                            )}
                                         </div>
-                                    ))}
+                                        {i === 0 && (
+                                            <div className="absolute bottom-2 left-2 px-2 py-1 bg-indigo-600 text-[8px] font-black uppercase tracking-widest text-white rounded-md shadow-lg">
+                                                Principal
+                                            </div>
+                                        )}
+                                    </div>
+                                ))}
+                            </div>
+
+                            {formData.images.length === 0 && (
+                                <div className="py-20 flex flex-col items-center justify-center border-2 border-dashed border-zinc-800 rounded-[3rem] bg-zinc-900/30">
+                                    <CameraIcon className="h-12 w-12 text-zinc-700 mb-4" />
+                                    <p className="text-zinc-500 text-xs font-bold uppercase tracking-widest">Sin imágenes cargadas</p>
                                 </div>
                             )}
                         </div>

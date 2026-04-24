@@ -11,7 +11,6 @@ interface ImageUploadProps {
 
 export function ImageUpload({ onUpload }: ImageUploadProps) {
     const [uploading, setUploading] = useState(false);
-    const [previews, setPreviews] = useState<string[]>([]);
     const supabase = createBrowserClient();
 
     const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -19,15 +18,13 @@ export function ImageUpload({ onUpload }: ImageUploadProps) {
 
         setUploading(true);
         const files = Array.from(e.target.files);
-        const newPreviews = files.map(file => URL.createObjectURL(file));
-        setPreviews(prev => [...prev, ...newPreviews]);
 
         const uploadPromises = files.map(async (file) => {
             const fileExt = file.name.split('.').pop();
             const fileName = `${Math.random()}.${fileExt}`;
             const filePath = `cars/${fileName}`;
 
-            const { data, error } = await supabase.storage
+            const { error } = await supabase.storage
                 .from('car-images')
                 .upload(filePath, file);
 
@@ -47,42 +44,31 @@ export function ImageUpload({ onUpload }: ImageUploadProps) {
         const successfulUrls = urls.filter((url): url is string => url !== null);
         onUpload(successfulUrls);
         setUploading(false);
+        // Reset input
+        e.target.value = '';
     };
 
     return (
-        <div className="space-y-4">
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                {previews.map((preview, i) => (
-                    <div key={i} className="relative aspect-video rounded-xl overflow-hidden bg-secondary">
-                        <img src={preview} alt="Preview" className="w-full h-full object-cover" />
-                        <button
-                            type="button"
-                            className="absolute top-1 right-1 h-6 w-6 rounded-full bg-black/50 text-white flex items-center justify-center backdrop-blur-sm"
-                            onClick={() => setPreviews(prev => prev.filter((_, index) => index !== i))}
-                        >
-                            <X className="h-3 w-3" />
-                        </button>
-                    </div>
-                ))}
-                <label className="flex flex-col items-center justify-center aspect-video rounded-xl border-2 border-dashed border-border hover:border-primary hover:bg-primary/5 cursor-pointer transition-all">
-                    {uploading ? (
-                        <Loader2 className="h-6 w-6 animate-spin text-primary" />
-                    ) : (
-                        <>
-                            <Upload className="h-6 w-6 text-muted-foreground" />
-                            <span className="text-xs font-medium text-muted-foreground mt-2">Subir fotos</span>
-                        </>
-                    )}
-                    <input
-                        type="file"
-                        multiple
-                        accept="image/*"
-                        className="hidden"
-                        onChange={handleFileChange}
-                        disabled={uploading}
-                    />
-                </label>
-            </div>
-        </div>
+        <label className="flex flex-col items-center justify-center aspect-video w-full h-full rounded-[2rem] border-2 border-dashed border-zinc-800 hover:border-indigo-500 hover:bg-indigo-500/5 cursor-pointer transition-all group overflow-hidden">
+            {uploading ? (
+                <div className="flex flex-col items-center gap-2">
+                    <Loader2 className="h-8 w-8 animate-spin text-indigo-500" />
+                    <span className="text-[10px] font-black text-zinc-500 uppercase tracking-widest">Subiendo...</span>
+                </div>
+            ) : (
+                <>
+                    <Upload className="h-8 w-8 text-zinc-600 group-hover:text-indigo-500 transition-colors" />
+                    <span className="text-[10px] font-black text-zinc-500 group-hover:text-zinc-300 uppercase tracking-widest mt-3 transition-colors">Subir fotos</span>
+                </>
+            )}
+            <input
+                type="file"
+                multiple
+                accept="image/*"
+                className="hidden"
+                onChange={handleFileChange}
+                disabled={uploading}
+            />
+        </label>
     );
 }
