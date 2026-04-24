@@ -103,3 +103,16 @@ export async function deleteCarAction(id: string) {
 
     return { success: true };
 }
+
+export async function getAutomatedSpecsAction(make: string, model: string) {
+    const { getSpecsForModel } = await import("@/lib/car-data");
+    const specs = getSpecsForModel(make, model);
+    
+    if (specs) {
+        return { success: true, specs };
+    }
+
+    // Fallback: If not in local dict, we could call an AI service here.
+    // For now, return generic data based on common sense if the user insists.
+    return { success: false, message: "Modelo no encontrado en base de datos local." };
+}

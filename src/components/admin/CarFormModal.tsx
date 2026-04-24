@@ -6,6 +6,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { ImageUpload } from "@/components/marketplace/image-upload";
+import { POPULAR_BRANDS, MODEL_SUGGESTIONS } from "@/lib/car-data";
+import { getAutomatedSpecsAction } from "@/app/actions/cars";
+import { toast } from "sonner";
 
 interface CarFormModalProps {
     isOpen: boolean;
@@ -67,6 +70,38 @@ export function CarFormModal({ isOpen, onClose, onSubmit, initialData, isLoading
             }
         }
     });
+
+    const [magicLoading, setMagicLoading] = useState(false);
+
+    const handleMagicFill = async () => {
+        if (!formData.make || !formData.model) {
+            toast.error("Ingresa Marca y Modelo primero");
+            return;
+        }
+
+        setMagicLoading(true);
+        try {
+            const result = await getAutomatedSpecsAction(formData.make, formData.model);
+            if (result.success && result.specs) {
+                setFormData(prev => ({
+                    ...prev,
+                    technical_specs: result.specs
+                }));
+                toast.success("¡Ficha técnica auto-completada!", {
+                    description: `Se cargaron especificaciones para ${formData.make} ${formData.model}`,
+                    icon: <Zap className="h-4 w-4 text-amber-500" />
+                });
+            } else {
+                toast.error("Modelo no encontrado", {
+                    description: "No tenemos datos técnicos para esta unidad específica."
+                });
+            }
+        } catch (err) {
+            toast.error("Error al buscar datos");
+        } finally {
+            setMagicLoading(false);
+        }
+    };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -135,10 +170,30 @@ export function CarFormModal({ isOpen, onClose, onSubmit, initialData, isLoading
                     {activeTab === "general" && (
                         <div className="grid grid-cols-2 gap-6 animate-in fade-in slide-in-from-bottom-4 duration-300">
                             <FormGroup label="Marca">
-                                <input required value={formData.make} placeholder="Ej. BMW" className="form-input" onChange={e => setFormData({...formData, make: e.target.value})} />
+                                <input required list="brands-list" value={formData.make} placeholder="Ej. BMW" className="form-input" onChange={e => setFormData({...formData, make: e.target.value})} />
+                                <datalist id="brands-list">
+                                    {POPULAR_BRANDS.map(b => <option key={b} value={b} />)}
+                                </datalist>
                             </FormGroup>
                             <FormGroup label="Modelo">
-                                <input required value={formData.model} placeholder="Ej. M3" className="form-input" onChange={e => setFormData({...formData, model: e.target.value})} />
+                                <div className="relative group">
+                                    <input required list="models-list" value={formData.model} placeholder="Ej. M3" className="form-input" onChange={e => setFormData({...formData, model: e.target.value})} />
+                                    <datalist id="models-list">
+                                        {(MODEL_SUGGESTIONS[formData.make] || []).map(m => <option key={m} value={m} />)}
+                                    </datalist>
+                                    
+                                    {formData.make && formData.model && (
+                                        <button 
+                                            type="button"
+                                            onClick={handleMagicFill}
+                                            disabled={magicLoading}
+                                            className="absolute right-2 top-1/2 -translate-y-1/2 h-10 px-4 bg-indigo-600/10 hover:bg-indigo-600 text-indigo-400 hover:text-white border border-indigo-500/20 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all flex items-center gap-2"
+                                        >
+                                            {magicLoading ? <Loader2 className="h-3 w-3 animate-spin" /> : <Zap className="h-3 w-3" />}
+                                            Magia IA
+                                        </button>
+                                    )}
+                                </div>
                             </FormGroup>
                             <FormGroup label="Año">
                                 <input required type="number" value={formData.year} className="form-input" onChange={e => setFormData({...formData, year: parseInt(e.target.value)})} />
