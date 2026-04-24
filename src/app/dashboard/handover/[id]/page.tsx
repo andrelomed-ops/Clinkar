@@ -47,10 +47,12 @@ export default function HandoverPage() {
                     status: 'IN_VAULT',
                     car_price: 385000,
                     buyer_id: user?.id,
+                    seller_id: 'mock-seller-id', // Added for testing roles
                     cars: {
                         make: "BMW",
                         model: "M3 Sedan",
-                        location: "Naucalpan, Estado de México"
+                        location: "Naucalpan, Estado de México",
+                        year: 2021
                     },
                     metadata: {
                         scheduled_delivery_date: new Date().toISOString(),
@@ -152,6 +154,7 @@ export default function HandoverPage() {
                                transaction.status === 'COMPLETED' ? 'RELEASED' : 'PENDING'} 
                         carPrice={transaction.car_price} 
                         carYear={transaction.cars?.year || 2024}
+                        role={user?.id === transaction?.seller_id ? 'seller' : 'buyer'}
                     />
                     </div>
 
@@ -246,9 +249,14 @@ export default function HandoverPage() {
                                 <CheckCircle className="h-5 w-5 text-emerald-600" />
                                 <span className="text-sm font-black text-emerald-900 uppercase">Fondos Liberados</span>
                             </div>
-                            <p className="text-[10px] text-emerald-800 font-medium leading-relaxed">El vendedor ha sido notificado. Disfruta tu nueva unidad con la tranquilidad de StarterKar.</p>
+                            <p className="text-[10px] text-emerald-800 font-medium leading-relaxed">
+                                <strong>Acuse de Recibo:</strong> El vendedor confirma la recepción íntegra de los recursos. El comprador acepta la unidad en las condiciones físicas y legales validadas.
+                            </p>
                         </div>
                         <div className="grid grid-cols-1 gap-3">
+                            <Button variant="outline" className="h-14 font-black text-xs uppercase tracking-widest border-zinc-200" onClick={() => toast.success("Descargando Constancia de Liquidación...")}>
+                                <FileText className="mr-2 h-4 w-4" /> Descargar Constancia Legal
+                            </Button>
                             <Button asChild size="lg" className="h-14 font-black text-sm uppercase tracking-widest bg-indigo-600 hover:bg-indigo-500">
                                 <Link href="/dashboard">Ir a mi Garage</Link>
                             </Button>

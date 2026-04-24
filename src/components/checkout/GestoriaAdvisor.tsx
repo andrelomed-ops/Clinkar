@@ -39,18 +39,18 @@ export function GestoriaAdvisor({ onSelect }: GestoriaAdvisorProps) {
                     </div>
                     <div className="space-y-4">
                         <div>
-                            <h3 className="text-2xl font-black tracking-tight leading-none mb-2">Gestoría de Legalización</h3>
-                            <p className="text-[10px] text-muted-foreground font-black uppercase tracking-[0.2em]">Revisión de Pedimento y Factura</p>
+                            <h3 className="text-2xl font-black tracking-tight leading-none mb-2">Gestoría VIP</h3>
+                            <p className="text-[10px] text-muted-foreground font-black uppercase tracking-[0.2em]">Cambio de Propietario y Placas</p>
                         </div>
 
                         <p className="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed max-w-md">
-                            ¿El auto es importado o fronterizo? Nuestros gestores certificados validan el **Pedimento A1** y el historial de nacionalización e impagos antes de liberar tus fondos.
+                            Evita filas y trámites engorrosos. Nuestros gestores certificados realizan el cambio de propietario y trámite de placas ante SEMOVI/SCT por ti.
                         </p>
 
                         <div className="flex flex-col sm:flex-row items-center gap-4 pt-2">
-                            <div className="text-3xl font-black text-indigo-600">$1,250 <span className="text-[10px] text-zinc-400 font-bold uppercase ml-1 tracking-widest">Pago único</span></div>
+                            <div className="text-3xl font-black text-indigo-600">$1,000 <span className="text-[10px] text-zinc-400 font-bold uppercase ml-1 tracking-widest">+ Derechos</span></div>
                             <div className="flex items-center gap-2 text-[10px] font-black text-emerald-600 uppercase tracking-widest bg-emerald-500/10 px-3 py-1.5 rounded-full border border-emerald-500/20">
-                                <CheckCircle2 className="h-3.5 w-3.5" /> Protección Legal 100%
+                                <CheckCircle2 className="h-3.5 w-3.5" /> Trámite Express
                             </div>
                         </div>
                     </div>
@@ -65,7 +65,7 @@ export function GestoriaAdvisor({ onSelect }: GestoriaAdvisorProps) {
                         active ? "bg-emerald-100 text-emerald-700 hover:bg-emerald-200 border-emerald-200" : "bg-zinc-900 text-white hover:bg-zinc-800"
                     )}
                 >
-                    {loading ? <Loader2 className="animate-spin h-5 w-5" /> : active ? "Servicio Añadido" : "Añadir Asesoría"}
+                    {loading ? <Loader2 className="animate-spin h-5 w-5" /> : active ? "Servicio Añadido" : "Añadir Gestoría"}
                 </Button>
             </div>
 
@@ -75,11 +75,11 @@ export function GestoriaAdvisor({ onSelect }: GestoriaAdvisorProps) {
                     <div className="grid md:grid-cols-2 gap-4">
                         <div className="flex items-center gap-3 p-3 bg-white dark:bg-zinc-900 rounded-xl border border-emerald-500/10">
                             <FileSearch className="h-5 w-5 text-emerald-500" />
-                            <span className="text-[11px] font-bold">Validación de Pedimento A1</span>
+                            <span className="text-[11px] font-bold">Gestión de Bajas y Altas</span>
                         </div>
                         <div className="flex items-center gap-3 p-3 bg-white dark:bg-zinc-900 rounded-xl border border-emerald-500/10">
                             <ShieldAlert className="h-5 w-5 text-emerald-500" />
-                            <span className="text-[11px] font-bold">Chequeo de Alerta de Robo Int.</span>
+                            <span className="text-[11px] font-bold">Entrega de Placas a Domicilio</span>
                         </div>
                     </div>
                 </div>

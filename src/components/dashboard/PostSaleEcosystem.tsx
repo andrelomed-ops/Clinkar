@@ -18,7 +18,8 @@ import {
     FileSearch,
     Gavel,
     ChevronRight,
-    ExternalLink
+    ExternalLink,
+    Star
 } from "lucide-react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
@@ -100,7 +101,7 @@ export function PostSaleEcosystem({
             title: "Póliza de Cobertura Mecánica",
             desc: "Extensión de garantía hasta por 12 meses. Protege motor, transmisión y sistema eléctrico.",
             icon: <ShieldAlert className="h-5 w-5" />,
-            priceLabel: "Desde $4,500",
+            priceLabel: "Desde $2,500",
             status: "RECOMENDADO",
             priority: 3
         },
@@ -260,11 +261,19 @@ export function PostSaleEcosystem({
                         title="Contrato de Compraventa" 
                         desc="Modelo oficial PROFECO para compraventa de autos usados entre particulares." 
                         icon={<Gavel className="h-5 w-5" />}
+                        onDownload={() => toast.success("Generando Contrato PROFECO...")}
                     />
                     <DownloadCard 
                         title="Carta Responsiva" 
                         desc="Formato legal para el deslinde de responsabilidades al momento de la entrega física." 
                         icon={<ShieldCheck className="h-5 w-5" />}
+                        onDownload={() => toast.success("Generando Carta Responsiva...")}
+                    />
+                    <DownloadCard 
+                        title="Certificado StarterKar" 
+                        desc="Resumen ejecutivo de los 150 puntos de inspección y validación legal." 
+                        icon={<Star className="h-5 w-5" />}
+                        onDownload={() => toast.success("Descargando Certificado 150 Puntos...")}
                     />
                 </div>
             </div>
@@ -303,9 +312,12 @@ export function PostSaleEcosystem({
     );
 }
 
-function DownloadCard({ title, desc, icon }: { title: string, desc: string, icon: React.ReactNode }) {
+function DownloadCard({ title, desc, icon, onDownload }: { title: string, desc: string, icon: React.ReactNode, onDownload?: () => void }) {
     return (
-        <div className="p-6 bg-zinc-50 rounded-2xl border border-zinc-100 flex items-start gap-4 group hover:bg-white hover:border-indigo-200 transition-all cursor-pointer">
+        <div 
+            onClick={onDownload}
+            className="p-6 bg-zinc-50 rounded-2xl border border-zinc-100 flex items-start gap-4 group hover:bg-white hover:border-indigo-200 transition-all cursor-pointer"
+        >
             <div className="h-10 w-10 bg-white rounded-lg flex items-center justify-center text-zinc-400 group-hover:text-indigo-600 shadow-sm transition-colors">
                 {icon}
             </div>

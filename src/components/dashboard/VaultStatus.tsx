@@ -14,6 +14,7 @@ interface VaultStatusProps {
     mechanicalStatus?: "PENDING" | "VERIFIED" | "ISSUE";
     contractStatus?: "PENDING" | "SIGNED";
     currency?: string;
+    role?: 'buyer' | 'seller';
 }
 
 export function VaultStatus({
@@ -23,7 +24,8 @@ export function VaultStatus({
     legalStatus = "PENDING",
     mechanicalStatus = "PENDING",
     contractStatus = "SIGNED", // Default verified for now or passed from parent
-    currency = "MXN"
+    currency = "MXN",
+    role = "buyer"
 }: VaultStatusProps) {
     const [isMounted, setIsMounted] = useState(false);
 
@@ -33,9 +35,15 @@ export function VaultStatus({
     }, []);
 
     // Constants provided by user logic
-    const BUYER_COMMISSION = carPrice * 0.05; // 5% fee for example
-    const SELLER_RECEIVES = carPrice;
-    const TOTAL_DEPOSITED = carPrice + BUYER_COMMISSION;
+    const SELLER_COMMISSION_RATE = 0.035; // 3.5%
+    const BUYER_LOGISTICS_FEE = 2500;
+    const BUYER_PROMO_DISCOUNT = -2500;
+    
+    const SELLER_COMMISSION = carPrice * SELLER_COMMISSION_RATE;
+    const BUYER_NET_COMMISSION = BUYER_LOGISTICS_FEE + BUYER_PROMO_DISCOUNT;
+    
+    const SELLER_RECEIVES = carPrice; // Gross before commission payment
+    const TOTAL_DEPOSITED = role === 'buyer' ? carPrice : carPrice; // For now total in vault is car price
 
     const formatCurrency = (val: number) => {
         if (!isMounted || val === undefined || val === null) return "...";
@@ -95,9 +103,9 @@ export function VaultStatus({
                             </div>
                             <div>
                                 <p className="font-bold text-foreground text-lg">
-                                    ${formatCurrency(TOTAL_DEPOSITED)} {currency}
+                                    ${formatCurrency(carPrice)} {currency}
                                 </p>
-                                <p className="text-xs text-muted-foreground">Recibimos tu transferencia</p>
+                                <p className="text-xs text-muted-foreground">Fondos resguardados en Bóveda Digital</p>
                             </div>
                         </div>
                     </div>
@@ -122,23 +130,69 @@ export function VaultStatus({
 
                         <div className="bg-card rounded-xl p-4 border border-border space-y-3">
                             <p className="text-xs text-muted-foreground mb-2">Desglose de la operación:</p>
-                            {/* SELLER PART */}
-                            <div className="flex justify-between items-center">
-                                <div className="flex items-center gap-2">
-                                    <div className="h-2 w-2 rounded-full bg-purple-500" />
-                                    <span className="text-sm font-medium text-slate-600">Pago al Vendedor</span>
-                                </div>
-                                <span className="font-mono font-bold text-slate-700">${formatCurrency(SELLER_RECEIVES)}</span>
-                            </div>
-                            {/* FEE PART */}
-                            <div className="flex justify-between items-center">
-                                <div className="flex items-center gap-2">
-                                    <div className="h-2 w-2 rounded-full bg-blue-500" />
-                                    <span className="text-sm font-medium text-muted-foreground">Comisión StarterKar</span>
-                                </div>
-                                <span className="font-mono font-bold text-foreground/80">${formatCurrency(BUYER_COMMISSION)}</span>
-                            </div>
+                            
+                            {role === 'buyer' ? (
+                                <>
+                                    <div className="flex justify-between items-center">
+                                        <div className="flex items-center gap-2">
+                                            <div className="h-2 w-2 rounded-full bg-purple-500" />
+                                            <span className="text-sm font-medium text-slate-600">Valor de la Unidad</span>
+                                        </div>
+                                        <span className="font-mono font-bold text-slate-700">${formatCurrency(carPrice)}</span>
+                                    </div>
+                                    <div className="flex justify-between items-center">
+                                        <div className="flex items-center gap-2">
+                                            <div className="h-2 w-2 rounded-full bg-blue-500" />
+                                            <span className="text-sm font-medium text-muted-foreground">Logística de Compra</span>
+                                        </div>
+                                        <span className="font-mono font-bold text-foreground/80">${formatCurrency(BUYER_LOGISTICS_FEE)}</span>
+                                    </div>
+                                    <div className="flex justify-between items-center bg-emerald-50 p-2 rounded-lg border border-emerald-100">
+                                        <div className="flex items-center gap-2">
+                                            <div className="h-2 w-2 rounded-full bg-emerald-500" />
+                                            <span className="text-[10px] font-black uppercase text-emerald-700 tracking-tight">Descuento StarterKar (Promoción)</span>
+                                        </div>
+                                        <span className="font-mono font-bold text-emerald-600">-${formatCurrency(Math.abs(BUYER_PROMO_DISCOUNT))}</span>
+                                    </div>
+                                </>
+                            ) : (
+                                <>
+                                    <div className="flex justify-between items-center">
+                                        <div className="flex items-center gap-2">
+                                            <div className="h-2 w-2 rounded-full bg-purple-500" />
+                                            <span className="text-sm font-medium text-slate-600">Precio de Venta</span>
+                                        </div>
+                                        <span className="font-mono font-bold text-slate-700">${formatCurrency(carPrice)}</span>
+                                    </div>
+                                    <div className="flex justify-between items-center bg-amber-50 p-2 rounded-lg border border-amber-100">
+                                        <div className="flex items-center gap-2">
+                                            <AlertTriangle className="h-3 w-3 text-amber-600" />
+                                            <span className="text-[10px] font-black uppercase text-amber-700 tracking-tight">Comisión StarterKar (3.5%)</span>
+                                        </div>
+                                        <span className="font-mono font-bold text-amber-600">${formatCurrency(SELLER_COMMISSION)}</span>
+                                    </div>
+                                </>
+                            )}
                         </div>
+                        
+                        {role === 'seller' && (
+                            <div className="mt-4 p-4 bg-zinc-900 rounded-xl border border-zinc-800 text-white space-y-3">
+                                <p className="text-[10px] font-black uppercase tracking-widest text-zinc-500">Liquidación de Comisión</p>
+                                <p className="text-[10px] text-zinc-300 leading-relaxed">
+                                    Una vez liberados los fondos del auto, el pago de la comisión (${formatCurrency(SELLER_COMMISSION)} MXN) debe realizarse vía transferencia a:
+                                </p>
+                                <div className="grid grid-cols-2 gap-4 pt-2 border-t border-zinc-800">
+                                    <div>
+                                        <p className="text-[8px] font-bold text-zinc-500 uppercase">Banco</p>
+                                        <p className="text-[10px] font-black">BBVA MÉXICO</p>
+                                    </div>
+                                    <div>
+                                        <p className="text-[8px] font-bold text-zinc-500 uppercase">CLABE</p>
+                                        <p className="text-[10px] font-black">0121 8000 1234 5678 90</p>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
                         <p className="mt-3 text-[10px] text-muted-foreground/60 leading-tight">
                             * {LEGAL_TEXTS.NON_CUSTODIAL_DISCLAIMER}
                         </p>
