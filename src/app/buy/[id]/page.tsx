@@ -314,6 +314,7 @@ export default function CarDetailPage({ params }: { params: Promise<{ id: string
                                         carId={car.id} 
                                         carPrice={car.price} 
                                         carLocation={car.location} 
+                                        category={car.category || 'Car'}
                                     />
                                 </div>
 
