@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { ShieldCheck, Upload, Camera, CheckCircle2, ChevronRight, Lock, UserCheck } from "lucide-react";
+import { ShieldCheck, Upload, Camera as CameraIcon, CheckCircle2, ChevronRight, Lock, UserCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
@@ -158,7 +158,7 @@ export function VerificationWizard() {
                                     <img src={URL.createObjectURL(files.selfie)} className="w-full h-full object-cover" />
                                 ) : (
                                     <div className="text-center">
-                                        <Camera className="h-12 w-12 text-zinc-300 mx-auto mb-2" />
+                                        <CameraIcon className="h-12 w-12 text-zinc-300 mx-auto mb-2" />
                                         <p className="text-sm text-zinc-400">Cámara pendiente de activación</p>
                                     </div>
                                 )}

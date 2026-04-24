@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { Camera, Upload, Info, CheckCircle2, Loader2, X, Zap, ShieldCheck } from "lucide-react";
+import { Camera as CameraIcon, Upload, Info, CheckCircle2, Loader2, X, Zap, ShieldCheck } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { createBrowserClient } from "@/lib/supabase/client";
 import { validateImageQuality } from "@/lib/ai-brain";
@@ -146,7 +146,7 @@ export function PhotoEvidence({ photos, onPhotosChange, carId }: PhotoEvidencePr
                             <div className="p-8 bg-secondary/10 flex flex-col justify-center border-r">
                                 <div className="flex items-center gap-3 mb-4">
                                     <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
-                                        <Camera className="h-5 w-5" />
+                                        <CameraIcon className="h-5 w-5" />
                                     </div>
                                     <h4 className="text-lg font-bold">{cat.label}</h4>
                                 </div>
@@ -209,7 +209,7 @@ export function PhotoEvidence({ photos, onPhotosChange, carId }: PhotoEvidencePr
                                         disabled={uploading === cat.id}
                                         className="aspect-square rounded-2xl bg-indigo-600 text-white flex flex-col items-center justify-center gap-2 hover:scale-[1.02] active:scale-95 transition-all group disabled:opacity-50 shadow-lg shadow-indigo-600/20"
                                     >
-                                        <Camera className="h-6 w-6" />
+                                        <CameraIcon className="h-6 w-6" />
                                         <span className="text-[10px] font-black uppercase tracking-widest">Captura IA</span>
                                     </button>
 

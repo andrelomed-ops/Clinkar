@@ -125,7 +125,7 @@ export function CarFormModal({ isOpen, onClose, onSubmit, initialData, isLoading
                     <TabButton 
                         active={activeTab === "gallery"} 
                         onClick={() => setActiveTab("gallery")} 
-                        icon={<Camera className="h-4 w-4" />} 
+                        icon={<CameraIcon className="h-4 w-4" />} 
                         label="Galería" 
                     />
                 </div>
