@@ -4,10 +4,7 @@ import { useState } from "react";
 import {
     FileText,
     MapPin,
-    History,
-    Settings2,
     ArrowRight,
-    CarFront,
     UserCog,
     Download,
     BellRing,
@@ -17,13 +14,11 @@ import {
     CheckCircle2,
     Truck,
     ShieldAlert,
-    CreditCard,
-    UserCheck,
-    Warehouse,
-    Home,
-    Smartphone,
     Zap,
-    Package
+    FileSearch,
+    Gavel,
+    ChevronRight,
+    ExternalLink
 } from "lucide-react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
@@ -55,15 +50,13 @@ export function PostSaleEcosystem({
     const [hasInsurance, setHasInsurance] = useState(initialInsurance);
     const [logistics, setLogistics] = useState<any>(null);
     const [warranty, setWarranty] = useState<{ type: WarrantyType, cost: number } | null>(null);
-    const [deliveryType, setDeliveryType] = useState<'workshop' | 'home'>('workshop');
-    const [remoteMode, setRemoteMode] = useState(false);
 
     const handleGestoriaSelect = async (active: boolean) => {
         if (!active) return;
         try {
-            await updateTransactionServicesAction(transactionId, { gestoriaCost: 1250 });
+            await updateTransactionServicesAction(transactionId, { gestoriaCost: 1000 });
             setHasGestoria(true);
-            toast.success("Gestoría añadida a tu orden");
+            toast.success("Gestoría de cambio de propietario añadida ($1,000 + derechos)");
         } catch (e) {
             toast.error("Error al añadir gestoría");
         }
@@ -77,7 +70,7 @@ export function PostSaleEcosystem({
                 insuranceCost: cost 
             });
             setHasInsurance(true);
-            toast.success(`Seguro con ${provider} añadido`);
+            toast.success(`Seguro con ${provider} añadido satisfactoriamente`);
         } catch (e) {
             toast.error("Error al añadir seguro");
         }
@@ -85,348 +78,243 @@ export function PostSaleEcosystem({
 
     const services = [
         {
-            id: "logistica",
-            title: "Logística Élite",
-            desc: "Cotización de traslado en grúa plataforma especializada.",
-            icon: <Truck className="h-6 w-6" />,
-            color: "from-blue-600 to-indigo-600",
-            badge: "A DOMICILIO"
-        },
-        {
-            id: "garantia",
-            title: "Protección Total",
-            desc: "Extensión de garantía mecánica hasta por 12 meses.",
-            icon: <ShieldAlert className="h-6 w-6" />,
-            color: "from-emerald-600 to-teal-600",
-            badge: "CERTIFICADO"
-        },
-        {
-            id: "entrega",
-            title: "Protocolo Entrega",
-            desc: "Gestión de cita en taller aliado o entrega VIP en casa.",
-            icon: <Package className="h-6 w-6" />,
-            color: "from-amber-500 to-orange-600",
-            badge: "SEGURO"
-        },
-        {
-            id: "operacion",
-            title: "Modalidad Híbrida",
-            desc: "Compra remota con videollamada HD o presencial.",
-            icon: <Zap className="h-6 w-6" />,
-            color: "from-purple-600 to-pink-600",
-            badge: "REMOTA OK"
+            id: "seguro_aliado",
+            title: "Seguro de Cobertura Amplia",
+            desc: "Protección inmediata antes de salir a carretera. Pólizas certificadas con los mejores partners.",
+            icon: <Briefcase className="h-5 w-5" />,
+            priceLabel: "Cotización Real",
+            status: hasInsurance ? "CONTRATADO" : "PENDIENTE",
+            priority: 1
         },
         {
             id: "cambio_propietario",
-            title: "Gestoría VIP",
-            desc: "Trámites de cambio de propietario ante SCT/SEMOVI.",
-            icon: <UserCog className="h-6 w-6" />,
-            color: "from-zinc-800 to-zinc-950",
-            badge: "SIN FILAS"
+            title: "Gestoría VIP (Cambio Placas/Propietario)",
+            desc: "Nos encargamos del trámite ante SCT/SEMOVI para que tu auto esté a tu nombre sin filas.",
+            icon: <UserCog className="h-5 w-5" />,
+            priceLabel: "$1,000 + Derechos",
+            status: hasGestoria ? "SOLICITADO" : "DISPONIBLE",
+            priority: 2
         },
         {
-            id: "seguro_aliado",
-            title: "Blindaje Seguro",
-            desc: "Póliza de cobertura amplia con partners certificados.",
-            icon: <Briefcase className="h-6 w-6" />,
-            color: "from-red-600 to-rose-700",
-            badge: "INMEDIATO"
+            id: "garantia",
+            title: "Póliza de Cobertura Mecánica",
+            desc: "Extensión de garantía hasta por 12 meses. Protege motor, transmisión y sistema eléctrico.",
+            icon: <ShieldAlert className="h-5 w-5" />,
+            priceLabel: "Desde $4,500",
+            status: "RECOMENDADO",
+            priority: 3
+        },
+        {
+            id: "logistica",
+            title: "Entrega Virtual con Traslado",
+            desc: "Traslado en grúa plataforma especializada. El costo se calcula basado en la distancia.",
+            icon: <Truck className="h-5 w-5" />,
+            priceLabel: "Costo variable",
+            status: "OPCIONAL",
+            priority: 4
         },
         {
             id: "aviso_venta",
-            title: "Notificación IA",
-            desc: "Aviso de enajenación automático ante autoridades.",
-            icon: <FileText className="h-6 w-6" />,
-            color: "from-indigo-400 to-blue-500",
-            badge: "OBLIGATORIO"
-        },
-        {
-            id: "carta_responsiva",
-            title: "Blindaje Legal",
-            desc: "Carta responsiva digital con validez jurídica.",
-            icon: <ShieldCheck className="h-6 w-6" />,
-            color: "from-slate-700 to-slate-900",
-            badge: "PDF FIRMADO"
+            title: "Aviso de Enajenación (Legal)",
+            desc: "Notificación oficial ante autoridades para deslindar responsabilidades fiscales y legales.",
+            icon: <FileSearch className="h-5 w-5" />,
+            priceLabel: "$300 pesos",
+            status: "DISPONIBLE",
+            priority: 5
         },
     ];
 
     return (
-        <div className="space-y-8 animate-in fade-in slide-in-from-bottom-12 duration-1000">
-            <div className="relative bg-white/40 dark:bg-zinc-900/40 backdrop-blur-3xl border border-white/20 dark:border-white/5 rounded-[3.5rem] p-10 shadow-[0_32px_64px_-16px_rgba(0,0,0,0.1)] overflow-hidden">
-                {/* Premium Background Effects */}
-                <div className="absolute top-0 right-0 w-96 h-96 bg-indigo-600/10 rounded-full blur-[120px] -translate-y-1/2 translate-x-1/2" />
-                <div className="absolute bottom-0 left-0 w-96 h-96 bg-emerald-600/10 rounded-full blur-[120px] translate-y-1/2 -translate-x-1/2" />
-
-                <div className="relative z-10 flex flex-col lg:flex-row lg:items-end justify-between gap-8 mb-12">
-                    <div>
-                        <div className="flex items-center gap-3 mb-3">
-                            <div className="h-1.5 w-16 bg-gradient-to-r from-indigo-600 to-transparent rounded-full" />
-                            <span className="text-[10px] font-black text-indigo-600 dark:text-indigo-400 uppercase tracking-[0.4em]">Ecosistema StarterKar</span>
-                        </div>
-                        <h2 className="text-5xl font-black text-zinc-900 dark:text-white tracking-tighter italic uppercase leading-none">
-                            Post-Venta <span className="text-indigo-600 underline decoration-indigo-600/20 underline-offset-8">Élite</span>
-                        </h2>
-                        <p className="text-zinc-500 text-xs font-bold uppercase tracking-widest mt-6 max-w-sm">
-                            Logística, trámites y servicios de valor agregado personalizados para tu nueva unidad.
-                        </p>
+        <div className="space-y-12">
+            {/* Minimalist Hero Section */}
+            <div className="bg-white rounded-[2rem] border border-zinc-100 p-8 md:p-12 shadow-sm relative overflow-hidden">
+                <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-50 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 opacity-50" />
+                
+                <div className="relative z-10 max-w-2xl">
+                    <div className="flex items-center gap-2 mb-4">
+                        <Zap className="h-4 w-4 text-indigo-600 fill-indigo-600" />
+                        <span className="text-[10px] font-black text-indigo-600 uppercase tracking-[0.2em]">Servicios de Valor Agregado</span>
                     </div>
-                    
-                    <div className="bg-zinc-900 dark:bg-zinc-950 px-8 py-6 rounded-[2rem] border border-white/10 shadow-2xl flex items-center gap-6">
-                        <div className="h-12 w-12 bg-emerald-500/10 rounded-2xl flex items-center justify-center text-emerald-500 border border-emerald-500/20">
-                            <Zap className="h-6 w-6 animate-pulse" />
-                        </div>
-                        <div>
-                            <p className="text-[10px] font-black uppercase text-zinc-500 tracking-[0.2em] mb-1">Estatus Bóveda</p>
-                            <p className="text-lg font-black text-white italic tracking-tight uppercase">Sincronizado</p>
-                        </div>
-                    </div>
+                    <h2 className="text-4xl font-black text-zinc-900 tracking-tighter uppercase italic leading-[0.9]">
+                        Prepara tu entrega <br />
+                        <span className="text-indigo-600">StarterKar Premium</span>
+                    </h2>
+                    <p className="mt-6 text-zinc-500 text-sm font-medium leading-relaxed">
+                        Asegura tu inversión y circula tranquilo desde el primer kilómetro. Estos servicios son esenciales para una transición legal y física sin complicaciones.
+                    </p>
                 </div>
+            </div>
 
-                {/* Service Grid - Premium Tiles */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6 mb-12">
-                    {services.map((service) => (
-                        <button
-                            key={service.id}
-                            onClick={() => setRequestedService(service.id)}
-                            className={cn(
-                                "group relative p-8 rounded-[2.5rem] border-2 text-left transition-all duration-700 overflow-hidden flex flex-col h-full",
-                                requestedService === service.id
-                                    ? "border-indigo-600 bg-white dark:bg-zinc-800 shadow-3xl shadow-indigo-500/30 scale-[1.02]"
-                                    : "border-zinc-100 dark:border-white/5 bg-white/50 dark:bg-white/5 hover:border-indigo-300 hover:scale-[1.01] hover:shadow-xl"
-                            )}
-                        >
-                            {/* Accent Glow */}
-                            <div className={cn(
-                                "absolute -top-12 -right-12 w-32 h-32 rounded-full blur-[40px] transition-opacity duration-700",
-                                requestedService === service.id ? "bg-indigo-600/20 opacity-100" : "bg-indigo-600/5 opacity-0 group-hover:opacity-100"
-                            )} />
-
-                            <div className="mb-8 flex justify-between items-start relative z-10">
+            {/* Main Services List */}
+            <div className="grid grid-cols-1 gap-4">
+                {services.map((service) => (
+                    <div 
+                        key={service.id}
+                        className={cn(
+                            "group bg-white rounded-2xl border transition-all duration-300 overflow-hidden",
+                            requestedService === service.id 
+                                ? "border-indigo-600 ring-4 ring-indigo-50 shadow-lg" 
+                                : "border-zinc-100 hover:border-zinc-200 hover:shadow-md"
+                        )}
+                    >
+                        <div className="p-6 md:p-8 flex flex-col md:flex-row md:items-center justify-between gap-6">
+                            <div className="flex items-start gap-6">
                                 <div className={cn(
-                                    "h-14 w-14 rounded-2xl flex items-center justify-center transition-all duration-700 shadow-lg",
-                                    requestedService === service.id 
-                                        ? "bg-indigo-600 text-white scale-110 rotate-6" 
-                                        : "bg-zinc-100 dark:bg-zinc-800 text-zinc-500 group-hover:bg-indigo-50 group-hover:text-indigo-600"
+                                    "h-12 w-12 rounded-xl flex items-center justify-center transition-colors",
+                                    requestedService === service.id ? "bg-indigo-600 text-white" : "bg-zinc-50 text-zinc-400 group-hover:bg-indigo-50 group-hover:text-indigo-600"
                                 )}>
                                     {service.icon}
                                 </div>
-                                <span className={cn(
-                                    "text-[8px] font-black px-3 py-1.5 rounded-full border transition-all",
-                                    requestedService === service.id 
-                                        ? "bg-indigo-50 text-indigo-600 border-indigo-100" 
-                                        : "bg-zinc-50 dark:bg-zinc-900 text-zinc-400 border-zinc-100 dark:border-zinc-800"
-                                )}>
-                                    {service.badge}
-                                </span>
+                                <div>
+                                    <div className="flex items-center gap-3 mb-1">
+                                        <h4 className="font-black text-sm uppercase tracking-tight text-zinc-900">{service.title}</h4>
+                                        <span className={cn(
+                                            "text-[8px] font-black px-2 py-0.5 rounded-full border",
+                                            service.status === 'CONTRATADO' ? "bg-emerald-50 text-emerald-600 border-emerald-100" : "bg-zinc-50 text-zinc-400 border-zinc-100"
+                                        )}>
+                                            {service.status}
+                                        </span>
+                                    </div>
+                                    <p className="text-xs text-zinc-500 font-medium max-w-xl">{service.desc}</p>
+                                </div>
                             </div>
-
-                            <div className="relative z-10 mt-auto">
-                                <h4 className={cn(
-                                    "font-black text-sm uppercase tracking-tight mb-2 italic transition-colors",
-                                    requestedService === service.id ? "text-indigo-900 dark:text-white" : "text-zinc-900 dark:text-zinc-200"
-                                )}>{service.title}</h4>
-                                <p className="text-[10px] text-zinc-500 dark:text-zinc-400 leading-relaxed font-bold uppercase tracking-widest opacity-80 group-hover:opacity-100 transition-opacity">
-                                    {service.desc}
-                                </p>
-                            </div>
-                        </button>
-                    ))}
-                </div>
-
-                {/* Detailed Action Area - Focus on Content */}
-                {requestedService && (
-                    <div className="relative bg-zinc-900 dark:bg-black rounded-[3rem] p-10 border border-white/10 shadow-3xl animate-in slide-in-from-top-8 duration-700 mb-10 overflow-hidden">
-                        <div className="absolute top-0 right-0 p-8 opacity-5">
-                            <Zap className="h-64 w-64" />
-                        </div>
-                        <div className="relative z-10">
-                            {requestedService === 'logistica' && (
-                                <LogisticsWidget
-                                    carLocation={carLocation}
-                                    onQuote={(q) => {
-                                        setLogistics(q);
-                                        if(q) toast.success(`Cotización de traslado: $${q.cost.toLocaleString()}`);
-                                    }}
-                                />
-                            )}
-                            {requestedService === 'garantia' && (
-                                <WarrantySelector
-                                    carPrice={carPrice}
-                                    onSelect={(w) => {
-                                        setWarranty(w);
-                                        if(w) toast.success(`Garantía ${w.type} añadida`);
-                                    }}
-                                />
-                            )}
-                            {requestedService === 'entrega' && (
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                    <button
-                                        onClick={() => {setDeliveryType('workshop'); toast.info("Protocolo Taller Aliado activado");}}
-                                        className={cn(
-                                            "group p-10 rounded-[2.5rem] border-2 text-left transition-all duration-500",
-                                            deliveryType === 'workshop' 
-                                                ? "border-indigo-600 bg-white/5 shadow-2xl" 
-                                                : "border-zinc-800 bg-transparent opacity-40 hover:opacity-100"
-                                        )}
-                                    >
-                                        <Warehouse className={cn("h-12 w-12 mb-6 transition-all", deliveryType === 'workshop' ? "text-indigo-500 scale-110" : "text-zinc-600")} />
-                                        <h5 className="font-black text-xl text-white italic uppercase tracking-tighter mb-2">Taller Aliado</h5>
-                                        <p className="text-xs text-zinc-500 font-medium">Recepción en Punto Seguro StarterKar. Sin costo de logística local.</p>
-                                    </button>
-                                    <button
-                                        onClick={() => {setDeliveryType('home'); toast.info("Envío a Domicilio activado");}}
-                                        className={cn(
-                                            "group p-10 rounded-[2.5rem] border-2 text-left transition-all duration-500",
-                                            deliveryType === 'home' 
-                                                ? "border-indigo-600 bg-white/5 shadow-2xl" 
-                                                : "border-zinc-800 bg-transparent opacity-40 hover:opacity-100"
-                                        )}
-                                    >
-                                        <Home className={cn("h-12 w-12 mb-6 transition-all", deliveryType === 'home' ? "text-indigo-500 scale-110" : "text-zinc-600")} />
-                                        <h5 className="font-black text-xl text-white italic uppercase tracking-tighter mb-2">Entrega VIP</h5>
-                                        <p className="text-xs text-zinc-500 font-medium">Traslado en grúa plataforma hasta tu puerta. Protocolo de firma remoto.</p>
-                                    </button>
+                            
+                            <div className="flex flex-row md:flex-col items-center md:items-end justify-between md:justify-center gap-4 border-t md:border-t-0 pt-4 md:pt-0 border-zinc-50">
+                                <div className="text-right">
+                                    <p className="text-[10px] font-black text-zinc-400 uppercase tracking-widest mb-0.5">Precio</p>
+                                    <p className="text-sm font-black text-zinc-900 italic tracking-tight">{service.priceLabel}</p>
                                 </div>
-                            )}
-                            {requestedService === 'operacion' && (
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                    <button
-                                        onClick={() => {setRemoteMode(false); toast.info("Modalidad Presencial confirmada");}}
-                                        className={cn(
-                                            "group p-10 rounded-[2.5rem] border-2 text-left transition-all duration-500",
-                                            !remoteMode 
-                                                ? "border-indigo-600 bg-white/5 shadow-2xl" 
-                                                : "border-zinc-800 bg-transparent opacity-40 hover:opacity-100"
-                                        )}
-                                    >
-                                        <MapPin className={cn("h-12 w-12 mb-6 transition-all", !remoteMode ? "text-indigo-500 scale-110" : "text-zinc-600")} />
-                                        <h5 className="font-black text-xl text-white italic uppercase tracking-tighter mb-2">Cita Física</h5>
-                                        <p className="text-xs text-zinc-500 font-medium">Intercambio de llaves y documentos en presencia de inspector.</p>
-                                    </button>
-                                    <button
-                                        onClick={() => {setRemoteMode(true); toast.info("Venta Remota 100% Digital activada");}}
-                                        className={cn(
-                                            "group p-10 rounded-[2.5rem] border-2 text-left transition-all duration-500",
-                                            remoteMode 
-                                                ? "border-indigo-600 bg-white/5 shadow-2xl" 
-                                                : "border-zinc-800 bg-transparent opacity-40 hover:opacity-100"
-                                        )}
-                                    >
-                                        <Smartphone className={cn("h-12 w-12 mb-6 transition-all", remoteMode ? "text-indigo-500 scale-110" : "text-zinc-600")} />
-                                        <h5 className="font-black text-xl text-white italic uppercase tracking-tighter mb-2">Remoto IA</h5>
-                                        <p className="text-xs text-zinc-500 font-medium">Validación vía videollamada HD y liberación de fondos con QR.</p>
-                                    </button>
-                                </div>
-                            )}
-                            {requestedService === 'cambio_propietario' && <GestoriaAdvisor onSelect={handleGestoriaSelect} />}
-                            {requestedService === 'seguro_aliado' && <InsuranceSelector carValue={carPrice} onSelectOption={handleInsuranceSelect} />}
-                            {requestedService === 'aviso_venta' && (
-                                <div className="flex flex-col md:flex-row items-center gap-8">
-                                    <div className="h-20 w-20 bg-amber-500/10 rounded-3xl flex items-center justify-center text-amber-500 border border-amber-500/20">
-                                        <AlertTriangle className="h-10 w-10" />
-                                    </div>
-                                    <div className="flex-1">
-                                        <h4 className="text-white font-black text-xl italic uppercase tracking-tight mb-2">Aviso de Venta SEMOVI</h4>
-                                        <p className="text-sm text-zinc-500 font-medium mb-6">Generamos tu notificación oficial para {state}. El documento está listo para descarga y firma digital.</p>
-                                        <button onClick={() => toast.success("Documento generado satisfactoriamente")} className="h-14 px-8 bg-white text-black rounded-2xl font-black text-xs uppercase tracking-widest hover:scale-105 transition-all flex items-center gap-3">
-                                            <Download className="h-5 w-5" /> Descargar Formato Oficial
-                                        </button>
-                                    </div>
-                                </div>
-                            )}
-                            {requestedService === 'carta_responsiva' && (
-                                <div className="flex flex-col md:flex-row items-center gap-8">
-                                    <div className="h-20 w-20 bg-indigo-500/10 rounded-3xl flex items-center justify-center text-indigo-500 border border-indigo-500/20">
-                                        <ShieldCheck className="h-10 w-10" />
-                                    </div>
-                                    <div className="flex-1">
-                                        <h4 className="text-white font-black text-xl italic uppercase tracking-tight mb-2">Contrato de Deslinde Legal</h4>
-                                        <p className="text-sm text-zinc-500 font-medium mb-6">Protección 360° ante multas o incidentes post-entrega. Validez jurídica ante notario.</p>
-                                        <Link href={`/dashboard/release-letter/${transactionId}`} className="inline-flex h-14 px-8 bg-indigo-600 text-white rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-indigo-500 hover:scale-105 transition-all items-center gap-3">
-                                            <FileText className="h-5 w-5" /> Generar Carta Digital
-                                        </Link>
-                                    </div>
-                                </div>
-                            )}
-                        </div>
-                    </div>
-                )}
-
-                {/* Concierge Inteligente - The Masterpiece */}
-                <div className="relative group mt-8">
-                    <div className={cn(
-                        "absolute -inset-1 bg-gradient-to-r from-indigo-600 via-purple-600 to-indigo-600 rounded-[3rem] blur-xl opacity-25 group-hover:opacity-50 transition-opacity duration-1000",
-                        remindersEnabled && "opacity-60 blur-2xl"
-                    )} />
-                    
-                    <div className="relative bg-zinc-900 dark:bg-black rounded-[2.5rem] p-10 flex flex-col xl:flex-row items-center justify-between gap-12 border border-white/10 shadow-3xl overflow-hidden">
-                        <div className="absolute top-0 left-0 w-full h-full bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-10" />
-                        
-                        <div className="relative z-10 flex flex-col md:flex-row items-center gap-8">
-                            <div className={cn(
-                                "h-24 w-24 rounded-[2rem] flex items-center justify-center transition-all duration-1000 border-2 relative",
-                                remindersEnabled 
-                                    ? "bg-white text-indigo-600 border-white shadow-[0_0_50px_rgba(255,255,255,0.3)] scale-110" 
-                                    : "bg-white/5 text-white border-white/10"
-                            )}>
-                                <BellRing className={cn("h-10 w-10", remindersEnabled && "animate-bounce")} />
-                                {remindersEnabled && (
-                                    <div className="absolute -top-2 -right-2 h-6 w-6 bg-emerald-500 rounded-full flex items-center justify-center text-[10px] font-black text-white animate-pulse">
-                                        ON
-                                    </div>
-                                )}
-                            </div>
-                            <div className="text-center md:text-left">
-                                <h3 className="font-black text-3xl text-white italic uppercase tracking-tighter mb-2">Concierge <span className="text-indigo-500">Inteligente</span></h3>
-                                <div className="flex flex-wrap justify-center md:justify-start gap-4">
-                                    <span className="text-[10px] font-black text-zinc-500 uppercase tracking-widest flex items-center gap-2">
-                                        <CheckCircle2 className="h-3 w-3 text-emerald-500" /> Mantenimientos
-                                    </span>
-                                    <span className="text-[10px] font-black text-zinc-500 uppercase tracking-widest flex items-center gap-2">
-                                        <CheckCircle2 className="h-3 w-3 text-emerald-500" /> Tenencias
-                                    </span>
-                                    <span className="text-[10px] font-black text-zinc-500 uppercase tracking-widest flex items-center gap-2">
-                                        <CheckCircle2 className="h-3 w-3 text-emerald-500" /> Verificaciones
-                                    </span>
-                                </div>
+                                <button 
+                                    onClick={() => setRequestedService(requestedService === service.id ? null : service.id)}
+                                    className={cn(
+                                        "h-10 px-6 rounded-lg font-black text-[10px] uppercase tracking-widest transition-all",
+                                        requestedService === service.id 
+                                            ? "bg-zinc-900 text-white" 
+                                            : "bg-indigo-600 text-white hover:bg-indigo-700 shadow-md shadow-indigo-200"
+                                    )}
+                                >
+                                    {requestedService === service.id ? "Cerrar Panel" : "Configurar"}
+                                </button>
                             </div>
                         </div>
 
-                        {remindersEnabled && (
-                            <div className="relative z-10 flex-1 max-w-md animate-in fade-in slide-in-from-right-8 duration-700">
-                                <div className="bg-white/5 rounded-2xl p-6 border border-white/5 space-y-4">
-                                    <p className="text-[10px] font-black text-indigo-400 uppercase tracking-widest">Próximas Alertas</p>
-                                    <div className="flex items-center justify-between text-xs font-bold text-zinc-400">
-                                        <span className="uppercase">Cambio de Aceite (Est.)</span>
-                                        <span className="text-white italic">En 4,200 km</span>
-                                    </div>
-                                    <div className="flex items-center justify-between text-xs font-bold text-zinc-400">
-                                        <span className="uppercase">Tenencia {new Date().getFullYear() + 1}</span>
-                                        <span className="text-white italic">Enero 1st</span>
-                                    </div>
+                        {/* Interactive Selection Area */}
+                        {requestedService === service.id && (
+                            <div className="px-8 pb-8 animate-in slide-in-from-top-4 duration-300">
+                                <div className="p-8 bg-zinc-50 rounded-2xl border border-zinc-100">
+                                    {service.id === 'seguro_aliado' && <InsuranceSelector carValue={carPrice} onSelectOption={handleInsuranceSelect} />}
+                                    {service.id === 'cambio_propietario' && <GestoriaAdvisor onSelect={handleGestoriaSelect} />}
+                                    {service.id === 'garantia' && (
+                                        <WarrantySelector
+                                            carPrice={carPrice}
+                                            onSelect={(w) => {
+                                                setWarranty(w);
+                                                if(w) toast.success(`Garantía ${w.type} pre-seleccionada`);
+                                            }}
+                                        />
+                                    )}
+                                    {service.id === 'logistica' && (
+                                        <LogisticsWidget
+                                            carLocation={carLocation}
+                                            onQuote={(q) => {
+                                                if(q) toast.success(`Cotización de traslado: $${q.cost.toLocaleString()}`);
+                                            }}
+                                        />
+                                    )}
+                                    {service.id === 'aviso_venta' && (
+                                        <div className="flex flex-col md:flex-row items-center gap-8">
+                                            <div className="h-16 w-16 bg-white rounded-2xl flex items-center justify-center text-amber-500 border border-zinc-100 shadow-sm">
+                                                <AlertTriangle className="h-8 w-8" />
+                                            </div>
+                                            <div className="flex-1">
+                                                <h5 className="font-black text-sm uppercase tracking-tight mb-1 text-zinc-900">Aviso de Enajenación SEMOVI</h5>
+                                                <p className="text-xs text-zinc-500 font-medium mb-4">Evita problemas legales deslindándote de la unidad ante la autoridad estatal de {state}.</p>
+                                                <button 
+                                                    onClick={async () => {
+                                                        await updateTransactionServicesAction(transactionId, { gestoriaCost: 300 });
+                                                        toast.success("Aviso de enajenación solicitado ($300)");
+                                                    }}
+                                                    className="h-10 px-6 bg-white border border-zinc-200 text-zinc-900 rounded-lg font-black text-[10px] uppercase tracking-widest hover:bg-zinc-50 transition-all"
+                                                >
+                                                    Solicitar Aviso ($300)
+                                                </button>
+                                            </div>
+                                        </div>
+                                    )}
                                 </div>
                             </div>
                         )}
+                    </div>
+                ))}
+            </div>
 
-                        <button
-                            onClick={() => {
-                                const newStatus = !remindersEnabled;
-                                setRemindersEnabled(newStatus);
-                                if (newStatus) {
-                                    toast.success("Concierge Élite Activado: Monitoreo 24/7 activo.");
-                                }
-                            }}
-                            className={cn(
-                                "relative z-10 w-full xl:w-auto px-12 h-16 rounded-2xl font-black text-sm uppercase tracking-widest transition-all shadow-3xl",
-                                remindersEnabled 
-                                    ? "bg-white text-indigo-600 hover:scale-105 active:scale-95" 
-                                    : "bg-indigo-600 text-white hover:bg-indigo-500 hover:scale-105 active:scale-95 shadow-xl shadow-indigo-600/20"
-                            )}
-                        >
-                            {remindersEnabled ? "Sincronizado" : "Activar Ahora"}
-                        </button>
+            {/* Documents & Downloads Section */}
+            <div className="bg-white rounded-[2rem] border border-zinc-100 p-8 md:p-12 shadow-sm">
+                <div className="flex items-center gap-3 mb-8">
+                    <FileText className="h-5 w-5 text-indigo-600" />
+                    <h3 className="text-xl font-black text-zinc-900 tracking-tighter uppercase italic">Documentación Legal</h3>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <DownloadCard 
+                        title="Contrato de Compraventa" 
+                        desc="Modelo oficial PROFECO para compraventa de autos usados entre particulares." 
+                        icon={<Gavel className="h-5 w-5" />}
+                    />
+                    <DownloadCard 
+                        title="Carta Responsiva" 
+                        desc="Formato legal para el deslinde de responsabilidades al momento de la entrega física." 
+                        icon={<ShieldCheck className="h-5 w-5" />}
+                    />
+                </div>
+            </div>
+
+            {/* Concierge Section - Simplified & Minimalist */}
+            <div className="bg-zinc-900 rounded-[2.5rem] p-10 flex flex-col md:flex-row items-center justify-between gap-8 border border-zinc-800 shadow-2xl relative overflow-hidden">
+                <div className="absolute top-0 left-0 w-full h-full opacity-[0.03] pointer-events-none bg-[radial-gradient(#4f46e5_1px,transparent_1px)] [background-size:16px_16px]" />
+                
+                <div className="relative z-10 flex items-center gap-6">
+                    <div className={cn(
+                        "h-16 w-16 rounded-2xl flex items-center justify-center transition-all duration-500",
+                        remindersEnabled ? "bg-white text-indigo-600" : "bg-white/5 text-zinc-400"
+                    )}>
+                        <BellRing className={cn("h-7 w-7", remindersEnabled && "animate-pulse")} />
+                    </div>
+                    <div>
+                        <h3 className="font-black text-xl text-white italic uppercase tracking-tighter mb-1">Concierge <span className="text-indigo-500">Inteligente</span></h3>
+                        <p className="text-[10px] font-bold text-zinc-500 uppercase tracking-[0.2em]">Sincronización de trámites y mantenimiento</p>
                     </div>
                 </div>
+
+                <button
+                    onClick={() => {
+                        setRemindersEnabled(!remindersEnabled);
+                        if (!remindersEnabled) toast.success("Concierge Activado: Recibirás recordatorios de tenencias y servicios.");
+                    }}
+                    className={cn(
+                        "relative z-10 px-8 h-12 rounded-xl font-black text-[10px] uppercase tracking-widest transition-all",
+                        remindersEnabled ? "bg-white text-indigo-600" : "bg-indigo-600 text-white hover:bg-indigo-500"
+                    )}
+                >
+                    {remindersEnabled ? "Sincronizado" : "Activar Ahora"}
+                </button>
+            </div>
+        </div>
+    );
+}
+
+function DownloadCard({ title, desc, icon }: { title: string, desc: string, icon: React.ReactNode }) {
+    return (
+        <div className="p-6 bg-zinc-50 rounded-2xl border border-zinc-100 flex items-start gap-4 group hover:bg-white hover:border-indigo-200 transition-all cursor-pointer">
+            <div className="h-10 w-10 bg-white rounded-lg flex items-center justify-center text-zinc-400 group-hover:text-indigo-600 shadow-sm transition-colors">
+                {icon}
+            </div>
+            <div className="flex-1">
+                <div className="flex items-center justify-between mb-1">
+                    <h5 className="font-black text-xs uppercase tracking-tight text-zinc-900">{title}</h5>
+                    <Download className="h-4 w-4 text-zinc-300 group-hover:text-indigo-600 transition-colors" />
+                </div>
+                <p className="text-[10px] text-zinc-500 font-medium leading-relaxed">{desc}</p>
             </div>
         </div>
     );
