@@ -217,7 +217,7 @@ export function PostSaleEcosystem({
                                         <LogisticsWidget
                                             carLocation={carLocation}
                                             onQuote={(q) => {
-                                                if(q) toast.success(`Cotización de traslado: $${q.cost.toLocaleString()}`);
+                                                if(q?.cost) toast.success(`Cotización de traslado: $${q.cost.toLocaleString()}`);
                                             }}
                                         />
                                     )}

@@ -147,12 +147,12 @@ export default function HandoverPage() {
                 <div className="space-y-16">
                     {/* 1. Vault Status Hero */}
                     <div className="animate-in fade-in slide-in-from-top-12 duration-1000">
-                        <VaultStatus 
-                            status={transaction.status} 
-                            amount={transaction.car_price} 
-                            transactionId={transaction.id}
-                            onRelease={handleReleaseFunds}
-                        />
+                    <VaultStatus 
+                        status={transaction.status === 'IN_VAULT' ? 'FUNDS_HELD' : 
+                               transaction.status === 'COMPLETED' ? 'RELEASED' : 'PENDING'} 
+                        carPrice={transaction.car_price} 
+                        carYear={transaction.cars?.year || 2024}
+                    />
                     </div>
 
                     {/* 2. Extra Services (PRIORITY CROSS-SELL) */}

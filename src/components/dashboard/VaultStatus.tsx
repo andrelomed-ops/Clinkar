@@ -37,7 +37,14 @@ export function VaultStatus({
     const SELLER_RECEIVES = carPrice;
     const TOTAL_DEPOSITED = carPrice + BUYER_COMMISSION;
 
-    const formatCurrency = (val: number) => isMounted ? val.toLocaleString() : "...";
+    const formatCurrency = (val: number) => {
+        if (!isMounted || val === undefined || val === null) return "...";
+        try {
+            return val.toLocaleString();
+        } catch {
+            return "...";
+        }
+    };
 
     return (
         <div className="w-full space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
