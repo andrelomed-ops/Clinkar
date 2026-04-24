@@ -254,7 +254,11 @@ export default function HandoverPage() {
                             </p>
                         </div>
                         <div className="grid grid-cols-1 gap-3">
-                            <Button variant="outline" className="h-14 font-black text-xs uppercase tracking-widest border-zinc-200" onClick={() => toast.success("Descargando Constancia de Liquidación...")}>
+                            <Button 
+                                variant="outline" 
+                                className="h-14 font-black text-xs uppercase tracking-widest border-zinc-200" 
+                                onClick={() => window.open(`/api/documents/responsiva?id=${transaction.id}`, '_blank')}
+                            >
                                 <FileText className="mr-2 h-4 w-4" /> Descargar Constancia Legal
                             </Button>
                             <Button asChild size="lg" className="h-14 font-black text-sm uppercase tracking-widest bg-indigo-600 hover:bg-indigo-500">

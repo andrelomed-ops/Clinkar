@@ -261,19 +261,19 @@ export function PostSaleEcosystem({
                         title="Contrato de Compraventa" 
                         desc="Modelo oficial PROFECO para compraventa de autos usados entre particulares." 
                         icon={<Gavel className="h-5 w-5" />}
-                        onDownload={() => toast.success("Generando Contrato PROFECO...")}
+                        onDownload={() => window.open(`/api/documents/contract?id=${transactionId}`, '_blank')}
                     />
                     <DownloadCard 
                         title="Carta Responsiva" 
                         desc="Formato legal para el deslinde de responsabilidades al momento de la entrega física." 
                         icon={<ShieldCheck className="h-5 w-5" />}
-                        onDownload={() => toast.success("Generando Carta Responsiva...")}
+                        onDownload={() => window.open(`/api/documents/responsiva?id=${transactionId}`, '_blank')}
                     />
                     <DownloadCard 
                         title="Certificado StarterKar" 
                         desc="Resumen ejecutivo de los 150 puntos de inspección y validación legal." 
                         icon={<Star className="h-5 w-5" />}
-                        onDownload={() => toast.success("Descargando Certificado 150 Puntos...")}
+                        onDownload={() => window.open(`/api/documents/certificate?id=${transactionId}`, '_blank')}
                     />
                 </div>
             </div>
