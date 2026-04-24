@@ -13,7 +13,17 @@ import {
     BellRing,
     AlertTriangle,
     ShieldCheck,
-    Briefcase
+    Briefcase,
+    CheckCircle2,
+    Truck,
+    ShieldAlert,
+    CreditCard,
+    UserCheck,
+    Warehouse,
+    Home,
+    Smartphone,
+    Zap,
+    Package
 } from "lucide-react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
@@ -23,15 +33,6 @@ import { LogisticsWidget } from "../checkout/LogisticsWidget";
 import { WarrantySelector, WarrantyType } from "../checkout/WarrantySelector";
 import { updateTransactionServicesAction } from "@/app/actions/transaction";
 import { toast } from "sonner";
-import { 
-    Warehouse, 
-    Home, 
-    Smartphone, 
-    Zap, 
-    Truck, 
-    ShieldAlert,
-    Package
-} from "lucide-react";
 
 export function PostSaleEcosystem({ 
     transactionId, 
