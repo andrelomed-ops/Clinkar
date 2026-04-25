@@ -21,25 +21,28 @@ interface CarFormModalProps {
 
 export function CarFormModal({ isOpen, onClose, onSubmit, initialData, isLoading, mode }: CarFormModalProps) {
     const [activeTab, setActiveTab] = useState<"general" | "specs" | "features" | "gallery">("general");
+    const [previewMode, setPreviewMode] = useState(false);
     
-    const [formData, setFormData] = useState({
-        make: initialData?.make || "",
-        model: initialData?.model || "",
-        year: initialData?.year || 2024,
-        price: initialData?.price || 0,
-        mileage: initialData?.mileage || 0,
-        location: initialData?.location || "CDMX",
-        description: initialData?.description || "Unidad certificada por StarterKar.",
-        status: initialData?.status || "published",
-        category: initialData?.category || "Car",
-        images: initialData?.images || [],
-        technical_specs: initialData?.market_data?.technical_specs || {
+    const defaultData = {
+        make: "",
+        model: "",
+        year: 2024,
+        price: 0,
+        mileage: 0,
+        location: "CDMX",
+        description: "Unidad certificada por StarterKar.",
+        status: "published",
+        category: "Car",
+        images: [],
+        technical_specs: {
             performance: { engine: "", horsepower: "", fuelType: "Gasoline", transmission: "Automatic", driveTrain: "FWD", cylinders: 4, consumption: "" },
             architecture: { bodyType: "SUV", doors: 5, passengers: 5, dimensions: "", tankCapacity: "", rims: "" },
             features: { ac: true, sunroof: false, leatherSeats: false, touchScreen: true, carPlay: true, androidAuto: true, bluetooth: true, startStopButton: true },
             security: { airbags: 6, abs: true, discBrakes: 4, reverseCamera: true, parkingSensors: true }
         }
-    });
+    };
+
+    const [formData, setFormData] = useState(initialData || defaultData);
 
     const [magicLoading, setMagicLoading] = useState(false);
     const [showBrandSuggestions, setShowBrandSuggestions] = useState(false);
@@ -77,16 +80,40 @@ export function CarFormModal({ isOpen, onClose, onSubmit, initialData, isLoading
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        // Prepare final data structure
+        
+        if (!previewMode && mode === "create") {
+            setPreviewMode(true);
+            return;
+        }
+
         const finalData = {
             ...formData,
-            technical_specs: formData.technical_specs, // Dedicated column
+            technical_specs: formData.technical_specs,
             market_data: {
                 ...(initialData?.market_data || {}),
-                technical_specs: formData.technical_specs // Legacy support
+                technical_specs: formData.technical_specs
             }
         };
-        await onSubmit(finalData);
+
+        try {
+            await onSubmit(finalData);
+            
+            if (mode === "create") {
+                toast.success("¡Unidad publicada con éxito!", {
+                    description: `${formData.make} ${formData.model} ya está disponible.`,
+                    icon: <Check className="h-4 w-4 text-emerald-500" />
+                });
+                // Continuous workflow: reset and keep open
+                setFormData(defaultData);
+                setPreviewMode(false);
+                setActiveTab("general");
+            } else {
+                toast.success("Actualizado con éxito");
+                onClose();
+            }
+        } catch (err) {
+            toast.error("Error al procesar la unidad");
+        }
     };
 
     if (!isOpen) return null;
@@ -95,51 +122,92 @@ export function CarFormModal({ isOpen, onClose, onSubmit, initialData, isLoading
         <div className="fixed inset-0 bg-black/80 backdrop-blur-md z-[100] flex items-center justify-center p-4">
             <div className="bg-zinc-900 border border-zinc-800 rounded-[3rem] w-full max-w-4xl max-h-[90vh] overflow-hidden flex flex-col animate-in zoom-in-95 duration-200 shadow-[0_0_100px_rgba(99,102,241,0.1)]">
                 {/* Header */}
-                <div className="p-8 pb-4 flex justify-between items-center border-b border-zinc-800">
+                <div className="p-8 pb-4 flex justify-between items-center border-b border-zinc-800 bg-zinc-900/50">
                     <div>
                         <h3 className="text-2xl font-black text-white uppercase italic tracking-tighter">
-                            {mode === "create" ? "Publicar Nueva Unidad" : "Editar Expediente de Unidad"}
+                            {previewMode ? "Confirmar Publicación" : mode === "create" ? "Publicar Nueva Unidad" : "Editar Expediente de Unidad"}
                         </h3>
-                        <p className="text-zinc-500 text-xs font-bold uppercase tracking-widest mt-1">
-                            {mode === "create" ? "Configuración de inventario maestro" : `Editando: ${formData.make} ${formData.model}`}
+                        <p className="text-zinc-500 text-[10px] font-black uppercase tracking-widest mt-1">
+                            {previewMode ? "Vista previa del anuncio en marketplace" : mode === "create" ? "Configuración de inventario maestro" : `Editando: ${formData.make} ${formData.model}`}
                         </p>
                     </div>
-                    <button onClick={onClose} className="h-12 w-12 bg-zinc-800 rounded-full flex items-center justify-center text-zinc-400 hover:text-white transition-all hover:rotate-90">
-                        <Ban className="h-5 w-5" />
-                    </button>
+                    <div className="flex gap-4">
+                        {previewMode && (
+                            <button 
+                                onClick={() => setPreviewMode(false)}
+                                className="h-12 px-6 bg-zinc-800 text-white text-[10px] font-black rounded-2xl uppercase tracking-widest hover:bg-zinc-700 transition-all border border-zinc-700"
+                            >
+                                ← Volver a Editar
+                            </button>
+                        )}
+                        <button onClick={onClose} className="h-12 w-12 bg-zinc-800 rounded-full flex items-center justify-center text-zinc-400 hover:text-white transition-all hover:rotate-90">
+                            <X className="h-5 w-5" />
+                        </button>
+                    </div>
                 </div>
 
-                {/* Tabs */}
-                <div className="flex px-8 pt-4 gap-2 bg-zinc-900/50">
-                    <TabButton 
-                        active={activeTab === "general"} 
-                        onClick={() => setActiveTab("general")} 
-                        icon={<Zap className="h-4 w-4" />} 
-                        label="General" 
-                    />
-                    <TabButton 
-                        active={activeTab === "specs"} 
-                        onClick={() => setActiveTab("specs")} 
-                        icon={<Settings className="h-4 w-4" />} 
-                        label="Ficha Técnica" 
-                    />
-                    <TabButton 
-                        active={activeTab === "features"} 
-                        onClick={() => setActiveTab("features")} 
-                        icon={<ShieldCheck className="h-4 w-4" />} 
-                        label="Equipamiento" 
-                    />
-                    <TabButton 
-                        active={activeTab === "gallery"} 
-                        onClick={() => setActiveTab("gallery")} 
-                        icon={<CameraIcon className="h-4 w-4" />} 
-                        label="Galería" 
-                    />
-                </div>
+                {/* Tabs - Hidden in Preview */}
+                {!previewMode && (
+                    <div className="flex px-8 pt-4 gap-2 bg-zinc-950/30 border-b border-zinc-800/50">
+                        <TabButton active={activeTab === "general"} onClick={() => setActiveTab("general")} icon={<Zap className="h-4 w-4" />} label="General" />
+                        <TabButton active={activeTab === "specs"} onClick={() => setActiveTab("specs")} icon={<Settings className="h-4 w-4" />} label="Ficha Técnica" />
+                        <TabButton active={activeTab === "features"} onClick={() => setActiveTab("features")} icon={<ShieldCheck className="h-4 w-4" />} label="Equipamiento" />
+                        <TabButton active={activeTab === "gallery"} onClick={() => setActiveTab("gallery")} icon={<CameraIcon className="h-4 w-4" />} label="Galería" />
+                    </div>
+                )}
 
                 {/* Form Content */}
                 <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto custom-scrollbar p-8">
-                    {activeTab === "general" && (
+                    {previewMode ? (
+                        <div className="max-w-2xl mx-auto space-y-8 animate-in zoom-in-95 duration-300 pb-10">
+                            {/* Listing Preview Card */}
+                            <div className="bg-zinc-950 border-2 border-indigo-500/30 rounded-[3rem] overflow-hidden shadow-[0_0_50px_rgba(99,102,241,0.2)]">
+                                <div className="aspect-video bg-zinc-900 relative overflow-hidden">
+                                    {formData.images.length > 0 ? (
+                                        <img src={formData.images[0]} alt="Hero" className="w-full h-full object-cover" />
+                                    ) : (
+                                        <div className="w-full h-full flex flex-col items-center justify-center text-zinc-800">
+                                            <CameraIcon className="h-20 w-20 mb-4" />
+                                            <p className="text-xs font-black uppercase tracking-[0.3em]">Sin imágenes</p>
+                                        </div>
+                                    )}
+                                    <div className="absolute top-6 left-6 px-4 py-2 bg-indigo-600/80 backdrop-blur-md rounded-full border border-white/10 text-[10px] font-black uppercase tracking-widest text-white animate-pulse">
+                                        Modo Vista Previa
+                                    </div>
+                                </div>
+                                <div className="p-10">
+                                    <div className="flex justify-between items-start mb-6">
+                                        <div>
+                                            <h4 className="text-4xl font-black italic uppercase tracking-tighter text-white">{formData.make} {formData.model}</h4>
+                                            <p className="text-zinc-500 font-black uppercase text-xs tracking-widest mt-1 italic">{formData.year} • {formData.mileage.toLocaleString()} KM • {formData.location}</p>
+                                        </div>
+                                        <div className="text-right">
+                                            <p className="text-3xl font-black text-indigo-400 italic tracking-tighter">${formData.price.toLocaleString()}</p>
+                                            <p className="text-[9px] font-black text-zinc-600 uppercase tracking-widest mt-1">Precio Final Clinkar</p>
+                                        </div>
+                                    </div>
+                                    <div className="grid grid-cols-3 gap-4 mb-8">
+                                        <PreviewInfo icon={Zap} label="Motor" value={formData.technical_specs.performance.engine || "2.0L"} />
+                                        <PreviewInfo icon={Settings} label="Transmisión" value={formData.technical_specs.performance.transmission} />
+                                        <PreviewInfo icon={ShieldCheck} label="Seguridad" value={`${formData.technical_specs.security.airbags} Airbags`} />
+                                    </div>
+                                    <div className="p-8 bg-zinc-900/50 rounded-3xl border border-zinc-800 text-zinc-300 text-sm italic leading-relaxed">
+                                        "{formData.description}"
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="p-10 bg-indigo-600/5 border border-indigo-500/20 rounded-[3rem] text-center">
+                                <p className="text-indigo-400 text-sm font-black uppercase tracking-[0.2em] mb-4 italic">¿Todo listo para publicar?</p>
+                                <p className="text-zinc-500 text-[10px] font-medium leading-loose mb-8">Al confirmar, la unidad se indexará inmediatamente en el marketplace<br/>y se activará el sistema de transacciones P2P.</p>
+                                <Button type="submit" disabled={isLoading} className="w-full h-20 bg-indigo-600 hover:bg-indigo-500 text-2xl font-black italic tracking-tighter rounded-3xl shadow-2xl shadow-indigo-600/30 active:scale-95 transition-all">
+                                    {isLoading ? <Loader2 className="h-8 w-8 animate-spin" /> : "PUBLICAR UNIDAD AHORA"}
+                                </Button>
+                            </div>
+                        </div>
+                    ) : (
+                        <>
+                            {activeTab === "general" && (
                         <div className="grid grid-cols-2 gap-6 animate-in fade-in slide-in-from-bottom-4 duration-300">
                             <FormGroup label="Marca">
                                 <div className="relative">
@@ -389,23 +457,33 @@ export function CarFormModal({ isOpen, onClose, onSubmit, initialData, isLoading
                     )}
                 </form>
 
-                {/* Footer Actions */}
-                <div className="p-8 border-t border-zinc-800 bg-zinc-900/50 flex justify-end gap-4">
-                    <Button variant="ghost" onClick={onClose} disabled={isLoading} className="rounded-xl font-bold uppercase tracking-widest text-xs">
-                        Cancelar
-                    </Button>
-                    <Button 
-                        onClick={handleSubmit} 
-                        disabled={isLoading} 
-                        className="rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-black uppercase tracking-[0.2em] text-xs px-8 h-12 shadow-lg shadow-indigo-600/20"
-                    >
-                        {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : (
-                            <span className="flex items-center gap-2">
-                                <Save className="h-4 w-4" /> {mode === "create" ? "Publicar Unidad" : "Guardar Cambios"}
-                            </span>
-                        )}
-                    </Button>
-                </div>
+                {/* Footer - Hidden in Preview */}
+                {!previewMode && (
+                    <div className="p-8 border-t border-zinc-800 bg-zinc-950/80 backdrop-blur-md flex justify-between items-center">
+                        <div className="flex gap-4">
+                            <div className="flex items-center gap-2 px-4 py-2 bg-zinc-900 rounded-xl border border-zinc-800">
+                                <div className="h-2 w-2 bg-indigo-500 rounded-full animate-pulse" />
+                                <span className="text-[10px] font-black text-zinc-400 uppercase tracking-widest">Autoguardado Activo</span>
+                            </div>
+                        </div>
+                        <div className="flex gap-4">
+                            <button onClick={onClose} className="px-8 py-4 text-zinc-500 hover:text-white transition-colors text-xs font-black uppercase tracking-widest">
+                                Cancelar
+                            </button>
+                            <Button 
+                                type="submit" 
+                                onClick={handleSubmit}
+                                disabled={isLoading} 
+                                className="h-16 px-10 bg-indigo-600 hover:bg-indigo-500 text-white rounded-2xl shadow-xl shadow-indigo-600/20 flex items-center gap-3"
+                            >
+                                {isLoading ? <Loader2 className="h-5 w-5 animate-spin" /> : <Save className="h-5 w-5" />}
+                                <span className="text-sm font-black uppercase italic tracking-tighter">
+                                    {mode === "create" ? "Continuar a Vista Previa" : "Guardar Cambios"}
+                                </span>
+                            </Button>
+                        </div>
+                    </div>
+                )}
             </div>
 
             <style jsx>{`
