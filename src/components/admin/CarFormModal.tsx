@@ -555,5 +555,16 @@ function ToggleGroup({ label, checked, onChange }: { label: string, checked: boo
                 <div className="h-4 w-4 bg-white rounded-full shadow-sm" />
             </button>
         </div>
+}
+
+function PreviewInfo({ icon: Icon, label, value }: { icon: any, label: string, value: string }) {
+    return (
+        <div className="bg-zinc-900/50 p-4 rounded-2xl border border-zinc-800">
+            <p className="text-[8px] font-black text-zinc-600 uppercase tracking-widest mb-1">{label}</p>
+            <div className="flex items-center gap-2">
+                <Icon className="h-3 w-3 text-indigo-500" />
+                <p className="text-xs font-bold text-white uppercase">{value}</p>
+            </div>
+        </div>
     );
 }
