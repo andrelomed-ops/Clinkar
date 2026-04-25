@@ -178,21 +178,23 @@ export function CarFormModal({ isOpen, onClose, onSubmit, initialData, isLoading
                                 <div className="p-10">
                                     <div className="flex justify-between items-start mb-6">
                                         <div>
-                                            <h4 className="text-4xl font-black italic uppercase tracking-tighter text-white">{formData.make} {formData.model}</h4>
-                                            <p className="text-zinc-500 font-black uppercase text-xs tracking-widest mt-1 italic">{formData.year} • {formData.mileage.toLocaleString()} KM • {formData.location}</p>
+                                            <h4 className="text-4xl font-black italic uppercase tracking-tighter text-white">{(formData.make || "Sin Marca")} {(formData.model || "Sin Modelo")}</h4>
+                                            <p className="text-zinc-500 font-black uppercase text-xs tracking-widest mt-1 italic">
+                                                {formData.year} • {(Number(formData.mileage) || 0).toLocaleString()} KM • {formData.location || "N/A"}
+                                            </p>
                                         </div>
                                         <div className="text-right">
-                                            <p className="text-3xl font-black text-indigo-400 italic tracking-tighter">${formData.price.toLocaleString()}</p>
+                                            <p className="text-3xl font-black text-indigo-400 italic tracking-tighter">${(Number(formData.price) || 0).toLocaleString()}</p>
                                             <p className="text-[9px] font-black text-zinc-600 uppercase tracking-widest mt-1">Precio Final Clinkar</p>
                                         </div>
                                     </div>
                                     <div className="grid grid-cols-3 gap-4 mb-8">
-                                        <PreviewInfo icon={Zap} label="Motor" value={formData.technical_specs.performance.engine || "2.0L"} />
-                                        <PreviewInfo icon={Settings} label="Transmisión" value={formData.technical_specs.performance.transmission} />
-                                        <PreviewInfo icon={ShieldCheck} label="Seguridad" value={`${formData.technical_specs.security.airbags} Airbags`} />
+                                        <PreviewInfo icon={Zap} label="Motor" value={formData.technical_specs?.performance?.engine || "N/A"} />
+                                        <PreviewInfo icon={Settings} label="Transmisión" value={formData.technical_specs?.performance?.transmission || "N/A"} />
+                                        <PreviewInfo icon={ShieldCheck} label="Seguridad" value={`${formData.technical_specs?.security?.airbags || 0} Airbags`} />
                                     </div>
                                     <div className="p-8 bg-zinc-900/50 rounded-3xl border border-zinc-800 text-zinc-300 text-sm italic leading-relaxed">
-                                        "{formData.description}"
+                                        "{formData.description || "Sin descripción proporcionada."}"
                                     </div>
                                 </div>
                             </div>
