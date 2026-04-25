@@ -455,6 +455,8 @@ export function CarFormModal({ isOpen, onClose, onSubmit, initialData, isLoading
                             )}
                         </div>
                     )}
+                    </>
+                )}
                 </form>
 
                 {/* Footer - Hidden in Preview */}
