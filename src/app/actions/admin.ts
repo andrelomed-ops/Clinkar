@@ -140,8 +140,8 @@ export async function getInvestorApplicationsAction() {
         .from("investor_applications")
         .select(`
             *,
-            profiles:user_id (full_name, email),
-            tier:tier_id (name, price)
+            profiles (full_name, email),
+            investor_tiers (name, price)
         `)
         .order("created_at", { ascending: false });
 

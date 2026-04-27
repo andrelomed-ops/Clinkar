@@ -651,7 +651,7 @@ export default function AdminDashboard() {
                                             <div className="flex items-center gap-4 mt-2">
                                                 <p className="text-[10px] font-black text-zinc-500 uppercase tracking-widest">Email: <span className="text-zinc-300">{app.profiles?.email}</span></p>
                                                 <span className="h-1 w-1 bg-zinc-800 rounded-full" />
-                                                <p className="text-[10px] font-black text-zinc-500 uppercase tracking-widest">Tier: <span className="text-indigo-400">{app.tier?.name} (${app.tier?.price?.toLocaleString()})</span></p>
+                                                <p className="text-[10px] font-black text-zinc-500 uppercase tracking-widest">Tier: <span className="text-indigo-400">{app.investor_tiers?.name} (${app.investor_tiers?.price?.toLocaleString()})</span></p>
                                             </div>
                                         </div>
                                     </div>
