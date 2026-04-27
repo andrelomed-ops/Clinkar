@@ -294,7 +294,7 @@ export default function CarDetailPage({ params }: { params: Promise<{ id: string
                                         id={car.id}
                                         carPrice={car.price}
                                         carName={`${car.make} ${car.model}`}
-                                        repairCost={0}
+                                        floorPrice={car.market_data?.minimum_price || car.price * 0.95}
                                         hasSeal={['CERTIFIED', 'published'].includes(car.status)}
                                     />
                                 </div>

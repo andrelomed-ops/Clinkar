@@ -28,6 +28,7 @@ export function CarFormModal({ isOpen, onClose, onSubmit, initialData, isLoading
         model: "",
         year: 2024,
         price: 0,
+        minimum_price: 0,
         mileage: 0,
         location: "CDMX",
         description: "Unidad certificada por StarterKar.",
@@ -42,7 +43,12 @@ export function CarFormModal({ isOpen, onClose, onSubmit, initialData, isLoading
         }
     };
 
-    const [formData, setFormData] = useState(initialData || defaultData);
+    const parsedInitialData = initialData ? {
+        ...initialData,
+        minimum_price: initialData.minimum_price || initialData.market_data?.minimum_price || initialData.price
+    } : null;
+
+    const [formData, setFormData] = useState(parsedInitialData || defaultData);
 
     const [magicLoading, setMagicLoading] = useState(false);
     const [showBrandSuggestions, setShowBrandSuggestions] = useState(false);
@@ -303,8 +309,14 @@ export function CarFormModal({ isOpen, onClose, onSubmit, initialData, isLoading
                             <FormGroup label="Año">
                                 <input type="number" value={formData.year} className="form-input" onChange={e => setFormData({...formData, year: parseInt(e.target.value)})} />
                             </FormGroup>
-                            <FormGroup label="Precio (MXN)">
+                            <FormGroup label="Precio de Venta Público (MXN)">
                                 <input type="number" value={formData.price} className="form-input" onChange={e => setFormData({...formData, price: parseFloat(e.target.value)})} />
+                            </FormGroup>
+                            <FormGroup label="Piso de Venta (Mínimo Aceptable MXN)">
+                                <div className="relative">
+                                    <input type="number" value={formData.minimum_price || formData.price} className="form-input text-red-500 font-bold pr-10" onChange={e => setFormData({...formData, minimum_price: parseFloat(e.target.value)})} />
+                                    <AlertCircle className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-red-500" />
+                                </div>
                             </FormGroup>
                             <FormGroup label={
                                 formData.category === 'Marine' || formData.category === 'Air' || formData.category === 'Heavy' 

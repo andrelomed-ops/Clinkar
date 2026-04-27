@@ -101,7 +101,8 @@ export class CarService {
             ...(carData.market_data || {}),
             location: carData.location || 'CDMX',
             technical_specs: carData.technical_specs || {},
-            category: carData.category || 'Car'
+            category: carData.category || 'Car',
+            minimum_price: carData.minimum_price || carData.price
         };
 
         // Strict extraction of only valid DB columns based on REAL DB DISCOVERY
@@ -155,7 +156,8 @@ export class CarService {
             ...(carData.market_data || {}),
             location: carData.location || 'CDMX',
             technical_specs: carData.technical_specs || {},
-            category: carData.category || 'Car'
+            category: carData.category || 'Car',
+            minimum_price: carData.minimum_price || carData.price
         };
 
         const dbReadyData: any = {

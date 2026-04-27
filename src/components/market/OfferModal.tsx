@@ -12,19 +12,20 @@ import { useRouter } from "next/navigation";
 interface OfferModalProps {
     id: string; // Car ID for redirection
     carPrice: number;
-    repairCost: number;
+    floorPrice: number;
     carName: string;
     hasSeal: boolean;
 }
 
-export function OfferModal({ id, carPrice, repairCost, carName, hasSeal }: OfferModalProps) {
+export function OfferModal({ id, carPrice, floorPrice, carName, hasSeal }: OfferModalProps) {
     const router = useRouter();
     const [mounted, setMounted] = useState(false);
     const [isOpen, setIsOpen] = useState(false);
     const [negotiationResult, setNegotiationResult] = useState<'success' | 'reject' | null>(null);
     const [isNegotiating, setIsNegotiating] = useState(false);
-    const [offerAmount, setOfferAmount] = useState<number>(carPrice - repairCost);
-    const offerFloor = carPrice - repairCost;
+    const [offerAmount, setOfferAmount] = useState<number>(carPrice);
+    const offerFloor = floorPrice;
+    const repairCost = carPrice - floorPrice;
 
     useEffect(() => {
         setMounted(true);
