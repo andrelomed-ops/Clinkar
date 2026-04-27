@@ -35,32 +35,8 @@ export class TransactionService extends BaseService {
             throw new Error(`RESOURCE_LOCKED: Vehículo temporalmente reservado y en proceso de pago por otro usuario. Por favor, espera e intenta de nuevo más tarde. Únete a la fila de este auto para ser el primero en fila.`);
         }
 
-        // 1. PLD / AML Screening
-        const sellerName = "Seller Name Placeholder";
-        const pldResult = await PldService.screenPerson(supabase, data.sellerId, sellerName, undefined, 'TRANSACTION');
-
-        if (pldResult.riskLevel === 'BLOCKED') {
-            await (supabase.from('audit_logs') as any).insert({
-                actor_id: data.sellerId,
-                action: 'ATTEMPT_BLOCKED',
-                entity_type: 'TRANSACTION',
-                metadata: { reason: 'PLD_BLOCKED', details: pldResult.matches },
-                ip_address: '0.0.0.0'
-            });
-            throw new Error("OPERACIÓN BLOQUEADA: Su perfil presenta restricciones de cumplimiento normativo (PLD).");
-        }
-
-        // 2. AML Thresholds
-        const UMBRAL_IDENTIFICACION = 360000;
-        if (data.amount > UMBRAL_IDENTIFICACION) {
-            const { data: profile } = await (supabase.from('risk_profiles') as any)
-                .select('verification_status')
-                .eq('user_id', data.sellerId)
-                .maybeSingle();
-            if (profile?.verification_status !== 'VERIFIED') {
-                throw new Error("KYC_REQUIRED: Para operar montos mayores a $360,000 MXN, necesitamos verificar tu identidad.");
-            }
-        }
+        // 1. Mediator Only: No KYC/AML enforcement required as funds do not pass through StarterKar.
+        // PLD & AML thresholds removed per business pivot to P2P Mediation.
 
         // 3. Calculate Commissions
         // 3.1 Buyer Commission (Free on 1st purchase)
