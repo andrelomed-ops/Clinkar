@@ -109,17 +109,17 @@ export class TransactionService extends BaseService {
                 buyer_id: data.buyerId,
                 seller_id: data.sellerId,
                 car_price: data.amount,
-                buyer_commission: buyerCommission,
-                seller_success_fee: sellerSuccessFee,
-                logistics_cost: data.logisticsQuote?.cost || 0,
-                warranty_cost: data.warrantyQuote?.cost || 0,
-                insurance_cost: data.insuranceQuote?.cost || 0,
-                gestoria_cost: data.gestoriaQuote?.cost || 0,
                 stripe_session_id: data.stripeSessionId,
                 status: 'PENDING',
                 pld_status: pldResult.riskLevel === 'CLEAN' ? 'APPROVED' : 'PENDING',
                 risk_metadata: pldResult as any,
                 metadata: {
+                    logistics_cost: data.logisticsQuote?.cost || 0,
+                    warranty_cost: data.warrantyQuote?.cost || 0,
+                    insurance_cost: data.insuranceQuote?.cost || 0,
+                    gestoria_cost: data.gestoriaQuote?.cost || 0,
+                    buyer_commission: buyerCommission,
+                    seller_success_fee: sellerSuccessFee,
                     ...(appliedPerk ? { used_perk_id: (appliedPerk as any).id } : {}),
                     ...(data.metadata || {})
                 }
