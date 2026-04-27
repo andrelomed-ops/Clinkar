@@ -333,7 +333,7 @@ export default function AdminDashboard() {
             </aside>
 
             {/* Main Content Area */}
-            <main className="flex-1 overflow-y-auto p-12 relative z-10 custom-scrollbar">
+            <main className="flex-1 ml-72 overflow-y-auto p-12 relative z-10 custom-scrollbar">
                 {debugError && (
                     <div className="mb-8 p-6 bg-red-500/10 border-2 border-red-500/50 rounded-3xl animate-in shake duration-500">
                         <div className="flex items-center gap-4 text-red-500">

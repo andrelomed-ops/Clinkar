@@ -158,7 +158,7 @@ export function CarFormModal({ isOpen, onClose, onSubmit, initialData, isLoading
                 )}
 
                 {/* Form Content */}
-                <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto custom-scrollbar p-8">
+                <form id="car-form" onSubmit={handleSubmit} className="flex-1 overflow-y-auto custom-scrollbar p-8">
                     {previewMode ? (
                         <div className="max-w-2xl mx-auto space-y-8 animate-in zoom-in-95 duration-300 pb-10">
                             {/* Listing Preview Card */}
@@ -477,6 +477,7 @@ export function CarFormModal({ isOpen, onClose, onSubmit, initialData, isLoading
                             </button>
                             <Button 
                                 type="submit" 
+                                form="car-form"
                                 disabled={isLoading} 
                                 className="h-16 px-10 bg-indigo-600 hover:bg-indigo-500 text-white rounded-2xl shadow-xl shadow-indigo-600/20 flex items-center gap-3"
                             >
