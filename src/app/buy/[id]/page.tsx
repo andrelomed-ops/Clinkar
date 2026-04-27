@@ -79,8 +79,8 @@ export default function CarDetailPage({ params }: { params: Promise<{ id: string
                     .maybeSingle();
 
                 // It is locked to us if it exists and we are not the owner
-                const { data: { user } } = await supabaseBrowser.auth.getUser();
-                const isLockedStatus = lockData ? lockData.locked_by !== user?.id : false;
+                const { data: { user: currentUser } } = await supabaseBrowser.auth.getUser();
+                const isLockedStatus = lockData ? lockData.locked_by !== currentUser?.id : false;
 
                 if (data && !error) {
                     const carData: any = data;
