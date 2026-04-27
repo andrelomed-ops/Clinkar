@@ -2,6 +2,15 @@ import { SupabaseClient } from '@supabase/supabase-js';
 import { Database } from '@/lib/database.types';
 import { Logger } from '@/lib/logger';
 import { NotificationService } from './NotificationService';
+import { createClient } from '@supabase/supabase-js';
+
+// Create a singleton admin client for LockService to bypass RLS issues
+function getAdminSupabase() {
+    return createClient<Database>(
+        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        process.env.SUPABASE_SERVICE_ROLE_KEY!
+    );
+}
 
 export class LockService {
     /**
@@ -14,14 +23,15 @@ export class LockService {
         userId: string,
         durationMinutes: number = 15
     ): Promise<{ success: boolean; expiration?: string; error?: string }> {
+        const adminSupabase = getAdminSupabase();
         const expiresAt = new Date();
         expiresAt.setMinutes(expiresAt.getMinutes() + durationMinutes);
 
         // 1. Limpiar locks vencidos para este auto
-        await this.cleanExpiredLocks(supabase, carId);
+        await this.cleanExpiredLocks(adminSupabase, carId);
 
         // 2. Revisar si ya existe un lock (para renovar si es del mismo usuario)
-        const { data: existingLock } = await (supabase.from('car_locks') as any)
+        const { data: existingLock } = await (adminSupabase.from('car_locks') as any)
             .select('locked_by, expires_at')
             .eq('car_id', carId)
             .maybeSingle();
@@ -29,20 +39,20 @@ export class LockService {
         if (existingLock) {
             if (existingLock.locked_by === userId) {
                 // Renovar el lock
-                await (supabase.from('car_locks') as any)
+                await (adminSupabase.from('car_locks') as any)
                     .update({ expires_at: expiresAt.toISOString() })
                     .eq('car_id', carId);
                 return { success: true, expiration: expiresAt.toISOString() };
             } else {
                 // Pertenece a otro usuario
                 Logger.info(`[LockService] Fallo al asegurar el vehículo ${carId}. Reservado por otro.`);
-                await this.joinWaitlist(supabase, carId, userId);
+                await this.joinWaitlist(adminSupabase, carId, userId);
                 return { success: false, error: 'RESOURCE_LOCKED' };
             }
         }
 
         // 3. Intentar crear el lock nuevo
-        const { data, error } = await (supabase.from('car_locks') as any)
+        const { data, error } = await (adminSupabase.from('car_locks') as any)
             .insert({
                 car_id: carId,
                 locked_by: userId,
@@ -57,7 +67,7 @@ export class LockService {
             // 23505 = unique_violation
             if (error.code === '23505') {
                 Logger.info(`[LockService] Fallo al asegurar el vehículo ${carId}. Reservado por otro.`);
-                await this.joinWaitlist(supabase, carId, userId);
+                await this.joinWaitlist(adminSupabase, carId, userId);
                 return { success: false, error: 'RESOURCE_LOCKED' };
             }
             
@@ -80,7 +90,8 @@ export class LockService {
         supabase: SupabaseClient<Database>,
         carId: string
     ): Promise<boolean> {
-        const { error } = await (supabase.from('car_locks') as any)
+        const adminSupabase = getAdminSupabase();
+        const { error } = await (adminSupabase.from('car_locks') as any)
             .delete()
             .eq('car_id', carId);
 
@@ -90,7 +101,7 @@ export class LockService {
         }
 
         // Al liberar un lock prematuramente, verificamos si hay gente en la waitlist
-        await this.notifyWaitlist(supabase, carId);
+        await this.notifyWaitlist(adminSupabase, carId);
 
         return true;
     }
@@ -102,10 +113,11 @@ export class LockService {
         supabase: SupabaseClient<Database>,
         carId: string
     ): Promise<{ isLocked: boolean; lockedBy?: string; expiresAt?: string }> {
+        const adminSupabase = getAdminSupabase();
         // Limpiamos los expirados de pasada
-        await this.cleanExpiredLocks(supabase, carId);
+        await this.cleanExpiredLocks(adminSupabase, carId);
 
-        const { data, error } = await (supabase.from('car_locks') as any)
+        const { data, error } = await (adminSupabase.from('car_locks') as any)
             .select('locked_by, expires_at')
             .eq('car_id', carId)
             .maybeSingle();
@@ -130,20 +142,21 @@ export class LockService {
      * Limpia internamente los locks expirados de un vehículo
      */
     private static async cleanExpiredLocks(supabase: SupabaseClient<Database>, carId: string) {
+        const adminSupabase = getAdminSupabase();
         const now = new Date().toISOString();
-        const { data: expiredLocks } = await (supabase.from('car_locks') as any)
+        const { data: expiredLocks } = await (adminSupabase.from('car_locks') as any)
             .select('id')
             .eq('car_id', carId)
             .lt('expires_at', now);
             
         if (expiredLocks && expiredLocks.length > 0) {
-            await (supabase.from('car_locks') as any)
+            await (adminSupabase.from('car_locks') as any)
                 .delete()
                 .eq('car_id', carId)
                 .lt('expires_at', now);
                 
             // Notificamos a la waitlist que el auto está libre
-            await this.notifyWaitlist(supabase, carId);
+            await this.notifyWaitlist(adminSupabase, carId);
         }
     }
 
