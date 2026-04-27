@@ -6,7 +6,7 @@ import {
     Ban, ShieldAlert, ExternalLink, Users, DollarSign, Loader2, 
     CarFront, LayoutDashboard, Zap, FileText, CreditCard, 
     ArrowUpRight, AlertTriangle, ShieldCheck, Download, 
-    ChevronRight, Calendar, UserCheck, LogOut, Gift, Activity
+    ChevronRight, Calendar, UserCheck, LogOut, Gift, Activity, MessageSquare
 } from "lucide-react";
 import { getLegalTransactionsAction, overrideTransactionStatusAction, validateCEPAction, registerCommissionPaymentAction } from "@/app/actions/transaction";
 import { createCarAction, getAdminInventoryAction, deleteCarAction, updateCarAction } from "@/app/actions/cars";
@@ -47,7 +47,7 @@ export default function AdminDashboard() {
         transmission: "Automatic",
         fuel_type: "Gasoline",
         location: "CDMX",
-        description: "Unidad certificada por StarterKar.",
+        description: "Unidad certificada por Clinkar.",
         status: "published"
     });
 
@@ -252,8 +252,8 @@ export default function AdminDashboard() {
             <aside className="w-72 border-r border-zinc-800 flex flex-col p-6 fixed h-screen bg-zinc-950/50 backdrop-blur-xl z-20">
                 <div className="mb-12 px-2">
                     <h1 className="text-2xl font-black italic uppercase tracking-tighter flex items-center gap-2">
-                        <div className="h-8 w-8 bg-indigo-600 rounded-lg flex items-center justify-center italic text-white text-xl">S</div>
-                        StarterKar <span className="text-[10px] bg-indigo-600/20 text-indigo-400 px-2 py-0.5 rounded-full not-italic tracking-widest font-black border border-indigo-500/30 ml-1">ADMIN</span>
+                        <div className="h-8 w-8 bg-indigo-600 rounded-lg flex items-center justify-center italic text-white text-xl">C</div>
+                        Clinkar <span className="text-[10px] bg-indigo-600/20 text-indigo-400 px-2 py-0.5 rounded-full not-italic tracking-widest font-black border border-indigo-500/30 ml-1">ADMIN</span>
                     </h1>
                 </div>
 
@@ -505,7 +505,8 @@ export default function AdminDashboard() {
                                         <ShieldCheck className="h-20 w-20 text-white/10 group-hover:scale-125 transition-transform duration-1000" />
                                     </div>
                                     <div className="relative z-10">
-                                        <p className="text-[10px] font-black uppercase tracking-[0.3em] mb-2 opacity-80">Seguridad StarterKar</p>
+                                        <p className="text-[10px] font-black uppercase tracking-[0.3em] mb-2 opacity-80">Seguridad Clinkar</p>
+                                        <span className="text-2xl font-black tracking-tighter text-white uppercase italic">CLINKAR</span>
                                         <h4 className="text-2xl font-black italic tracking-tighter mb-6 uppercase">Infraestructura Protegida</h4>
                                         <div className="flex items-center gap-3 bg-white/10 backdrop-blur-md rounded-xl p-3 border border-white/10">
                                             <div className="h-2 w-2 bg-emerald-400 rounded-full animate-ping" />
@@ -613,7 +614,7 @@ export default function AdminDashboard() {
                                 </div>
                                 <div>
                                     <h3 className="text-2xl font-black uppercase italic tracking-tighter text-white">Red de Capital (Inversionistas)</h3>
-                                    <p className="text-sm text-zinc-500 font-medium mt-1">Gestión de solicitudes para el programa de inversión StarterKar.</p>
+                                    <p className="text-sm text-zinc-500 font-medium mt-1">Gestión de solicitudes para el programa de inversión Clinkar.</p>
                                 </div>
                             </div>
                             <div className="text-right">
