@@ -78,9 +78,10 @@ export function CarFormModal({ isOpen, onClose, onSubmit, initialData, isLoading
         }
     };
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
+    const handleSubmit = async (e?: React.FormEvent) => {
+        if (e) e.preventDefault();
         console.log("[CarFormModal] handleSubmit called. PreviewMode:", previewMode);
+        toast.info("Procesando vista previa...");
         
         if (!previewMode && mode === "create") {
             // Validation
@@ -481,8 +482,8 @@ export function CarFormModal({ isOpen, onClose, onSubmit, initialData, isLoading
                                 Cancelar
                             </button>
                             <Button 
-                                type="submit" 
-                                form="car-form"
+                                type="button" 
+                                onClick={() => handleSubmit()}
                                 disabled={isLoading} 
                                 className="h-16 px-10 bg-indigo-600 hover:bg-indigo-500 text-white rounded-2xl shadow-xl shadow-indigo-600/20 flex items-center gap-3"
                             >
