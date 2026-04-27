@@ -23,7 +23,8 @@ import {
     LayoutDashboard,
     Share2,
     Maximize2,
-    Camera as CameraIcon
+    Camera as CameraIcon,
+    X
 } from "lucide-react";
 import { FavoriteService } from "@/services/FavoriteService";
 import { createBrowserClient } from "@/lib/supabase/client";
@@ -41,6 +42,8 @@ export default function CarDetailPage({ params }: { params: Promise<{ id: string
     const [isFavorite, setIsFavorite] = useState(false);
     const [userProfile, setUserProfile] = useState<any>(null);
     const [showWarrantyModal, setShowWarrantyModal] = useState(false);
+    const [showGallery, setShowGallery] = useState(false);
+    const [galleryIndex, setGalleryIndex] = useState(0);
     
     const supabaseBrowser = useMemo(() => createBrowserClient(), []);
 
@@ -163,7 +166,10 @@ export default function CarDetailPage({ params }: { params: Promise<{ id: string
                 <div className="grid lg:grid-cols-12 gap-12">
                     <div className="lg:col-span-7 space-y-8">
                         <div className="grid grid-cols-4 gap-4 aspect-[16/10]">
-                            <div className="col-span-3 row-span-2 relative rounded-[2.5rem] overflow-hidden bg-zinc-100 dark:bg-zinc-800 border border-border/50 shadow-2xl group cursor-pointer">
+                            <div 
+                                onClick={() => { setGalleryIndex(0); setShowGallery(true); }}
+                                className="col-span-3 row-span-2 relative rounded-[2.5rem] overflow-hidden bg-zinc-100 dark:bg-zinc-800 border border-border/50 shadow-2xl group cursor-pointer"
+                            >
                                 {car.images?.[0] ? (
                                     <Image
                                         src={car.images[0]}
@@ -187,7 +193,10 @@ export default function CarDetailPage({ params }: { params: Promise<{ id: string
                                 </div>
                             </div>
                             
-                            <div className="relative rounded-[1.5rem] overflow-hidden bg-zinc-100 dark:bg-zinc-800 border border-border/50 group cursor-pointer">
+                            <div 
+                                onClick={() => { if (car.images?.[1]) { setGalleryIndex(1); setShowGallery(true); } }}
+                                className="relative rounded-[1.5rem] overflow-hidden bg-zinc-100 dark:bg-zinc-800 border border-border/50 group cursor-pointer"
+                            >
                                 {car.images?.[1] ? (
                                     <Image src={car.images[1]} alt="Interior" fill className="object-cover group-hover:scale-110 transition-transform duration-500" />
                                 ) : (
@@ -195,7 +204,10 @@ export default function CarDetailPage({ params }: { params: Promise<{ id: string
                                 )}
                             </div>
                             
-                            <div className="relative rounded-[1.5rem] overflow-hidden bg-zinc-100 dark:bg-zinc-800 border border-border/50 group cursor-pointer">
+                            <div 
+                                onClick={() => { if (car.images && car.images.length > 2) { setGalleryIndex(2); setShowGallery(true); } }}
+                                className="relative rounded-[1.5rem] overflow-hidden bg-zinc-100 dark:bg-zinc-800 border border-border/50 group cursor-pointer"
+                            >
                                 {car.images && car.images.length > 2 ? (
                                     <>
                                         <Image src={car.images[2]} alt="Detalle" fill className="object-cover group-hover:scale-110 transition-transform duration-500" />
@@ -366,6 +378,65 @@ export default function CarDetailPage({ params }: { params: Promise<{ id: string
                                 ENTENDIDO
                             </button>
                         </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Premium Gallery Modal */}
+            {showGallery && car.images && (
+                <div className="fixed inset-0 z-[200] bg-black/95 backdrop-blur-xl flex flex-col animate-in fade-in duration-300">
+                    <div className="flex items-center justify-between p-6">
+                        <div className="flex flex-col">
+                            <h3 className="text-white font-black italic uppercase tracking-tighter">{car.make} {car.model}</h3>
+                            <p className="text-[10px] text-zinc-500 font-bold uppercase tracking-widest">Imagen {galleryIndex + 1} de {car.images.length}</p>
+                        </div>
+                        <button 
+                            onClick={() => setShowGallery(false)}
+                            className="h-12 w-12 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition-all group"
+                        >
+                            <X className="h-6 w-6 group-hover:scale-110 transition-transform" />
+                        </button>
+                    </div>
+
+                    <div className="flex-1 relative flex items-center justify-center p-4">
+                        <button 
+                            onClick={() => setGalleryIndex(prev => (prev === 0 ? car.images!.length - 1 : prev - 1))}
+                            className="absolute left-6 z-10 h-14 w-14 rounded-full bg-black/50 border border-white/10 text-white flex items-center justify-center hover:bg-indigo-600 transition-all"
+                        >
+                            <ChevronLeft className="h-8 w-8" />
+                        </button>
+
+                        <div className="relative w-full h-full flex items-center justify-center">
+                            <Image 
+                                src={car.images[galleryIndex]} 
+                                alt="Gallery View" 
+                                fill
+                                className="object-contain"
+                                priority
+                            />
+                        </div>
+
+                        <button 
+                            onClick={() => setGalleryIndex(prev => (prev === car.images!.length - 1 ? 0 : prev + 1))}
+                            className="absolute right-6 z-10 h-14 w-14 rounded-full bg-black/50 border border-white/10 text-white flex items-center justify-center hover:bg-indigo-600 transition-all"
+                        >
+                            <ChevronRight className="h-8 w-8" />
+                        </button>
+                    </div>
+
+                    <div className="p-8 flex justify-center gap-2 overflow-x-auto bg-black/40">
+                        {car.images.map((img, idx) => (
+                            <button 
+                                key={idx}
+                                onClick={() => setGalleryIndex(idx)}
+                                className={cn(
+                                    "relative h-16 w-24 rounded-lg overflow-hidden border-2 transition-all shrink-0",
+                                    galleryIndex === idx ? "border-indigo-500 scale-110 shadow-lg shadow-indigo-500/30" : "border-transparent opacity-40 hover:opacity-100"
+                                )}
+                            >
+                                <Image src={img} alt="Thumbnail" fill className="object-cover" />
+                            </button>
+                        ))}
                     </div>
                 </div>
             )}
