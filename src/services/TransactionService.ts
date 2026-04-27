@@ -485,7 +485,7 @@ export class TransactionService extends BaseService {
         // 2. Validate status (Must be P2P_VALIDATED, HANDOVER_SCHEDULED, or RESERVED)
         if (!['P2P_VALIDATED', 'HANDOVER_SCHEDULED', 'RESERVED'].includes(transaction.status)) {
             Logger.warn(`[Security] Attempt to confirm handover for tx ${transactionId} in status ${transaction.status}`);
-            return { success: false, error: 'ESTADO_INVALIDO: El pago no ha sido validado aún o la transacción no está activa.' };
+            return { success: false, error: `[V3] ESTADO_INVALIDO: El estado actual es ${transaction.status}. Se requiere validación o reserva.` };
         }
 
         // 3. Update status to RELEASED
