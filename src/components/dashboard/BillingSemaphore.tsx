@@ -16,13 +16,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
-import { 
-    Dialog, 
-    DialogContent, 
-    DialogHeader, 
-    DialogTitle, 
-    DialogDescription 
-} from "@/components/ui/dialog";
+
 
 interface BillingSemaphoreProps {
     transactionId: string;
@@ -135,91 +129,100 @@ export function BillingSemaphore({
                 </div>
             </div>
 
-            {/* Payment Instructions Dialog */}
-            <Dialog open={showInstructions} onOpenChange={setShowInstructions}>
-                <DialogContent className="max-w-md bg-white rounded-[2.5rem] border-none p-10 gap-8 overflow-hidden">
-                    <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-indigo-600 via-purple-600 to-indigo-600" />
-                    
-                    <DialogHeader className="text-center space-y-4">
-                        <div className="h-20 w-20 bg-indigo-50 text-indigo-600 rounded-[2rem] flex items-center justify-center mx-auto shadow-inner">
-                            <DollarSign className="h-10 w-10" />
-                        </div>
-                        <DialogTitle className="text-3xl font-black italic tracking-tighter uppercase leading-none">Pago de Comisión</DialogTitle>
-                        <DialogDescription className="text-sm font-medium text-zinc-500 px-4">
-                            Transfiere la comisión de éxito para liberar tu factura y mantener tu reputación como vendedor StarterKar Elite.
-                        </DialogDescription>
-                    </DialogHeader>
-
-                    <div className="space-y-6">
-                        {/* Amount Card */}
-                        <div className="bg-zinc-900 rounded-3xl p-6 text-white relative overflow-hidden group">
-                            <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:scale-125 transition-transform duration-700">
-                                <Zap className="h-16 w-16" />
+            {/* Payment Instructions Modal */}
+            {showInstructions && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6">
+                    <div className="absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity" onClick={() => setShowInstructions(false)} />
+                    <div className="relative w-full max-w-md bg-white rounded-[2.5rem] p-10 overflow-hidden shadow-2xl animate-in zoom-in-95 duration-200">
+                        <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-indigo-600 via-purple-600 to-indigo-600" />
+                        
+                        <div className="text-center space-y-4 mb-8">
+                            <button 
+                                onClick={() => setShowInstructions(false)} 
+                                className="absolute top-6 right-6 h-10 w-10 bg-zinc-50 text-zinc-400 rounded-full hover:bg-zinc-100 hover:text-zinc-600 flex items-center justify-center transition-colors"
+                            >
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                            </button>
+                            <div className="h-20 w-20 bg-indigo-50 text-indigo-600 rounded-[2rem] flex items-center justify-center mx-auto shadow-inner">
+                                <DollarSign className="h-10 w-10" />
                             </div>
-                            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-indigo-400 mb-1">Monto Exacto a Transferir</p>
-                            <div className="flex items-end gap-2">
-                                <h3 className="text-4xl font-black italic tracking-tighter">${commissionAmount.toLocaleString()}</h3>
-                                <span className="text-xs font-bold text-zinc-500 mb-1.5 uppercase">MXN</span>
-                            </div>
-                        </div>
-
-                        {/* SPEI Details */}
-                        <div className="space-y-3">
-                            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-400 px-2">Datos de Transferencia SPEI</p>
-                            <div className="space-y-2">
-                                <div className="p-4 bg-zinc-50 rounded-2xl border border-zinc-100 flex items-center justify-between group hover:border-indigo-200 transition-colors">
-                                    <div>
-                                        <p className="text-[9px] font-black text-zinc-400 uppercase tracking-widest">Banco</p>
-                                        <p className="text-sm font-black text-zinc-900">STP (StarterKar Bóveda)</p>
-                                    </div>
-                                    <div className="h-8 w-8 bg-white rounded-lg flex items-center justify-center text-zinc-300">
-                                        <Info className="h-4 w-4" />
-                                    </div>
-                                </div>
-                                <div className="p-4 bg-zinc-50 rounded-2xl border border-zinc-100 flex items-center justify-between group hover:border-indigo-200 transition-colors">
-                                    <div>
-                                        <p className="text-[9px] font-black text-zinc-400 uppercase tracking-widest">CLABE Interbancaria</p>
-                                        <p className="text-sm font-black text-zinc-900">6461 8012 3456 7890 12</p>
-                                    </div>
-                                    <button 
-                                        onClick={() => copyToClipboard("646180123456789012")}
-                                        className="h-10 w-10 bg-white rounded-xl shadow-sm border border-zinc-100 flex items-center justify-center text-zinc-400 hover:text-indigo-600 transition-all active:scale-90"
-                                    >
-                                        {copied ? <Check className="h-4 w-4 text-emerald-500" /> : <Copy className="h-4 w-4" />}
-                                    </button>
-                                </div>
-                                <div className="p-4 bg-zinc-50 rounded-2xl border border-zinc-100 flex items-center justify-between group hover:border-indigo-200 transition-colors">
-                                    <div>
-                                        <p className="text-[9px] font-black text-zinc-400 uppercase tracking-widest">Concepto / Referencia</p>
-                                        <p className="text-sm font-black text-zinc-900">COM-{transactionId.slice(0, 8).toUpperCase()}</p>
-                                    </div>
-                                    <button 
-                                        onClick={() => copyToClipboard(`COM-${transactionId.slice(0, 8).toUpperCase()}`)}
-                                        className="h-10 w-10 bg-white rounded-xl shadow-sm border border-zinc-100 flex items-center justify-center text-zinc-400 hover:text-indigo-600 transition-all active:scale-90"
-                                    >
-                                        <Copy className="h-4 w-4" />
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Note */}
-                        <div className="flex gap-4 p-4 bg-amber-50 rounded-2xl border border-amber-100">
-                            <AlertTriangle className="h-5 w-5 text-amber-600 shrink-0 mt-0.5" />
-                            <p className="text-[10px] font-bold text-amber-900 leading-relaxed uppercase tracking-tight">
-                                Envía tu comprobante a <span className="underline">pagos@starterkar.com</span> o por WhatsApp para validación inmediata.
+                            <h3 className="text-3xl font-black italic tracking-tighter uppercase leading-none text-zinc-900">Pago de Comisión</h3>
+                            <p className="text-sm font-medium text-zinc-500 px-4">
+                                Transfiere la comisión de éxito para liberar tu factura y mantener tu reputación como vendedor StarterKar Elite.
                             </p>
                         </div>
 
-                        <Button 
-                            className="w-full h-14 bg-indigo-600 hover:bg-indigo-500 text-white font-black uppercase tracking-widest rounded-2xl shadow-xl shadow-indigo-600/20 active:scale-95"
-                            onClick={() => setShowInstructions(false)}
-                        >
-                            He Realizado el Pago
-                        </Button>
+                        <div className="space-y-6">
+                            {/* Amount Card */}
+                            <div className="bg-zinc-900 rounded-3xl p-6 text-white relative overflow-hidden group">
+                                <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:scale-125 transition-transform duration-700">
+                                    <Zap className="h-16 w-16" />
+                                </div>
+                                <p className="text-[10px] font-black uppercase tracking-[0.2em] text-indigo-400 mb-1">Monto Exacto a Transferir</p>
+                                <div className="flex items-end gap-2">
+                                    <h3 className="text-4xl font-black italic tracking-tighter">${commissionAmount.toLocaleString()}</h3>
+                                    <span className="text-xs font-bold text-zinc-500 mb-1.5 uppercase">MXN</span>
+                                </div>
+                            </div>
+
+                            {/* SPEI Details */}
+                            <div className="space-y-3">
+                                <p className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-400 px-2">Datos de Transferencia SPEI</p>
+                                <div className="space-y-2">
+                                    <div className="p-4 bg-zinc-50 rounded-2xl border border-zinc-100 flex items-center justify-between group hover:border-indigo-200 transition-colors">
+                                        <div>
+                                            <p className="text-[9px] font-black text-zinc-400 uppercase tracking-widest">Banco</p>
+                                            <p className="text-sm font-black text-zinc-900">STP (StarterKar Bóveda)</p>
+                                        </div>
+                                        <div className="h-8 w-8 bg-white rounded-lg flex items-center justify-center text-zinc-300">
+                                            <Info className="h-4 w-4" />
+                                        </div>
+                                    </div>
+                                    <div className="p-4 bg-zinc-50 rounded-2xl border border-zinc-100 flex items-center justify-between group hover:border-indigo-200 transition-colors">
+                                        <div>
+                                            <p className="text-[9px] font-black text-zinc-400 uppercase tracking-widest">CLABE Interbancaria</p>
+                                            <p className="text-sm font-black text-zinc-900">6461 8012 3456 7890 12</p>
+                                        </div>
+                                        <button 
+                                            onClick={() => copyToClipboard("646180123456789012")}
+                                            className="h-10 w-10 bg-white rounded-xl shadow-sm border border-zinc-100 flex items-center justify-center text-zinc-400 hover:text-indigo-600 transition-all active:scale-90"
+                                        >
+                                            {copied ? <Check className="h-4 w-4 text-emerald-500" /> : <Copy className="h-4 w-4" />}
+                                        </button>
+                                    </div>
+                                    <div className="p-4 bg-zinc-50 rounded-2xl border border-zinc-100 flex items-center justify-between group hover:border-indigo-200 transition-colors">
+                                        <div>
+                                            <p className="text-[9px] font-black text-zinc-400 uppercase tracking-widest">Concepto / Referencia</p>
+                                            <p className="text-sm font-black text-zinc-900">COM-{transactionId.slice(0, 8).toUpperCase()}</p>
+                                        </div>
+                                        <button 
+                                            onClick={() => copyToClipboard(`COM-${transactionId.slice(0, 8).toUpperCase()}`)}
+                                            className="h-10 w-10 bg-white rounded-xl shadow-sm border border-zinc-100 flex items-center justify-center text-zinc-400 hover:text-indigo-600 transition-all active:scale-90"
+                                        >
+                                            <Copy className="h-4 w-4" />
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Note */}
+                            <div className="flex gap-4 p-4 bg-amber-50 rounded-2xl border border-amber-100">
+                                <AlertTriangle className="h-5 w-5 text-amber-600 shrink-0 mt-0.5" />
+                                <p className="text-[10px] font-bold text-amber-900 leading-relaxed uppercase tracking-tight">
+                                    Envía tu comprobante a <span className="underline">pagos@starterkar.com</span> o por WhatsApp para validación inmediata.
+                                </p>
+                            </div>
+
+                            <button 
+                                className="w-full h-14 bg-indigo-600 hover:bg-indigo-500 text-white font-black uppercase tracking-widest rounded-2xl shadow-xl shadow-indigo-600/20 active:scale-95 transition-all"
+                                onClick={() => setShowInstructions(false)}
+                            >
+                                He Realizado el Pago
+                            </button>
+                        </div>
                     </div>
-                </DialogContent>
-            </Dialog>
+                </div>
+            )}
         </>
     );
 }
