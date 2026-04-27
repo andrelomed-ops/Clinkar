@@ -53,7 +53,6 @@ export default function AdminDashboard() {
 
     const [referralPayouts, setReferralPayouts] = useState<any[]>([]);
     const [demandRequests, setDemandRequests] = useState<any[]>([]);
-    const [actionLoading, setActionLoading] = useState<string | null>(null);
     const [debugError, setDebugError] = useState<string | null>(null);
     const [payoutLoading, setPayoutLoading] = useState<string | null>(null);
 
