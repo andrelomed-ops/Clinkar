@@ -22,6 +22,7 @@ export function OfferModal({ id, carPrice, repairCost, carName, hasSeal }: Offer
     const [mounted, setMounted] = useState(false);
     const [isOpen, setIsOpen] = useState(false);
     const [showReservePopup, setShowReservePopup] = useState(false);
+    const [isNegotiating, setIsNegotiating] = useState(false);
     const [offerAmount, setOfferAmount] = useState<number>(carPrice - repairCost);
     const offerFloor = carPrice - repairCost;
 
@@ -33,7 +34,11 @@ export function OfferModal({ id, carPrice, repairCost, carName, hasSeal }: Offer
 
     const handleOffer = () => {
         if (!isValid) return;
-        setShowReservePopup(true);
+        setIsNegotiating(true);
+        setTimeout(() => {
+            setIsNegotiating(false);
+            setShowReservePopup(true);
+        }, 2000);
     };
 
     return (
@@ -64,8 +69,8 @@ export function OfferModal({ id, carPrice, repairCost, carName, hasSeal }: Offer
 
             </div>
             {isOpen && mounted && createPortal(
-                <div className="fixed inset-0 z-[200] flex items-center justify-center p-2 sm:p-4 bg-background/80 backdrop-blur-md animate-in fade-in duration-300">
-                    <div className="bg-background/90 backdrop-blur-2xl border border-border w-full max-w-lg rounded-[2.5rem] p-6 shadow-2xl space-y-4 animate-in zoom-in-95 duration-300 relative max-h-[95vh] overflow-y-auto custom-scrollbar">
+                <div className="fixed inset-0 z-[200] flex items-center justify-center p-2 sm:p-4 bg-background/95 backdrop-blur-xl animate-in fade-in duration-300">
+                    <div className="bg-background border border-border w-full max-w-lg rounded-[2.5rem] p-6 shadow-2xl space-y-4 animate-in zoom-in-95 duration-300 relative max-h-[95vh] overflow-y-auto custom-scrollbar">
                         <button
                             onClick={() => setIsOpen(false)}
                             className="absolute top-6 right-6 h-8 w-8 rounded-full bg-secondary text-muted-foreground hover:text-foreground hover:bg-secondary/80 transition-all flex items-center justify-center z-10 border border-border"
@@ -111,10 +116,10 @@ export function OfferModal({ id, carPrice, repairCost, carName, hasSeal }: Offer
                                     value={offerAmount}
                                     onChange={(e) => setOfferAmount(Number(e.target.value))}
                                     className={cn(
-                                        "w-full h-16 rounded-2xl bg-background border-2 pl-12 pr-6 text-3xl font-black focus:ring-0 transition-all border-border focus:border-amber-500 text-foreground selection:bg-amber-500/30 shadow-inner"
+                                        "w-full h-16 rounded-2xl bg-secondary/20 border-2 pl-12 pr-6 text-3xl font-black focus:ring-0 transition-all border-border focus:border-amber-500 text-foreground selection:bg-amber-500/30 shadow-inner"
                                     )}
                                 />
-                                <div className="absolute right-4 top-1/2 -translate-y-1/2 px-2 py-1 bg-secondary rounded-md text-[10px] font-black text-muted-foreground">MXN</div>
+                                <div className="absolute right-4 top-1/2 -translate-y-1/2 px-2 py-1 bg-background rounded-md text-[10px] font-black text-muted-foreground border border-border/50">MXN</div>
                             </div>
 
                             {/* Dynamic Feedback Legend */}
@@ -124,11 +129,11 @@ export function OfferModal({ id, carPrice, repairCost, carName, hasSeal }: Offer
                                 </div>
                             ) : offerAmount >= offerFloor ? (
                                 <div className="flex items-center gap-2 text-amber-600 bg-amber-500/10 p-2 rounded-xl text-xs font-bold border border-amber-500/20">
-                                    <CheckCircle2 className="h-4 w-4" /> Oferta Justa: Dentro del rango de negociación.
+                                    <CheckCircle2 className="h-4 w-4" /> Oferta Justa: Dentro del rango pre-autorizado.
                                 </div>
                             ) : (
                                 <div className="flex items-center gap-2 text-red-500 bg-red-500/10 p-2 rounded-xl text-xs font-bold border border-red-500/20">
-                                    <AlertCircle className="h-4 w-4" /> Oferta Muy Baja: El vendedor no la aceptará.
+                                    <AlertCircle className="h-4 w-4" /> Oferta Muy Baja: Inferior al piso del vendedor.
                                 </div>
                             )}
                         </div>
@@ -152,7 +157,7 @@ export function OfferModal({ id, carPrice, repairCost, carName, hasSeal }: Offer
                             </div>
                         </div>
 
-                        <div className="p-4 bg-background border border-border rounded-xl space-y-2">
+                        <div className="p-4 bg-secondary/30 border border-border rounded-xl space-y-2">
                             <div className="flex items-center gap-2 text-indigo-500">
                                 <BadgeAlert className="h-4 w-4" />
                                 <span className="text-[10px] font-black uppercase tracking-widest">Aviso de Exclusividad</span>
@@ -164,10 +169,17 @@ export function OfferModal({ id, carPrice, repairCost, carName, hasSeal }: Offer
 
                         <button
                             onClick={handleOffer}
-                            disabled={!isValid}
-                            className="w-full h-16 rounded-2xl bg-amber-500 text-black font-black text-lg shadow-xl shadow-amber-500/20 hover:bg-amber-400 hover:scale-[1.02] active:scale-95 transition-all disabled:opacity-50 disabled:grayscale uppercase italic tracking-tighter"
+                            disabled={!isValid || isNegotiating}
+                            className="w-full h-16 rounded-2xl bg-amber-500 text-black font-black text-lg shadow-xl shadow-amber-500/20 hover:bg-amber-400 hover:scale-[1.02] active:scale-95 transition-all disabled:opacity-50 disabled:grayscale uppercase italic tracking-tighter flex items-center justify-center gap-2"
                         >
-                            Iniciar Compra Segura
+                            {isNegotiating ? (
+                                <>
+                                    <div className="h-5 w-5 border-2 border-black/30 border-t-black rounded-full animate-spin" />
+                                    Negociando en Vivo...
+                                </>
+                            ) : (
+                                "Confirmar y Enviar Oferta"
+                            )}
                         </button>
                     </div>
                 </div>,
@@ -175,18 +187,29 @@ export function OfferModal({ id, carPrice, repairCost, carName, hasSeal }: Offer
             )}
 
             {showReservePopup && mounted && createPortal(
-                <div className="fixed inset-0 z-[250] flex items-center justify-center p-4 bg-background/90 backdrop-blur-md animate-in fade-in duration-300">
-                    <div className="bg-background border border-border w-full max-w-sm rounded-[2rem] p-8 text-center space-y-6 shadow-2xl animate-in zoom-in-95 duration-300">
-                        <div className="h-16 w-16 bg-amber-500/10 text-amber-500 mx-auto rounded-full flex items-center justify-center">
-                            <Info className="h-8 w-8" />
+                <div className="fixed inset-0 z-[250] flex items-center justify-center p-4 bg-background/95 backdrop-blur-xl animate-in fade-in duration-300">
+                    <div className="bg-background border border-emerald-500/30 w-full max-w-sm rounded-[2rem] p-8 text-center space-y-6 shadow-2xl shadow-emerald-500/20 animate-in zoom-in-95 duration-500 relative overflow-hidden">
+                        <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-emerald-400 via-emerald-500 to-emerald-600" />
+                        <div className="h-20 w-20 bg-emerald-500/10 text-emerald-500 mx-auto rounded-full flex items-center justify-center border-4 border-emerald-500/20">
+                            <CheckCircle2 className="h-10 w-10" />
                         </div>
-                        <h3 className="text-2xl font-black italic tracking-tighter uppercase">Operación en Espera</h3>
-                        <p className="text-sm text-muted-foreground font-medium">Un asesor especializado se pondrá en contacto contigo a la brevedad para reservar la cita de confirmación en el Taller Aliado.</p>
+                        <div className="space-y-2">
+                            <h3 className="text-2xl font-black italic tracking-tighter uppercase text-emerald-600">¡Oferta Aprobada!</h3>
+                            <div className="inline-block px-3 py-1 bg-emerald-500/10 text-emerald-600 rounded-lg text-xs font-black uppercase tracking-widest mb-2">
+                                Automática • {new Date().toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit' })}
+                            </div>
+                        </div>
+                        <p className="text-xs text-muted-foreground font-medium leading-relaxed">
+                            La inteligencia de precios de StarterKar ha validado tu oferta de <strong className="text-foreground">${offerAmount.toLocaleString()} MXN</strong> contra el piso pre-autorizado por el vendedor.
+                        </p>
                         <button
-                            onClick={() => setShowReservePopup(false)}
-                            className="w-full h-14 bg-amber-500 text-black font-black uppercase tracking-widest rounded-xl hover:scale-[1.02] active:scale-95 transition-all shadow-lg shadow-amber-500/20"
+                            onClick={() => {
+                                setShowReservePopup(false);
+                                setIsOpen(false);
+                            }}
+                            className="w-full h-14 bg-emerald-500 text-white font-black uppercase tracking-widest rounded-xl hover:scale-[1.02] active:scale-95 transition-all shadow-lg shadow-emerald-500/20"
                         >
-                            Entendido
+                            Proceder al Pago Seguro
                         </button>
                     </div>
                 </div>,
