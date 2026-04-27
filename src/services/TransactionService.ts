@@ -1,15 +1,17 @@
 import { Database } from '@/lib/database.types';
 import { NotificationService } from './NotificationService';
-import { SupabaseClient } from '@supabase/supabase-js';
-import { BaseService } from './BaseService';
-import { TransactionSchema } from './schemas';
-import { PldService } from './PldService';
-import { VehicleCheckService } from './VehicleCheckService';
-import { SpeiService } from './SpeiService';
-import { Logger } from '@/lib/logger';
-import { PRICING_CONFIG } from '@/config/pricing';
-import { ReferralService } from './ReferralService';
-import { LockService } from './LockService';
+import { createClient, SupabaseClient } from '@supabase/supabase-js';
+
+const getAdminClient = (supabase: SupabaseClient<Database>) => {
+    const adminKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+    if (adminKey) {
+        return createClient<Database>(
+            process.env.NEXT_PUBLIC_SUPABASE_URL!,
+            adminKey
+        );
+    }
+    return supabase;
+};
 
 export type Transaction = Database['public']['Tables']['transactions']['Row'];
 
@@ -102,7 +104,8 @@ export class TransactionService extends BaseService {
             (data.insuranceQuote?.cost || 0);
 
         // 4. Create Transaction
-        const { data: transaction, error } = await (supabase
+        const adminClient = getAdminClient(supabase);
+        const { data: transaction, error } = await (adminClient
             .from('transactions') as any)
             .insert({
                 car_id: data.carId,
