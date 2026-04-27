@@ -482,10 +482,10 @@ export class TransactionService extends BaseService {
             return { success: false, error: 'TRANSACCION_NO_ENCONTRADA' };
         }
 
-        // 2. Validate status (Must be P2P_VALIDATED or HANDOVER_SCHEDULED)
-        if (!['P2P_VALIDATED', 'HANDOVER_SCHEDULED'].includes(transaction.status)) {
+        // 2. Validate status (Must be P2P_VALIDATED, HANDOVER_SCHEDULED, or RESERVED)
+        if (!['P2P_VALIDATED', 'HANDOVER_SCHEDULED', 'RESERVED'].includes(transaction.status)) {
             Logger.warn(`[Security] Attempt to confirm handover for tx ${transactionId} in status ${transaction.status}`);
-            return { success: false, error: 'ESTADO_INVALIDO: El pago no ha sido validado aún.' };
+            return { success: false, error: 'ESTADO_INVALIDO: El pago no ha sido validado aún o la transacción no está activa.' };
         }
 
         // 3. Update status to RELEASED

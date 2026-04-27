@@ -40,7 +40,7 @@ export async function GET(
 
         const { data: tx, error } = await supabase
             .from("transactions")
-            .select("*, cars(*)")
+            .select("*")
             .eq("id", transactionId)
             .single();
 
@@ -48,15 +48,23 @@ export async function GET(
             return NextResponse.json({ error: "Transaction not found" }, { status: 404 });
         }
 
+        // Manual fetch of car to handle missing FKs
+        const { data: carData } = await supabase
+            .from("cars")
+            .select("*")
+            .eq("id", tx.car_id)
+            .single();
+
         data = {
             transactionId: tx.id,
             carPrice: tx.car_price,
             carDetails: {
-                make: tx.cars.make,
-                model: tx.cars.model,
-                year: tx.cars.year,
-                vin: tx.cars.vin,
-                plates: tx.cars.plates
+                make: carData?.make || "Desconocido",
+                model: carData?.model || "Desconocido",
+                year: carData?.year || 0,
+                vin: carData?.vin || "SIN-VIN",
+                plates: carData?.plates || "SIN-PLACAS",
+                color: carData?.color || "N/A"
             },
             date: new Date().toLocaleDateString("es-MX")
         };

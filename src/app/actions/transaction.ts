@@ -135,7 +135,17 @@ export async function getLegalTransactionsAction() {
 
     if (error) throw new Error(error.message);
 
-    return txs;
+    // Manual join to bypass FK issues
+    const txsWithCars = await Promise.all((txs || []).map(async (tx) => {
+        const { data: car } = await supabase
+            .from("cars")
+            .select("*")
+            .eq("id", tx.car_id)
+            .single();
+        return { ...tx, car };
+    }));
+
+    return txsWithCars;
 }
 
 export async function overrideTransactionStatusAction(transactionId: string, status: string) {

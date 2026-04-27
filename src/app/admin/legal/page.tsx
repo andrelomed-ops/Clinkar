@@ -201,6 +201,7 @@ export default function AdminLegalDashboard() {
                                 <th className="px-6 py-3">Auto</th>
                                 <th className="px-6 py-3">Vendedor</th>
                                 <th className="px-6 py-3">Estado</th>
+                                <th className="px-6 py-3">Documentos</th>
                                 <th className="px-6 py-3 text-right">Monto</th>
                             </tr>
                         </thead>
@@ -221,8 +222,26 @@ export default function AdminLegalDashboard() {
                                             {tx.status}
                                         </button>
                                     </td>
+                                    <td className="px-6 py-4">
+                                        <div className="flex gap-2">
+                                            <button 
+                                                onClick={() => window.open(`/api/documents/contract?id=${tx.id}`, '_blank')}
+                                                className="px-2 py-1 bg-zinc-800 hover:bg-zinc-700 text-[9px] font-black uppercase rounded border border-zinc-700 transition-all"
+                                                title="Contrato PROFECO"
+                                            >
+                                                Contrato
+                                            </button>
+                                            <button 
+                                                onClick={() => window.open(`/api/documents/responsiva?id=${tx.id}`, '_blank')}
+                                                className="px-2 py-1 bg-zinc-800 hover:bg-zinc-700 text-[9px] font-black uppercase rounded border border-zinc-700 transition-all"
+                                                title="Carta Responsiva"
+                                            >
+                                                Responsiva
+                                            </button>
+                                        </div>
+                                    </td>
                                     <td className="px-6 py-4 text-right font-mono text-zinc-300">
-                                        ${tx.total_amount?.toLocaleString()}
+                                        ${tx.total_amount?.toLocaleString() || tx.car_price?.toLocaleString()}
                                     </td>
                                 </tr>
                             ))}
