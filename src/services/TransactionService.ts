@@ -154,7 +154,7 @@ export class TransactionService extends BaseService {
     static async updateTransactionStatusBySessionId(
         supabase: SupabaseClient<Database>,
         sessionId: string,
-        status: 'PENDING' | 'IN_VAULT' | 'RELEASED' | 'CANCELLED'
+        status: string
     ): Promise<void> {
         const { data: transaction } = await (supabase
             .from('transactions') as any)

@@ -66,13 +66,13 @@ export class CarService {
             return [];
         }
 
-        return (data || []).map(d => ({
+        return (data as any[] || []).map(d => ({
             ...d,
-            location: (d.market_data as any)?.location || 'CDMX',
-            distance: d.mileage || 0,
-            fuel: d.fuel_type || 'Gasoline',
-            transmission: d.transmission || 'Automatic',
-            marketValue: (d.market_data as any)?.marketValue || d.price
+            location: (d as any).market_data?.location || 'CDMX',
+            distance: (d as any).mileage || 0,
+            fuel: (d as any).fuel_type || 'Gasoline',
+            transmission: (d as any).transmission || 'Automatic',
+            marketValue: (d as any).market_data?.marketValue || (d as any).price
         }));
     }
 
@@ -183,8 +183,7 @@ export class CarService {
         const clinkarSeal = carData.has_clinkar_seal !== undefined ? carData.has_clinkar_seal : carData.has_starterkar_seal;
         if (clinkarSeal !== undefined) dbReadyData.has_clinkar_seal = clinkarSeal;
 
-        const { error } = await supabase
-            .from('cars')
+        const { error } = await (supabase.from('cars') as any)
             .update(dbReadyData)
             .eq('id', id);
 

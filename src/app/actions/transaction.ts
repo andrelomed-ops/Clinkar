@@ -6,6 +6,7 @@ import { CarService } from '@/services/CarService';
 import { ALL_CARS } from '@/data/cars';
 import { emails } from '@/lib/emails';
 import { redirect } from 'next/navigation';
+import { revalidatePath } from 'next/cache';
 import { NotificationService } from '@/services/NotificationService';
 
 export async function startTransaction(carId: string, addOns?: {
@@ -61,8 +62,8 @@ export async function startTransaction(carId: string, addOns?: {
         } else {
             const transaction = await TransactionService.createTransaction(supabase, {
                 carId: car.id,
-                buyerId: buyerId,
-                sellerId: sellerId,
+                buyerId: buyerId as string,
+                sellerId: sellerId as string,
                 amount: car.price,
                 stripeSessionId: mockStripeSessionId,
                 logisticsQuote: addOns?.logistics,
