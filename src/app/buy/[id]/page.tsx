@@ -165,69 +165,51 @@ export default function CarDetailPage({ params }: { params: Promise<{ id: string
 
                 <div className="grid lg:grid-cols-12 gap-12">
                     <div className="lg:col-span-7 space-y-8">
-                        <div className="grid grid-cols-4 gap-4 aspect-[16/10]">
-                            <div 
-                                onClick={() => { setGalleryIndex(0); setShowGallery(true); }}
-                                className="col-span-3 row-span-2 relative rounded-[2.5rem] overflow-hidden bg-zinc-100 dark:bg-zinc-800 border border-border/50 shadow-2xl group cursor-pointer"
-                            >
-                                {car.images?.[0] ? (
-                                    <Image
-                                        src={car.images[0]}
-                                        alt={`${car.make} ${car.model}`}
-                                        fill
-                                        className="object-cover group-hover:scale-105 transition-transform duration-700"
-                                        priority
-                                    />
-                                ) : (
-                                    <div className="absolute inset-0 flex items-center justify-center text-zinc-400">
-                                        Sin Imagen Disponible
-                                    </div>
-                                )}
-                                <div className="absolute top-6 left-6 flex flex-wrap gap-3">
-                                    {car.status === 'CERTIFIED' && (
-                                        <div className="px-4 py-2 bg-emerald-500 text-white text-xs font-black rounded-full shadow-lg shadow-emerald-500/30 flex items-center gap-2">
-                                            <ShieldCheck className="h-4 w-4" />
-                                            CERTIFICADO 150 PUNTOS
+                        {/* StarterKar Cinematic Showcase */}
+                        <div className="relative w-full -ml-6 pr-6 md:-ml-0 md:pr-0 mb-8 overflow-hidden group">
+                            <div className="flex gap-4 overflow-x-auto pb-6 pt-2 px-6 md:px-0 snap-x snap-mandatory custom-scrollbar hide-scroll-arrows">
+                                {car.images && car.images.length > 0 ? (
+                                    car.images.map((img, idx) => (
+                                        <div 
+                                            key={idx}
+                                            onClick={() => { setGalleryIndex(idx); setShowGallery(true); }}
+                                            className={cn(
+                                                "relative shrink-0 snap-center cursor-pointer transition-all duration-700 ease-out hover:z-10",
+                                                idx === 0 ? "w-[85vw] md:w-[45rem] h-[50vh] md:h-[35rem] rounded-[2.5rem] shadow-2xl" : "w-[65vw] md:w-[25rem] h-[50vh] md:h-[35rem] rounded-[2rem] opacity-70 hover:opacity-100 shadow-xl"
+                                            )}
+                                        >
+                                            <Image
+                                                src={img}
+                                                alt={`${car.make} ${car.model} view ${idx + 1}`}
+                                                fill
+                                                className="object-cover rounded-[inherit] hover:scale-105 transition-transform duration-1000"
+                                                priority={idx < 2}
+                                            />
+                                            {idx === 0 && car.status === 'CERTIFIED' && (
+                                                <div className="absolute top-6 left-6 px-5 py-2.5 bg-emerald-500/90 backdrop-blur-md text-white text-xs font-black rounded-full shadow-lg shadow-emerald-500/30 flex items-center gap-2 border border-emerald-400/50">
+                                                    <ShieldCheck className="h-5 w-5" />
+                                                    CERTIFICADO 150 PUNTOS
+                                                </div>
+                                            )}
+                                            {idx === Math.min(car.images.length - 1, 4) && car.images.length > 5 && (
+                                                <div className="absolute inset-0 bg-zinc-950/60 backdrop-blur-sm rounded-[inherit] flex flex-col items-center justify-center text-white transition-colors hover:bg-zinc-950/40">
+                                                    <Maximize2 className="h-10 w-10 mb-3 animate-pulse" />
+                                                    <span className="text-2xl font-black italic tracking-tighter">+{car.images.length - 5}</span>
+                                                    <span className="text-xs font-black uppercase tracking-[0.3em] opacity-90">Ver Galería Premium</span>
+                                                </div>
+                                            )}
                                         </div>
-                                    )}
-                                </div>
-                            </div>
-                            
-                            <div 
-                                onClick={() => { if (car.images?.[1]) { setGalleryIndex(1); setShowGallery(true); } }}
-                                className="relative rounded-[1.5rem] overflow-hidden bg-zinc-100 dark:bg-zinc-800 border border-border/50 group cursor-pointer"
-                            >
-                                {car.images?.[1] ? (
-                                    <Image src={car.images[1]} alt="Interior" fill className="object-cover group-hover:scale-110 transition-transform duration-500" />
+                                    )).slice(0, 5)
                                 ) : (
-                                    <div className="absolute inset-0 flex items-center justify-center text-zinc-600 bg-zinc-900"><CameraIcon className="h-6 w-6" /></div>
-                                )}
-                            </div>
-                            
-                            <div 
-                                onClick={() => { if (car.images && car.images.length > 2) { setGalleryIndex(2); setShowGallery(true); } }}
-                                className="relative rounded-[1.5rem] overflow-hidden bg-zinc-100 dark:bg-zinc-800 border border-border/50 group cursor-pointer"
-                            >
-                                {car.images && car.images.length > 2 ? (
-                                    <>
-                                        <Image src={car.images[2]} alt="Detalle" fill className="object-cover group-hover:scale-110 transition-transform duration-500" />
-                                        {car.images.length > 3 && (
-                                            <div className="absolute inset-0 bg-zinc-900/70 backdrop-blur-md flex flex-col items-center justify-center text-white group-hover:bg-zinc-900/50 transition-all duration-300">
-                                                <Maximize2 className="h-8 w-8 mb-2 animate-pulse" />
-                                                <span className="text-base font-black tracking-tighter">+{car.images.length - 3}</span>
-                                                <span className="text-[10px] font-bold uppercase tracking-[0.2em] opacity-80">Fotografías</span>
-                                            </div>
-                                        )}
-                                    </>
-                                ) : (
-                                    <div className="absolute inset-0 flex items-center justify-center text-zinc-600 bg-zinc-900 flex-col gap-2">
-                                        <div className="p-3 bg-zinc-800 rounded-full">
-                                            <Maximize2 className="h-6 w-6" />
-                                        </div>
-                                        <span className="text-[10px] font-black uppercase tracking-[0.2em]">Ver más</span>
+                                    <div className="w-full h-[30rem] rounded-[3rem] bg-zinc-100 dark:bg-zinc-900 border-2 border-dashed border-zinc-300 dark:border-zinc-800 flex items-center justify-center text-zinc-500">
+                                        <CameraIcon className="h-12 w-12 opacity-50" />
                                     </div>
                                 )}
                             </div>
+                            
+                            {car.images && car.images.length > 1 && (
+                                <div className="absolute right-0 top-1/2 -translate-y-1/2 w-32 h-full bg-gradient-to-l from-background to-transparent pointer-events-none hidden md:block" />
+                            )}
                         </div>
 
                         <div>
