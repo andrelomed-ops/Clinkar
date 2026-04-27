@@ -123,7 +123,8 @@ export async function getLegalTransactionsAction() {
         .eq("id", user.id)
         .single();
 
-    if (profile?.role !== 'admin' && user.email !== 'StarterKar@hotmail.com') {
+    const userEmail = user.email?.toLowerCase();
+    if (profile?.role !== 'admin' && userEmail !== 'starterkar@hotmail.com') {
         throw new Error("Forbidden");
     }
 
@@ -149,7 +150,8 @@ export async function overrideTransactionStatusAction(transactionId: string, sta
         .eq("id", user.id)
         .single();
 
-    if (profile?.role !== 'admin' && user.email !== 'StarterKar@hotmail.com') {
+    const userEmail = user.email?.toLowerCase();
+    if (profile?.role !== 'admin' && userEmail !== 'starterkar@hotmail.com') {
         throw new Error("Forbidden");
     }
 

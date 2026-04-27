@@ -19,7 +19,8 @@ export async function createCarAction(carData: any) {
         .eq("id", user.id)
         .single();
 
-    if (profile?.role !== 'admin' && user.email !== 'StarterKar@hotmail.com') {
+    const userEmail = user.email?.toLowerCase();
+    if (profile?.role !== 'admin' && userEmail !== 'starterkar@hotmail.com') {
         throw new Error("Only admins can create cars directly.");
     }
 
