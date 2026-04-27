@@ -35,6 +35,7 @@ export default function HandoverPage() {
     const [isLoading, setIsLoading] = useState(true);
     const [processing, setProcessing] = useState(false);
     const [completed, setCompleted] = useState(false);
+    const [activeTab, setActiveTab] = useState<'monitor' | 'handover' | 'services'>('monitor');
 
     useEffect(() => {
         async function loadData() {
@@ -156,87 +157,128 @@ export default function HandoverPage() {
                     </div>
                 </div>
 
-                <div className="space-y-16">
-                    {/* 1. Vault Status Hero */}
-                    <div className="animate-in fade-in slide-in-from-top-12 duration-1000">
-                    <VaultStatus 
-                        status={transaction.status === 'RELEASED' ? 'RELEASED' : 'FUNDS_HELD'} 
-                        carPrice={transaction.car_price} 
-                        carYear={transaction.cars?.year || 2024}
-                        role={user?.id === transaction?.seller_id ? 'seller' : 'buyer'}
-                    />
+                <div className="space-y-8">
+                    {/* TABS NAVIGATION */}
+                    <div className="flex bg-white dark:bg-zinc-900 rounded-2xl p-2 border border-zinc-200 dark:border-zinc-800 shadow-sm max-w-fit mx-auto">
+                        <button
+                            onClick={() => setActiveTab('monitor')}
+                            className={cn(
+                                "px-6 py-3 rounded-xl text-sm font-black uppercase tracking-widest transition-all",
+                                activeTab === 'monitor' ? "bg-indigo-600 text-white shadow-md" : "text-zinc-500 hover:bg-zinc-100 dark:hover:bg-zinc-800"
+                            )}
+                        >
+                            Monitor de Compra
+                        </button>
+                        <button
+                            onClick={() => setActiveTab('handover')}
+                            className={cn(
+                                "px-6 py-3 rounded-xl text-sm font-black uppercase tracking-widest transition-all",
+                                activeTab === 'handover' ? "bg-indigo-600 text-white shadow-md" : "text-zinc-500 hover:bg-zinc-100 dark:hover:bg-zinc-800"
+                            )}
+                        >
+                            Checklist de Entrega
+                        </button>
+                        <button
+                            onClick={() => setActiveTab('services')}
+                            className={cn(
+                                "px-6 py-3 rounded-xl text-sm font-black uppercase tracking-widest transition-all flex items-center gap-2",
+                                activeTab === 'services' ? "bg-indigo-600 text-white shadow-md" : "text-zinc-500 hover:bg-zinc-100 dark:hover:bg-zinc-800"
+                            )}
+                        >
+                            <span className="relative flex h-2 w-2">
+                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                            </span>
+                            Servicios y Documentos
+                        </button>
                     </div>
 
-                    {/* 2. Extra Services (PRIORITY CROSS-SELL) */}
-                    <div className="animate-in fade-in slide-in-from-bottom-12 duration-1000 delay-200">
-                        <PostSaleEcosystem 
-                            transactionId={transaction.id} 
-                            carPrice={transaction.car_price}
-                            carLocation={transaction.cars?.location || "CDMX"}
-                            state={transaction.cars?.location?.split(',').pop()?.trim() || "CDMX"}
-                            initialGestoria={transaction.gestoria_cost > 0}
-                            initialInsurance={transaction.insurance_cost > 0}
-                        />
-                    </div>
-
-                    {/* 3. Final Handover Protocol */}
-                    <div className="animate-in fade-in slide-in-from-bottom-12 duration-1000 delay-400">
-                        <div className="mb-10 max-w-2xl">
-                            <div className="flex items-center gap-3 mb-3">
-                                <div className="h-1 w-12 bg-indigo-600 rounded-full" />
-                                <span className="text-[10px] font-black text-indigo-600 uppercase tracking-[0.4em]">Protocolo de Entrega</span>
-                            </div>
-                            <h2 className="text-4xl font-black text-zinc-900 italic uppercase tracking-tighter italic">Checklist de Entrega Física</h2>
-                            <p className="text-zinc-500 text-sm font-medium mt-4 leading-relaxed">
-                                Una vez revisados los servicios adicionales, valida el estado físico. **Al confirmar la entrega, notificas a StarterKar que la transacción P2P ha sido satisfactoria.**
-                            </p>
-                        </div>
-
-                        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
-                            <div className="lg:col-span-8">
-                                <HandoverSafeCheck 
-                                    isProcessing={processing}
-                                    onComplete={handleReleaseFunds}
-                                    onNegotiate={async () => {
-                                        setProcessing(true);
-                                        try {
-                                            const res = await reportDiscrepancyAction(transaction.id, {
-                                                reason: "Discrepancia en checklist de entrega física",
-                                            });
-                                            if (res.success) {
-                                                setTransaction({ ...transaction, status: 'DISPUTED' });
-                                                toast.warning("Mediación StarterKar Activada.");
-                                                window.open(`https://wa.me/525522120249?text=Hola, solicito mediación para la transacción ${transaction.id}. El vehículo no cumple con el checklist.`, '_blank');
-                                            }
-                                        } catch (e) {
-                                            toast.error("Error al reportar discrepancia");
-                                        } finally {
-                                            setProcessing(false);
-                                        }
-                                    }}
+                    {/* TAB CONTENTS */}
+                    <div className="mt-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                        {activeTab === 'monitor' && (
+                            <div className="animate-in fade-in zoom-in-95 duration-500">
+                                <VaultStatus 
+                                    status={transaction.status === 'RELEASED' ? 'RELEASED' : 'FUNDS_HELD'} 
+                                    carPrice={transaction.car_price} 
+                                    carYear={transaction.cars?.year || 2024}
+                                    role={user?.id === transaction?.seller_id ? 'seller' : 'buyer'}
                                 />
                             </div>
+                        )}
 
-                            <div className="lg:col-span-4 space-y-6">
-                                <div className="bg-white rounded-3xl p-8 border border-zinc-100 shadow-sm">
-                                    <h4 className="font-black text-[10px] uppercase tracking-[0.2em] text-zinc-400 mb-6">Guía StarterKar</h4>
-                                    <ul className="space-y-6">
-                                        <li className="flex gap-4">
-                                            <div className="h-6 w-6 bg-indigo-50 text-indigo-600 rounded-full flex items-center justify-center flex-shrink-0 text-[10px] font-black border border-indigo-100">1</div>
-                                            <p className="text-xs font-bold text-zinc-600 leading-relaxed">Revisa que la factura original y tenencias coincidan con el vendedor.</p>
-                                        </li>
-                                        <li className="flex gap-4">
-                                            <div className="h-6 w-6 bg-indigo-50 text-indigo-600 rounded-full flex items-center justify-center flex-shrink-0 text-[10px] font-black border border-indigo-100">2</div>
-                                            <p className="text-xs font-bold text-zinc-600 leading-relaxed">Compara el VIN físico contra el reporte del Pasaporte Digital.</p>
-                                        </li>
-                                        <li className="flex gap-4">
-                                            <div className="h-6 w-6 bg-indigo-50 text-indigo-600 rounded-full flex items-center justify-center flex-shrink-0 text-[10px] font-black border border-indigo-100">3</div>
-                                            <p className="text-xs font-bold text-zinc-600 leading-relaxed">Prueba encendido, luces y sistemas electrónicos básicos.</p>
-                                        </li>
-                                    </ul>
+                        {activeTab === 'handover' && (
+                            <div className="animate-in fade-in zoom-in-95 duration-500">
+                                <div className="mb-10 max-w-2xl">
+                                    <div className="flex items-center gap-3 mb-3">
+                                        <div className="h-1 w-12 bg-indigo-600 rounded-full" />
+                                        <span className="text-[10px] font-black text-indigo-600 uppercase tracking-[0.4em]">Protocolo de Entrega</span>
+                                    </div>
+                                    <h2 className="text-4xl font-black text-zinc-900 italic uppercase tracking-tighter">Checklist de Entrega Física</h2>
+                                    <p className="text-zinc-500 text-sm font-medium mt-4 leading-relaxed">
+                                        Valida el estado físico de tu nuevo vehículo. **Al confirmar la entrega, notificas a StarterKar que la transacción P2P ha sido satisfactoria y puedes proceder al pago.**
+                                    </p>
+                                </div>
+
+                                <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
+                                    <div className="lg:col-span-8">
+                                        <HandoverSafeCheck 
+                                            isProcessing={processing}
+                                            onComplete={handleReleaseFunds}
+                                            onNegotiate={async () => {
+                                                setProcessing(true);
+                                                try {
+                                                    const res = await reportDiscrepancyAction(transaction.id, {
+                                                        reason: "Discrepancia en checklist de entrega física",
+                                                    });
+                                                    if (res.success) {
+                                                        setTransaction({ ...transaction, status: 'DISPUTED' });
+                                                        toast.warning("Mediación StarterKar Activada.");
+                                                        window.open(`https://wa.me/525522120249?text=Hola, solicito mediación para la transacción ${transaction.id}. El vehículo no cumple con el checklist.`, '_blank');
+                                                    }
+                                                } catch (e) {
+                                                    toast.error("Error al reportar discrepancia");
+                                                } finally {
+                                                    setProcessing(false);
+                                                }
+                                            }}
+                                        />
+                                    </div>
+
+                                    <div className="lg:col-span-4 space-y-6">
+                                        <div className="bg-white rounded-3xl p-8 border border-zinc-100 shadow-sm">
+                                            <h4 className="font-black text-[10px] uppercase tracking-[0.2em] text-zinc-400 mb-6">Guía StarterKar</h4>
+                                            <ul className="space-y-6">
+                                                <li className="flex gap-4">
+                                                    <div className="h-6 w-6 bg-indigo-50 text-indigo-600 rounded-full flex items-center justify-center flex-shrink-0 text-[10px] font-black border border-indigo-100">1</div>
+                                                    <p className="text-xs font-bold text-zinc-600 leading-relaxed">Revisa que la factura original y tenencias coincidan con el vendedor.</p>
+                                                </li>
+                                                <li className="flex gap-4">
+                                                    <div className="h-6 w-6 bg-indigo-50 text-indigo-600 rounded-full flex items-center justify-center flex-shrink-0 text-[10px] font-black border border-indigo-100">2</div>
+                                                    <p className="text-xs font-bold text-zinc-600 leading-relaxed">Compara el VIN físico contra el reporte del Pasaporte Digital.</p>
+                                                </li>
+                                                <li className="flex gap-4">
+                                                    <div className="h-6 w-6 bg-indigo-50 text-indigo-600 rounded-full flex items-center justify-center flex-shrink-0 text-[10px] font-black border border-indigo-100">3</div>
+                                                    <p className="text-xs font-bold text-zinc-600 leading-relaxed">Prueba encendido, luces y sistemas electrónicos básicos.</p>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
+                        )}
+
+                        {activeTab === 'services' && (
+                            <div className="animate-in fade-in zoom-in-95 duration-500">
+                                <PostSaleEcosystem 
+                                    transactionId={transaction.id} 
+                                    carPrice={transaction.car_price}
+                                    carLocation={transaction.cars?.location || "CDMX"}
+                                    state={transaction.cars?.location?.split(',').pop()?.trim() || "CDMX"}
+                                    initialGestoria={transaction.gestoria_cost > 0}
+                                    initialInsurance={transaction.insurance_cost > 0}
+                                />
+                            </div>
+                        )}
                     </div>
                 </div>
             </main>

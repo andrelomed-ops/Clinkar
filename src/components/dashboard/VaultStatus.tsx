@@ -88,24 +88,42 @@ export function VaultStatus({
                 {/* LEFT: VISUAL PIPELINE */}
                 <div className="2xl:col-span-7 space-y-6">
 
-                    {/* 1. INGESTION NODE -> Tu Pago */}
+                    {/* 1. INSTRUCTION NODE -> Protocolo de Pago */}
                     <div className={cn(
                         "relative p-6 rounded-2xl border-2 transition-all",
                         status !== 'PENDING' ? "border-blue-500 bg-blue-500/10" : "border-border bg-muted/50 opacity-60"
                     )}>
                         <div className="flex items-center justify-between mb-2">
-                            <span className="text-xs font-bold uppercase text-muted-foreground/60">1. Tu Pago</span>
+                            <span className="text-xs font-bold uppercase text-blue-600/80 tracking-widest">1. Protocolo de Pago</span>
                             {status !== 'PENDING' && <CheckCircle2 className="h-5 w-5 text-blue-500" />}
                         </div>
-                        <div className="flex items-center gap-4">
-                            <div className="h-10 w-10 bg-muted rounded-lg flex items-center justify-center">
-                                <Clock className="h-5 w-5 text-muted-foreground" />
+                        <div className="flex items-start gap-4 mt-4">
+                            <div className="h-10 w-10 bg-blue-500/20 rounded-xl flex items-center justify-center shrink-0">
+                                <Info className="h-5 w-5 text-blue-600" />
                             </div>
                             <div>
                                 <p className="font-bold text-foreground text-lg">
                                     ${formatCurrency(carPrice)} {currency}
                                 </p>
-                                <p className="text-xs text-muted-foreground">Fondos resguardados en Bóveda Digital</p>
+                                {role === 'buyer' ? (
+                                    <div className="space-y-2 mt-2">
+                                        <p className="text-sm font-medium text-slate-700">
+                                            <strong>IMPORTANTE:</strong> No realices ningún pago en este momento.
+                                        </p>
+                                        <p className="text-xs text-muted-foreground leading-relaxed">
+                                            El pago debe realizarse <strong>únicamente</strong> después de revisar físicamente el vehículo el día de tu cita, en presencia del Asistente y Mecánico de StarterKar. Nosotros no retenemos el dinero de la compraventa; el pago lo harás directo al vendedor cuando todo esté en orden.
+                                        </p>
+                                    </div>
+                                ) : (
+                                    <div className="space-y-2 mt-2">
+                                        <p className="text-sm font-medium text-slate-700">
+                                            Valor de tu vehículo acordado.
+                                        </p>
+                                        <p className="text-xs text-muted-foreground leading-relaxed">
+                                            Recibirás el pago completo directamente del comprador el día de la cita, una vez que el vehículo apruebe la revisión mecánica y legal física. StarterKar funge únicamente como mediador y garante de seguridad.
+                                        </p>
+                                    </div>
+                                )}
                             </div>
                         </div>
                     </div>
@@ -117,42 +135,35 @@ export function VaultStatus({
                         </div>
                     </div>
 
-                    {/* 2. VERIFICATION NODE -> Seguridad */}
+                    {/* 2. MEDIATION NODE -> Desglose y Comisión */}
                     <div className={cn(
                         "relative p-6 rounded-2xl border-2 transition-all",
                         status === 'FUNDS_HELD' ? "border-amber-500 bg-amber-500/10 ring-4 ring-amber-500/5" :
                             status === 'RELEASED' ? "border-blue-500/30 opacity-60" : "border-border opacity-40"
                     )}>
                         <div className="flex items-center justify-between mb-4">
-                            <span className="text-xs font-bold uppercase text-muted-foreground/60">2. Verificación de Seguridad</span>
-                            {status === 'FUNDS_HELD' && <span className="animate-pulse text-xs font-bold text-amber-500">● VALIDANDO RECEPCIÓN</span>}
+                            <span className="text-xs font-bold uppercase text-amber-600/80 tracking-widest">2. Mediación StarterKar</span>
+                            {status === 'FUNDS_HELD' && <span className="animate-pulse text-xs font-bold text-amber-500">● ESPERANDO CITA</span>}
                         </div>
 
                         <div className="bg-card rounded-xl p-4 border border-border space-y-3">
-                            <p className="text-xs text-muted-foreground mb-2">Desglose de la operación:</p>
+                            <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground mb-4">Resumen de la Operación</p>
                             
                             {role === 'buyer' ? (
                                 <>
                                     <div className="flex justify-between items-center">
                                         <div className="flex items-center gap-2">
-                                            <div className="h-2 w-2 rounded-full bg-purple-500" />
-                                            <span className="text-sm font-medium text-slate-600">Valor de la Unidad</span>
+                                            <div className="h-2 w-2 rounded-full bg-blue-500" />
+                                            <span className="text-sm font-medium text-slate-600">Valor del Vehículo a pagar al vendedor</span>
                                         </div>
                                         <span className="font-mono font-bold text-slate-700">${formatCurrency(carPrice)}</span>
                                     </div>
-                                    <div className="flex justify-between items-center">
+                                    <div className="flex justify-between items-center pt-2 mt-2 border-t border-slate-100">
                                         <div className="flex items-center gap-2">
-                                            <div className="h-2 w-2 rounded-full bg-blue-500" />
-                                            <span className="text-sm font-medium text-muted-foreground">Logística de Compra</span>
+                                            <Shield className="h-4 w-4 text-emerald-500" />
+                                            <span className="text-xs font-medium text-emerald-700">Servicio de Mediación y Verificación</span>
                                         </div>
-                                        <span className="font-mono font-bold text-foreground/80">${formatCurrency(BUYER_LOGISTICS_FEE)}</span>
-                                    </div>
-                                    <div className="flex justify-between items-center bg-emerald-50 p-2 rounded-lg border border-emerald-100">
-                                        <div className="flex items-center gap-2">
-                                            <div className="h-2 w-2 rounded-full bg-emerald-500" />
-                                            <span className="text-[10px] font-black uppercase text-emerald-700 tracking-tight">Descuento StarterKar (Promoción)</span>
-                                        </div>
-                                        <span className="font-mono font-bold text-emerald-600">-${formatCurrency(Math.abs(BUYER_PROMO_DISCOUNT))}</span>
+                                        <span className="text-xs font-bold text-emerald-600 bg-emerald-50 px-2 py-1 rounded-md">CUBIERTO POR EL VENDEDOR</span>
                                     </div>
                                 </>
                             ) : (
@@ -164,37 +175,37 @@ export function VaultStatus({
                                         </div>
                                         <span className="font-mono font-bold text-slate-700">${formatCurrency(carPrice)}</span>
                                     </div>
-                                    <div className="flex justify-between items-center bg-amber-50 p-2 rounded-lg border border-amber-100">
+                                    <div className="flex justify-between items-center bg-amber-50 p-3 rounded-xl border border-amber-100 mt-2">
                                         <div className="flex items-center gap-2">
-                                            <AlertTriangle className="h-3 w-3 text-amber-600" />
-                                            <span className="text-[10px] font-black uppercase text-amber-700 tracking-tight">Comisión StarterKar (3.5%)</span>
+                                            <AlertTriangle className="h-4 w-4 text-amber-600" />
+                                            <span className="text-xs font-black uppercase text-amber-700 tracking-tight">Comisión StarterKar (3.5%)</span>
                                         </div>
-                                        <span className="font-mono font-bold text-amber-600">${formatCurrency(SELLER_COMMISSION)}</span>
+                                        <span className="font-mono font-black text-amber-600">${formatCurrency(SELLER_COMMISSION)}</span>
                                     </div>
                                 </>
                             )}
                         </div>
                         
                         {role === 'seller' && (
-                            <div className="mt-4 p-4 bg-zinc-900 rounded-xl border border-zinc-800 text-white space-y-3">
-                                <p className="text-[10px] font-black uppercase tracking-widest text-zinc-500">Liquidación de Comisión</p>
-                                <p className="text-[10px] text-zinc-300 leading-relaxed">
-                                    Una vez liberados los fondos del auto, el pago de la comisión (${formatCurrency(SELLER_COMMISSION)} MXN) debe realizarse vía transferencia a:
+                            <div className="mt-4 p-5 bg-zinc-900 rounded-xl border border-zinc-800 text-white space-y-3">
+                                <p className="text-[10px] font-black uppercase tracking-widest text-zinc-400">Pago de Honorarios</p>
+                                <p className="text-xs text-zinc-300 leading-relaxed">
+                                    Una vez que el comprador te haya transferido el monto total del vehículo (${formatCurrency(carPrice)} MXN) y confirmes de recibido, deberás transferir la comisión correspondiente (${formatCurrency(SELLER_COMMISSION)} MXN) a StarterKar:
                                 </p>
-                                <div className="grid grid-cols-2 gap-4 pt-2 border-t border-zinc-800">
-                                    <div>
-                                        <p className="text-[8px] font-bold text-zinc-500 uppercase">Banco</p>
-                                        <p className="text-[10px] font-black">BBVA MÉXICO</p>
+                                <div className="grid grid-cols-2 gap-4 pt-4 mt-2 border-t border-zinc-800/80">
+                                    <div className="bg-zinc-800/50 p-3 rounded-lg">
+                                        <p className="text-[9px] font-bold text-zinc-500 uppercase tracking-wider mb-1">Banco</p>
+                                        <p className="text-xs font-black">BBVA MÉXICO</p>
                                     </div>
-                                    <div>
-                                        <p className="text-[8px] font-bold text-zinc-500 uppercase">CLABE</p>
-                                        <p className="text-[10px] font-black">0121 8000 1234 5678 90</p>
+                                    <div className="bg-zinc-800/50 p-3 rounded-lg">
+                                        <p className="text-[9px] font-bold text-zinc-500 uppercase tracking-wider mb-1">CLABE</p>
+                                        <p className="text-xs font-black font-mono">0121 8000 1234 5678 90</p>
                                     </div>
                                 </div>
                             </div>
                         )}
-                        <p className="mt-3 text-[10px] text-muted-foreground/60 leading-tight">
-                            * {LEGAL_TEXTS.NON_CUSTODIAL_DISCLAIMER}
+                        <p className="mt-4 text-[10px] text-muted-foreground/60 leading-tight">
+                            * StarterKar actúa exclusivamente como intermediario tecnológico y verificador. No captamos ni resguardamos los fondos de la compraventa.
                         </p>
                     </div>
 
@@ -205,17 +216,17 @@ export function VaultStatus({
                         </div>
                     </div>
 
-                    {/* 3. RELEASE NODE -> Pago Entregado */}
+                    {/* 3. RELEASE NODE -> Trato Cerrado */}
                     <div className={cn(
                         "relative p-6 rounded-2xl border-2 transition-all",
                         status === 'RELEASED' ? "border-emerald-500 bg-emerald-500/10" : "border-border opacity-40"
                     )}>
                         <div className="flex items-center justify-between mb-2">
-                            <span className="text-xs font-bold uppercase text-muted-foreground/60">3. Pago Entregado</span>
+                            <span className="text-xs font-bold uppercase text-emerald-600/80 tracking-widest">3. Trato Cerrado</span>
                             {status === 'RELEASED' && <CheckCircle2 className="h-5 w-5 text-emerald-500" />}
                         </div>
-                        <p className="text-sm text-muted-foreground">
-                            ¡Listo! El vendedor ya recibió su dinero y tú tienes tu auto.
+                        <p className="text-sm font-medium text-slate-700">
+                            ¡Listo! El trato se ha concretado de forma segura bajo el protocolo StarterKar.
                         </p>
                     </div>
 
