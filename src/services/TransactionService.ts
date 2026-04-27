@@ -1,17 +1,6 @@
 import { Database } from '@/lib/database.types';
 import { NotificationService } from './NotificationService';
-import { createClient, SupabaseClient } from '@supabase/supabase-js';
-
-const getAdminClient = (supabase: SupabaseClient<Database>) => {
-    const adminKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-    if (adminKey) {
-        return createClient<Database>(
-            process.env.NEXT_PUBLIC_SUPABASE_URL!,
-            adminKey
-        );
-    }
-    return supabase;
-};
+import { SupabaseClient } from '@supabase/supabase-js';
 
 export type Transaction = Database['public']['Tables']['transactions']['Row'];
 
@@ -104,8 +93,7 @@ export class TransactionService extends BaseService {
             (data.insuranceQuote?.cost || 0);
 
         // 4. Create Transaction
-        const adminClient = getAdminClient(supabase);
-        const { data: transaction, error } = await (adminClient
+        const { data: transaction, error } = await (supabase
             .from('transactions') as any)
             .insert({
                 car_id: data.carId,
@@ -117,10 +105,16 @@ export class TransactionService extends BaseService {
             .select()
             .single();
 
-        if (error || !transaction) {
+        if (error) {
+            if (error.code === '42501') {
+                Logger.error('[TransactionService] RLS Error: El usuario no tiene permisos para insertar en la tabla "transactions".');
+                throw new Error("ERROR DE PERMISOS (RLS): No tienes permiso para registrar esta transacción en la base de datos. Por favor verifica las políticas de Supabase.");
+            }
             Logger.error('Error creating transaction:', error);
             throw new Error(error?.message || 'Transaction creation failed');
         }
+
+        if (!transaction) throw new Error('No se pudo crear el registro de la transacción.');
 
         const typedTransaction = transaction as any;
 
