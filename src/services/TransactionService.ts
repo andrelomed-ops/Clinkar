@@ -108,6 +108,7 @@ export class TransactionService extends BaseService {
                 buyer_id: data.buyerId,
                 seller_id: data.sellerId,
                 car_price: data.amount,
+                total_amount: totalAmount,
                 status: 'PENDING'
             })
             .select()
