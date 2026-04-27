@@ -36,14 +36,16 @@ export function PostSaleEcosystem({
     carLocation = "Ciudad de México",
     state = "CDMX",
     initialGestoria = false,
-    initialInsurance = false
+    initialInsurance = false,
+    role = "buyer"
 }: { 
     transactionId: string, 
     carPrice?: number,
     carLocation?: string,
     state?: string,
     initialGestoria?: boolean,
-    initialInsurance?: boolean
+    initialInsurance?: boolean,
+    role?: "buyer" | "seller"
 }) {
     const [remindersEnabled, setRemindersEnabled] = useState(false);
     const [requestedService, setRequestedService] = useState<string | null>(null);
@@ -125,6 +127,20 @@ export function PostSaleEcosystem({
         },
     ];
 
+    const sellerServices = [
+        {
+            id: "aviso_venta",
+            title: "Aviso de Enajenación (Legal)",
+            desc: "Notificación oficial ante autoridades para deslindar responsabilidades fiscales y legales. Imprescindible para evitar multas de un auto que ya vendiste.",
+            icon: <FileSearch className="h-5 w-5" />,
+            priceLabel: "$300 pesos",
+            status: "RECOMENDADO",
+            priority: 1
+        }
+    ];
+
+    const currentServices = role === 'buyer' ? services : sellerServices;
+
     return (
         <div className="space-y-12">
             {/* Minimalist Hero Section */}
@@ -134,21 +150,25 @@ export function PostSaleEcosystem({
                 <div className="relative z-10 max-w-2xl">
                     <div className="flex items-center gap-2 mb-4">
                         <Zap className="h-4 w-4 text-indigo-600 fill-indigo-600" />
-                        <span className="text-[10px] font-black text-indigo-600 uppercase tracking-[0.2em]">Servicios de Valor Agregado</span>
+                        <span className="text-[10px] font-black text-indigo-600 uppercase tracking-[0.2em]">
+                            {role === 'buyer' ? 'Servicios de Valor Agregado' : 'Cierre de Operación'}
+                        </span>
                     </div>
                     <h2 className="text-4xl font-black text-zinc-900 tracking-tighter uppercase italic leading-[0.9]">
-                        Prepara tu entrega <br />
+                        {role === 'buyer' ? 'Prepara tu entrega' : 'Finaliza tu venta'} <br />
                         <span className="text-indigo-600">StarterKar Premium</span>
                     </h2>
                     <p className="mt-6 text-zinc-500 text-sm font-medium leading-relaxed">
-                        Asegura tu inversión y circula tranquilo desde el primer kilómetro. Estos servicios son esenciales para una transición legal y física sin complicaciones.
+                        {role === 'buyer' 
+                            ? 'Asegura tu inversión y circula tranquilo desde el primer kilómetro. Estos servicios son esenciales para una transición legal y física sin complicaciones.' 
+                            : 'Asegúrate de tener todos los documentos legales en regla y deslindarte de responsabilidades futuras sobre el vehículo.'}
                     </p>
                 </div>
             </div>
 
             {/* Main Services List */}
             <div className="grid grid-cols-1 gap-4">
-                {services.map((service) => (
+                {currentServices.map((service) => (
                     <div 
                         key={service.id}
                         className={cn(
@@ -269,45 +289,59 @@ export function PostSaleEcosystem({
                         icon={<ShieldCheck className="h-5 w-5" />}
                         onDownload={() => window.open(`/api/documents/responsiva?id=${transactionId}`, '_blank')}
                     />
-                    <DownloadCard 
-                        title="Certificado StarterKar" 
-                        desc="Resumen ejecutivo de los 150 puntos de inspección y validación legal." 
-                        icon={<Star className="h-5 w-5" />}
-                        onDownload={() => window.open(`/api/documents/certificate?id=${transactionId}`, '_blank')}
-                    />
-                </div>
-            </div>
-
-            {/* Concierge Section - Simplified & Minimalist */}
-            <div className="bg-zinc-900 rounded-[2.5rem] p-10 flex flex-col md:flex-row items-center justify-between gap-8 border border-zinc-800 shadow-2xl relative overflow-hidden">
-                <div className="absolute top-0 left-0 w-full h-full opacity-[0.03] pointer-events-none bg-[radial-gradient(#4f46e5_1px,transparent_1px)] [background-size:16px_16px]" />
-                
-                <div className="relative z-10 flex items-center gap-6">
-                    <div className={cn(
-                        "h-16 w-16 rounded-2xl flex items-center justify-center transition-all duration-500",
-                        remindersEnabled ? "bg-white text-indigo-600" : "bg-white/5 text-zinc-400"
-                    )}>
-                        <BellRing className={cn("h-7 w-7", remindersEnabled && "animate-pulse")} />
-                    </div>
-                    <div>
-                        <h3 className="font-black text-xl text-white italic uppercase tracking-tighter mb-1">Concierge <span className="text-indigo-500">Inteligente</span></h3>
-                        <p className="text-[10px] font-bold text-zinc-500 uppercase tracking-[0.2em]">Sincronización de trámites y mantenimiento</p>
-                    </div>
-                </div>
-
-                <button
-                    onClick={() => {
-                        setRemindersEnabled(!remindersEnabled);
-                        if (!remindersEnabled) toast.success("Concierge Activado: Recibirás recordatorios de tenencias y servicios.");
-                    }}
-                    className={cn(
-                        "relative z-10 px-8 h-12 rounded-xl font-black text-[10px] uppercase tracking-widest transition-all",
-                        remindersEnabled ? "bg-white text-indigo-600" : "bg-indigo-600 text-white hover:bg-indigo-500"
+                    {role === 'buyer' ? (
+                        <DownloadCard 
+                            title="Certificado StarterKar" 
+                            desc="Resumen ejecutivo de los 150 puntos de inspección y validación legal." 
+                            icon={<Star className="h-5 w-5" />}
+                            onDownload={() => window.open(`/api/documents/certificate?id=${transactionId}`, '_blank')}
+                        />
+                    ) : (
+                        <DownloadCard 
+                            title="Recibo de Honorarios" 
+                            desc="Factura y comprobante del pago de comisión del 3.5% a StarterKar." 
+                            icon={<FileText className="h-5 w-5" />}
+                            onDownload={() => toast.info("El recibo estará disponible una vez liquidada la comisión.")}
+                        />
                     )}
-                >
-                    {remindersEnabled ? "Sincronizado" : "Activar Ahora"}
-                </button>
+                </div>
             </div>
+
+            {/* Concierge Section - Only for buyers */}
+            {role === 'buyer' && (
+                <div className="bg-zinc-900 rounded-[2.5rem] p-10 flex flex-col md:flex-row items-center justify-between gap-8 border border-zinc-800 shadow-2xl relative overflow-hidden">
+                    <div className="absolute top-0 left-0 w-full h-full opacity-[0.03] pointer-events-none bg-[radial-gradient(#4f46e5_1px,transparent_1px)] [background-size:16px_16px]" />
+                    
+                    <div className="relative z-10 flex items-center gap-6">
+                        <div className={cn(
+                            "h-16 w-16 rounded-2xl flex items-center justify-center transition-all duration-500",
+                            remindersEnabled ? "bg-white text-indigo-600" : "bg-white/5 text-zinc-400"
+                        )}>
+                            <BellRing className={cn("h-7 w-7", remindersEnabled && "animate-pulse")} />
+                        </div>
+                        <div>
+                            <h3 className="font-black text-xl text-white italic uppercase tracking-tighter mb-1">Concierge <span className="text-indigo-500">Inteligente</span></h3>
+                            <p className="text-[10px] font-bold text-zinc-500 uppercase tracking-[0.2em]">Sincronización de trámites y mantenimiento</p>
+                        </div>
+                    </div>
+
+                    <button
+                        onClick={() => {
+                            setRemindersEnabled(!remindersEnabled);
+                            if (!remindersEnabled) toast.success("Concierge Activado: Recibirás recordatorios de tenencias y servicios.");
+                        }}
+                        className={cn(
+                            "relative z-10 px-8 h-12 rounded-xl font-black text-[10px] uppercase tracking-widest transition-all",
+                            remindersEnabled ? "bg-white text-indigo-600" : "bg-indigo-600 text-white hover:bg-indigo-500"
+                        )}
+                    >
+                        {remindersEnabled ? "Sincronizado" : "Activar Ahora"}
+                    </button>
+                </div>
+            )}
+        </div>
+    );
+}
         </div>
     );
 }

@@ -215,7 +215,10 @@ export default function HandoverPage() {
                                     </div>
                                     <h2 className="text-4xl font-black text-zinc-900 italic uppercase tracking-tighter">Checklist de Entrega Física</h2>
                                     <p className="text-zinc-500 text-sm font-medium mt-4 leading-relaxed">
-                                        Valida el estado físico de tu nuevo vehículo. **Al confirmar la entrega, notificas a StarterKar que la transacción P2P ha sido satisfactoria y puedes proceder al pago.**
+                                        {user?.id === transaction?.seller_id 
+                                            ? "Asegúrate de cumplir con estos requisitos para una entrega exitosa. **Una vez que el comprador confirme, recibirás el pago.**"
+                                            : "Valida el estado físico de tu nuevo vehículo. **Al confirmar la entrega, notificas a StarterKar que la transacción P2P ha sido satisfactoria y puedes proceder al pago.**"
+                                        }
                                     </p>
                                 </div>
 
@@ -223,6 +226,7 @@ export default function HandoverPage() {
                                     <div className="lg:col-span-8">
                                         <HandoverSafeCheck 
                                             isProcessing={processing}
+                                            role={user?.id === transaction?.seller_id ? 'seller' : 'buyer'}
                                             onComplete={handleReleaseFunds}
                                             onNegotiate={async () => {
                                                 setProcessing(true);
@@ -250,15 +254,27 @@ export default function HandoverPage() {
                                             <ul className="space-y-6">
                                                 <li className="flex gap-4">
                                                     <div className="h-6 w-6 bg-indigo-50 text-indigo-600 rounded-full flex items-center justify-center flex-shrink-0 text-[10px] font-black border border-indigo-100">1</div>
-                                                    <p className="text-xs font-bold text-zinc-600 leading-relaxed">Revisa que la factura original y tenencias coincidan con el vendedor.</p>
+                                                    <p className="text-xs font-bold text-zinc-600 leading-relaxed">
+                                                        {user?.id === transaction?.seller_id 
+                                                            ? "Acude puntual a la cita con el tanque a 1/4 y el vehículo limpio."
+                                                            : "Revisa que la factura original y tenencias coincidan con el vendedor."}
+                                                    </p>
                                                 </li>
                                                 <li className="flex gap-4">
                                                     <div className="h-6 w-6 bg-indigo-50 text-indigo-600 rounded-full flex items-center justify-center flex-shrink-0 text-[10px] font-black border border-indigo-100">2</div>
-                                                    <p className="text-xs font-bold text-zinc-600 leading-relaxed">Compara el VIN físico contra el reporte del Pasaporte Digital.</p>
+                                                    <p className="text-xs font-bold text-zinc-600 leading-relaxed">
+                                                        {user?.id === transaction?.seller_id 
+                                                            ? "Muestra disposición para que el mecánico y el comprador revisen el auto."
+                                                            : "Compara el VIN físico contra el reporte del Pasaporte Digital."}
+                                                    </p>
                                                 </li>
                                                 <li className="flex gap-4">
                                                     <div className="h-6 w-6 bg-indigo-50 text-indigo-600 rounded-full flex items-center justify-center flex-shrink-0 text-[10px] font-black border border-indigo-100">3</div>
-                                                    <p className="text-xs font-bold text-zinc-600 leading-relaxed">Prueba encendido, luces y sistemas electrónicos básicos.</p>
+                                                    <p className="text-xs font-bold text-zinc-600 leading-relaxed">
+                                                        {user?.id === transaction?.seller_id 
+                                                            ? "Solo endosa la factura y entrega las llaves hasta ver el dinero reflejado en tu cuenta bancaria."
+                                                            : "Prueba encendido, luces y sistemas electrónicos básicos."}
+                                                    </p>
                                                 </li>
                                             </ul>
                                         </div>
@@ -274,6 +290,7 @@ export default function HandoverPage() {
                                     carPrice={transaction.car_price}
                                     carLocation={transaction.cars?.location || "CDMX"}
                                     state={transaction.cars?.location?.split(',').pop()?.trim() || "CDMX"}
+                                    role={user?.id === transaction?.seller_id ? 'seller' : 'buyer'}
                                     initialGestoria={transaction.gestoria_cost > 0}
                                     initialInsurance={transaction.insurance_cost > 0}
                                 />

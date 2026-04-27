@@ -8,14 +8,15 @@ interface HandoverSafeCheckProps {
     onComplete?: () => void;
     onNegotiate?: () => void;
     isProcessing?: boolean;
+    role?: 'buyer' | 'seller';
 }
 
-export function HandoverSafeCheck({ onComplete, onNegotiate, isProcessing }: HandoverSafeCheckProps) {
+export function HandoverSafeCheck({ onComplete, onNegotiate, isProcessing, role = 'buyer' }: HandoverSafeCheckProps) {
     const [checks, setChecks] = useState({
-        odometer: false,
-        fluids: false,
-        lights: false,
-        physical: false
+        check1: false,
+        check2: false,
+        check3: false,
+        check4: false
     });
 
     const allPassed = Object.values(checks).every(v => v);
@@ -28,8 +29,12 @@ export function HandoverSafeCheck({ onComplete, onNegotiate, isProcessing }: Han
                         <ClipboardCheck className="h-7 w-7" />
                     </div>
                     <div>
-                        <h3 className="font-black text-2xl italic tracking-tighter uppercase leading-none mb-1">Checklist <span className="text-indigo-600">Protocol</span></h3>
-                        <p className="text-[10px] text-zinc-400 font-black uppercase tracking-[0.2em] leading-none">Validación de activos en Taller Aliado</p>
+                        <h3 className="font-black text-2xl italic tracking-tighter uppercase leading-none mb-1">
+                            {role === 'buyer' ? 'Checklist ' : 'Preparación '}<span className="text-indigo-600">Protocol</span>
+                        </h3>
+                        <p className="text-[10px] text-zinc-400 font-black uppercase tracking-[0.2em] leading-none">
+                            {role === 'buyer' ? 'Validación de activos en Taller Aliado' : 'Requisitos para entrega exitosa'}
+                        </p>
                     </div>
                 </div>
                 <div className="flex flex-col items-start sm:items-end">
@@ -40,30 +45,61 @@ export function HandoverSafeCheck({ onComplete, onNegotiate, isProcessing }: Han
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                <CheckItem
-                    title="Odómetro & Kilometraje"
-                    desc="Verificación visual del odómetro contra reporte de inspección inicial."
-                    checked={checks.odometer}
-                    onChange={(v) => setChecks(s => ({ ...s, odometer: v }))}
-                />
-                <CheckItem
-                    title="Testigos & Electrónica"
-                    desc="Escaneo de testigos de motor, ABS y bolsas de aire activos."
-                    checked={checks.fluids}
-                    onChange={(v) => setChecks(s => ({ ...s, fluids: v }))}
-                />
-                <CheckItem
-                    title="Condición Física"
-                    desc="Evaluación de daños cosméticos, cristales y pintura post-traslado."
-                    checked={checks.physical}
-                    onChange={(v) => setChecks(s => ({ ...s, physical: v }))}
-                />
-                <CheckItem
-                    title="Certificación Mecánica"
-                    desc="Firma del experto aliado validando el estado del activo."
-                    checked={checks.lights}
-                    onChange={(v) => setChecks(s => ({ ...s, lights: v }))}
-                />
+                {role === 'buyer' ? (
+                    <>
+                        <CheckItem
+                            title="Odómetro & Kilometraje"
+                            desc="Verificación visual del odómetro contra reporte de inspección inicial."
+                            checked={checks.check1}
+                            onChange={(v) => setChecks(s => ({ ...s, check1: v }))}
+                        />
+                        <CheckItem
+                            title="Testigos & Electrónica"
+                            desc="Escaneo de testigos de motor, ABS y bolsas de aire activos."
+                            checked={checks.check2}
+                            onChange={(v) => setChecks(s => ({ ...s, check2: v }))}
+                        />
+                        <CheckItem
+                            title="Condición Física"
+                            desc="Evaluación de daños cosméticos, cristales y pintura post-traslado."
+                            checked={checks.check3}
+                            onChange={(v) => setChecks(s => ({ ...s, check3: v }))}
+                        />
+                        <CheckItem
+                            title="Certificación Mecánica"
+                            desc="Firma del experto aliado validando el estado del activo."
+                            checked={checks.check4}
+                            onChange={(v) => setChecks(s => ({ ...s, check4: v }))}
+                        />
+                    </>
+                ) : (
+                    <>
+                        <CheckItem
+                            title="Factura Original"
+                            desc="Lleva la factura original para el endoso correspondiente y los comprobantes de tenencias."
+                            checked={checks.check1}
+                            onChange={(v) => setChecks(s => ({ ...s, check1: v }))}
+                        />
+                        <CheckItem
+                            title="Llaves y Manuales"
+                            desc="Asegúrate de llevar los duplicados de llaves, manual de usuario y póliza de garantía original (si aplica)."
+                            checked={checks.check2}
+                            onChange={(v) => setChecks(s => ({ ...s, check2: v }))}
+                        />
+                        <CheckItem
+                            title="Identificación Oficial"
+                            desc="Es estrictamente necesario presentar tu INE o pasaporte vigente para firmar el contrato de compraventa."
+                            checked={checks.check3}
+                            onChange={(v) => setChecks(s => ({ ...s, check3: v }))}
+                        />
+                        <CheckItem
+                            title="Limpieza y Pertenencias"
+                            desc="Verifica que el vehículo esté limpio y no dejes objetos personales ni documentos ajenos al auto en el interior."
+                            checked={checks.check4}
+                            onChange={(v) => setChecks(s => ({ ...s, check4: v }))}
+                        />
+                    </>
+                )}
             </div>
 
             <div className="mt-8 pt-6 border-t border-dashed border-border flex flex-col gap-4">
@@ -72,10 +108,12 @@ export function HandoverSafeCheck({ onComplete, onNegotiate, isProcessing }: Han
                         <div className="flex items-center gap-3 bg-amber-500/5 p-4 rounded-2xl border border-amber-500/10">
                             <AlertCircle className="h-5 w-5 text-amber-600 shrink-0" />
                             <p className="text-[10px] text-amber-800 leading-relaxed text-justify font-medium">
-                                Si algún punto no se cumple, tienes derecho a negociar antes de liberar el pago.
+                                {role === 'buyer' 
+                                    ? 'Si algún punto no se cumple, tienes derecho a negociar antes de liberar el pago.' 
+                                    : 'Asegúrate de cumplir todos los puntos para evitar retrasos o cancelaciones por parte del comprador.'}
                             </p>
                         </div>
-                        {onNegotiate && (
+                        {onNegotiate && role === 'buyer' && (
                             <button
                                 onClick={onNegotiate}
                                 className="w-full h-16 bg-amber-50 hover:bg-amber-100 text-amber-700 font-black rounded-2xl border-2 border-amber-200 transition-all flex items-center justify-center gap-3 text-xs uppercase tracking-[0.2em] shadow-lg shadow-amber-500/5 hover:scale-[1.02] active:scale-95"
@@ -90,8 +128,14 @@ export function HandoverSafeCheck({ onComplete, onNegotiate, isProcessing }: Han
                         <div className="flex items-center gap-3 bg-emerald-500/5 p-4 rounded-2xl border border-emerald-500/10 animate-in fade-in zoom-in duration-500">
                             <CheckCircle2 className="h-6 w-6 text-emerald-600 shrink-0" />
                             <div>
-                                <p className="text-xs font-black text-emerald-900 uppercase">Vehículo Validado</p>
-                                <p className="text-[10px] text-emerald-700 font-medium">Puedes proceder con la firma digital. StarterKar ha blindado tu compra.</p>
+                                <p className="text-xs font-black text-emerald-900 uppercase">
+                                    {role === 'buyer' ? 'Vehículo Validado' : 'Requisitos Listos'}
+                                </p>
+                                <p className="text-[10px] text-emerald-700 font-medium">
+                                    {role === 'buyer' 
+                                        ? 'Puedes proceder con la firma digital. StarterKar ha blindado tu compra.' 
+                                        : 'Estás listo para proceder con la firma digital y entregar el vehículo.'}
+                                </p>
                             </div>
                         </div>
                         {onComplete && (
@@ -105,7 +149,7 @@ export function HandoverSafeCheck({ onComplete, onNegotiate, isProcessing }: Han
                                 ) : (
                                     <>
                                         <CheckCircle2 className="h-5 w-5" />
-                                        Liberar Fondos y Finalizar Entrega
+                                        {role === 'buyer' ? 'Liberar Fondos y Finalizar Entrega' : 'Confirmar Entrega de Vehículo'}
                                     </>
                                 )}
                             </button>
