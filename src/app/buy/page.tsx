@@ -75,7 +75,7 @@ export default function BuyPage() {
             try {
                 const data = await CarService.getAllCars(supabase);
 
-                if (data && data.length > 0) {
+                if (data) {
                     const mappedCars = (data as any[]).map(dbCar => ({
                         ...dbCar,
                         features: dbCar.features || [],
@@ -91,8 +91,8 @@ export default function BuyPage() {
                     }));
                     setCars(mappedCars);
                 } else {
-                    // Fallback to ALL_CARS if DB is empty
-                    console.log("[BuyPage] DB returned no cars, using mock data.");
+                    // Fallback to ALL_CARS only if data is null
+                    console.log("[BuyPage] DB fetch returned null, using mock data fallback.");
                     setCars(ALL_CARS);
                 }
             } catch (e) {
