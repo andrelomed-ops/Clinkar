@@ -1,6 +1,14 @@
 import { Database } from '@/lib/database.types';
 import { NotificationService } from './NotificationService';
 import { SupabaseClient } from '@supabase/supabase-js';
+import { BaseService } from './BaseService';
+import { Logger } from '@/lib/logger';
+import { PRICING_CONFIG } from '@/config/pricing';
+import { ReferralService } from './ReferralService';
+import { LockService } from './LockService';
+import { PldService } from './PldService';
+import { VehicleCheckService } from './VehicleCheckService';
+import { SpeiService } from './SpeiService';
 
 export type Transaction = Database['public']['Tables']['transactions']['Row'];
 
