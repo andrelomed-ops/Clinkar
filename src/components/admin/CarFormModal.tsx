@@ -85,9 +85,9 @@ export function CarFormModal({ isOpen, onClose, onSubmit, initialData, isLoading
         
         if (!previewMode && mode === "create") {
             // Validation
-            if (!formData.make || !formData.model || !formData.price || !formData.location) {
+            if (!formData.make || !formData.model || formData.price <= 0 || !formData.location) {
                 toast.error("Campos incompletos", {
-                    description: "Por favor completa la Marca, Modelo, Precio y Ubicación."
+                    description: "Por favor completa la Marca, Modelo, Precio (>0) y Ubicación."
                 });
                 return;
             }

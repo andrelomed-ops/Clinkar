@@ -12,6 +12,7 @@ import { SmartSupport } from "@/components/layout/SmartSupport";
 import { SafeHydration } from "@/components/ui/SafeHydration";
 import { ReferralTracker } from "@/components/layout/ReferralTracker";
 import { PostHogProvider } from "@/components/providers/PostHogProvider";
+import { Toaster } from "sonner";
 
 
 
@@ -126,6 +127,7 @@ export default function RootLayout({
             </GlobalErrorBoundary>
             <Footer />
             <SmartSupport />
+            <Toaster richColors position="top-right" closeButton />
           </PostHogProvider>
         </ThemeProvider>
       </body>
