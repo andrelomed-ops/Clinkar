@@ -342,9 +342,6 @@ export function PostSaleEcosystem({
         </div>
     );
 }
-        </div>
-    );
-}
 
 function DownloadCard({ title, desc, icon, onDownload }: { title: string, desc: string, icon: React.ReactNode, onDownload?: () => void }) {
     return (
