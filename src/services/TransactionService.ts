@@ -109,8 +109,7 @@ export class TransactionService extends BaseService {
                 buyer_id: data.buyerId,
                 seller_id: data.sellerId,
                 car_price: data.amount,
-                status: 'PENDING',
-                stripe_session_id: data.stripeSessionId
+                status: 'PENDING'
             })
             .select()
             .single();
