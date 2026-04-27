@@ -17,7 +17,7 @@ import { createBrowserClient } from "@/lib/supabase/client";
 import { CarFormModal } from "@/components/admin/CarFormModal";
 
 
-type AdminView = 'CONTROL' | 'INVENTORY' | 'INVESTORS' | 'BILLING' | 'UPSELLS' | 'REFERRALS';
+type AdminView = 'CONTROL' | 'INVENTORY' | 'INVESTORS' | 'BILLING' | 'UPSELLS' | 'REFERRALS' | 'DEMANDS';
 
 export default function AdminDashboard() {
     const supabase = createBrowserClient();
@@ -34,7 +34,8 @@ export default function AdminDashboard() {
         gmv: 0,
         pendingCommissions: 0,
         activeHandovers: 0,
-        conversionRate: 84
+        conversionRate: 84,
+        totalDemands: 0
     });
 
     const [newCar, setNewCar] = useState({
@@ -51,22 +52,27 @@ export default function AdminDashboard() {
     });
 
     const [referralPayouts, setReferralPayouts] = useState<any[]>([]);
+    const [demandRequests, setDemandRequests] = useState<any[]>([]);
+    const [actionLoading, setActionLoading] = useState<string | null>(null);
+    const [debugError, setDebugError] = useState<string | null>(null);
     const [payoutLoading, setPayoutLoading] = useState<string | null>(null);
 
     async function loadData() {
         setLoading(true);
         try {
-            const [cars, txs, apps, payouts] = await Promise.all([
+            const [cars, txs, apps, payouts, demands] = await Promise.all([
                 getAdminInventoryAction(),
                 getLegalTransactionsAction(),
                 getInvestorApplicationsAction(),
-                getPendingReferralPayouts()
+                getPendingReferralPayouts(),
+                supabase.from('demand_registry').select('*').order('created_at', { ascending: false })
             ]);
             
             setInventory(cars || []);
             setTransactions(txs || []);
             setInvestorApps(apps || []);
             setReferralPayouts(payouts || []);
+            setDemandRequests(demands.data || []);
 
             // Calculate Stats
             const gmv = (txs || []).reduce((acc: number, tx: any) => acc + (tx.car_price || 0), 0);
@@ -79,11 +85,12 @@ export default function AdminDashboard() {
                 gmv,
                 pendingCommissions: pendingComm,
                 activeHandovers: activeHO,
-                conversionRate: 84
+                conversionRate: 84,
+                totalDemands: demands.data?.length || 0
             });
-        } catch (err) {
+        } catch (err: any) {
             console.error("Error loading admin data:", err);
-            toast.error("Error al sincronizar datos");
+            toast.error("Error al recargar datos", { description: err.message });
         } finally {
             setLoading(false);
         }
@@ -130,7 +137,7 @@ export default function AdminDashboard() {
             setEditingCar(null);
             await loadData();
         } catch (err: any) {
-            toast.error("Error al actualizar");
+            toast.error("Error al actualizar", { description: err.message });
         } finally {
             setActionLoading(null);
         }
@@ -222,13 +229,18 @@ export default function AdminDashboard() {
 
     const handleCreateCar = async (carData: any) => {
         setActionLoading("CREATE");
+        setDebugError(null);
         try {
-            await createCarAction(carData);
+            console.log("[Admin] Sending car data:", carData);
+            const result = await createCarAction(carData);
+            console.log("[Admin] Create Result:", result);
             toast.success("Vehículo publicado con éxito");
             setIsCreateModalOpen(false);
             await loadData();
         } catch (err: any) {
-            toast.error("Error al publicar");
+            console.error("[Admin] Create Car Error:", err);
+            setDebugError(`Error al publicar: ${err.message || String(err)}`);
+            toast.error("Error al publicar", { description: err.message });
         } finally {
             setActionLoading(null);
         }
@@ -286,6 +298,13 @@ export default function AdminDashboard() {
                         onClick={() => setView('REFERRALS')} 
                         badge={referralPayouts.length.toString()}
                     />
+                    <SidebarItem 
+                        icon={MessageSquare} 
+                        label="Solicitudes" 
+                        active={view === 'DEMANDS'} 
+                        onClick={() => setView('DEMANDS')} 
+                        badge={demandRequests.filter(d => d.status === 'pending').length.toString()}
+                    />
                 </nav>
 
                 <div className="mt-auto pt-8 border-t border-zinc-900">
@@ -315,7 +334,21 @@ export default function AdminDashboard() {
             </aside>
 
             {/* Main Content Area */}
-            <main className="flex-1 ml-72 p-12 min-h-screen">
+            <main className="flex-1 overflow-y-auto p-12 relative z-10 custom-scrollbar">
+                {debugError && (
+                    <div className="mb-8 p-6 bg-red-500/10 border-2 border-red-500/50 rounded-3xl animate-in shake duration-500">
+                        <div className="flex items-center gap-4 text-red-500">
+                            <AlertTriangle className="h-6 w-6" />
+                            <div>
+                                <p className="text-sm font-black uppercase tracking-widest">Error de Sistema Detectado</p>
+                                <p className="text-xs font-bold mt-1 opacity-80">{debugError}</p>
+                            </div>
+                            <button onClick={() => setDebugError(null)} className="ml-auto text-[10px] font-black underline uppercase tracking-widest">Cerrar</button>
+                        </div>
+                    </div>
+                )}
+
+                {/* Dashboard Header */}
                 <header className="flex justify-between items-center mb-16">
                     <div className="animate-in fade-in slide-in-from-left-4 duration-700">
                         <h2 className="text-4xl font-black uppercase italic tracking-tighter text-white">
@@ -325,6 +358,7 @@ export default function AdminDashboard() {
                             {view === 'BILLING' && "Gestión de Tesorería"}
                             {view === 'UPSELLS' && "Servicios Plus"}
                             {view === 'REFERRALS' && "Programa de Referidos"}
+                            {view === 'DEMANDS' && "Solicitudes de Auto (Demanda)"}
                         </h2>
                         <div className="flex items-center gap-2 mt-2">
                             <div className="h-1.5 w-1.5 bg-indigo-500 rounded-full" />
@@ -353,9 +387,10 @@ export default function AdminDashboard() {
                 {view === 'CONTROL' && (
                     <div className="space-y-12 animate-in fade-in slide-in-from-bottom-6 duration-700">
                         {/* KPI Grid */}
-                        <div className="grid grid-cols-4 gap-8">
+                        <div className="grid grid-cols-5 gap-6">
                             <KpiCard label="GMV Acumulado" value={`$${(stats.gmv / 1000000).toFixed(1)}M`} trend="+18%" icon={DollarSign} color="indigo" />
                             <KpiCard label="Entregas Activas" value={stats.activeHandovers.toString()} trend="HOY" icon={Calendar} color="emerald" />
+                            <KpiCard label="Solicitudes Activas" value={stats.totalDemands.toString()} trend="DEMANDA" icon={MessageSquare} color="indigo" />
                             <KpiCard label="Comisiones Pend." value={`$${(stats.pendingCommissions / 1000).toFixed(0)}K`} trend="RECAUDAR" icon={AlertTriangle} color="amber" alert />
                             <KpiCard label="Tasa de Cierre" value={`${stats.conversionRate}%`} trend="+2.4%" icon={Zap} color="indigo" />
                         </div>
@@ -523,7 +558,11 @@ export default function AdminDashboard() {
                             {inventory.map(car => (
                                 <div key={car.id} className="bg-zinc-900/50 backdrop-blur-xl border border-zinc-800 rounded-[2.5rem] overflow-hidden hover:border-indigo-500/40 transition-all group shadow-xl">
                                     <div className="h-60 bg-zinc-950 flex items-center justify-center relative group-hover:bg-zinc-900 transition-colors">
-                                        <CarFront className="h-24 w-24 text-zinc-800/50 group-hover:scale-110 group-hover:text-indigo-500/20 transition-all duration-700" />
+                                        {car.images && car.images.length > 0 ? (
+                                            <img src={car.images[0]} alt={car.model} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
+                                        ) : (
+                                            <CarFront className="h-24 w-24 text-zinc-800/50 group-hover:scale-110 group-hover:text-indigo-500/20 transition-all duration-700" />
+                                        )}
                                         <div className="absolute top-6 left-6">
                                             <span className={cn(
                                                 "px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest border backdrop-blur-md",
@@ -849,6 +888,79 @@ export default function AdminDashboard() {
                                 <div className="py-32 text-center border-2 border-dashed border-zinc-800 rounded-[3rem] bg-zinc-900/20">
                                     <Users className="h-12 w-12 text-zinc-800 mx-auto mb-4 opacity-50" />
                                     <p className="text-zinc-600 font-black uppercase tracking-[0.4em] italic">No hay pagos de referidos pendientes</p>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                )}
+                {view === 'DEMANDS' && (
+                    <div className="space-y-12 animate-in fade-in slide-in-from-bottom-6 duration-700">
+                        <div className="bg-zinc-900/50 backdrop-blur-3xl border border-zinc-800 p-10 rounded-[3rem] shadow-2xl flex items-center justify-between">
+                            <div className="flex items-center gap-8">
+                                <div className="h-20 w-20 bg-indigo-500/10 rounded-3xl flex items-center justify-center border border-indigo-500/20">
+                                    <MessageSquare className="h-10 w-10 text-indigo-500" />
+                                </div>
+                                <div>
+                                    <h3 className="text-2xl font-black uppercase italic tracking-tighter text-white">Solicitudes de Auto (Búsqueda Maestro)</h3>
+                                    <p className="text-sm text-zinc-500 font-medium mt-1">Peticiones de usuarios que no encontraron su unidad ideal en el inventario.</p>
+                                </div>
+                            </div>
+                            <div className="text-right">
+                                <p className="text-[10px] font-black text-zinc-600 uppercase tracking-widest mb-1">Total Peticiones</p>
+                                <p className="text-4xl font-black text-white italic tracking-tighter">{demandRequests.length}</p>
+                            </div>
+                        </div>
+
+                        <div className="grid gap-6">
+                            {demandRequests.map(demand => (
+                                <div key={demand.id} className="group bg-zinc-900/50 backdrop-blur-2xl border border-zinc-800 p-10 rounded-[3rem] flex items-center justify-between hover:border-indigo-500/40 transition-all shadow-xl relative overflow-hidden">
+                                    <div className={cn(
+                                        "absolute left-0 top-0 bottom-0 w-2",
+                                        demand.status === 'pending' ? "bg-amber-500/50" : "bg-emerald-500/50"
+                                    )} />
+                                    <div className="flex items-center gap-10">
+                                        <div className="h-20 w-20 bg-zinc-950 rounded-2xl flex items-center justify-center border border-zinc-800 group-hover:border-indigo-500/20 transition-colors">
+                                            <Search className="h-10 w-10 text-zinc-800 group-hover:text-indigo-500/50 transition-colors" />
+                                        </div>
+                                        <div>
+                                            <div className="flex items-center gap-3 mb-2">
+                                                <h4 className="text-2xl font-black text-white italic tracking-tighter uppercase">
+                                                    {demand.brand} {demand.model}
+                                                </h4>
+                                                <span className={cn(
+                                                    "px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest border",
+                                                    demand.status === 'pending' ? "bg-amber-500/10 text-amber-500 border-amber-500/20" : "bg-emerald-500/10 text-emerald-500 border-emerald-500/20"
+                                                )}>
+                                                    {demand.status === 'pending' ? "BUSCANDO" : "COMPLETADO"}
+                                                </span>
+                                            </div>
+                                            <div className="flex items-center gap-4">
+                                                <p className="text-[10px] font-black text-zinc-500 uppercase tracking-widest italic">Años: <span className="text-zinc-300">{demand.year_min} - {demand.year_max}</span></p>
+                                                <span className="h-1 w-1 bg-zinc-800 rounded-full" />
+                                                <p className="text-[10px] font-black text-zinc-500 uppercase tracking-widest italic">Presupuesto: <span className="text-emerald-500">${demand.budget_min?.toLocaleString()} - ${demand.budget_max?.toLocaleString()}</span></p>
+                                                <span className="h-1 w-1 bg-zinc-800 rounded-full" />
+                                                <p className="text-[10px] font-black text-zinc-500 uppercase tracking-widest italic">Ubicación: <span className="text-zinc-300">{demand.location || 'N/A'}</span></p>
+                                            </div>
+                                            {demand.notes && (
+                                                <p className="mt-4 text-xs text-zinc-400 font-medium line-clamp-1 italic bg-zinc-950/50 px-4 py-2 rounded-xl border border-zinc-800 inline-block">
+                                                    &quot;{demand.notes}&quot;
+                                                </p>
+                                            )}
+                                        </div>
+                                    </div>
+
+                                    <div className="flex items-center gap-4">
+                                        <button className="h-14 px-8 bg-zinc-800 text-zinc-300 text-xs font-black rounded-2xl hover:bg-zinc-700 transition-all uppercase tracking-widest border border-zinc-700">MARCAR MATCH</button>
+                                        <button className="h-14 w-14 bg-indigo-600 text-white rounded-2xl flex items-center justify-center hover:bg-indigo-500 transition-all shadow-xl shadow-indigo-600/20">
+                                            <ExternalLink className="h-5 w-5" />
+                                        </button>
+                                    </div>
+                                </div>
+                            ))}
+                            {demandRequests.length === 0 && (
+                                <div className="py-32 text-center border-2 border-dashed border-zinc-800 rounded-[3rem] bg-zinc-900/20">
+                                    <MessageSquare className="h-12 w-12 text-zinc-800 mx-auto mb-4 opacity-50" />
+                                    <p className="text-zinc-600 font-black uppercase tracking-[0.4em] italic">No hay solicitudes de auto activas</p>
                                 </div>
                             )}
                         </div>

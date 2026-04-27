@@ -13,7 +13,7 @@ export type Database = {
                 Row: {
                     created_at: string | null
                     description: string | null
-                    has_starterkar_seal: boolean | null
+                    has_clinkar_seal: boolean | null
                     id: string
                     images: string[] | null
                     make: string
@@ -26,6 +26,9 @@ export type Database = {
                     mileage: number | null
                     fuel_type: string | null
                     transmission: string | null
+                    location: string | null
+                    category: string | null
+                    technical_specs: Json | null
                     sensory_data: Json | null
                     market_data: Json | null
                     digital_passport_data: Json | null
@@ -33,7 +36,7 @@ export type Database = {
                 Insert: {
                     created_at?: string | null
                     description?: string | null
-                    has_starterkar_seal?: boolean | null
+                    has_clinkar_seal?: boolean | null
                     id?: string
                     images?: string[] | null
                     make: string
@@ -46,6 +49,9 @@ export type Database = {
                     mileage?: number | null
                     fuel_type?: string | null
                     transmission?: string | null
+                    location?: string | null
+                    category?: string | null
+                    technical_specs?: Json | null
                     sensory_data?: Json | null
                     market_data?: Json | null
                     digital_passport_data?: Json | null
@@ -53,7 +59,7 @@ export type Database = {
                 Update: {
                     created_at?: string | null
                     description?: string | null
-                    has_starterkar_seal?: boolean | null
+                    has_clinkar_seal?: boolean | null
                     id?: string
                     images?: string[] | null
                     make?: string
@@ -66,6 +72,9 @@ export type Database = {
                     mileage?: number | null
                     fuel_type?: string | null
                     transmission?: string | null
+                    location?: string | null
+                    category?: string | null
+                    technical_specs?: Json | null
                     sensory_data?: Json | null
                     market_data?: Json | null
                     digital_passport_data?: Json | null

@@ -6,6 +6,7 @@ import { CarService } from "@/services/CarService";
 import { revalidatePath } from "next/cache";
 
 export async function createCarAction(carData: any) {
+    console.log("[Action] Starting createCarAction with data:", { make: carData.make, model: carData.model });
     const supabase = await createClient();
 
     // Verify Admin
@@ -28,7 +29,12 @@ export async function createCarAction(carData: any) {
         status: carData.status || 'published'
     });
 
-    if (!newCar) throw new Error("Failed to create car.");
+    if (!newCar) {
+        console.error("[Action] CarService.createCar returned null");
+        throw new Error("Failed to create car.");
+    }
+    
+    console.log("[Action] Car created successfully:", newCar.id);
 
     revalidatePath("/admin");
     revalidatePath("/buy");
@@ -77,8 +83,8 @@ export async function updateCarAction(id: string, carData: any) {
     const { data: profile } = await supabase.from("profiles").select("role").eq("id", user.id).single();
     if (profile?.role !== 'admin' && user.email !== 'StarterKar@hotmail.com') throw new Error("Forbidden");
 
-    const { error } = await supabase.from("cars").update(carData).eq("id", id);
-    if (error) throw new Error(error.message);
+    const success = await CarService.updateCar(supabase, id, carData);
+    if (!success) throw new Error("Failed to update car.");
 
     revalidatePath("/admin");
     revalidatePath("/buy");

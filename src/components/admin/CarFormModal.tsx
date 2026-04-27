@@ -80,6 +80,7 @@ export function CarFormModal({ isOpen, onClose, onSubmit, initialData, isLoading
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+        console.log("[CarFormModal] handleSubmit called. PreviewMode:", previewMode);
         
         if (!previewMode && mode === "create") {
             setPreviewMode(true);
@@ -476,7 +477,6 @@ export function CarFormModal({ isOpen, onClose, onSubmit, initialData, isLoading
                             </button>
                             <Button 
                                 type="submit" 
-                                onClick={handleSubmit}
                                 disabled={isLoading} 
                                 className="h-16 px-10 bg-indigo-600 hover:bg-indigo-500 text-white rounded-2xl shadow-xl shadow-indigo-600/20 flex items-center gap-3"
                             >

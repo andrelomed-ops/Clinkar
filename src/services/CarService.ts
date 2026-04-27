@@ -41,6 +41,8 @@ export class CarService {
             distance: d.mileage || 0,
             fuel: d.fuel_type || 'Gasoline',
             transmission: d.transmission || 'Automatic',
+            location: (d.market_data as any)?.location || 'CDMX',
+            technical_specs: (d.market_data as any)?.technical_specs || {},
             // Parse JSONB fields or fallback
             sensory: d.sensory_data || {},
             priceEquation: (d.market_data as any)?.priceEquation || {},
@@ -53,18 +55,25 @@ export class CarService {
         };
     }
 
-    static async getAllCars(supabase: SupabaseClient<Database>): Promise<Car[]> {
+    static async getAllCars(supabase: SupabaseClient<Database>): Promise<any[]> {
         const { data, error } = await supabase
             .from('cars')
             .select('*')
-            .in('status', ['available', 'PUBLISHED', 'CERTIFIED', 'AVAILABLE', 'certified']); // Show all active/ready cars
+            .in('status', ['available', 'PUBLISHED', 'CERTIFIED', 'AVAILABLE', 'certified', 'published']); 
 
         if (error) {
             Logger.error('Error fetching cars:', error);
             return [];
         }
 
-        return data || [];
+        return (data || []).map(d => ({
+            ...d,
+            location: (d.market_data as any)?.location || 'CDMX',
+            distance: d.mileage || 0,
+            fuel: d.fuel_type || 'Gasoline',
+            transmission: d.transmission || 'Automatic',
+            marketValue: (d.market_data as any)?.marketValue || d.price
+        }));
     }
 
     static async updateCarStatus(supabase: SupabaseClient<Database>, id: string, status: string): Promise<boolean> {
@@ -81,18 +90,108 @@ export class CarService {
         return true;
     }
 
-    static async createCar(supabase: SupabaseClient<Database>, carData: Partial<Car>): Promise<Car | null> {
+    static async createCar(supabase: SupabaseClient<Database>, carData: any): Promise<Car | null> {
+        // Explicitly map nested data to top-level columns if they exist
+        const fuel_type = carData.technical_specs?.performance?.fuelType || carData.fuel_type;
+        const transmission = carData.technical_specs?.performance?.transmission || carData.transmission;
+        const mileage = carData.mileage || carData.technical_specs?.performance?.mileage;
+
+        // Construct market_data for JSONB storage (preserves full richness)
+        const market_data = {
+            ...(carData.market_data || {}),
+            location: carData.location || 'CDMX',
+            technical_specs: carData.technical_specs || {},
+            category: carData.category || 'Car'
+        };
+
+        // Strict extraction of only valid DB columns based on REAL DB DISCOVERY
+        const dbReadyData: any = {
+            make: carData.make,
+            model: carData.model,
+            year: carData.year,
+            price: carData.price,
+            seller_id: carData.seller_id,
+            status: carData.status || 'published',
+            description: carData.description,
+            images: carData.images || [],
+            vin: carData.vin,
+            fuel_type: fuel_type,
+            transmission: transmission,
+            mileage: mileage,
+            market_data: market_data,
+            location: carData.location || 'CDMX',
+            category: carData.category || 'Car',
+            technical_specs: carData.technical_specs || {},
+            has_clinkar_seal: carData.has_clinkar_seal || carData.has_starterkar_seal || false
+        };
+
         const { data, error } = await supabase
             .from('cars')
-            .insert(carData as any)
+            .insert(dbReadyData)
             .select()
             .single();
 
         if (error) {
+            console.error('[CarService] Supabase Error Details:', {
+                message: error.message,
+                details: error.details,
+                hint: error.hint,
+                code: error.code
+            });
             Logger.error('[CarService] Failed to create car:', error);
             return null;
         }
 
         return data;
+    }
+
+    static async updateCar(supabase: SupabaseClient<Database>, id: string, carData: any): Promise<boolean> {
+        // Explicitly map nested data to top-level columns if they exist
+        const fuel_type = carData.technical_specs?.performance?.fuelType || carData.fuel_type;
+        const transmission = carData.technical_specs?.performance?.transmission || carData.transmission;
+        const mileage = carData.mileage || carData.technical_specs?.performance?.mileage;
+
+        const market_data = {
+            ...(carData.market_data || {}),
+            location: carData.location || 'CDMX',
+            technical_specs: carData.technical_specs || {},
+            category: carData.category || 'Car'
+        };
+
+        const dbReadyData: any = {
+            market_data
+        };
+        
+        // Only include fields if they are provided
+        if (carData.make) dbReadyData.make = carData.make;
+        if (carData.model) dbReadyData.model = carData.model;
+        if (carData.year) dbReadyData.year = carData.year;
+        if (carData.price) dbReadyData.price = carData.price;
+        if (carData.status) dbReadyData.status = carData.status;
+        if (carData.description) dbReadyData.description = carData.description;
+        if (carData.images) dbReadyData.images = carData.images;
+        if (carData.vin) dbReadyData.vin = carData.vin;
+        if (fuel_type) dbReadyData.fuel_type = fuel_type;
+        if (transmission) dbReadyData.transmission = transmission;
+        if (mileage) dbReadyData.mileage = mileage;
+        if (carData.location) dbReadyData.location = carData.location;
+        if (carData.category) dbReadyData.category = carData.category;
+        if (carData.technical_specs) dbReadyData.technical_specs = carData.technical_specs;
+        
+        const clinkarSeal = carData.has_clinkar_seal !== undefined ? carData.has_clinkar_seal : carData.has_starterkar_seal;
+        if (clinkarSeal !== undefined) dbReadyData.has_clinkar_seal = clinkarSeal;
+
+        const { error } = await supabase
+            .from('cars')
+            .update(dbReadyData)
+            .eq('id', id);
+
+        if (error) {
+            console.error('[CarService] Update Error Details:', error);
+            Logger.error('[CarService] Failed to update car:', error);
+            return false;
+        }
+
+        return true;
     }
 }
