@@ -122,31 +122,35 @@ export async function getInspectorScheduleAction() {
 export async function getInvestorApplicationsAction() {
     const supabase = await createClient();
 
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) throw new Error("Unauthorized");
+    try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) throw new Error("Unauthorized");
 
-    const { data: profile } = await supabase
-        .from("profiles")
-        .select("role")
-        .eq("id", user.id)
-        .single();
+        const { data: profile } = await supabase
+            .from("profiles")
+            .select("role")
+            .eq("id", user.id)
+            .single();
 
-    const userEmail = user.email?.toLowerCase();
-    if (profile?.role !== 'admin' && userEmail !== 'starterkar@hotmail.com') {
-        throw new Error("Forbidden");
+        const userEmail = user.email?.toLowerCase();
+        if (profile?.role !== 'admin' && userEmail !== 'starterkar@hotmail.com') {
+            throw new Error("Forbidden");
+        }
+
+        const { data, error } = await supabase
+            .from("investor_applications")
+            .select("*")
+            .order("created_at", { ascending: false });
+
+        if (error) {
+            console.error("Database query error (Investors):", error);
+            return [];
+        }
+        return data || [];
+    } catch (err) {
+        console.error("getInvestorApplicationsAction failed:", err);
+        return [];
     }
-
-    const { data, error } = await supabase
-        .from("investor_applications")
-        .select(`
-            *,
-            profiles (full_name, email),
-            investor_tiers (name, price)
-        `)
-        .order("created_at", { ascending: false });
-
-    if (error) throw error;
-    return data;
 }
 
 export async function approveInvestorApplicationAction(applicationId: string) {
