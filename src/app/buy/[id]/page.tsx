@@ -44,6 +44,7 @@ export default function CarDetailPage({ params }: { params: Promise<{ id: string
     const [showWarrantyModal, setShowWarrantyModal] = useState(false);
     const [showGallery, setShowGallery] = useState(false);
     const [galleryIndex, setGalleryIndex] = useState(0);
+    const [negotiatedPrice, setNegotiatedPrice] = useState<number | null>(null);
     
     const supabaseBrowser = useMemo(() => createBrowserClient(), []);
 
@@ -296,17 +297,24 @@ export default function CarDetailPage({ params }: { params: Promise<{ id: string
                                         carName={`${car.make} ${car.model}`}
                                         floorPrice={car.market_data?.minimum_price || car.price * 0.95}
                                         hasSeal={['CERTIFIED', 'published'].includes(car.status)}
+                                        onSuccess={(amount) => {
+                                            setNegotiatedPrice(amount);
+                                            toast.success(`Precio pactado en $${amount.toLocaleString()} MXN`);
+                                            setTimeout(() => {
+                                                document.getElementById("checkout-section")?.scrollIntoView({ behavior: "smooth", block: "center" });
+                                            }, 300);
+                                        }}
                                     />
                                 </div>
 
-                                <div className="space-y-5">
+                                <div id="checkout-section" className="space-y-5 transition-all duration-500">
                                     <h4 className="text-[11px] font-black uppercase tracking-[0.3em] text-zinc-900 dark:text-zinc-100 mb-3 flex items-center gap-2">
                                         <ShieldCheck className="h-3 w-3 text-emerald-500" />
                                         Trato Seguro P2P
                                     </h4>
                                     <CheckoutAction 
                                         carId={car.id} 
-                                        carPrice={car.price} 
+                                        carPrice={negotiatedPrice || car.price} 
                                         carLocation={car.location} 
                                         category={car.category || 'Car'}
                                     />

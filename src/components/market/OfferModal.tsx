@@ -15,9 +15,10 @@ interface OfferModalProps {
     floorPrice: number;
     carName: string;
     hasSeal: boolean;
+    onSuccess?: (amount: number) => void;
 }
 
-export function OfferModal({ id, carPrice, floorPrice, carName, hasSeal }: OfferModalProps) {
+export function OfferModal({ id, carPrice, floorPrice, carName, hasSeal, onSuccess }: OfferModalProps) {
     const router = useRouter();
     const [mounted, setMounted] = useState(false);
     const [isOpen, setIsOpen] = useState(false);
@@ -69,8 +70,8 @@ export function OfferModal({ id, carPrice, floorPrice, carName, hasSeal }: Offer
 
             </div>
             {isOpen && mounted && createPortal(
-                <div className="fixed inset-0 z-[200] flex items-center justify-center p-2 sm:p-4 bg-background/95 backdrop-blur-xl animate-in fade-in duration-300">
-                    <div className="bg-background border border-border w-full max-w-lg rounded-[2.5rem] p-6 shadow-2xl space-y-4 animate-in zoom-in-95 duration-300 relative max-h-[95vh] overflow-y-auto custom-scrollbar">
+                <div className="fixed inset-0 z-[200] flex items-center justify-center p-2 sm:p-4 bg-black/60 backdrop-blur-md animate-in fade-in duration-300">
+                    <div className="bg-white dark:bg-zinc-950 border border-border w-full max-w-lg rounded-[2.5rem] p-6 shadow-2xl space-y-4 animate-in zoom-in-95 duration-300 relative max-h-[95vh] overflow-y-auto custom-scrollbar">
                         <button
                             onClick={() => setIsOpen(false)}
                             className="absolute top-6 right-6 h-8 w-8 rounded-full bg-secondary text-muted-foreground hover:text-foreground hover:bg-secondary/80 transition-all flex items-center justify-center z-10 border border-border"
@@ -79,7 +80,7 @@ export function OfferModal({ id, carPrice, floorPrice, carName, hasSeal }: Offer
                         </button>
 
                         <div className="space-y-1">
-                            <h2 className="text-3xl font-black tracking-tight italic uppercase">Negociar Oferta</h2>
+                            <h2 className="text-3xl font-black tracking-tight italic uppercase text-zinc-900 dark:text-white">Negociar Oferta</h2>
                             <p className="text-muted-foreground font-medium text-xs">Estás ofertando por el <span className="text-foreground font-bold">{carName}</span></p>
                         </div>
 
@@ -96,7 +97,7 @@ export function OfferModal({ id, carPrice, floorPrice, carName, hasSeal }: Offer
                         <div className="bg-secondary/50 rounded-2xl p-4 border border-border space-y-3">
                             <div className="flex justify-between items-center text-xs font-black uppercase tracking-widest">
                                 <span className="text-muted-foreground">Precio Base</span>
-                                <span>${carPrice.toLocaleString()} MXN</span>
+                                <span className="text-zinc-900 dark:text-white">${carPrice.toLocaleString()} MXN</span>
                             </div>
                             <div className="flex justify-between items-center text-xs font-black uppercase tracking-widest text-red-500">
                                 <span className="flex items-center gap-2">
@@ -116,10 +117,10 @@ export function OfferModal({ id, carPrice, floorPrice, carName, hasSeal }: Offer
                                     value={offerAmount}
                                     onChange={(e) => setOfferAmount(Number(e.target.value))}
                                     className={cn(
-                                        "w-full h-16 rounded-2xl bg-secondary/20 border-2 pl-12 pr-6 text-3xl font-black focus:ring-0 transition-all border-border focus:border-amber-500 text-foreground selection:bg-amber-500/30 shadow-inner"
+                                        "w-full h-16 rounded-2xl bg-zinc-100 dark:bg-zinc-900 border-2 pl-12 pr-6 text-3xl font-black focus:ring-0 transition-all border-border focus:border-amber-500 text-zinc-900 dark:text-white selection:bg-amber-500/30 shadow-inner"
                                     )}
                                 />
-                                <div className="absolute right-4 top-1/2 -translate-y-1/2 px-2 py-1 bg-background rounded-md text-[10px] font-black text-muted-foreground border border-border/50">MXN</div>
+                                <div className="absolute right-4 top-1/2 -translate-y-1/2 px-2 py-1 bg-white dark:bg-zinc-800 rounded-md text-[10px] font-black text-muted-foreground border border-border/50">MXN</div>
                             </div>
 
                             {/* Dynamic Feedback Legend */}
@@ -142,7 +143,7 @@ export function OfferModal({ id, carPrice, floorPrice, carName, hasSeal }: Offer
                         <div className="bg-amber-500/5 rounded-2xl p-5 space-y-3 border border-amber-500/20 shadow-inner">
                             <div className="flex justify-between items-center text-xs font-bold uppercase tracking-widest">
                                 <span className="text-muted-foreground">Oferta Directa</span>
-                                <span>${offerAmount.toLocaleString()}</span>
+                                <span className="text-zinc-900 dark:text-white">${offerAmount.toLocaleString()}</span>
                             </div>
                             <div className="flex justify-between items-center text-xs font-bold uppercase tracking-widest text-emerald-600">
                                 <span className="flex items-center gap-2">
@@ -152,8 +153,8 @@ export function OfferModal({ id, carPrice, floorPrice, carName, hasSeal }: Offer
                                 <span>$0.00</span>
                             </div>
                             <div className="pt-3 border-t border-border flex justify-between items-center">
-                                <span className="text-lg font-black italic uppercase tracking-tighter">Total a Pagar</span>
-                                <span className="text-2xl font-black italic tracking-tighter">${offerAmount.toLocaleString()}</span>
+                                <span className="text-lg font-black italic uppercase tracking-tighter text-zinc-900 dark:text-white">Total a Pagar</span>
+                                <span className="text-2xl font-black italic tracking-tighter text-zinc-900 dark:text-white">${offerAmount.toLocaleString()}</span>
                             </div>
                         </div>
 
@@ -187,8 +188,8 @@ export function OfferModal({ id, carPrice, floorPrice, carName, hasSeal }: Offer
             )}
 
             {negotiationResult === 'success' && mounted && createPortal(
-                <div className="fixed inset-0 z-[250] flex items-center justify-center p-4 bg-background/95 backdrop-blur-xl animate-in fade-in duration-300">
-                    <div className="bg-background border border-emerald-500/30 w-full max-w-sm rounded-[2rem] p-8 text-center space-y-6 shadow-2xl shadow-emerald-500/20 animate-in zoom-in-95 duration-500 relative overflow-hidden">
+                <div className="fixed inset-0 z-[250] flex items-center justify-center p-4 bg-black/60 backdrop-blur-md animate-in fade-in duration-300">
+                    <div className="bg-white dark:bg-zinc-950 border border-emerald-500/30 w-full max-w-sm rounded-[2rem] p-8 text-center space-y-6 shadow-2xl shadow-emerald-500/20 animate-in zoom-in-95 duration-500 relative overflow-hidden">
                         <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-emerald-400 via-emerald-500 to-emerald-600" />
                         <div className="h-20 w-20 bg-emerald-500/10 text-emerald-500 mx-auto rounded-full flex items-center justify-center border-4 border-emerald-500/20">
                             <CheckCircle2 className="h-10 w-10" />
@@ -200,16 +201,17 @@ export function OfferModal({ id, carPrice, floorPrice, carName, hasSeal }: Offer
                             </div>
                         </div>
                         <p className="text-xs text-muted-foreground font-medium leading-relaxed">
-                            La inteligencia de precios de StarterKar ha validado tu oferta de <strong className="text-foreground">${offerAmount.toLocaleString()} MXN</strong> contra el piso pre-autorizado por el vendedor.
+                            La inteligencia de precios de StarterKar ha validado tu oferta de <strong className="text-zinc-900 dark:text-white">${offerAmount.toLocaleString()} MXN</strong> contra el piso pre-autorizado por el vendedor.
                         </p>
                         <button
                             onClick={() => {
                                 setNegotiationResult(null);
                                 setIsOpen(false);
+                                if (onSuccess) onSuccess(offerAmount);
                             }}
                             className="w-full h-14 bg-emerald-500 text-white font-black uppercase tracking-widest rounded-xl hover:scale-[1.02] active:scale-95 transition-all shadow-lg shadow-emerald-500/20"
                         >
-                            Proceder al Pago Seguro
+                            Proceder al Bloqueo
                         </button>
                     </div>
                 </div>,
@@ -217,8 +219,8 @@ export function OfferModal({ id, carPrice, floorPrice, carName, hasSeal }: Offer
             )}
 
             {negotiationResult === 'reject' && mounted && createPortal(
-                <div className="fixed inset-0 z-[250] flex items-center justify-center p-4 bg-background/95 backdrop-blur-xl animate-in fade-in duration-300">
-                    <div className="bg-background border border-red-500/30 w-full max-w-sm rounded-[2rem] p-8 text-center space-y-6 shadow-2xl shadow-red-500/20 animate-in zoom-in-95 duration-500 relative overflow-hidden">
+                <div className="fixed inset-0 z-[250] flex items-center justify-center p-4 bg-black/60 backdrop-blur-md animate-in fade-in duration-300">
+                    <div className="bg-white dark:bg-zinc-950 border border-red-500/30 w-full max-w-sm rounded-[2rem] p-8 text-center space-y-6 shadow-2xl shadow-red-500/20 animate-in zoom-in-95 duration-500 relative overflow-hidden">
                         <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-red-400 via-red-500 to-red-600" />
                         <div className="h-20 w-20 bg-red-500/10 text-red-500 mx-auto rounded-full flex items-center justify-center border-4 border-red-500/20">
                             <AlertCircle className="h-10 w-10" />
@@ -230,7 +232,7 @@ export function OfferModal({ id, carPrice, floorPrice, carName, hasSeal }: Offer
                             </div>
                         </div>
                         <p className="text-xs text-muted-foreground font-medium leading-relaxed">
-                            Lo sentimos, el vendedor no está dispuesto a aceptar un monto de <strong className="text-foreground">${offerAmount.toLocaleString()} MXN</strong>. Te invitamos a realizar una oferta más competitiva.
+                            Lo sentimos, el vendedor no está dispuesto a aceptar un monto de <strong className="text-zinc-900 dark:text-white">${offerAmount.toLocaleString()} MXN</strong>. Te invitamos a realizar una oferta más competitiva.
                         </p>
                         <button
                             onClick={() => setNegotiationResult(null)}
