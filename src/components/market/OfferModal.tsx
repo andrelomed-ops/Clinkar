@@ -21,7 +21,7 @@ export function OfferModal({ id, carPrice, repairCost, carName, hasSeal }: Offer
     const router = useRouter();
     const [mounted, setMounted] = useState(false);
     const [isOpen, setIsOpen] = useState(false);
-    const [showReservePopup, setShowReservePopup] = useState(false);
+    const [negotiationResult, setNegotiationResult] = useState<'success' | 'reject' | null>(null);
     const [isNegotiating, setIsNegotiating] = useState(false);
     const [offerAmount, setOfferAmount] = useState<number>(carPrice - repairCost);
     const offerFloor = carPrice - repairCost;
@@ -33,11 +33,10 @@ export function OfferModal({ id, carPrice, repairCost, carName, hasSeal }: Offer
     const isValid = offerAmount >= offerFloor;
 
     const handleOffer = () => {
-        if (!isValid) return;
         setIsNegotiating(true);
         setTimeout(() => {
             setIsNegotiating(false);
-            setShowReservePopup(true);
+            setNegotiationResult(isValid ? 'success' : 'reject');
         }, 2000);
     };
 
@@ -133,7 +132,7 @@ export function OfferModal({ id, carPrice, repairCost, carName, hasSeal }: Offer
                                 </div>
                             ) : (
                                 <div className="flex items-center gap-2 text-red-500 bg-red-500/10 p-2 rounded-xl text-xs font-bold border border-red-500/20">
-                                    <AlertCircle className="h-4 w-4" /> Oferta Muy Baja: Inferior al piso del vendedor.
+                                    <AlertCircle className="h-4 w-4" /> Oferta Muy Baja: El vendedor no la aceptará.
                                 </div>
                             )}
                         </div>
@@ -169,7 +168,7 @@ export function OfferModal({ id, carPrice, repairCost, carName, hasSeal }: Offer
 
                         <button
                             onClick={handleOffer}
-                            disabled={!isValid || isNegotiating}
+                            disabled={isNegotiating}
                             className="w-full h-16 rounded-2xl bg-amber-500 text-black font-black text-lg shadow-xl shadow-amber-500/20 hover:bg-amber-400 hover:scale-[1.02] active:scale-95 transition-all disabled:opacity-50 disabled:grayscale uppercase italic tracking-tighter flex items-center justify-center gap-2"
                         >
                             {isNegotiating ? (
@@ -186,7 +185,7 @@ export function OfferModal({ id, carPrice, repairCost, carName, hasSeal }: Offer
                 document.body
             )}
 
-            {showReservePopup && mounted && createPortal(
+            {negotiationResult === 'success' && mounted && createPortal(
                 <div className="fixed inset-0 z-[250] flex items-center justify-center p-4 bg-background/95 backdrop-blur-xl animate-in fade-in duration-300">
                     <div className="bg-background border border-emerald-500/30 w-full max-w-sm rounded-[2rem] p-8 text-center space-y-6 shadow-2xl shadow-emerald-500/20 animate-in zoom-in-95 duration-500 relative overflow-hidden">
                         <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-emerald-400 via-emerald-500 to-emerald-600" />
@@ -204,12 +203,39 @@ export function OfferModal({ id, carPrice, repairCost, carName, hasSeal }: Offer
                         </p>
                         <button
                             onClick={() => {
-                                setShowReservePopup(false);
+                                setNegotiationResult(null);
                                 setIsOpen(false);
                             }}
                             className="w-full h-14 bg-emerald-500 text-white font-black uppercase tracking-widest rounded-xl hover:scale-[1.02] active:scale-95 transition-all shadow-lg shadow-emerald-500/20"
                         >
                             Proceder al Pago Seguro
+                        </button>
+                    </div>
+                </div>,
+                document.body
+            )}
+
+            {negotiationResult === 'reject' && mounted && createPortal(
+                <div className="fixed inset-0 z-[250] flex items-center justify-center p-4 bg-background/95 backdrop-blur-xl animate-in fade-in duration-300">
+                    <div className="bg-background border border-red-500/30 w-full max-w-sm rounded-[2rem] p-8 text-center space-y-6 shadow-2xl shadow-red-500/20 animate-in zoom-in-95 duration-500 relative overflow-hidden">
+                        <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-red-400 via-red-500 to-red-600" />
+                        <div className="h-20 w-20 bg-red-500/10 text-red-500 mx-auto rounded-full flex items-center justify-center border-4 border-red-500/20">
+                            <AlertCircle className="h-10 w-10" />
+                        </div>
+                        <div className="space-y-2">
+                            <h3 className="text-2xl font-black italic tracking-tighter uppercase text-red-500">Oferta Rechazada</h3>
+                            <div className="inline-block px-3 py-1 bg-red-500/10 text-red-500 rounded-lg text-xs font-black uppercase tracking-widest mb-2">
+                                Sistema Automatizado
+                            </div>
+                        </div>
+                        <p className="text-xs text-muted-foreground font-medium leading-relaxed">
+                            Lo sentimos, el vendedor no está dispuesto a aceptar un monto de <strong className="text-foreground">${offerAmount.toLocaleString()} MXN</strong>. Te invitamos a realizar una oferta más competitiva.
+                        </p>
+                        <button
+                            onClick={() => setNegotiationResult(null)}
+                            className="w-full h-14 bg-red-500 text-white font-black uppercase tracking-widest rounded-xl hover:scale-[1.02] active:scale-95 transition-all shadow-lg shadow-red-500/20"
+                        >
+                            Mejorar mi Oferta
                         </button>
                     </div>
                 </div>,
