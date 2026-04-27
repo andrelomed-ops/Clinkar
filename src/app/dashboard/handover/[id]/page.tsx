@@ -64,16 +64,25 @@ export default function HandoverPage() {
                 return;
             }
 
-            const { data: tx } = await supabase
+            // Fetch transaction first
+            const { data: tx, error: txError } = await supabase
                 .from('transactions')
-                .select(`
-                    *,
-                    cars (*)
-                `)
+                .select('*')
                 .eq('id', id)
                 .single();
 
-            if (tx) setTransaction(tx);
+            if (tx) {
+                // Manually fetch the related car to bypass missing Foreign Key constraints in Supabase
+                const { data: carData } = await supabase
+                    .from('cars')
+                    .select('*')
+                    .eq('id', tx.car_id)
+                    .single();
+                
+                tx.cars = carData || null;
+                setTransaction(tx);
+            }
+
             setIsLoading(false);
         }
         loadData();
