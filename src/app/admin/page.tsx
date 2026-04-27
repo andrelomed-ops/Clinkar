@@ -58,39 +58,48 @@ export default function AdminDashboard() {
 
     async function loadData() {
         setLoading(true);
+        setDebugError(null);
         try {
-            const [cars, txs, apps, payouts, demands] = await Promise.all([
-                getAdminInventoryAction(),
-                getLegalTransactionsAction(),
-                getInvestorApplicationsAction(),
-                getPendingReferralPayouts(),
+            // Load individual components to isolate errors
+            const fetchers = [
+                getAdminInventoryAction().catch(e => { console.error("Inv error:", e); return null; }),
+                getLegalTransactionsAction().catch(e => { console.error("Tx error:", e); return null; }),
+                getInvestorApplicationsAction().catch(e => { console.error("Apps error:", e); return null; }),
+                getPendingReferralPayouts().catch(e => { console.error("Payouts error:", e); return null; }),
                 supabase.from('demand_registry').select('*').order('created_at', { ascending: false })
-            ]);
+            ];
+
+            const [cars, txs, apps, payouts, demands] = await Promise.all(fetchers);
             
+            if (cars === null) setDebugError(prev => (prev ? prev + " | " : "") + "Error en Inventario");
+            if (txs === null) setDebugError(prev => (prev ? prev + " | " : "") + "Error en Transacciones");
+            if (apps === null) setDebugError(prev => (prev ? prev + " | " : "") + "Error en Inversionistas");
+            if (payouts === null) setDebugError(prev => (prev ? prev + " | " : "") + "Error en Pagos Referidos");
+
             setInventory(cars || []);
             setTransactions(txs || []);
             setInvestorApps(apps || []);
             setReferralPayouts(payouts || []);
-            setDemandRequests(demands.data || []);
+            setDemandRequests(demands?.data || []);
 
             // Calculate Stats
-            const gmv = (txs || []).reduce((acc: number, tx: any) => acc + (tx.car_price || 0), 0);
-            const pendingComm = (txs || [])
+            const txList = txs || [];
+            const gmv = txList.reduce((acc: number, tx: any) => acc + (tx.car_price || 0), 0);
+            const pendingComm = txList
                 .filter((tx: any) => tx.status === 'RELEASED' && !tx.commission_paid)
                 .reduce((acc: number, tx: any) => acc + ((tx.car_price || 0) * 0.035), 0);
-            const activeHO = (txs || []).filter((tx: any) => tx.status === 'HANDOVER_SCHEDULED').length;
+            const activeHO = txList.filter((tx: any) => tx.status === 'HANDOVER_SCHEDULED').length;
 
             setStats({
                 gmv,
                 pendingCommissions: pendingComm,
                 activeHandovers: activeHO,
                 conversionRate: 84,
-                totalDemands: demands.data?.length || 0
+                totalDemands: demands?.data?.length || 0
             });
         } catch (err: any) {
-            console.error("Error loading admin data:", err);
-            setDebugError(`Error al cargar datos: ${err.message || String(err)}`);
-            toast.error("Error al recargar datos", { description: err.message });
+            console.error("Critical Admin Error:", err);
+            setDebugError(`Error Crítico: ${err.message || String(err)}`);
         } finally {
             setLoading(false);
         }
