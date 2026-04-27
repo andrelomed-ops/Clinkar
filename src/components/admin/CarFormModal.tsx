@@ -83,6 +83,13 @@ export function CarFormModal({ isOpen, onClose, onSubmit, initialData, isLoading
         console.log("[CarFormModal] handleSubmit called. PreviewMode:", previewMode);
         
         if (!previewMode && mode === "create") {
+            // Validation
+            if (!formData.make || !formData.model || !formData.price || !formData.location) {
+                toast.error("Campos incompletos", {
+                    description: "Por favor completa la Marca, Modelo, Precio y Ubicación."
+                });
+                return;
+            }
             setPreviewMode(true);
             return;
         }
@@ -215,7 +222,6 @@ export function CarFormModal({ isOpen, onClose, onSubmit, initialData, isLoading
                             <FormGroup label="Marca">
                                 <div className="relative">
                                     <input 
-                                        required 
                                         value={formData.make} 
                                         placeholder="Ej. BMW" 
                                         className="form-input pr-10" 
@@ -248,7 +254,6 @@ export function CarFormModal({ isOpen, onClose, onSubmit, initialData, isLoading
                             <FormGroup label="Modelo">
                                 <div className="relative group">
                                     <input 
-                                        required 
                                         value={formData.model} 
                                         placeholder="Ej. M3" 
                                         className="form-input pr-32" 
@@ -295,17 +300,17 @@ export function CarFormModal({ isOpen, onClose, onSubmit, initialData, isLoading
                                 </div>
                             </FormGroup>
                             <FormGroup label="Año">
-                                <input required type="number" value={formData.year} className="form-input" onChange={e => setFormData({...formData, year: parseInt(e.target.value)})} />
+                                <input type="number" value={formData.year} className="form-input" onChange={e => setFormData({...formData, year: parseInt(e.target.value)})} />
                             </FormGroup>
                             <FormGroup label="Precio (MXN)">
-                                <input required type="number" value={formData.price} className="form-input" onChange={e => setFormData({...formData, price: parseFloat(e.target.value)})} />
+                                <input type="number" value={formData.price} className="form-input" onChange={e => setFormData({...formData, price: parseFloat(e.target.value)})} />
                             </FormGroup>
                             <FormGroup label={
                                 formData.category === 'Marine' || formData.category === 'Air' || formData.category === 'Heavy' 
                                 ? "Horas de Uso" 
                                 : "Kilometraje"
                             }>
-                                <input required type="number" value={formData.mileage} className="form-input" onChange={e => setFormData({...formData, mileage: parseInt(e.target.value)})} />
+                                <input type="number" value={formData.mileage} className="form-input" onChange={e => setFormData({...formData, mileage: parseInt(e.target.value)})} />
                             </FormGroup>
                             <FormGroup label="Categoría">
                                 <select value={formData.category} className="form-input" onChange={e => setFormData({...formData, category: e.target.value})}>
@@ -317,7 +322,7 @@ export function CarFormModal({ isOpen, onClose, onSubmit, initialData, isLoading
                                 </select>
                             </FormGroup>
                             <FormGroup label="Ubicación">
-                                <input required value={formData.location} className="form-input" onChange={e => setFormData({...formData, location: e.target.value})} />
+                                <input value={formData.location} className="form-input" onChange={e => setFormData({...formData, location: e.target.value})} />
                             </FormGroup>
                             <div className="col-span-2">
                                 <FormGroup label="Descripción / Notas">

@@ -89,6 +89,7 @@ export default function AdminDashboard() {
             });
         } catch (err: any) {
             console.error("Error loading admin data:", err);
+            setDebugError(`Error al cargar datos: ${err.message || String(err)}`);
             toast.error("Error al recargar datos", { description: err.message });
         } finally {
             setLoading(false);
