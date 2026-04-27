@@ -20,8 +20,28 @@ export class LockService {
         // 1. Limpiar locks vencidos para este auto
         await this.cleanExpiredLocks(supabase, carId);
 
-        // 2. Intentar crear el lock
-        // Si ya hay un lock vigente, esto fallará por el constraint UNIQUE(car_id)
+        // 2. Revisar si ya existe un lock (para renovar si es del mismo usuario)
+        const { data: existingLock } = await (supabase.from('car_locks') as any)
+            .select('locked_by, expires_at')
+            .eq('car_id', carId)
+            .maybeSingle();
+
+        if (existingLock) {
+            if (existingLock.locked_by === userId) {
+                // Renovar el lock
+                await (supabase.from('car_locks') as any)
+                    .update({ expires_at: expiresAt.toISOString() })
+                    .eq('car_id', carId);
+                return { success: true, expiration: expiresAt.toISOString() };
+            } else {
+                // Pertenece a otro usuario
+                Logger.info(`[LockService] Fallo al asegurar el vehículo ${carId}. Reservado por otro.`);
+                await this.joinWaitlist(supabase, carId, userId);
+                return { success: false, error: 'RESOURCE_LOCKED' };
+            }
+        }
+
+        // 3. Intentar crear el lock nuevo
         const { data, error } = await (supabase.from('car_locks') as any)
             .insert({
                 car_id: carId,

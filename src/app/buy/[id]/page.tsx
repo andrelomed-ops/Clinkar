@@ -71,6 +71,17 @@ export default function CarDetailPage({ params }: { params: Promise<{ id: string
                     .eq('id', id)
                     .single();
 
+                const { data: lockData } = await supabaseBrowser
+                    .from('car_locks')
+                    .select('expires_at, locked_by')
+                    .eq('car_id', id)
+                    .gt('expires_at', new Date().toISOString())
+                    .maybeSingle();
+
+                // It is locked to us if it exists and we are not the owner
+                const { data: { user } } = await supabaseBrowser.auth.getUser();
+                const isLockedStatus = lockData ? lockData.locked_by !== user?.id : false;
+
                 if (data && !error) {
                     const carData: any = data;
                     setCar({
@@ -78,10 +89,11 @@ export default function CarDetailPage({ params }: { params: Promise<{ id: string
                         distance: (carData.mileage || 0) / 1000,
                         fuel: carData.fuel || 'Gasolina',
                         transmission: carData.transmission || 'Automática',
+                        isLocked: isLockedStatus
                     } as any);
                 } else {
                     const mockCar = ALL_CARS.find(c => c.id === id);
-                    if (mockCar) setCar(mockCar);
+                    if (mockCar) setCar({...mockCar, isLocked: isLockedStatus} as any);
                 }
             } catch (e) {
                 const mockCar = ALL_CARS.find(c => c.id === id);
@@ -276,7 +288,27 @@ export default function CarDetailPage({ params }: { params: Promise<{ id: string
 
                     <div className="lg:col-span-5">
                         <div className="sticky top-24">
-                            <div className="glass-card border-indigo-500/20 rounded-[2.5rem] p-8 shadow-2xl space-y-8">
+                            <div className="glass-card border-indigo-500/20 rounded-[2.5rem] p-8 shadow-2xl space-y-8 relative overflow-hidden">
+                                {(car.isLocked || car.status === 'RESERVED') && (
+                                    <div className="absolute inset-0 z-50 bg-white/80 dark:bg-zinc-950/80 backdrop-blur-md flex flex-col items-center justify-center p-8 text-center animate-in fade-in duration-500">
+                                        <div className="h-20 w-20 bg-amber-500/10 border-2 border-amber-500/20 rounded-full flex items-center justify-center mb-6 shadow-[0_0_50px_rgba(245,158,11,0.2)]">
+                                            <Lock className="h-10 w-10 text-amber-500" />
+                                        </div>
+                                        <h3 className="text-2xl font-black uppercase italic tracking-tighter text-zinc-900 dark:text-white mb-3">Activo Apartado</h3>
+                                        <p className="text-sm font-medium text-muted-foreground leading-relaxed mb-8">
+                                            Este vehículo se encuentra <strong className="text-zinc-900 dark:text-white">temporalmente bloqueado</strong> y en proceso de pago por otro usuario de la red.
+                                        </p>
+                                        <button 
+                                            onClick={() => toast.success("Has sido agregado a la lista de espera prioritaria.")}
+                                            className="w-full h-14 bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 rounded-xl font-black uppercase text-[10px] tracking-widest hover:scale-[1.02] active:scale-95 transition-all shadow-xl"
+                                        >
+                                            Únete a la Fila de Espera
+                                        </button>
+                                        <p className="text-[9px] font-bold text-muted-foreground mt-4 uppercase tracking-[0.2em]">
+                                            Te notificaremos si el pago falla
+                                        </p>
+                                    </div>
+                                )}
                                 <header className="flex justify-between items-baseline mb-2">
                                     <div className="space-y-1">
                                         <span className="text-xs font-bold text-muted-foreground uppercase tracking-widest">Precio Final Garantizado</span>
