@@ -49,7 +49,7 @@ export async function startTransaction(carId: string, addOns?: {
         }
     }
 
-    const sellerId = car.seller_id || '00000000-0000-0000-0000-000000000000';
+    const sellerId = car.seller_id || buyerId; // Use buyerId as fallback to ensure valid FK if seller is missing
     const mockStripeSessionId = `sess_${crypto.randomUUID()}`;
 
     let transactionId;
