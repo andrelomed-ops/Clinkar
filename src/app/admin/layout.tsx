@@ -14,7 +14,7 @@ export default function AdminLayout({
                 <div className="flex items-center gap-4">
                     <Link href="/admin" className="flex items-center gap-2 text-red-500 hover:text-red-400 transition-colors">
                         <ShieldAlert className="h-5 w-5" />
-                        <span className="font-bold tracking-tight uppercase text-zinc-100">Clinkar Ops</span>
+                        <span className="font-bold tracking-tight uppercase text-zinc-100">StarterKar Ops</span>
                     </Link>
                     <div className="h-4 w-px bg-zinc-800" />
                     <div className="flex items-center gap-4 text-xs font-bold text-zinc-500">
