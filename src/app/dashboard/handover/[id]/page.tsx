@@ -8,7 +8,8 @@ import {
     Zap, 
     PartyPopper, 
     CheckCircle,
-    MapPin
+    MapPin,
+    FileText
 } from "lucide-react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";

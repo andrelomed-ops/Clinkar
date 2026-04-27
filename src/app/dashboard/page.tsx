@@ -24,6 +24,7 @@ import { CarCard } from "@/components/market/CarCard";
 import { ALL_CARS, Vehicle } from "@/data/cars";
 import { CarService } from "@/services/CarService";
 import { ReferralPromoCard } from "@/components/dashboard/ReferralPromoCard";
+import { BillingSemaphore } from "@/components/dashboard/BillingSemaphore";
 
 // Removed: imports from deleted files (StatusHeader, NegotiationView, etc.)
 
@@ -177,7 +178,9 @@ export default function DashboardPage() {
                             status: tx.status,
                             role: tx.seller_id === user.id ? "seller" : "buyer",
                             location: "CDMX",
-                            image: car?.images?.[0] || ""
+                            image: car?.images?.[0] || "",
+                            commissionPaid: tx.commission_paid,
+                            commissionAmount: tx.seller_success_fee
                         };
                     });
 
@@ -515,9 +518,22 @@ export default function DashboardPage() {
                                 </div>
 
                                 {transactions.filter(tx => tx.role === 'seller').length > 0 ? (
-                                    <div className="grid gap-4">
+                                    <div className="grid gap-8">
                                         {transactions.filter(tx => tx.role === 'seller').map((tx) => (
-                                            <div key={tx.id} className="glass-card rounded-[2rem] p-6 border border-border/50 flex flex-col md:flex-row items-center justify-between gap-6 group hover:border-indigo-500/30 transition-all">
+                                            <div key={tx.id} className="space-y-4">
+                                                {/* Billing Semaphore Integration */}
+                                                {(tx.status === 'RELEASED' || tx.status === 'HANDOVER_SCHEDULED') && (
+                                                    <BillingSemaphore 
+                                                        transactionId={tx.id}
+                                                        carName={tx.carName}
+                                                        price={tx.price}
+                                                        commissionAmount={tx.commissionAmount || (tx.price * 0.035)}
+                                                        isPaid={tx.commissionPaid}
+                                                        status={tx.status}
+                                                    />
+                                                )}
+                                                
+                                                <div className="glass-card rounded-[2rem] p-6 border border-border/50 flex flex-col md:flex-row items-center justify-between gap-6 group hover:border-indigo-500/30 transition-all">
                                                 <div className="flex items-center gap-6 w-full md:w-auto">
                                                     <div className="h-20 w-32 bg-secondary rounded-2xl overflow-hidden relative shadow-inner shrink-0">
                                                         {tx.image ? (
@@ -561,7 +577,8 @@ export default function DashboardPage() {
                                                     )}
                                                 </div>
                                             </div>
-                                        ))}
+                                        </div>
+                                    ))}
                                     </div>
                                 ) : (
                                     <div className="p-12 text-center rounded-[2.5rem] bg-secondary/20 border border-dashed border-border">
