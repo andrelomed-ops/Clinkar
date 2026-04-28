@@ -16,41 +16,30 @@ interface DocData {
     city?: string;
 }
 
-// Shield logo drawn with jsPDF primitives
+// Shield logo — only uses proven jsPDF primitives
 function drawShieldLogo(doc: jsPDF, x: number, y: number) {
-    const sx = x, sy = y, w = 14, h = 16;
-    // Shield body
+    const w = 14, h = 16;
+    // Top rounded part of shield
     doc.setFillColor(79, 70, 229);
-    doc.setDrawColor(60, 52, 200);
-    doc.setLineWidth(0.3);
-    // Draw shield: rounded top + pointed bottom using lines
-    doc.lines(
-        [
-            [w * 0.4, 0], [w * 0.3, 0, w * 0.5, -h * 0.1, w * 0.5, -h * 0.15],
-            [-w * 0.5, -h * 0.15, -w * 0.5, -h * 0.1, -w * 0.5, 0],
-            [-w * 0.5, 0]
-        ],
-        sx + w * 0.5, sy + h, 1, 1, "FD", false
-    );
-    // Simpler: use roundedRect for top + triangle for bottom
-    doc.setFillColor(79, 70, 229);
-    doc.roundedRect(sx, sy, w, h * 0.72, 2.5, 2.5, "F");
-    // Triangle bottom
-    doc.triangle(sx, sy + h * 0.65, sx + w, sy + h * 0.65, sx + w * 0.5, sy + h, "F");
-    // "S" letter
+    doc.roundedRect(x, y, w, h * 0.72, 2.5, 2.5, "F");
+    // Bottom triangle of shield
+    doc.triangle(x, y + h * 0.65, x + w, y + h * 0.65, x + w * 0.5, y + h, "F");
+    // Cover seam between rect and triangle
+    doc.rect(x, y + h * 0.55, w, h * 0.12, "F");
+    // "S" letter centered in shield
     doc.setTextColor(255, 255, 255);
     doc.setFontSize(9);
     doc.setFont("helvetica", "bold");
-    doc.text("S", sx + w * 0.5, sy + h * 0.45, { align: "center" });
-    // Brand name
+    doc.text("S", x + w * 0.5, y + h * 0.46, { align: "center" });
+    // Brand name to the right
     doc.setTextColor(30, 30, 30);
     doc.setFontSize(12);
     doc.setFont("helvetica", "bold");
-    doc.text("StarterKar", sx + w + 4, sy + h * 0.38);
+    doc.text("StarterKar", x + w + 4, y + h * 0.38);
     doc.setFontSize(7);
     doc.setFont("helvetica", "normal");
     doc.setTextColor(100, 100, 100);
-    doc.text("PLATAFORMA DE TRANSACCIONES VEHICULARES SEGURAS", sx + w + 4, sy + h * 0.68);
+    doc.text("PLATAFORMA DE TRANSACCIONES VEHICULARES SEGURAS", x + w + 4, y + h * 0.68);
 }
 
 function pageBorder(doc: jsPDF) {
