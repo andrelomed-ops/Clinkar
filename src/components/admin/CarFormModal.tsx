@@ -35,6 +35,10 @@ export function CarFormModal({ isOpen, onClose, onSubmit, initialData, isLoading
         status: "published",
         category: "Car",
         images: [],
+        is_new: false,
+        is_investor_only: false,
+        is_imported: false,
+        has_clinkar_seal: true,
         technical_specs: {
             performance: { engine: "", horsepower: "", fuelType: "Gasoline", transmission: "Automatic", driveTrain: "FWD", cylinders: 4, consumption: "" },
             architecture: { bodyType: "SUV", doors: 5, passengers: 5, dimensions: "", tankCapacity: "", rims: "" },
@@ -45,7 +49,11 @@ export function CarFormModal({ isOpen, onClose, onSubmit, initialData, isLoading
 
     const parsedInitialData = initialData ? {
         ...initialData,
-        minimum_price: initialData.minimum_price || initialData.market_data?.minimum_price || initialData.price
+        minimum_price: initialData.minimum_price || initialData.market_data?.minimum_price || initialData.price,
+        is_new: initialData.is_new || initialData.market_data?.is_new || false,
+        is_investor_only: initialData.is_investor_only || initialData.market_data?.is_investor_only || false,
+        is_imported: initialData.is_imported || initialData.market_data?.is_imported || false,
+        has_clinkar_seal: initialData.has_clinkar_seal !== undefined ? initialData.has_clinkar_seal : (initialData.market_data?.has_clinkar_seal ?? true)
     } : null;
 
     const [formData, setFormData] = useState(parsedInitialData || defaultData);
@@ -342,13 +350,39 @@ export function CarFormModal({ isOpen, onClose, onSubmit, initialData, isLoading
                                     <textarea className="form-input h-24 resize-none p-4" value={formData.description} onChange={e => setFormData({...formData, description: e.target.value})} />
                                 </FormGroup>
                             </div>
-                            <FormGroup label="Estatus">
+                             <FormGroup label="Estatus">
                                 <select value={formData.status} className="form-input" onChange={e => setFormData({...formData, status: e.target.value})}>
                                     <option value="published">PUBLICADO</option>
                                     <option value="draft">BORRADOR</option>
                                     <option value="archived">ARCHIVADO</option>
                                 </select>
                             </FormGroup>
+
+                            <div className="col-span-2 mt-6">
+                                <h4 className="text-indigo-400 text-[10px] font-black uppercase tracking-[0.2em] mb-4">Etiquetas y Clasificación Especial</h4>
+                                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                                    <ToggleGroup 
+                                        label="Unidad Nueva" 
+                                        checked={formData.is_new} 
+                                        onChange={v => setFormData({...formData, is_new: v})} 
+                                    />
+                                    <ToggleGroup 
+                                        label="Solo Inversionistas" 
+                                        checked={formData.is_investor_only} 
+                                        onChange={v => setFormData({...formData, is_investor_only: v})} 
+                                    />
+                                    <ToggleGroup 
+                                        label="Auto Importado" 
+                                        checked={formData.is_imported} 
+                                        onChange={v => setFormData({...formData, is_imported: v})} 
+                                    />
+                                    <ToggleGroup 
+                                        label="Sello Clinkar" 
+                                        checked={formData.has_clinkar_seal} 
+                                        onChange={v => setFormData({...formData, has_clinkar_seal: v})} 
+                                    />
+                                </div>
+                            </div>
                         </div>
                     )}
 

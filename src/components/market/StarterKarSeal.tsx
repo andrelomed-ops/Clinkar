@@ -59,7 +59,7 @@ export function StarterKarSeal({ variant = "compact", className, score }: Starte
         )}>
             <StarterKarLogo size="sm" hideSubmark={true} />
             <div>
-                <h4 className="text-base font-black uppercase tracking-widest text-zinc-900 dark:text-white">Sello StarterKar</h4>
+                <h4 className="text-base font-black uppercase tracking-widest text-zinc-900 dark:text-white">Sello Clinkar</h4>
                 <p className="text-[10px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-[0.2em]">Sello Único de Confianza Digital</p>
             </div>
         </div>

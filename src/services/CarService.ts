@@ -79,8 +79,12 @@ export class CarService {
             has_starterkar_seal: d.has_clinkar_seal || (d.market_data as any)?.certified || false,
             flashSale: (d.market_data as any)?.flashSale || false,
             isBorder: (d.market_data as any)?.isBorder || false,
-            investorOnly: (d.market_data as any)?.investorOnly || false,
-            isNew: (d.market_data as any)?.isNew || false,
+            isNew: (d.market_data as any)?.is_new || (d.market_data as any)?.isNew || false,
+            is_new: (d.market_data as any)?.is_new || (d.market_data as any)?.isNew || false,
+            investorOnly: (d.market_data as any)?.is_investor_only || (d.market_data as any)?.investorOnly || false,
+            is_investor_only: (d.market_data as any)?.is_investor_only || (d.market_data as any)?.investorOnly || false,
+            isBorder: (d.market_data as any)?.is_imported || (d.market_data as any)?.isBorder || false,
+            is_imported: (d.market_data as any)?.is_imported || (d.market_data as any)?.isBorder || false,
             agency: (d.market_data as any)?.agency || '',
             bonus: (d.market_data as any)?.bonus || '',
         }));
@@ -112,7 +116,10 @@ export class CarService {
             location: carData.location || 'CDMX',
             technical_specs: carData.technical_specs || {},
             category: carData.category || 'Car',
-            minimum_price: carData.minimum_price || carData.price
+            minimum_price: carData.minimum_price || carData.price,
+            is_new: carData.is_new || false,
+            is_investor_only: carData.is_investor_only || false,
+            is_imported: carData.is_imported || false
         };
 
         // Strict extraction of only valid DB columns based on REAL DB DISCOVERY
@@ -167,7 +174,10 @@ export class CarService {
             location: carData.location || 'CDMX',
             technical_specs: carData.technical_specs || {},
             category: carData.category || 'Car',
-            minimum_price: carData.minimum_price || carData.price
+            minimum_price: carData.minimum_price || carData.price,
+            is_new: carData.is_new !== undefined ? carData.is_new : (carData.market_data as any)?.is_new,
+            is_investor_only: carData.is_investor_only !== undefined ? carData.is_investor_only : (carData.market_data as any)?.is_investor_only,
+            is_imported: carData.is_imported !== undefined ? carData.is_imported : (carData.market_data as any)?.is_imported
         };
 
         const dbReadyData: any = {

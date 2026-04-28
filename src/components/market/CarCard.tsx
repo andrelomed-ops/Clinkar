@@ -56,7 +56,7 @@ export function CarCard({ car, isFavorite = false, onToggleFavorite }: CarCardPr
 
                     {/* Status Badge */}
                     <div className="absolute top-3 left-3 flex flex-wrap gap-2 max-w-[calc(100%-60px)] z-20">
-                        {(car.status === 'CERTIFIED' || car.has_starterkar_seal) && (
+                        {(car.status === 'CERTIFIED' || car.has_clinkar_seal || car.has_starterkar_seal) && (
                             <StarterKarSeal variant="compact" />
                         )}
                         {car.flashSale && (
@@ -64,17 +64,17 @@ export function CarCard({ car, isFavorite = false, onToggleFavorite }: CarCardPr
                                 Flash
                             </div>
                         )}
-                        {car.isBorder && (
+                        {(car.is_imported || (car as any).isBorder) && (
                             <div className="px-2.5 py-1 bg-blue-500 text-white text-[10px] font-bold rounded-lg uppercase tracking-wide flex items-center gap-1 shadow-sm whitespace-nowrap">
-                                🌎 Fronterizo
+                                🌎 Importado
                             </div>
                         )}
-                        {car.investorOnly && (
+                        {(car.is_investor_only || car.investorOnly) && (
                             <div className="px-2.5 py-1 bg-emerald-600 text-white text-[10px] font-bold rounded-lg uppercase tracking-wide flex items-center gap-1 shadow-sm whitespace-nowrap">
                                 💎 Inversionista
                             </div>
                         )}
-                        {(car as any).isNew && (
+                        {(car.is_new || (car as any).isNew) && (
                             <div className="px-2.5 py-1 bg-indigo-600 text-white text-[10px] font-bold rounded-lg uppercase tracking-wide flex items-center gap-1 shadow-sm whitespace-nowrap">
                                 <Zap className="h-3 w-3 fill-current" /> Nuevo
                             </div>

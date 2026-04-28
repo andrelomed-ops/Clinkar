@@ -50,6 +50,7 @@ export default function BuyPage() {
     const [currentPage, setCurrentPage] = useState(1);
     const [cars, setCars] = useState<any[]>(ALL_CARS);
     const [isLoading, setIsLoading] = useState(true);
+    const [userRole, setUserRole] = useState<string | null>(null);
 
     useEffect(() => {
         setIsMounted(true);
@@ -57,7 +58,15 @@ export default function BuyPage() {
             const favs = await FavoriteService.getFavorites(supabase);
             setFavorites(favs);
         };
+        const loadUserRole = async () => {
+            const { data: { user } } = await supabase.auth.getUser();
+            if (user) {
+                const { data: profile } = await supabase.from('profiles').select('role').eq('id', user.id).single();
+                setUserRole(profile?.role || 'buyer');
+            }
+        };
         loadFavorites();
+        loadUserRole();
 
         const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event) => {
             if (event === 'SIGNED_IN' || event === 'SIGNED_OUT') {
@@ -162,16 +171,16 @@ export default function BuyPage() {
             if (filters.makes && filters.makes.length > 0 && !filters.makes.includes(car.make)) return false;
             if (filters.minPrice && car.price < Number(filters.minPrice)) return false;
             if (filters.maxPrice && car.price > Number(filters.maxPrice)) return false;
-            const isUserInvestor = userProfile?.role?.toLowerCase() === 'investor';
+            const isUserInvestor = userRole?.toLowerCase() === 'investor';
 
-            if (filters.certifiedOnly && !car.has_starterkar_seal) return false;
+            if (filters.certifiedOnly && !car.has_clinkar_seal) return false;
             if (filters.flashSale && !car.flashSale) return false;
-            if (filters.isBorder && !car.isBorder) return false;
-            if (filters.investorOnly && !car.investorOnly) return false;
-            if (filters.newCars && !car.isNew) return false;
+            if (filters.isBorder && !car.is_imported) return false;
+            if (filters.investorOnly && !car.is_investor_only) return false;
+            if (filters.newCars && !car.is_new) return false;
 
             // RESTRICTION: Investor-only cars are ONLY visible to users with the 'investor' role
-            if (car.investorOnly && !isUserInvestor) return false;
+            if (car.is_investor_only && !isUserInvestor) return false;
 
             return true;
         }).sort((a, b) => {

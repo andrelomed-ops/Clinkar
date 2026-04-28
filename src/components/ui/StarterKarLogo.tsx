@@ -69,7 +69,7 @@ export function StarterKarLogo({
                             fill="white" 
                             style={{ fontSize: '45px', fontWeight: '900', fontFamily: 'Arial, sans-serif' }}
                         >
-                            S
+                            C
                         </text>
                     </svg>
                 </div>
@@ -95,7 +95,7 @@ export function StarterKarLogo({
                         )}
                         style={{ fontFamily: "'Outfit', sans-serif" }}
                     >
-                        Starter<span className="text-indigo-600">Kar</span>
+                        Clinkar
                     </span>
                     {!hideSubmark && (
                         <span
