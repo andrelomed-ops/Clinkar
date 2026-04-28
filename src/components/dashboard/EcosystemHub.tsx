@@ -37,12 +37,12 @@ export function EcosystemHub({ userProfile, activeInspections, investorApp }: Ec
 
                 {/* 2. SERVICES RIBBON */}
                 <div className="flex items-center gap-10 flex-1">
-                    {/* Bóveda */}
-                    <Link href="/dashboard/sell" className="flex items-center gap-3 group">
+                    {/* Bóveda / Gestión de Ventas */}
+                    <Link href="/dashboard?tab=selling" className="flex items-center gap-3 group">
                         <div className="h-9 w-9 rounded-xl bg-white dark:bg-zinc-800 flex items-center justify-center text-zinc-400 group-hover:text-indigo-600 shadow-sm transition-all border border-zinc-100 dark:border-zinc-800">
                             <QrCode className="h-4 w-4" />
                         </div>
-                        <span className="text-[11px] font-black uppercase tracking-tighter text-zinc-600 group-hover:text-zinc-900 dark:text-zinc-400 dark:group-hover:text-white transition-colors">Bóveda Digital</span>
+                        <span className="text-[11px] font-black uppercase tracking-tighter text-zinc-600 group-hover:text-zinc-900 dark:text-zinc-400 dark:group-hover:text-white transition-colors">Gestión de Ventas</span>
                     </Link>
 
                     {/* Inversionista */}

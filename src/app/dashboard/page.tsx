@@ -94,8 +94,19 @@ export default function DashboardPage() {
 
             // Clean URL
             router.replace("/dashboard");
+        }
+    }, [searchParams, router, user]);
 
-            // Apply referral code if present in URL
+    // Tab switching via URL param
+    useEffect(() => {
+        const tab = searchParams.get('tab');
+        if (tab === 'selling') setActiveTab('selling');
+        if (tab === 'buying') setActiveTab('buying');
+        if (tab === 'completed') setActiveTab('completed');
+    }, [searchParams]);
+
+    useEffect(() => {
+        if (mounted) {
             const refCode = searchParams.get("ref");
             if (refCode && user) {
                 const currentUserId = user.id;
@@ -104,7 +115,7 @@ export default function DashboardPage() {
                 })();
             }
         }
-    }, [searchParams, router, user]);
+    }, [mounted, user, searchParams]);
 
     const applyReferralCode = async (userId: string, code: string) => {
         try {
@@ -362,7 +373,10 @@ export default function DashboardPage() {
                         className="h-10 w-10 rounded-full bg-indigo-100 hover:bg-indigo-200 flex items-center justify-center text-xs font-bold text-indigo-700 border border-indigo-200 transition-all hover:scale-110 active:scale-95"
                     >
                         {userProfile?.full_name ? userProfile.full_name.split(' ').map((n: string) => n[0]).join('') : 'U'}
-                                <div className="flex flex-1 overflow-hidden">
+                    </Link>
+                </div>
+            </nav>
+            <div className="flex flex-1 overflow-hidden">
                 <main className="flex-1 h-full overflow-y-auto custom-scrollbar">
                     {/* Service Ribbon (Above the fold) */}
                     <EcosystemHub 
@@ -420,255 +434,169 @@ export default function DashboardPage() {
                                     </>
                                 )}
                             </div>
-                        </div>                        </div>
                         </div>
-                    </div>
 
-                    <div className="flex border-b border-border mb-8 gap-1">
-                        <button 
-                            onClick={() => setActiveTab("buying")}
-                            className={cn(
-                                "px-5 py-3 text-sm font-black uppercase tracking-widest transition-all border-b-2 relative",
-                                activeTab === "buying" ? "border-indigo-600 text-indigo-600" : "border-transparent text-muted-foreground hover:text-foreground"
-                            )}
-                        >
-                            🛒 Comprando
-                            {transactions.filter(tx => tx.role === 'buyer' && tx.status !== 'RELEASED').length > 0 && (
-                                <span className="ml-2 px-1.5 py-0.5 bg-indigo-600 text-white text-[9px] rounded-full font-black">
-                                    {transactions.filter(tx => tx.role === 'buyer' && tx.status !== 'RELEASED').length}
-                                </span>
-                            )}
-                        </button>
-                        <button 
-                            onClick={() => setActiveTab("selling")}
-                            className={cn(
-                                "px-5 py-3 text-sm font-black uppercase tracking-widest transition-all border-b-2 relative",
-                                activeTab === "selling" ? "border-indigo-600 text-indigo-600" : "border-transparent text-muted-foreground hover:text-foreground"
-                            )}
-                        >
-                            🏷️ Vendiendo
-                            {transactions.filter(tx => tx.role === 'seller' && tx.status !== 'RELEASED').length > 0 && (
-                                <span className="ml-2 px-1.5 py-0.5 bg-emerald-600 text-white text-[9px] rounded-full font-black">
-                                    {transactions.filter(tx => tx.role === 'seller' && tx.status !== 'RELEASED').length}
-                                </span>
-                            )}
-                        </button>
-                        <button 
-                            onClick={() => setActiveTab("completed")}
-                            className={cn(
-                                "px-5 py-3 text-sm font-black uppercase tracking-widest transition-all border-b-2 relative",
-                                activeTab === "completed" ? "border-zinc-600 text-zinc-900 dark:text-zinc-100" : "border-transparent text-muted-foreground hover:text-foreground"
-                            )}
-                        >
-                            ✅ Completadas
-                            {transactions.filter(tx => tx.status === 'RELEASED').length > 0 && (
-                                <span className="ml-2 px-1.5 py-0.5 bg-zinc-500 text-white text-[9px] rounded-full font-black">
-                                    {transactions.filter(tx => tx.status === 'RELEASED').length}
-                                </span>
-                            )}
-                        </button>
-                    </div>
+                        <div className="flex border-b border-border mb-8 gap-1">
+                            <button 
+                                onClick={() => setActiveTab("buying")}
+                                className={cn(
+                                    "px-5 py-3 text-sm font-black uppercase tracking-widest transition-all border-b-2 relative",
+                                    activeTab === "buying" ? "border-indigo-600 text-indigo-600" : "border-transparent text-muted-foreground hover:text-foreground"
+                                )}
+                            >
+                                🛒 Comprando
+                                {transactions.filter(tx => tx.role === 'buyer' && tx.status !== 'RELEASED').length > 0 && (
+                                    <span className="ml-2 px-1.5 py-0.5 bg-indigo-600 text-white text-[9px] rounded-full font-black">
+                                        {transactions.filter(tx => tx.role === 'buyer' && tx.status !== 'RELEASED').length}
+                                    </span>
+                                )}
+                            </button>
+                            <button 
+                                onClick={() => setActiveTab("selling")}
+                                className={cn(
+                                    "px-5 py-3 text-sm font-black uppercase tracking-widest transition-all border-b-2 relative",
+                                    activeTab === "selling" ? "border-indigo-600 text-indigo-600" : "border-transparent text-muted-foreground hover:text-foreground"
+                                )}
+                            >
+                                🏷️ Vendiendo
+                                {transactions.filter(tx => tx.role === 'seller' && tx.status !== 'RELEASED').length > 0 && (
+                                    <span className="ml-2 px-1.5 py-0.5 bg-emerald-600 text-white text-[9px] rounded-full font-black">
+                                        {transactions.filter(tx => tx.role === 'seller' && tx.status !== 'RELEASED').length}
+                                    </span>
+                                )}
+                            </button>
+                            <button 
+                                onClick={() => setActiveTab("completed")}
+                                className={cn(
+                                    "px-5 py-3 text-sm font-black uppercase tracking-widest transition-all border-b-2 relative",
+                                    activeTab === "completed" ? "border-zinc-600 text-zinc-900 dark:text-zinc-100" : "border-transparent text-muted-foreground hover:text-foreground"
+                                )}
+                            >
+                                ✅ Completadas
+                                {transactions.filter(tx => tx.status === 'RELEASED').length > 0 && (
+                                    <span className="ml-2 px-1.5 py-0.5 bg-zinc-500 text-white text-[9px] rounded-full font-black">
+                                        {transactions.filter(tx => tx.status === 'RELEASED').length}
+                                    </span>
+                                )}
+                            </button>
+                        </div>
 
-                    {activeTab === "buying" ? (
-                        <div className="space-y-6 animate-in slide-in-from-left-4 duration-300">
-                            {transactions.filter(tx => tx.role === 'buyer' && tx.status !== 'RELEASED').length > 0 ? (
-                                <div className="grid gap-6">
-                                    {transactions.filter(tx => tx.role === 'buyer' && tx.status !== 'RELEASED').map((tx, idx) => (
-                                        <Link href={`/dashboard/handover/${tx.id}`} key={tx.id} className={cn(
-                                            "glass-card rounded-3xl p-6 flex items-center justify-between hover:shadow-2xl hover:shadow-indigo-500/10 transition-all group animate-reveal",
-                                            idx === 0 ? "stagger-1" : idx === 1 ? "stagger-2" : "stagger-3"
-                                        )}>
-                                            <div className="flex items-center gap-6">
-                                                <div className="h-24 w-40 bg-secondary rounded-2xl overflow-hidden relative shadow-inner">
-                                                    {tx.image ? (
-                                                        <Image src={tx.image} alt={tx.carName} fill className="object-cover group-hover:scale-110 transition-transform duration-700" />
-                                                    ) : (
-                                                        <div className="w-full h-full flex items-center justify-center bg-muted"><Car className="h-10 w-10 text-muted-foreground/20" /></div>
-                                                    )}
-                                                </div>
-                                                <div>
-                                                    <h3 className="font-black text-xl italic tracking-tight">{tx.carName}</h3>
-                                                    <p className="text-sm font-bold text-muted-foreground uppercase tracking-widest">{tx.year} • {tx.location}</p>
-                                                    <div className="flex items-center gap-3 mt-3">
-                                                        <div className={cn(
-                                                            "px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border italic",
-                                                            tx.status === 'RELEASED' ? "bg-zinc-100 text-zinc-500 border-zinc-200" :
-                                                                tx.status === 'FUNDS_HELD' || tx.status === 'IN_VAULT' ? "bg-emerald-100 text-emerald-700 border-emerald-200" :
-                                                                    "bg-blue-50 text-blue-600 border-blue-100"
-                                                        )}>
-                                                            {tx.status === 'RELEASED' ? 'Vehículo Entregado' :
-                                                                tx.status === 'FUNDS_HELD' ? 'Pago en Bóveda' :
-                                                                    tx.status === 'IN_VAULT' ? 'Listo para Entrega' :
-                                                                        'Proceso Activo'}
+                        {activeTab === "buying" ? (
+                            <div className="space-y-6 animate-in slide-in-from-left-4 duration-300">
+                                {transactions.filter(tx => tx.role === 'buyer' && tx.status !== 'RELEASED').length > 0 ? (
+                                    <div className="grid gap-6">
+                                        {transactions.filter(tx => tx.role === 'buyer' && tx.status !== 'RELEASED').map((tx, idx) => (
+                                            <Link href={`/dashboard/handover/${tx.id}`} key={tx.id} className={cn(
+                                                "glass-card rounded-3xl p-6 flex items-center justify-between hover:shadow-2xl hover:shadow-indigo-500/10 transition-all group animate-reveal",
+                                                idx === 0 ? "stagger-1" : idx === 1 ? "stagger-2" : "stagger-3"
+                                            )}>
+                                                <div className="flex items-center gap-6">
+                                                    <div className="h-24 w-40 bg-secondary rounded-2xl overflow-hidden relative shadow-inner">
+                                                        {tx.image ? (
+                                                            <Image src={tx.image} alt={tx.carName} fill className="object-cover group-hover:scale-110 transition-transform duration-700" />
+                                                        ) : (
+                                                            <div className="w-full h-full flex items-center justify-center bg-muted"><Car className="h-10 w-10 text-muted-foreground/20" /></div>
+                                                        )}
+                                                    </div>
+                                                    <div>
+                                                        <h3 className="font-black text-xl italic tracking-tight">{tx.carName}</h3>
+                                                        <p className="text-sm font-bold text-muted-foreground uppercase tracking-widest">{tx.year} • {tx.location}</p>
+                                                        <div className="flex items-center gap-3 mt-3">
+                                                            <div className={cn(
+                                                                "px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border italic",
+                                                                tx.status === 'RELEASED' ? "bg-zinc-100 text-zinc-500 border-zinc-200" :
+                                                                    tx.status === 'FUNDS_HELD' || tx.status === 'IN_VAULT' ? "bg-emerald-100 text-emerald-700 border-emerald-200" :
+                                                                        "bg-blue-50 text-blue-600 border-blue-100"
+                                                            )}>
+                                                                {tx.status === 'RELEASED' ? 'Vehículo Entregado' :
+                                                                    tx.status === 'FUNDS_HELD' ? 'Pago en Bóveda' :
+                                                                        tx.status === 'IN_VAULT' ? 'Listo para Entrega' :
+                                                                            'Proceso Activo'}
+                                                            </div>
+                                                            <span className="text-[10px] font-black text-zinc-400 uppercase tracking-tighter">REF: {tx.id.slice(0, 8)}</span>
                                                         </div>
-                                                        <span className="text-[10px] font-black text-zinc-400 uppercase tracking-tighter">REF: {tx.id.slice(0, 8)}</span>
                                                     </div>
                                                 </div>
-                                            </div>
-                                            <ArrowRight className="h-6 w-6 text-zinc-300 group-hover:text-indigo-600 group-hover:translate-x-2 transition-all" />
-                                        </Link>
-                                    ))}
-                                </div>
-                            ) : (
-                                /* Pantalla de bienvenida para usuario nuevo */
-                                <div className="py-8 space-y-8 animate-in fade-in duration-500">
-                                    <div className="text-center space-y-2">
-                                        <p className="text-xs font-black uppercase tracking-[0.25em] text-indigo-500">¿Qué quieres hacer hoy?</p>
-                                        <h2 className="text-2xl font-black tracking-tight">Elige tu próximo paso</h2>
-                                    </div>
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-2xl mx-auto">
-                                        {/* CTA Comprar */}
-                                        <Link
-                                            href="/buy"
-                                            className="group relative overflow-hidden rounded-[2.5rem] p-8 bg-gradient-to-br from-indigo-600 via-indigo-700 to-purple-800 text-white shadow-2xl shadow-indigo-500/30 hover:shadow-indigo-500/50 transition-all hover:scale-[1.02] active:scale-[0.99]"
-                                        >
-                                            <div className="absolute top-0 right-0 p-6 opacity-10 group-hover:opacity-20 group-hover:scale-110 transition-all duration-700">
-                                                <Car className="h-32 w-32" />
-                                            </div>
-                                            <div className="relative z-10 space-y-4">
-                                                <div className="h-12 w-12 bg-white/20 rounded-2xl flex items-center justify-center backdrop-blur-sm">
-                                                    <Car className="h-6 w-6 text-white" />
-                                                </div>
-                                                <div>
-                                                    <p className="text-[10px] font-black uppercase tracking-[0.25em] text-indigo-200 mb-1">Inventario Certificado</p>
-                                                    <h3 className="text-2xl font-black tracking-tight">Comprar Auto</h3>
-                                                    <p className="text-indigo-200 text-sm font-medium mt-2 leading-relaxed">Explora autos con inspección de 150 puntos y pago protegido en bóveda.</p>
-                                                </div>
-                                                <div className="flex items-center gap-2 text-sm font-bold text-indigo-200 group-hover:text-white transition-colors">
-                                                    Ver inventario <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
-                                                </div>
-                                            </div>
-                                        </Link>
-
-                                        {/* CTA Vender */}
-                                        <Link
-                                            href="/sell"
-                                            className="group relative overflow-hidden rounded-[2.5rem] p-8 bg-zinc-950 border border-zinc-800 text-white shadow-2xl hover:border-indigo-500/50 transition-all hover:scale-[1.02] active:scale-[0.99]"
-                                        >
-                                            <div className="absolute top-0 right-0 p-6 opacity-10 group-hover:opacity-20 group-hover:scale-110 transition-all duration-700">
-                                                <CarFront className="h-32 w-32" />
-                                            </div>
-                                            <div className="relative z-10 space-y-4">
-                                                <div className="h-12 w-12 bg-indigo-600/30 rounded-2xl flex items-center justify-center">
-                                                    <CarFront className="h-6 w-6 text-indigo-400" />
-                                                </div>
-                                                <div>
-                                                    <p className="text-[10px] font-black uppercase tracking-[0.25em] text-zinc-500 mb-1">Proceso Certificado</p>
-                                                    <h3 className="text-2xl font-black tracking-tight">Vender mi Auto</h3>
-                                                    <p className="text-zinc-400 text-sm font-medium mt-2 leading-relaxed">Publica tu vehículo, agenda inspección y recibe tu pago seguro.</p>
-                                                </div>
-                                                <div className="flex items-center gap-2 text-sm font-bold text-zinc-400 group-hover:text-indigo-400 transition-colors">
-                                                    Publicar ahora <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
-                                                </div>
-                                            </div>
-                                        </Link>
-                                    </div>
-                                </div>
-                            )}
-
-                            {/* FAVORITES SECTION */}
-                            <div className="space-y-6 pt-8 border-t border-border/50">
-                                <div className="flex items-center justify-between">
-                                    <h2 className="text-xl font-black italic uppercase tracking-tighter flex items-center gap-2">
-                                        <Heart className="h-5 w-5 text-indigo-600" />
-                                        Mis Favoritos
-                                    </h2>
-                                    <Link href="/buy" className="text-xs font-bold text-indigo-600 hover:underline">Ver todo el inventario</Link>
-                                </div>
-
-                                {favoriteCars.length > 0 ? (
-                                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                                        {favoriteCars.filter(c => c && c.id).map(car => (
-                                            <div key={car.id} className="h-[380px]">
-                                                <CarCard
-                                                    car={car}
-                                                    isFavorite={true}
-                                                    onToggleFavorite={(e) => handleToggleFavorite(e, car.id)}
-                                                />
-                                            </div>
+                                                <ArrowRight className="h-6 w-6 text-zinc-300 group-hover:text-indigo-600 group-hover:translate-x-2 transition-all" />
+                                            </Link>
                                         ))}
                                     </div>
                                 ) : (
-                                    <div className="text-center py-12 rounded-[2rem] bg-indigo-50/20 border border-dashed border-indigo-200/50">
-                                        <p className="text-sm font-medium text-muted-foreground mb-4">Aún no has guardado ningún auto.</p>
-                                        <Button asChild variant="outline" className="rounded-xl font-bold">
-                                            <Link href="/buy">Explorar Inventario</Link>
-                                        </Button>
-                                    </div>
-                                )}
-                            </div>
-
-                            <RecommendedSection 
-                                favoriteIds={favoriteIds} 
-                                onToggleFavorite={handleToggleFavorite}
-                            />
-                        </div>
-                    ) : activeTab === "completed" ? (
-                        <div className="space-y-6 animate-in slide-in-from-right-4 duration-300">
-                            {transactions.filter(tx => tx.status === 'RELEASED').length > 0 ? (
-                                <div className="grid gap-4">
-                                    {transactions.filter(tx => tx.status === 'RELEASED').map((tx) => (
-                                        <div key={tx.id} className="glass-card rounded-3xl p-6 flex items-center justify-between opacity-80 hover:opacity-100 transition-all group">
-                                            <div className="flex items-center gap-6">
-                                                <div className="h-20 w-32 bg-secondary rounded-2xl overflow-hidden relative shadow-inner shrink-0">
-                                                    {tx.image ? (
-                                                        <Image src={tx.image} alt={tx.carName} fill className="object-cover" />
-                                                    ) : (
-                                                        <div className="w-full h-full flex items-center justify-center bg-muted"><Car className="h-8 w-8 text-muted-foreground/20" /></div>
-                                                    )}
+                                    <div className="py-8 space-y-8 animate-in fade-in duration-500">
+                                        <div className="text-center space-y-2">
+                                            <p className="text-xs font-black uppercase tracking-[0.25em] text-indigo-500">¿BUSCAS UN AUTO NUEVO?</p>
+                                            <h2 className="text-2xl font-black tracking-tight uppercase italic">Elige tu próximo paso</h2>
+                                        </div>
+                                        <div className="max-w-xl mx-auto">
+                                            <Link
+                                                href="/buy"
+                                                className="group relative overflow-hidden rounded-[2.5rem] p-8 bg-indigo-600 border border-indigo-500 text-white shadow-2xl hover:bg-indigo-700 transition-all hover:scale-[1.02] active:scale-[0.99] flex flex-col items-center text-center"
+                                            >
+                                                <div className="absolute top-0 right-0 p-6 opacity-10 group-hover:opacity-20 group-hover:scale-110 transition-all duration-700">
+                                                    <CarFront className="h-32 w-32 rotate-12" />
                                                 </div>
-                                                <div>
-                                                    <h3 className="font-black text-xl italic tracking-tight">{tx.carName}</h3>
-                                                    <p className="text-sm font-bold text-muted-foreground uppercase tracking-widest">{tx.year} • {tx.role === 'buyer' ? 'Comprado' : 'Vendido'}</p>
-                                                    <div className="flex items-center gap-3 mt-2">
-                                                        <div className="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border bg-zinc-100 text-zinc-600 border-zinc-200 italic flex items-center gap-1.5">
-                                                            <CheckCircle2 className="h-3 w-3 text-emerald-500" />
-                                                            {tx.role === 'buyer' ? 'Vehículo Recibido' : 'Venta Completada'}
-                                                        </div>
-                                                        <span className="text-[10px] font-black text-zinc-400 uppercase tracking-tighter">REF: {tx.id.slice(0, 8)}</span>
+                                                <div className="relative z-10 space-y-4">
+                                                    <div className="h-12 w-12 bg-white/20 rounded-2xl flex items-center justify-center backdrop-blur-md mx-auto">
+                                                        <CarFront className="h-6 w-6 text-white" />
+                                                    </div>
+                                                    <div>
+                                                        <p className="text-[10px] font-black uppercase tracking-[0.25em] text-indigo-200 mb-1">Inventario Certificado</p>
+                                                        <h3 className="text-2xl font-black tracking-tight uppercase italic">EXPLORAR INVENTARIO</h3>
+                                                        <p className="text-indigo-200 text-sm font-medium mt-2 leading-relaxed">Autos con inspección de 150 puntos y pago protegido en bóveda.</p>
+                                                    </div>
+                                                    <div className="flex items-center justify-center gap-2 text-sm font-bold text-indigo-200 group-hover:text-white transition-colors">
+                                                        Ver inventario <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
                                                     </div>
                                                 </div>
-                                            </div>
-                                            <div className="text-right">
-                                                <p className="font-black text-xl text-zinc-900 dark:text-white">${tx.price?.toLocaleString()} MXN</p>
-                                                <Link href={`/dashboard/handover/${tx.id}`} className="text-[10px] font-bold text-indigo-600 hover:underline mt-1 block">Ver documentos →</Link>
-                                            </div>
+                                            </Link>
                                         </div>
-                                    ))}
-                                </div>
-                            ) : (
-                                <div className="py-16 text-center rounded-[2rem] bg-zinc-50 border border-dashed border-zinc-200">
-                                    <p className="text-sm font-medium text-muted-foreground">Aún no tienes operaciones completadas.</p>
-                                </div>
-                            )}
-                        </div>
-                    ) : (
-                        <div className="space-y-12 animate-in slide-in-from-right-4 duration-300">
-                            {/* Active Sales Section */}
-                            <div className="space-y-4">
-                                <div className="flex items-center justify-between">
-                                    <h2 className="text-xl font-black italic uppercase tracking-tighter">Ventas en Progreso</h2>
-                                    <Link href="/sell" className="text-xs font-bold text-indigo-600 hover:underline">Publicar otro auto</Link>
+                                    </div>
+                                )}
+
+                                {/* FAVORITES SECTION (Always in Buying tab) */}
+                                <div className="space-y-6 pt-12 border-t border-border/50">
+                                    <div className="flex items-center justify-between">
+                                        <h2 className="text-xl font-black italic uppercase tracking-tighter flex items-center gap-2">
+                                            <Heart className="h-5 w-5 text-indigo-600" />
+                                            Mis Favoritos
+                                        </h2>
+                                        <Link href="/buy" className="text-xs font-bold text-indigo-600 hover:underline">Ver todo el inventario</Link>
+                                    </div>
+
+                                    {favoriteCars.length > 0 ? (
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                                            {favoriteCars.filter(c => c && c.id).map(car => (
+                                                <div key={car.id} className="h-[380px]">
+                                                    <CarCard
+                                                        car={car}
+                                                        isFavorite={true}
+                                                        onToggleFavorite={(e) => handleToggleFavorite(e, car.id)}
+                                                    />
+                                                </div>
+                                            ))}
+                                        </div>
+                                    ) : (
+                                        <div className="text-center py-12 rounded-[2rem] bg-indigo-50/20 border border-dashed border-indigo-200/50">
+                                            <p className="text-sm font-medium text-muted-foreground mb-4">Aún no tienes favoritos guardados.</p>
+                                            <Button asChild variant="outline" className="rounded-xl font-bold">
+                                                <Link href="/buy">Explorar Inventario</Link>
+                                            </Button>
+                                        </div>
+                                    )}
                                 </div>
 
-                                {transactions.filter(tx => tx.role === 'seller' && tx.status !== 'RELEASED').length > 0 ? (
-                                    <div className="grid gap-8">
-                                        {transactions.filter(tx => tx.role === 'seller' && tx.status !== 'RELEASED').map((tx) => (
-                                            <div key={tx.id} className="space-y-4">
-                                                {/* Billing Semaphore Integration */}
-                                                {(tx.status === 'RELEASED' || tx.status === 'HANDOVER_SCHEDULED') && (
-                                                    <BillingSemaphore 
-                                                        transactionId={tx.id}
-                                                        carName={tx.carName}
-                                                        price={tx.price}
-                                                        commissionAmount={tx.commissionAmount || (tx.price * 0.035)}
-                                                        isPaid={tx.commissionPaid}
-                                                        status={tx.status}
-                                                    />
-                                                )}
-                                                
-                                                <div className="glass-card rounded-[2rem] p-6 border border-border/50 flex flex-col md:flex-row items-center justify-between gap-6 group hover:border-indigo-500/30 transition-all">
-                                                <div className="flex items-center gap-6 w-full md:w-auto">
+                                <RecommendedSection 
+                                    favoriteIds={favoriteIds} 
+                                    onToggleFavorite={handleToggleFavorite}
+                                />
+                            </div>
+                        ) : activeTab === "completed" ? (
+                            <div className="space-y-6 animate-in slide-in-from-right-4 duration-300">
+                                {transactions.filter(tx => tx.status === 'RELEASED').length > 0 ? (
+                                    <div className="grid gap-4">
+                                        {transactions.filter(tx => tx.status === 'RELEASED').map((tx) => (
+                                            <div key={tx.id} className="glass-card rounded-3xl p-6 flex items-center justify-between opacity-80 hover:opacity-100 transition-all group">
+                                                <div className="flex items-center gap-6">
                                                     <div className="h-20 w-32 bg-secondary rounded-2xl overflow-hidden relative shadow-inner shrink-0">
                                                         {tx.image ? (
                                                             <Image src={tx.image} alt={tx.carName} fill className="object-cover" />
@@ -676,139 +604,219 @@ export default function DashboardPage() {
                                                             <div className="w-full h-full flex items-center justify-center bg-muted"><Car className="h-8 w-8 text-muted-foreground/20" /></div>
                                                         )}
                                                     </div>
-                                                    <div className="min-w-0">
-                                                        <div className="flex items-center gap-2 mb-1">
-                                                            <h3 className="font-black text-lg italic tracking-tight truncate">{tx.carName}</h3>
-                                                            <span className="px-2 py-0.5 rounded-full bg-indigo-50 text-indigo-600 text-[10px] font-black uppercase">SALE</span>
-                                                        </div>
-                                                        <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest">{tx.year} • Ref: {tx.id.slice(0, 8)}</p>
+                                                    <div>
+                                                        <h3 className="font-black text-xl italic tracking-tight">{tx.carName}</h3>
+                                                        <p className="text-sm font-bold text-muted-foreground uppercase tracking-widest">{tx.year} • {tx.role === 'buyer' ? 'Comprado' : 'Vendido'}</p>
                                                         <div className="flex items-center gap-3 mt-2">
-                                                            <div className={cn(
-                                                                "px-2 py-0.5 rounded text-[9px] font-black uppercase tracking-tighter",
-                                                                tx.status === 'FUNDS_HELD' || tx.status === 'IN_VAULT' ? "bg-emerald-100 text-emerald-700" : "bg-amber-100 text-amber-700"
-                                                            )}>
-                                                                {tx.status === 'FUNDS_HELD' || tx.status === 'IN_VAULT' ? 'Bóveda: Pago Asegurado' : 'Esperando Pago'}
+                                                            <div className="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border bg-zinc-100 text-zinc-600 border-zinc-200 italic flex items-center gap-1.5">
+                                                                <CheckCircle2 className="h-3 w-3 text-emerald-500" />
+                                                                {tx.role === 'buyer' ? 'Vehículo Recibido' : 'Venta Completada'}
                                                             </div>
-                                                            <span className="text-xs font-bold">${tx.price.toLocaleString()} MXN</span>
+                                                            <span className="text-[10px] font-black text-zinc-400 uppercase tracking-tighter">REF: {tx.id.slice(0, 8)}</span>
                                                         </div>
                                                     </div>
                                                 </div>
-
-                                                <div className="flex items-center gap-3 w-full md:w-auto">
-                                                    {(tx.status === 'FUNDS_HELD' || tx.status === 'IN_VAULT') ? (
-                                                        <Button asChild className="w-full md:w-auto rounded-xl h-12 px-6 bg-emerald-600 hover:bg-emerald-700 text-white font-black transition-all shadow-lg shadow-emerald-500/20 active:scale-95 group">
-                                                            <Link href={`/dashboard/handover/${tx.id}`}>
-                                                                <Smartphone className="mr-2 h-4 w-4 group-hover:scale-110 transition-transform" />
-                                                                Entregar Vehículo
-                                                            </Link>
-                                                        </Button>
-                                                    ) : (
-                                                        <Button asChild variant="secondary" className="w-full md:w-auto rounded-xl h-12 px-6 font-black active:scale-95">
-                                                            <Link href={`/dashboard/handover/${tx.id}`}>
-                                                                Ver Detalles
-                                                            </Link>
-                                                        </Button>
-                                                    )}
+                                                <div className="text-right">
+                                                    <p className="font-black text-xl text-zinc-900 dark:text-white">${tx.price?.toLocaleString()} MXN</p>
+                                                    <Link href={`/dashboard/handover/${tx.id}`} className="text-[10px] font-bold text-indigo-600 hover:underline mt-1 block">Ver documentos →</Link>
                                                 </div>
                                             </div>
-                                        </div>
-                                    ))}
-                                    </div>
-                                ) : (
-                                    <div className="p-12 text-center rounded-[2.5rem] bg-secondary/20 border border-dashed border-border">
-                                        <p className="text-sm font-medium text-muted-foreground">No tienes ventas activas en este momento.</p>
-                                    </div>
-                                )}
-                            </div>
-
-                            {/* My Garage Section */}
-                            <div className="space-y-4">
-                                <div className="flex items-center justify-between">
-                                    <h2 className="text-xl font-black italic uppercase tracking-tighter">Mi Garage</h2>
-                                    <span className="text-[10px] font-black bg-indigo-100 text-indigo-600 px-3 py-1 rounded-full uppercase">
-                                        {ownedCars.length} Vehículos Publicados
-                                    </span>
-                                </div>
-
-                                {ownedCars.length > 0 ? (
-                                    <div className="grid md:grid-cols-2 gap-4">
-                                        {ownedCars.map((car) => (
-                                            <Link
-                                                key={car.id}
-                                                href={`/dashboard/sell/${car.id}`}
-                                                className="glass-card rounded-[2.5rem] p-6 border border-border/50 group hover:border-primary/30 transition-all block"
-                                            >
-                                                <div className="flex items-center gap-5">
-                                                    <div className="h-16 w-16 rounded-2xl bg-secondary overflow-hidden shrink-0">
-                                                        {car.images?.[0] ? (
-                                                            <Image src={car.images[0]} alt={car.make} width={64} height={64} className="object-cover h-full w-full" />
-                                                        ) : <Car className="h-8 w-8 m-4 text-muted-foreground/20" />}
-                                                    </div>
-                                                    <div className="min-w-0 flex-1">
-                                                        <div className="flex items-center gap-2">
-                                                            <h3 className="font-black text-lg italic truncate">{car.make} {car.model}</h3>
-                                                            {car.status?.toUpperCase() === 'SOLD' && (
-                                                                <span className="px-2 py-0.5 rounded-full bg-zinc-900 text-white text-[8px] font-black uppercase tracking-tighter flex items-center gap-1">
-                                                                    <CheckCircle2 className="h-2.5 w-2.5 text-emerald-400" />
-                                                                    Vendido
-                                                                </span>
-                                                            )}
-                                                        </div>
-                                                        <div className="flex flex-col gap-1">
-                                                            <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">{car.year} • {car.transmission}</p>
-                                                            
-                                                            {/* Price Strategy Helper */}
-                                                            {car.priceEquation && (
-                                                                <div className="mt-2 p-3 bg-indigo-500/5 border border-indigo-500/10 rounded-xl space-y-2">
-                                                                    <div className="flex justify-between items-center text-[9px] font-bold">
-                                                                        <span className="text-muted-foreground uppercase">Libro Negro</span>
-                                                                        <span>${car.priceEquation.marketValue.toLocaleString()}</span>
-                                                                    </div>
-                                                                    <div className="flex justify-between items-center text-[9px] font-bold text-amber-600">
-                                                                        <span className="uppercase">Reparaciones Detectadas</span>
-                                                                        <span>- ${car.priceEquation.deductions.filter((d: any) => d.type === 'mechanical').reduce((acc: number, d: any) => acc + d.amount, 0).toLocaleString()}</span>
-                                                                    </div>
-                                                                    <div className="pt-1 border-t border-indigo-500/10 flex justify-between items-center text-[10px] font-black text-indigo-600">
-                                                                        <span className="uppercase italic tracking-tighter">Sugerencia StarterKar</span>
-                                                                        <span>${(car.priceEquation.marketValue - car.priceEquation.deductions.filter((d: any) => d.type === 'mechanical').reduce((acc: number, d: any) => acc + d.amount, 0)).toLocaleString()}</span>
-                                                                    </div>
-                                                                    <div className="flex justify-between items-center text-[8px] font-bold text-zinc-400">
-                                                                        <span className="uppercase tracking-widest">Comisión StarterKar</span>
-                                                                        <span>3.5% + Inspección</span>
-                                                                    </div>
-                                                                </div>
-                                                            )}
-                                                        </div>
-                                                    </div>
-                                                    <Button variant="ghost" size="sm" className="rounded-xl font-black text-[10px] uppercase tracking-widest group-hover:bg-primary group-hover:text-white transition-all">
-                                                        Gestionar
-                                                        <ArrowRight className="ml-2 h-4 w-4" />
-                                                    </Button>
-                                                </div>
-                                                <div className="mt-4 pt-4 border-t border-dashed border-border flex items-center justify-between text-[10px] font-bold text-muted-foreground">
-                                                    <div className="flex items-center gap-2">
-                                                        <Smartphone className="h-3 w-3 text-indigo-500" />
-                                                        IA Negociando Activa
-                                                    </div>
-                                                    <span className="text-zinc-400 italic">Protegiendo tu inversión</span>
-                                                </div>
-                                            </Link>
                                         ))}
                                     </div>
                                 ) : (
-                                    <div className="p-10 text-center rounded-[2.5rem] bg-indigo-50/30 border border-dashed border-indigo-100 dark:bg-zinc-900/30 dark:border-zinc-800">
-                                        <div className="h-12 w-12 bg-white dark:bg-zinc-800 rounded-2xl shadow-sm flex items-center justify-center mx-auto mb-4">
-                                            <CarFront className="h-6 w-6 text-indigo-400" />
-                                        </div>
-                                        <p className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Tu garage está vacío</p>
-                                        <Button asChild variant="link" className="text-indigo-600 text-xs font-black p-0 mt-2">
-                                            <Link href="/sell">Publicar mi primer auto</Link>
-                                        </Button>
+                                    <div className="py-16 text-center rounded-[2rem] bg-zinc-50 border border-dashed border-zinc-200">
+                                        <p className="text-sm font-medium text-muted-foreground">Aún no tienes operaciones completadas.</p>
                                     </div>
                                 )}
                             </div>
-                        </div>
-                    )}
+                        ) : (
+                            <div className="space-y-12 animate-in slide-in-from-right-4 duration-300">
+                                {/* Active Sales Section */}
+                                <div className="space-y-4">
+                                    <div className="flex items-center justify-between">
+                                        <h2 className="text-xl font-black italic uppercase tracking-tighter">Ventas en Progreso</h2>
+                                        <Link href="/sell" className="text-xs font-bold text-indigo-600 hover:underline">Publicar otro auto</Link>
+                                    </div>
+
+                                    {transactions.filter(tx => tx.role === 'seller' && tx.status !== 'RELEASED').length > 0 ? (
+                                        <div className="grid gap-8">
+                                            {transactions.filter(tx => tx.role === 'seller' && tx.status !== 'RELEASED').map((tx) => (
+                                                <div key={tx.id} className="space-y-4">
+                                                    {/* Billing Semaphore Integration */}
+                                                    {(tx.status === 'RELEASED' || tx.status === 'HANDOVER_SCHEDULED') && (
+                                                        <BillingSemaphore 
+                                                            transactionId={tx.id}
+                                                            carName={tx.carName}
+                                                            price={tx.price}
+                                                            commissionAmount={tx.commissionAmount || (tx.price * 0.035)}
+                                                            isPaid={tx.commissionPaid}
+                                                            status={tx.status}
+                                                        />
+                                                    )}
+                                                    
+                                                    <div className="glass-card rounded-[2rem] p-6 border border-border/50 flex flex-col md:flex-row items-center justify-between gap-6 group hover:border-indigo-500/30 transition-all">
+                                                        <div className="flex items-center gap-6 w-full md:w-auto">
+                                                            <div className="h-20 w-32 bg-secondary rounded-2xl overflow-hidden relative shadow-inner shrink-0">
+                                                                {tx.image ? (
+                                                                    <Image src={tx.image} alt={tx.carName} fill className="object-cover" />
+                                                                ) : (
+                                                                    <div className="w-full h-full flex items-center justify-center bg-muted"><Car className="h-8 w-8 text-muted-foreground/20" /></div>
+                                                                )}
+                                                            </div>
+                                                            <div className="min-w-0">
+                                                                <div className="flex items-center gap-2 mb-1">
+                                                                    <h3 className="font-black text-lg italic tracking-tight truncate">{tx.carName}</h3>
+                                                                    <span className="px-2 py-0.5 rounded-full bg-indigo-50 text-indigo-600 text-[10px] font-black uppercase">SALE</span>
+                                                                </div>
+                                                                <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest">{tx.year} • Ref: {tx.id.slice(0, 8)}</p>
+                                                                <div className="flex items-center gap-3 mt-2">
+                                                                    <div className={cn(
+                                                                        "px-2 py-0.5 rounded text-[9px] font-black uppercase tracking-tighter",
+                                                                        tx.status === 'FUNDS_HELD' || tx.status === 'IN_VAULT' ? "bg-emerald-100 text-emerald-700" : "bg-amber-100 text-amber-700"
+                                                                    )}>
+                                                                        {tx.status === 'FUNDS_HELD' || tx.status === 'IN_VAULT' ? 'Bóveda: Pago Asegurado' : 'Esperando Pago'}
+                                                                    </div>
+                                                                    <span className="text-xs font-bold">${tx.price.toLocaleString()} MXN</span>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                        <div className="flex items-center gap-3 w-full md:w-auto">
+                                                            {(tx.status === 'FUNDS_HELD' || tx.status === 'IN_VAULT') ? (
+                                                                <Button asChild className="w-full md:w-auto rounded-xl h-12 px-6 bg-emerald-600 hover:bg-emerald-700 text-white font-black transition-all shadow-lg shadow-emerald-500/20 active:scale-95 group">
+                                                                    <Link href={`/dashboard/handover/${tx.id}`}>
+                                                                        <Smartphone className="mr-2 h-4 w-4 group-hover:scale-110 transition-transform" />
+                                                                        Entregar Vehículo
+                                                                    </Link>
+                                                                </Button>
+                                                            ) : (
+                                                                <Button asChild variant="secondary" className="w-full md:w-auto rounded-xl h-12 px-6 font-black active:scale-95">
+                                                                    <Link href={`/dashboard/handover/${tx.id}`}>
+                                                                        Ver Detalles
+                                                                    </Link>
+                                                                </Button>
+                                                            )}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    ) : (
+                                        <div className="p-12 text-center rounded-[2.5rem] bg-secondary/20 border border-dashed border-border">
+                                            <p className="text-sm font-medium text-muted-foreground">No tienes ventas activas en este momento.</p>
+                                        </div>
+                                    )}
+                                </div>
+
+                                {/* My Garage Section */}
+                                <div className="space-y-4">
+                                    <div className="flex items-center justify-between">
+                                        <h2 className="text-xl font-black italic uppercase tracking-tighter">Mi Garage</h2>
+                                        <span className="text-[10px] font-black bg-indigo-100 text-indigo-600 px-3 py-1 rounded-full uppercase">
+                                            {ownedCars.length} Vehículos Publicados
+                                        </span>
+                                    </div>
+
+                                    {ownedCars.length > 0 ? (
+                                        <div className="grid md:grid-cols-2 gap-4">
+                                            {ownedCars.map((car) => (
+                                                <Link
+                                                    key={car.id}
+                                                    href={`/dashboard/sell/${car.id}`}
+                                                    className="glass-card rounded-[2.5rem] p-6 border border-border/50 group hover:border-primary/30 transition-all block"
+                                                >
+                                                    <div className="flex items-center gap-5">
+                                                        <div className="h-16 w-16 rounded-2xl bg-secondary overflow-hidden shrink-0">
+                                                            {car.images?.[0] ? (
+                                                                <Image src={car.images[0]} alt={car.make} width={64} height={64} className="object-cover h-full w-full" />
+                                                            ) : <Car className="h-8 w-8 m-4 text-muted-foreground/20" />}
+                                                        </div>
+                                                        <div className="min-w-0 flex-1">
+                                                            <div className="flex items-center gap-2">
+                                                                <h3 className="font-black text-lg italic truncate">{car.make} {car.model}</h3>
+                                                                {car.status?.toUpperCase() === 'SOLD' && (
+                                                                    <span className="px-2 py-0.5 rounded-full bg-zinc-900 text-white text-[8px] font-black uppercase tracking-tighter flex items-center gap-1">
+                                                                        <CheckCircle2 className="h-2.5 w-2.5 text-emerald-400" />
+                                                                        Vendido
+                                                                    </span>
+                                                                )}
+                                                            </div>
+                                                            <div className="flex flex-col gap-1">
+                                                                <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">{car.year} • {car.transmission}</p>
+                                                                
+                                                                {/* Price Strategy Helper */}
+                                                                {car.priceEquation && (
+                                                                    <div className="mt-2 p-3 bg-indigo-500/5 border border-indigo-500/10 rounded-xl space-y-2">
+                                                                        <div className="flex justify-between items-center text-[9px] font-bold">
+                                                                            <span className="text-muted-foreground uppercase">Libro Negro</span>
+                                                                            <span>${car.priceEquation.marketValue.toLocaleString()}</span>
+                                                                        </div>
+                                                                        <div className="flex justify-between items-center text-[9px] font-bold text-amber-600">
+                                                                            <span className="uppercase">Reparaciones Detectadas</span>
+                                                                            <span>- ${car.priceEquation.deductions.filter((d: any) => d.type === 'mechanical').reduce((acc: number, d: any) => acc + d.amount, 0).toLocaleString()}</span>
+                                                                        </div>
+                                                                        <div className="pt-1 border-t border-indigo-500/10 flex justify-between items-center text-[10px] font-black text-indigo-600">
+                                                                            <span className="uppercase italic tracking-tighter">Sugerencia StarterKar</span>
+                                                                            <span>${(car.priceEquation.marketValue - car.priceEquation.deductions.filter((d: any) => d.type === 'mechanical').reduce((acc: number, d: any) => acc + d.amount, 0)).toLocaleString()}</span>
+                                                                        </div>
+                                                                        <div className="flex justify-between items-center text-[8px] font-bold text-zinc-400">
+                                                                            <span className="uppercase tracking-widest">Comisión StarterKar</span>
+                                                                            <span>3.5% + Inspección</span>
+                                                                        </div>
+                                                                    </div>
+                                                                )}
+                                                            </div>
+                                                        </div>
+                                                        <Button variant="ghost" size="sm" className="rounded-xl font-black text-[10px] uppercase tracking-widest group-hover:bg-primary group-hover:text-white transition-all">
+                                                            Gestionar
+                                                            <ArrowRight className="ml-2 h-4 w-4" />
+                                                        </Button>
+                                                    </div>
+                                                    <div className="mt-4 pt-4 border-t border-dashed border-border flex items-center justify-between text-[10px] font-bold text-muted-foreground">
+                                                        <div className="flex items-center gap-2">
+                                                            <Smartphone className="h-3 w-3 text-indigo-500" />
+                                                            IA Negociando Activa
+                                                        </div>
+                                                        <span className="text-zinc-400 italic">Protegiendo tu inversión</span>
+                                                    </div>
+                                                </Link>
+                                            ))}
+                                        </div>
+                                    ) : (
+                                        /* Vender mi Auto CTA (Only in Selling tab) */
+                                        <div className="py-12 space-y-8 animate-reveal">
+                                            <div className="text-center space-y-2">
+                                                <p className="text-xs font-black uppercase tracking-[0.25em] text-zinc-500">¿QUIERES VENDER TU VEHÍCULO?</p>
+                                                <h2 className="text-2xl font-black tracking-tight uppercase italic">Inicia el proceso certificado</h2>
+                                            </div>
+                                            <div className="max-w-xl mx-auto">
+                                                <Link
+                                                    href="/sell"
+                                                    className="group relative overflow-hidden rounded-[2.5rem] p-10 bg-zinc-950 border border-zinc-800 text-white shadow-2xl hover:border-indigo-500/50 transition-all hover:scale-[1.02] active:scale-[0.99] flex flex-col items-center text-center"
+                                                >
+                                                    <div className="absolute top-0 right-0 p-6 opacity-10 group-hover:opacity-20 group-hover:scale-110 transition-all duration-700">
+                                                        <CarFront className="h-40 w-40" />
+                                                    </div>
+                                                    <div className="relative z-10 space-y-6">
+                                                        <div className="h-16 w-16 bg-indigo-600/30 rounded-[1.5rem] flex items-center justify-center mx-auto shadow-inner">
+                                                            <CarFront className="h-8 w-8 text-indigo-400" />
+                                                        </div>
+                                                        <div>
+                                                            <p className="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-500 mb-2">Proceso StarterKar</p>
+                                                            <h3 className="text-3xl font-black tracking-tight uppercase italic">Publicar mi Auto</h3>
+                                                            <p className="text-zinc-400 text-sm font-medium mt-3 leading-relaxed max-w-sm mx-auto">Consigue el mejor precio, agenda inspección y recibe tu pago seguro en bóveda.</p>
+                                                        </div>
+                                                        <div className="flex items-center justify-center gap-3 text-sm font-black uppercase tracking-widest text-zinc-400 group-hover:text-indigo-400 transition-colors">
+                                                            Publicar ahora <ArrowRight className="h-5 w-5 group-hover:translate-x-2 transition-transform" />
+                                                        </div>
+                                                    </div>
+                                                </Link>
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                        )}
                 </main>
             </div>
         </div>
