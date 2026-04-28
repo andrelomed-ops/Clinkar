@@ -281,13 +281,29 @@ export function PostSaleEcosystem({
                         title="Contrato de Compraventa" 
                         desc="Modelo oficial PROFECO para compraventa de autos usados entre particulares." 
                         icon={<Gavel className="h-5 w-5" />}
-                        onDownload={() => window.open(`/api/documents/contract?id=${transactionId}`, '_blank')}
+                        onDownload={async () => {
+                            const { downloadContractClient } = await import('@/lib/documents/clientGenerator');
+                            downloadContractClient({
+                                transactionId,
+                                carPrice,
+                                carDetails: { make: "Auto", model: "", year: "" },
+                                date: new Date().toLocaleDateString("es-MX")
+                            });
+                        }}
                     />
                     <DownloadCard 
                         title="Carta Responsiva" 
                         desc="Formato legal para el deslinde de responsabilidades al momento de la entrega física." 
                         icon={<ShieldCheck className="h-5 w-5" />}
-                        onDownload={() => window.open(`/api/documents/responsiva?id=${transactionId}`, '_blank')}
+                        onDownload={async () => {
+                            const { downloadResponsivaClient } = await import('@/lib/documents/clientGenerator');
+                            downloadResponsivaClient({
+                                transactionId,
+                                carPrice,
+                                carDetails: { make: "Auto", model: "", year: "" },
+                                date: new Date().toLocaleDateString("es-MX")
+                            });
+                        }}
                     />
                     {role === 'buyer' ? (
                         <DownloadCard 

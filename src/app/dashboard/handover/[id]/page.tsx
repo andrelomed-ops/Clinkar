@@ -321,18 +321,49 @@ export default function HandoverPage() {
                                 <strong>Acuse de Recibo:</strong> Se confirma la entrega física y legal del vehículo. StarterKar certifica que la transferencia bancaria fue validada y el trato se ha cerrado bajo el protocolo de Trato Seguro.
                             </p>
                         </div>
-                        <div className="grid grid-cols-1 gap-3">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                             <Button 
                                 variant="outline" 
-                                className="h-14 font-black text-xs uppercase tracking-widest border-zinc-200" 
-                                onClick={() => window.open(`/api/documents/responsiva?id=${transaction.id}`, '_blank')}
+                                className="h-14 font-black text-[10px] uppercase tracking-tighter border-zinc-200" 
+                                onClick={async () => {
+                                    const { downloadContractClient } = await import('@/lib/documents/clientGenerator');
+                                    downloadContractClient({
+                                        transactionId: transaction.id,
+                                        carPrice: transaction.car_price,
+                                        carDetails: {
+                                            make: transaction.cars?.make || "Auto",
+                                            model: transaction.cars?.model || "",
+                                            year: transaction.cars?.year || ""
+                                        },
+                                        date: new Date().toLocaleDateString("es-MX")
+                                    });
+                                }}
                             >
-                                <FileText className="mr-2 h-4 w-4" /> Descargar Constancia Legal
+                                <FileText className="mr-2 h-4 w-4" /> Contrato PROFECO
                             </Button>
-                            <Button asChild size="lg" className="h-14 font-black text-sm uppercase tracking-widest bg-indigo-600 hover:bg-indigo-500">
-                                <Link href="/dashboard">Ir a mi Garage</Link>
+                            <Button 
+                                variant="outline" 
+                                className="h-14 font-black text-[10px] uppercase tracking-tighter border-zinc-200" 
+                                onClick={async () => {
+                                    const { downloadResponsivaClient } = await import('@/lib/documents/clientGenerator');
+                                    downloadResponsivaClient({
+                                        transactionId: transaction.id,
+                                        carPrice: transaction.car_price,
+                                        carDetails: {
+                                            make: transaction.cars?.make || "Auto",
+                                            model: transaction.cars?.model || "",
+                                            year: transaction.cars?.year || ""
+                                        },
+                                        date: new Date().toLocaleDateString("es-MX")
+                                    });
+                                }}
+                            >
+                                <FileText className="mr-2 h-4 w-4" /> Carta Responsiva
                             </Button>
                         </div>
+                        <Button asChild size="lg" className="w-full h-14 font-black text-sm uppercase tracking-widest bg-indigo-600 hover:bg-indigo-500 rounded-3xl">
+                            <Link href="/dashboard">Ir a mi Garage</Link>
+                        </Button>
                     </div>
                 </div>
             )}
