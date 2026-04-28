@@ -100,17 +100,18 @@ export async function downloadContractClient(data: DocData) {
     doc.text(`FOLIO: ${data.transactionId}   |   FECHA: ${data.date}   |   HORA: ${time}   |   LUGAR: ${city}`, 105, y + 5, { align: "center" });
     y += 12;
 
-    // Section I: Vehiculo
     y = sectionBar(doc, "I.  DATOS DEL VEHICULO", y, m, [79, 70, 229]);
+    const BLANK = "_______________________________________________";
+    const SHORT_BLANK = "_______________________";
     const vr: [string, string][] = [
-        ["Marca / Submarca:", data.carDetails.make],
-        ["Modelo:", data.carDetails.model],
-        ["Año Modelo:", String(data.carDetails.year)],
-        ["Color:", data.carDetails.color || "Ver Factura Original"],
-        ["Kilometraje al momento de entrega:", data.carDetails.km || "Ver Odómetro"],
-        ["No. de Identificacion Vehicular (VIN):", data.carDetails.vin || "Ver Factura Original"],
-        ["Numero de Motor:", data.carDetails.motor || "Ver Factura Original"],
-        ["Placas de Circulacion:", data.carDetails.plates || "Ver Tarjeta de Circulacion"],
+        ["Marca / Submarca:", data.carDetails.make || BLANK],
+        ["Modelo:", data.carDetails.model || BLANK],
+        ["Año Modelo:", data.carDetails.year ? String(data.carDetails.year) : SHORT_BLANK],
+        ["Color:", data.carDetails.color || BLANK],
+        ["Kilometraje al momento de entrega:", data.carDetails.km || BLANK],
+        ["No. de Identificacion Vehicular (VIN):", data.carDetails.vin || BLANK],
+        ["Numero de Motor:", data.carDetails.motor || BLANK],
+        ["Placas de Circulacion:", data.carDetails.plates || SHORT_BLANK],
         ["Registro REPUVE:", "Sin reporte de robo a fecha de firma"],
         ["Precio Pactado:", `$${data.carPrice.toLocaleString("es-MX")} MXN (${amountWords(data.carPrice)} Pesos 00/100 M.N.)`],
         ["Metodo de Pago:", data.paymentMethod || "Transferencia electronica entre particulares (SPEI)"],
