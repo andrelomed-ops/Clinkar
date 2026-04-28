@@ -329,13 +329,18 @@ export default function HandoverPage() {
                                     const { downloadContractClient } = await import('@/lib/documents/clientGenerator');
                                     downloadContractClient({
                                         transactionId: transaction.id,
-                                        carPrice: transaction.car_price,
+                                        carPrice: transaction.car_price || 0,
                                         carDetails: {
                                             make: transaction.cars?.make || "Auto",
                                             model: transaction.cars?.model || "",
-                                            year: transaction.cars?.year || ""
+                                            year: transaction.cars?.year || "",
+                                            vin: transaction.cars?.vin || undefined,
+                                            plates: transaction.cars?.plates || undefined,
+                                            color: transaction.cars?.color || undefined,
+                                            km: transaction.cars?.mileage ? `${transaction.cars.mileage.toLocaleString()} km` : undefined,
                                         },
-                                        date: new Date().toLocaleDateString("es-MX")
+                                        date: new Date().toLocaleDateString("es-MX"),
+                                        time: new Date().toLocaleTimeString("es-MX", { hour: "2-digit", minute: "2-digit" }) + " hrs",
                                     });
                                 }}
                             >
@@ -348,13 +353,18 @@ export default function HandoverPage() {
                                     const { downloadResponsivaClient } = await import('@/lib/documents/clientGenerator');
                                     downloadResponsivaClient({
                                         transactionId: transaction.id,
-                                        carPrice: transaction.car_price,
+                                        carPrice: transaction.car_price || 0,
                                         carDetails: {
                                             make: transaction.cars?.make || "Auto",
                                             model: transaction.cars?.model || "",
-                                            year: transaction.cars?.year || ""
+                                            year: transaction.cars?.year || "",
+                                            vin: transaction.cars?.vin || undefined,
+                                            plates: transaction.cars?.plates || undefined,
+                                            color: transaction.cars?.color || undefined,
+                                            km: transaction.cars?.mileage ? `${transaction.cars.mileage.toLocaleString()} km` : undefined,
                                         },
-                                        date: new Date().toLocaleDateString("es-MX")
+                                        date: new Date().toLocaleDateString("es-MX"),
+                                        time: new Date().toLocaleTimeString("es-MX", { hour: "2-digit", minute: "2-digit" }) + " hrs",
                                     });
                                 }}
                             >
