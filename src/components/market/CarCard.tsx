@@ -64,6 +64,21 @@ export function CarCard({ car, isFavorite = false, onToggleFavorite }: CarCardPr
                                 Flash
                             </div>
                         )}
+                        {car.isBorder && (
+                            <div className="px-2.5 py-1 bg-blue-500 text-white text-[10px] font-bold rounded-lg uppercase tracking-wide flex items-center gap-1 shadow-sm whitespace-nowrap">
+                                🌎 Fronterizo
+                            </div>
+                        )}
+                        {car.investorOnly && (
+                            <div className="px-2.5 py-1 bg-emerald-600 text-white text-[10px] font-bold rounded-lg uppercase tracking-wide flex items-center gap-1 shadow-sm whitespace-nowrap">
+                                💎 Inversionista
+                            </div>
+                        )}
+                        {(car as any).isNew && (
+                            <div className="px-2.5 py-1 bg-indigo-600 text-white text-[10px] font-bold rounded-lg uppercase tracking-wide flex items-center gap-1 shadow-sm whitespace-nowrap">
+                                <Zap className="h-3 w-3 fill-current" /> Nuevo
+                            </div>
+                        )}
                         {priceLabel && (
                             <div className={cn("px-2.5 py-1 text-white text-[10px] font-bold rounded-lg uppercase tracking-wide flex items-center gap-1 shadow-sm whitespace-nowrap", priceLabel.color)}>
                                 {priceLabel.icon}
@@ -71,7 +86,7 @@ export function CarCard({ car, isFavorite = false, onToggleFavorite }: CarCardPr
                             </div>
                         )}
                         {savingsPercent > 15 && (
-                            <div className="px-2.5 py-1 bg-indigo-600 dark:bg-indigo-500 text-white text-[10px] font-bold rounded-lg uppercase tracking-wide flex items-center gap-1 shadow-sm whitespace-nowrap">
+                            <div className="px-2.5 py-1 bg-zinc-800 text-white text-[10px] font-bold rounded-lg uppercase tracking-wide flex items-center gap-1 shadow-sm whitespace-nowrap">
                                 <TrendingDown className="h-3 w-3" />
                                 Oportunidad
                             </div>

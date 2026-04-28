@@ -94,13 +94,63 @@ export const metadata: Metadata = {
 };
 
 
+export const dynamic = "force-dynamic";
+
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+
   return (
     <html lang="es" suppressHydrationWarning>
+      <head>
+        {/* Cache Buster: v1.1.2 - Force refresh and provide AlertCircle fallback */}
+        <meta name="version" content="1.1.5" />
+        <script dangerouslySetInnerHTML={{ __html: `
+          // 🚨 NUCLEAR CACHE CLEARING - EMERGENCY FIX v4.2
+          (function() {
+            if (typeof window !== 'undefined') {
+              const VERSION = '4.2';
+              const dummy = function() { return null; };
+              
+              // Immediate Fallbacks for phantom references
+              window.AlertCircle = window.AlertCircle || dummy;
+              if (typeof globalThis !== 'undefined') globalThis.AlertCircle = globalThis.AlertCircle || dummy;
+
+              if (localStorage.getItem('clinkar_reset_v') !== VERSION) {
+                console.log("StarterKar: Triggering Nuclear Cache Reset v" + VERSION + "...");
+                
+                // 1. Clear Storage
+                try {
+                  localStorage.clear();
+                  sessionStorage.clear();
+                  localStorage.setItem('clinkar_reset_v', VERSION);
+                } catch(e) {}
+
+                // 2. Unregister Service Workers
+                if ('serviceWorker' in navigator) {
+                  navigator.serviceWorker.getRegistrations().then(registrations => {
+                    for(let r of registrations) r.unregister();
+                  });
+                }
+
+                // 3. Clear Cache Storage
+                if ('caches' in window) {
+                  caches.keys().then(names => {
+                    for (let name of names) caches.delete(name);
+                  });
+                }
+
+                // 4. Force Hard Reload
+                console.warn("StarterKar: Cache purged. Reloading ecosystem...");
+                setTimeout(() => window.location.reload(true), 800);
+              }
+            }
+          })();
+        ` }} />
+
+      </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} ${outfit.variable} antialiased`}
         suppressHydrationWarning

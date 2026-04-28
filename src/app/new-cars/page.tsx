@@ -40,6 +40,29 @@ const MOCK_NEW_CARS = [
 ];
 
 export default function NewCarsPage() {
+    const supabase = useMemo(() => createBrowserClient(), []);
+    const [cars, setCars] = useState<any[]>(MOCK_NEW_CARS);
+    const [isLoading, setIsLoading] = useState(true);
+
+    useEffect(() => {
+        async function fetchNewCars() {
+            setIsLoading(true);
+            try {
+                const data = await CarService.getAllCars(supabase);
+                if (data) {
+                    const newCars = data.filter(c => c.isNew);
+                    // Merge with mock data for demonstration if DB is empty, or just use DB
+                    setCars(newCars.length > 0 ? newCars : MOCK_NEW_CARS);
+                }
+            } catch (e) {
+                console.error("Error fetching new cars:", e);
+            } finally {
+                setIsLoading(false);
+            }
+        }
+        fetchNewCars();
+    }, [supabase]);
+
     return (
         <div className="min-h-screen bg-background text-foreground">
             <Navbar variant="market" />
@@ -76,52 +99,63 @@ export default function NewCarsPage() {
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                    {MOCK_NEW_CARS.map((car) => (
-                        <div key={car.id} className="group relative bg-white dark:bg-zinc-900 rounded-[2.5rem] border border-border overflow-hidden hover:shadow-2xl transition-all duration-500 hover:-translate-y-2">
-                            <div className="aspect-[16/10] relative">
-                                <Image src={car.image} alt={car.model} fill className="object-cover transition-transform duration-700 group-hover:scale-105" />
-                                <div className="absolute top-4 left-4 flex gap-2">
-                                    <span className="px-3 py-1 bg-black/50 backdrop-blur-md text-white text-[10px] font-black uppercase tracking-widest rounded-full">{car.tag}</span>
-                                    <span className="px-3 py-1 bg-amber-500 text-black text-[10px] font-black uppercase tracking-widest rounded-full flex items-center gap-1">
-                                        <Zap className="h-3 w-3 fill-current" /> Nuevo
-                                    </span>
+                    {isLoading ? (
+                        Array(3).fill(0).map((_, i) => (
+                            <div key={i} className="h-[500px] bg-muted animate-pulse rounded-[2.5rem]" />
+                        ))
+                    ) : (
+                        cars.map((car) => (
+                            <div key={car.id} className="group relative bg-white dark:bg-zinc-900 rounded-[2.5rem] border border-border overflow-hidden hover:shadow-2xl transition-all duration-500 hover:-translate-y-2">
+                                <div className="aspect-[16/10] relative">
+                                    <Image 
+                                        src={car.images?.[0] || car.image || "https://images.unsplash.com/photo-1560958089-b8a1929cea89?auto=format&fit=crop&q=80&w=800"} 
+                                        alt={car.model} 
+                                        fill 
+                                        className="object-cover transition-transform duration-700 group-hover:scale-105" 
+                                    />
+                                    <div className="absolute top-4 left-4 flex gap-2">
+                                        <span className="px-3 py-1 bg-black/50 backdrop-blur-md text-white text-[10px] font-black uppercase tracking-widest rounded-full">{car.tag || 'Nuevo'}</span>
+                                        <span className="px-3 py-1 bg-amber-500 text-black text-[10px] font-black uppercase tracking-widest rounded-full flex items-center gap-1">
+                                            <Zap className="h-3 w-3 fill-current" /> Nuevo
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <div className="p-8 space-y-4">
+                                    <div className="space-y-1">
+                                        <div className="flex justify-between items-start">
+                                            <h3 className="text-xl font-black uppercase tracking-tighter">{car.make} {car.model}</h3>
+                                            <Star className="h-5 w-5 text-amber-500 fill-amber-500" />
+                                        </div>
+                                        <p className="text-sm font-bold text-muted-foreground tracking-wide uppercase">{car.agency || car.agency_name || 'Agencia Aliada'}</p>
+                                    </div>
+
+                                    <div className="py-4 border-y border-border/50">
+                                        <div className="flex justify-between items-end mb-2">
+                                            <span className="text-xs font-bold text-muted-foreground uppercase tracking-widest">Precio de Lista</span>
+                                            <span className="text-2xl font-black">${(Number(car.price) || 0).toLocaleString()}</span>
+                                        </div>
+                                        <div className="flex items-center gap-2 text-emerald-600 dark:text-emerald-400">
+                                            <ShieldCheck className="h-4 w-4" />
+                                            <span className="text-[10px] font-black uppercase tracking-widest">{car.bonus || car.bonus_text || 'Bono de Trade-in'}</span>
+                                        </div>
+                                    </div>
+
+                                    <div className="bg-indigo-500/5 p-4 rounded-2xl border border-indigo-500/10">
+                                        <p className="text-[10px] font-black text-indigo-600 dark:text-indigo-400 uppercase tracking-widest mb-1">Potencial Trade-in</p>
+                                        <p className="text-xs font-medium text-muted-foreground leading-snug italic">
+                                            &quot;Vende tu usado por hasta <span className="font-bold">20% más</span> que en agencia y abona a este auto.&quot;
+                                        </p>
+                                    </div>
+
+                                    <Link href={`/buy/${car.id}`} className="w-full h-14 bg-secondary hover:bg-primary hover:text-primary-foreground rounded-2xl font-black flex items-center justify-center gap-2 transition-all group/btn">
+                                        Ver Detalles y Trade-in
+                                        <ChevronRight className="h-5 w-5 group-hover/btn:translate-x-1 transition-transform" />
+                                    </Link>
                                 </div>
                             </div>
-
-                            <div className="p-8 space-y-4">
-                                <div className="space-y-1">
-                                    <div className="flex justify-between items-start">
-                                        <h3 className="text-xl font-black uppercase tracking-tighter">{car.make} {car.model}</h3>
-                                        <Star className="h-5 w-5 text-amber-500 fill-amber-500" />
-                                    </div>
-                                    <p className="text-sm font-bold text-muted-foreground tracking-wide uppercase">{car.agency}</p>
-                                </div>
-
-                                <div className="py-4 border-y border-border/50">
-                                    <div className="flex justify-between items-end mb-2">
-                                        <span className="text-xs font-bold text-muted-foreground uppercase tracking-widest">Precio de Lista</span>
-                                        <span className="text-2xl font-black">${car.price.toLocaleString()}</span>
-                                    </div>
-                                    <div className="flex items-center gap-2 text-emerald-600 dark:text-emerald-400">
-                                        <ShieldCheck className="h-4 w-4" />
-                                        <span className="text-[10px] font-black uppercase tracking-widest">{car.bonus}</span>
-                                    </div>
-                                </div>
-
-                                <div className="bg-indigo-500/5 p-4 rounded-2xl border border-indigo-500/10">
-                                    <p className="text-[10px] font-black text-indigo-600 dark:text-indigo-400 uppercase tracking-widest mb-1">Potencial Trade-in</p>
-                                    <p className="text-xs font-medium text-muted-foreground leading-snug italic">
-                                        &quot;Vende tu usado por hasta <span className="font-bold">20% más</span> que en agencia y abona a este auto.&quot;
-                                    </p>
-                                </div>
-
-                                <Link href={`/new-cars/${car.id}`} className="w-full h-14 bg-secondary hover:bg-primary hover:text-primary-foreground rounded-2xl font-black flex items-center justify-center gap-2 transition-all group/btn">
-                                    Ver Detalles y Trade-in
-                                    <ChevronRight className="h-5 w-5 group-hover/btn:translate-x-1 transition-transform" />
-                                </Link>
-                            </div>
-                        </div>
-                    ))}
+                        ))
+                    )}
                 </div>
             </main>
         </div>

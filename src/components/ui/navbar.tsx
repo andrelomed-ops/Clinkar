@@ -146,7 +146,7 @@ export function Navbar({
                                     href="/investor/apply"
                                     className="hidden xl:flex items-center gap-2 px-3 py-1.5 rounded-full bg-amber-500/10 text-amber-600 border border-amber-500/20 text-[10px] font-black uppercase tracking-widest hover:bg-amber-500/20 transition-all whitespace-nowrap"
                                 >
-                                    Suscripción
+                                    Inversionistas
                                 </Link>
                             )}
                             {user && (

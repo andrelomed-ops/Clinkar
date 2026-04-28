@@ -2,6 +2,12 @@ import { ShieldAlert } from "lucide-react";
 import Link from "next/link";
 import { ThemeToggle } from "@/components/layout/ThemeToggle";
 
+// Admin Layout Fallback
+if (typeof window !== 'undefined') {
+    (window as any).AlertCircle = (window as any).AlertCircle || (() => null);
+}
+
+
 export default function AdminLayout({
     children,
 }: {

@@ -179,7 +179,7 @@ export default function InvestorApplyPage() {
             <div className="text-center space-y-2">
               <h1 className="text-4xl font-black tracking-tighter italic uppercase">Información Fiscal</h1>
               <p className="text-muted-foreground font-medium text-sm leading-relaxed">
-                Nuestros proveedores de autos requieren tu Constancia de Situación Fiscal (CSF) para validar tu perfil de inversionista.
+                Nuestros proveedores de autos requieren tu Constancia de Situación Fiscal (CSF) para validar tu perfil de inversionista y acceso a subastas.
               </p>
             </div>
 
@@ -266,7 +266,7 @@ export default function InvestorApplyPage() {
           <div className="max-w-2xl mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-4">
             <div className="text-center space-y-2">
               <h1 className="text-4xl font-black tracking-tighter italic uppercase">Método de Pago</h1>
-              <p className="text-muted-foreground font-medium text-sm">Selecciona cómo deseas realizar tu pago de membresía.</p>
+              <p className="text-muted-foreground font-medium text-sm">Selecciona cómo deseas realizar tu pago de acceso inversionista.</p>
             </div>
 
             <div className="grid grid-cols-2 gap-4">
@@ -352,7 +352,7 @@ export default function InvestorApplyPage() {
             <div className="space-y-4">
               <h1 className="text-5xl font-black tracking-tighter italic">¡SOLICITUD RECIBIDA!</h1>
               <p className="text-muted-foreground font-medium leading-relaxed">
-                Estamos procesando tu información fiscal y el pago de membresía. Te notificaremos vía correo electrónico en cuanto tu acceso de inversionista esté activo.
+                Estamos procesando tu información fiscal y el pago de acceso inversionista. Te notificaremos vía correo electrónico en cuanto tu acceso a subastas esté activo.
               </p>
             </div>
             <Button asChild size="lg" className="h-14 px-10 rounded-2xl bg-zinc-950 text-white font-black shadow-xl active:scale-95 transition-all">

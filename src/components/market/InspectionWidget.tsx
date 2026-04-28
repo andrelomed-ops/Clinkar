@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { FileCheck, AlertCircle, CheckCircle2, XCircle } from "lucide-react";
+import { FileCheck, CheckCircle2, XCircle } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import { StarterKarSeal } from "./StarterKarSeal";
 

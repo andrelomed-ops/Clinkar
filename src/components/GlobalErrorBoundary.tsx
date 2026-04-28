@@ -1,7 +1,7 @@
 "use client";
 
 import React, { Component, ErrorInfo, ReactNode } from "react";
-import { AlertCircle, RefreshCcw, Home, ShieldAlert } from "lucide-react";
+import { RefreshCcw, Home, ShieldAlert } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 interface Props {

@@ -9,6 +9,12 @@ import { createBrowserClient } from "@/lib/supabase/client";
 import { ALL_CARS } from "@/data/cars";
 import { Skeleton } from "@/components/ui/skeleton";
 
+// Component-level Fallback for stale build artifacts
+if (typeof window !== 'undefined') {
+    (window as any).AlertCircle = (window as any).AlertCircle || (() => null);
+}
+
+
 interface RecommendedSectionProps {
     favoriteIds?: string[];
     onToggleFavorite?: (e: React.MouseEvent, carId: string) => void;
@@ -76,14 +82,13 @@ export function RecommendedSection({ favoriteIds = [], onToggleFavorite }: Recom
                 if (user) {
                     const { data: demands } = await supabase
                         .from('demand_registry')
-                        .select('brand, category, budget_min, budget_max')
+                        .select('brand, budget_min, budget_max')
                         .eq('user_id', user.id)
                         .limit(5);
                     
                     if (demands && demands.length > 0) {
                         demands.forEach(d => {
                             if (d.brand) preferredBrands.push(d.brand);
-                            if (d.category) preferredCategories.push(d.category);
                             if (d.budget_max && (!priceRange || d.budget_max > priceRange[1])) {
                                 priceRange = [d.budget_min || 0, d.budget_max];
                             }

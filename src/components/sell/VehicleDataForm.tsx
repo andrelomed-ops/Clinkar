@@ -16,14 +16,19 @@ export interface VehicleFormData {
     color: string;
     transmission: string;
     fuel: string;
+    // Marketplace Categories (Admin only)
+    marketplace_category?: string;
+    agency_name?: string;
+    bonus_text?: string;
 }
 
 interface Props {
     data: VehicleFormData;
     onChange: (data: VehicleFormData) => void;
+    isAdminMode?: boolean;
 }
 
-export function VehicleDataForm({ data, onChange }: Props) {
+export function VehicleDataForm({ data, onChange, isAdminMode = false }: Props) {
     const handleChange = (field: keyof VehicleFormData, value: string) => {
         onChange({ ...data, [field]: value });
     };
@@ -133,6 +138,56 @@ export function VehicleDataForm({ data, onChange }: Props) {
                     </div>
                 </div>
             </div>
+
+            {isAdminMode && (
+                <div className="bg-amber-500/5 dark:bg-amber-500/10 p-8 rounded-[2rem] border border-amber-500/20 space-y-6 animate-in slide-in-from-top-4 duration-700">
+                    <div className="flex items-center gap-3 mb-2">
+                        <div className="h-8 w-8 rounded-full bg-amber-500 flex items-center justify-center text-white font-black italic shadow-lg shadow-amber-500/20">A</div>
+                        <h3 className="text-lg font-black uppercase tracking-tight text-amber-900 dark:text-amber-200">Clasificación de Mercado (Admin)</h3>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div className="space-y-2">
+                            <Label className="font-bold text-[10px] uppercase tracking-widest text-amber-700 dark:text-amber-400">Categoría en Marketplace</Label>
+                            <select 
+                                value={data.marketplace_category || 'REGULAR'}
+                                onChange={(e) => handleChange('marketplace_category', e.target.value)}
+                                className="w-full h-12 px-4 bg-white dark:bg-zinc-800 border border-amber-200 dark:border-amber-800 rounded-xl text-sm font-bold focus:ring-2 focus:ring-amber-500/20 outline-none"
+                            >
+                                <option value="REGULAR">Venta Estándar (Usados)</option>
+                                <option value="CERTIFIED">StarterKar Certificado</option>
+                                <option value="FLASH_SALE">StarterKar Venta Flash 🔥</option>
+                                <option value="BORDER">Autos Fronterizos 🌎</option>
+                                <option value="INVESTOR">Solo Inversionistas 💎</option>
+                                <option value="NEW_CAR">Auto Nuevo (Alianza Agencia) ⚡</option>
+                            </select>
+                        </div>
+
+                        {data.marketplace_category === 'NEW_CAR' && (
+                            <>
+                                <div className="space-y-2">
+                                    <Label className="font-bold text-[10px] uppercase tracking-widest text-amber-700 dark:text-amber-400">Agencia de Alianza</Label>
+                                    <Input 
+                                        value={data.agency_name || ''}
+                                        onChange={(e) => handleChange('agency_name', e.target.value)}
+                                        placeholder="Ej. BMW Autowelt"
+                                        className="h-12 rounded-xl border-amber-200 dark:border-amber-800 bg-white dark:bg-zinc-800 focus:ring-2 focus:ring-amber-500/20"
+                                    />
+                                </div>
+                                <div className="space-y-2 md:col-span-2">
+                                    <Label className="font-bold text-[10px] uppercase tracking-widest text-amber-700 dark:text-amber-400">Beneficio Exclusivo (Tag)</Label>
+                                    <Input 
+                                        value={data.bonus_text || ''}
+                                        onChange={(e) => handleChange('bonus_text', e.target.value)}
+                                        placeholder="Ej. Seguro 1er año gratis / Mantenimiento incluido"
+                                        className="h-12 rounded-xl border-amber-200 dark:border-amber-800 bg-white dark:bg-zinc-800 focus:ring-2 focus:ring-amber-500/20"
+                                    />
+                                </div>
+                            </>
+                        )}
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

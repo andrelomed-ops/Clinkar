@@ -162,7 +162,16 @@ export default function BuyPage() {
             if (filters.makes && filters.makes.length > 0 && !filters.makes.includes(car.make)) return false;
             if (filters.minPrice && car.price < Number(filters.minPrice)) return false;
             if (filters.maxPrice && car.price > Number(filters.maxPrice)) return false;
+            const isUserInvestor = userProfile?.role?.toLowerCase() === 'investor';
+
             if (filters.certifiedOnly && !car.has_starterkar_seal) return false;
+            if (filters.flashSale && !car.flashSale) return false;
+            if (filters.isBorder && !car.isBorder) return false;
+            if (filters.investorOnly && !car.investorOnly) return false;
+            if (filters.newCars && !car.isNew) return false;
+
+            // RESTRICTION: Investor-only cars are ONLY visible to users with the 'investor' role
+            if (car.investorOnly && !isUserInvestor) return false;
 
             return true;
         }).sort((a, b) => {

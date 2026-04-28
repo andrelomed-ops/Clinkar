@@ -263,6 +263,38 @@ export function MarketFilters({ filters, setFilters }: MarketFiltersProps) {
                 </label>
             </div>
 
+            {/* NEW CARS TOGGLE */}
+            <div className="bg-gradient-to-r from-indigo-50 to-blue-50 dark:from-indigo-900/10 dark:to-blue-900/10 p-4 rounded-2xl border border-indigo-100 dark:border-indigo-500/20 mb-6 relative overflow-hidden group/card shadow-sm hover:shadow-md transition-all duration-300">
+                <div className="absolute top-0 right-0 p-4 opacity-5 pointer-events-none">
+                    <Zap className="h-20 w-20 text-indigo-900 dark:text-indigo-400" />
+                </div>
+
+                <label className="flex items-center justify-between cursor-pointer relative z-10">
+                    <div className="flex items-center gap-3">
+                        <div className="h-10 w-10 rounded-full bg-gradient-to-br from-indigo-100 to-blue-200 dark:from-indigo-500 dark:to-blue-500 flex items-center justify-center text-xl shadow-inner group-hover/card:scale-110 transition-transform duration-300 ring-2 ring-white dark:ring-zinc-900">⚡</div>
+                        <div>
+                            <span className="font-black text-indigo-950 dark:text-indigo-50 block text-sm tracking-tight">Autos Nuevos (Agencia)</span>
+                            <span className="text-[10px] text-indigo-700 dark:text-indigo-400 font-bold uppercase tracking-wide">Alianzas Estratégicas</span>
+                        </div>
+                    </div>
+                    <div className={cn(
+                        "w-11 h-6 rounded-full p-1 transition-colors duration-300 shadow-inner",
+                        filters.newCars ? "bg-indigo-600" : "bg-slate-200 dark:bg-zinc-800"
+                    )}>
+                        <div className={cn(
+                            "w-4 h-4 bg-white rounded-full shadow-md transition-transform duration-300",
+                            filters.newCars && "translate-x-5"
+                        )} />
+                    </div>
+                    <input
+                        type="checkbox"
+                        className="hidden"
+                        checked={filters.newCars || false}
+                        onChange={(e) => setFilters({ ...filters, newCars: e.target.checked })}
+                    />
+                </label>
+            </div>
+
             {/* CATEGORY FILTER (The 4 Pillars of StarterKar) */}
             <div className="border-b border-border/50 pb-6">
                 <button onClick={() => toggleSection('category')} className="flex items-center justify-between w-full mb-4">

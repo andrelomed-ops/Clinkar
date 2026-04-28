@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { 
-    Search, Filter, MoreHorizontal, CheckCircle2, AlertCircle, Clock, 
+    Search, Filter, MoreHorizontal, CheckCircle2, Clock, 
     Ban, ShieldAlert, ExternalLink, Users, DollarSign, Loader2, 
     CarFront, LayoutDashboard, Zap, FileText, CreditCard, 
     ArrowUpRight, AlertTriangle, ShieldCheck, Download, 
@@ -10,14 +10,26 @@ import {
 } from "lucide-react";
 import { getLegalTransactionsAction, overrideTransactionStatusAction, validateCEPAction, registerCommissionPaymentAction } from "@/app/actions/transaction";
 import { createCarAction, getAdminInventoryAction, deleteCarAction, updateCarAction } from "@/app/actions/cars";
-import { approveInvestorApplicationAction, rejectInvestorApplicationAction, getInvestorApplicationsAction, getPendingReferralPayouts, processReferralPayout } from "@/app/actions/admin";
+import { 
+    approveInvestorApplicationAction, rejectInvestorApplicationAction, 
+    getInvestorApplicationsAction, getPendingReferralPayouts, 
+    processReferralPayout, updateUserRole, searchUsersAction 
+} from "@/app/actions/admin";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { createBrowserClient } from "@/lib/supabase/client";
 import { CarFormModal } from "@/components/admin/CarFormModal";
 
 
-type AdminView = 'CONTROL' | 'INVENTORY' | 'INVESTORS' | 'BILLING' | 'UPSELLS' | 'REFERRALS' | 'DEMANDS';
+
+// Admin Dashboard v4.2.1 - Emergency Stabilization
+if (typeof window !== 'undefined') {
+    (window as any).AlertCircle = (window as any).AlertCircle || (() => null);
+    console.log("StarterKar Ops: Dashboard v4.2.1 Loaded");
+}
+
+type AdminView = 'CONTROL' | 'INVENTORY' | 'INVESTORS' | 'USERS' | 'BILLING' | 'UPSELLS' | 'REFERRALS' | 'DEMANDS';
+
 
 export default function AdminDashboard() {
     const supabase = createBrowserClient();
@@ -53,8 +65,36 @@ export default function AdminDashboard() {
 
     const [referralPayouts, setReferralPayouts] = useState<any[]>([]);
     const [demandRequests, setDemandRequests] = useState<any[]>([]);
+    const [users, setUsers] = useState<any[]>([]);
+    const [userSearchQuery, setUserSearchQuery] = useState("");
     const [debugError, setDebugError] = useState<string | null>(null);
     const [payoutLoading, setPayoutLoading] = useState<string | null>(null);
+
+    const handleSearchUsers = async () => {
+        if (!userSearchQuery) return;
+        setLoading(true);
+        try {
+            const results = await searchUsersAction(userSearchQuery);
+            setUsers(results);
+        } catch (err: any) {
+            toast.error("Error al buscar usuarios");
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleUpdateUserRole = async (userId: string, newRole: any) => {
+        setActionLoading(userId);
+        try {
+            await updateUserRole(userId, newRole);
+            toast.success(`Rol actualizado a ${newRole}`);
+            await handleSearchUsers();
+        } catch (err: any) {
+            toast.error(err.message || "Error al actualizar rol");
+        } finally {
+            setActionLoading(null);
+        }
+    };
 
     async function loadData() {
         setLoading(true);
@@ -287,6 +327,12 @@ export default function AdminDashboard() {
                         active={view === 'INVESTORS'} 
                         onClick={() => setView('INVESTORS')} 
                         badge={investorApps.filter(a => a.status === 'pending').length.toString()}
+                    />
+                    <SidebarItem 
+                        icon={Users} 
+                        label="Gestión Usuarios" 
+                        active={view === 'USERS'} 
+                        onClick={() => setView('USERS')} 
                     />
                     <SidebarItem 
                         icon={DollarSign} 
@@ -693,6 +739,100 @@ export default function AdminDashboard() {
                                 <div className="py-32 text-center border-2 border-dashed border-zinc-800 rounded-[3rem] bg-zinc-900/20">
                                     <UserCheck className="h-12 w-12 text-zinc-800 mx-auto mb-4 opacity-50" />
                                     <p className="text-zinc-600 font-black uppercase tracking-[0.4em] italic">No hay solicitudes de inversionistas</p>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                )}
+
+                {view === 'USERS' && (
+                    <div className="space-y-12 animate-in fade-in slide-in-from-bottom-6 duration-700">
+                        <div className="bg-zinc-900/50 backdrop-blur-3xl border border-zinc-800 p-10 rounded-[3rem] shadow-2xl space-y-8">
+                            <div className="flex items-center gap-8">
+                                <div className="h-20 w-20 bg-blue-500/10 rounded-3xl flex items-center justify-center border border-blue-500/20">
+                                    <Users className="h-10 w-10 text-blue-500" />
+                                </div>
+                                <div>
+                                    <h3 className="text-2xl font-black uppercase italic tracking-tighter text-white">Directorio Maestro de Usuarios</h3>
+                                    <p className="text-sm text-zinc-500 font-medium mt-1">Búsqueda manual y asignación de rangos (Inversionista, Inspector, Admin).</p>
+                                </div>
+                            </div>
+
+                            <div className="flex gap-4">
+                                <div className="relative flex-1">
+                                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-zinc-500" />
+                                    <input 
+                                        type="text"
+                                        value={userSearchQuery}
+                                        onChange={(e) => setUserSearchQuery(e.target.value)}
+                                        onKeyDown={(e) => e.key === 'Enter' && handleSearchUsers()}
+                                        placeholder="Buscar por Nombre o ID de Usuario..."
+                                        className="w-full h-16 bg-zinc-950 border border-zinc-800 rounded-2xl pl-12 pr-4 text-white font-bold outline-none focus:ring-2 focus:ring-indigo-500/50"
+                                    />
+                                </div>
+                                <button 
+                                    onClick={handleSearchUsers}
+                                    className="h-16 px-10 bg-white text-black font-black rounded-2xl hover:bg-zinc-200 transition-all uppercase tracking-widest text-sm"
+                                >
+                                    BUSCAR
+                                </button>
+                            </div>
+                        </div>
+
+                        <div className="grid gap-6">
+                            {users.map(u => (
+                                <div key={u.id} className="group bg-zinc-900/40 border border-zinc-800/50 p-8 rounded-[2.5rem] flex items-center justify-between hover:border-indigo-500/30 transition-all">
+                                    <div className="flex items-center gap-8">
+                                        <div className="h-16 w-16 bg-zinc-950 rounded-2xl flex items-center justify-center border border-zinc-800 overflow-hidden">
+                                            {u.avatar_url ? (
+                                                <img src={u.avatar_url} alt={u.full_name} className="w-full h-full object-cover" />
+                                            ) : (
+                                                <Users className="h-8 w-8 text-zinc-800" />
+                                            )}
+                                        </div>
+                                        <div>
+                                            <h4 className="text-xl font-black text-white italic tracking-tighter uppercase">{u.full_name || "Usuario Sin Nombre"}</h4>
+                                            <p className="text-[10px] font-black text-zinc-500 uppercase tracking-widest mt-1">ID: <span className="text-zinc-400">{u.id}</span></p>
+                                        </div>
+                                    </div>
+
+                                    <div className="flex items-center gap-6">
+                                        <div className="text-right">
+                                            <p className="text-[9px] font-black text-zinc-600 uppercase tracking-widest mb-1">Rango Actual</p>
+                                            <span className={cn(
+                                                "px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-widest border",
+                                                u.role === 'investor' ? "bg-emerald-500/10 text-emerald-500 border-emerald-500/20" : 
+                                                u.role === 'admin' ? "bg-indigo-500/10 text-indigo-500 border-indigo-500/20" : 
+                                                "bg-zinc-800 text-zinc-500 border-zinc-700"
+                                            )}>
+                                                {u.role || 'buyer'}
+                                            </span>
+                                        </div>
+                                        
+                                        <div className="h-10 w-[1px] bg-zinc-800" />
+
+                                        <div className="flex gap-2">
+                                            <button 
+                                                onClick={() => handleUpdateUserRole(u.id, 'investor')}
+                                                disabled={actionLoading === u.id || u.role === 'investor'}
+                                                className="h-12 px-6 bg-emerald-600 text-white text-[10px] font-black rounded-xl hover:bg-emerald-500 transition-all uppercase tracking-widest disabled:opacity-30"
+                                            >
+                                                PROMOVER A INVERSIONISTA
+                                            </button>
+                                            <button 
+                                                onClick={() => handleUpdateUserRole(u.id, 'buyer')}
+                                                disabled={actionLoading === u.id || u.role === 'buyer'}
+                                                className="h-12 px-6 bg-zinc-800 text-zinc-400 text-[10px] font-black rounded-xl hover:bg-zinc-700 transition-all uppercase tracking-widest disabled:opacity-30"
+                                            >
+                                                REVERTIR A COMPRADOR
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
+                            {userSearchQuery && users.length === 0 && !loading && (
+                                <div className="py-20 text-center border-2 border-dashed border-zinc-800 rounded-[3rem] bg-zinc-950/20">
+                                    <p className="text-zinc-600 font-black uppercase tracking-[0.4em] italic text-xs">No se encontraron usuarios</p>
                                 </div>
                             )}
                         </div>

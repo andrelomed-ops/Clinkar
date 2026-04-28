@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
-import { Lock, AlertCircle, Info, Calculator, CheckCircle2, Shield, Clock, BadgeAlert, Zap } from "lucide-react";
+import { Lock, AlertTriangle, Info, Calculator, CheckCircle2, Shield, Clock, BadgeAlert, Zap } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { SellerReliabilityBadge } from "../dashboard/SellerReliabilityBadge";
 import { BUSINESS_RULES } from "@/lib/fiscal-utils";
@@ -62,7 +62,7 @@ export function OfferModal({ id, carPrice, floorPrice, carName, hasSeal, onSucce
                         </>
                     ) : (
                         <>
-                            <AlertCircle className="h-5 w-5" />
+                            <AlertTriangle className="h-5 w-5" />
                             CERTIFICACIÓN EN PROCESO
                         </>
                     )}
@@ -134,7 +134,7 @@ export function OfferModal({ id, carPrice, floorPrice, carName, hasSeal, onSucce
                                 </div>
                             ) : (
                                 <div className="flex items-center gap-2 text-red-500 bg-red-500/10 p-2 rounded-xl text-xs font-bold border border-red-500/20">
-                                    <AlertCircle className="h-4 w-4" /> Oferta Muy Baja: El vendedor no la aceptará.
+                                    <AlertTriangle className="h-4 w-4" /> Oferta Muy Baja: El vendedor no la aceptará.
                                 </div>
                             )}
                         </div>
@@ -223,7 +223,7 @@ export function OfferModal({ id, carPrice, floorPrice, carName, hasSeal, onSucce
                     <div className="bg-white dark:bg-zinc-950 border border-red-500/30 w-full max-w-sm rounded-[2rem] p-8 text-center space-y-6 shadow-2xl shadow-red-500/20 animate-in zoom-in-95 duration-500 relative overflow-hidden">
                         <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-red-400 via-red-500 to-red-600" />
                         <div className="h-20 w-20 bg-red-500/10 text-red-500 mx-auto rounded-full flex items-center justify-center border-4 border-red-500/20">
-                            <AlertCircle className="h-10 w-10" />
+                            <AlertTriangle className="h-10 w-10" />
                         </div>
                         <div className="space-y-2">
                             <h3 className="text-2xl font-black italic tracking-tighter uppercase text-red-500">Oferta Rechazada</h3>

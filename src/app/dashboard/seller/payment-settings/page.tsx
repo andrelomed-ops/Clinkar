@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { createBrowserClient } from "@/lib/supabase/client";
-import { Landmark, ShieldCheck, CreditCard, Lock, CheckCircle2, AlertCircle } from "lucide-react";
+import { Landmark, ShieldCheck, CreditCard, Lock, CheckCircle2, AlertTriangle } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { NotificationService } from "@/services/NotificationService";
 
@@ -101,7 +101,7 @@ export default function PaymentSettingsPage() {
                             
                             {error && (
                                 <div className="p-4 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 rounded-xl flex items-start gap-3 border border-red-200 dark:border-red-800">
-                                    <AlertCircle className="h-5 w-5 shrink-0 mt-0.5" />
+                                    <AlertTriangle className="h-5 w-5 shrink-0 mt-0.5" />
                                     <p className="text-sm font-medium">{error}</p>
                                 </div>
                             )}

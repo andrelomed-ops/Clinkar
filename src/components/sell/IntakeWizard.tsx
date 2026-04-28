@@ -82,7 +82,10 @@ export function IntakeWizard({ isAdminMode = false }: Props) {
                 model: vehicleData.model,
                 year: vehicleData.year,
                 km: vehicleData.km,
-                admin: isAdminMode ? 'true' : 'false'
+                admin: isAdminMode ? 'true' : 'false',
+                mkt_cat: vehicleData.marketplace_category || 'REGULAR',
+                agency: vehicleData.agency_name || '',
+                bonus: vehicleData.bonus_text || ''
             });
             
             toast.success("Información guardada. Vamos a agendar tu revisión.");
@@ -134,6 +137,7 @@ export function IntakeWizard({ isAdminMode = false }: Props) {
                     <VehicleDataForm 
                         data={vehicleData} 
                         onChange={setVehicleData} 
+                        isAdminMode={isAdminMode}
                     />
                 )}
                 {step === 3 && category && (

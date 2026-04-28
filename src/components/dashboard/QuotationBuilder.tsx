@@ -4,7 +4,6 @@ import React, { useState } from 'react';
 import {
     Plus,
     Trash2,
-    AlertCircle,
     ChevronRight,
     DollarSign,
     Hammer

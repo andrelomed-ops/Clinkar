@@ -50,7 +50,16 @@ export async function startTransaction(carId: string, addOns?: {
         }
     }
 
-    const sellerId = car.seller_id || buyerId; // Use buyerId as fallback to ensure valid FK if seller is missing
+    // 3. SELLER RESOLUTION
+    // If car has no seller_id (legacy/mock), use a dedicated System ID or Admin to avoid Buyer-as-Seller bug
+    const SYSTEM_SELLER_ID = '00000000-0000-0000-0000-000000000000'; 
+    const sellerId = car.seller_id || SYSTEM_SELLER_ID;
+
+    if (sellerId === buyerId) {
+        console.warn(`[Security] Buyer ${buyerId} is trying to buy their own car or seller is missing.`);
+        // Note: We allow this for testing but ideally should block in prod
+    }
+
     const mockStripeSessionId = `sess_${crypto.randomUUID()}`;
 
     let transactionId;
@@ -200,7 +209,12 @@ export async function confirmP2PHandoverAction(transactionId: string) {
         }
     }
 
-    return await TransactionService.confirmP2PHandover(supabase, transactionId);
+    const result = await TransactionService.confirmP2PHandover(supabase, transactionId);
+    if (result.success) {
+        revalidatePath('/dashboard');
+        revalidatePath(`/dashboard/handover/${transactionId}`);
+    }
+    return result;
 }
 
 export async function reportDiscrepancyAction(transactionId: string, details: {

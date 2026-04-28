@@ -76,6 +76,13 @@ export class CarService {
             images: Array.isArray((d as any).images) ? (d as any).images : [],
             condition: (d as any).condition || 'Seminuevo',
             category: (d as any).category || 'Car',
+            has_starterkar_seal: d.has_clinkar_seal || (d.market_data as any)?.certified || false,
+            flashSale: (d.market_data as any)?.flashSale || false,
+            isBorder: (d.market_data as any)?.isBorder || false,
+            investorOnly: (d.market_data as any)?.investorOnly || false,
+            isNew: (d.market_data as any)?.isNew || false,
+            agency: (d.market_data as any)?.agency || '',
+            bonus: (d.market_data as any)?.bonus || '',
         }));
     }
 

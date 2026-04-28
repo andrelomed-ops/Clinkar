@@ -47,6 +47,38 @@ export async function updateUserRole(targetUserId: string, newRole: 'admin' | 'i
     return { success: true };
 }
 
+export async function searchUsersAction(query: string) {
+    const supabase = await createClient();
+
+    // 1. Verify Requestor is Admin
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) throw new Error("Unauthorized");
+
+    const { data: profile } = await supabase
+        .from("profiles")
+        .select("role")
+        .eq("id", user.id)
+        .single();
+
+    const userEmail = user.email?.toLowerCase();
+    if (profile?.role !== 'admin' && userEmail !== 'starterkar@hotmail.com') {
+        throw new Error("Forbidden");
+    }
+
+    // 2. Search in profiles
+    const { data, error } = await supabase
+        .from("profiles")
+        .select("*")
+        .or(`full_name.ilike.%${query}%,id.eq.${query}`)
+        .limit(20);
+
+    if (error) {
+        console.error("Search Users Error:", error);
+        return [];
+    }
+    return data || [];
+}
+
 export async function processReferralPayout(referralId: string, amount: number, description: string) {
     const supabase = await createClient();
 

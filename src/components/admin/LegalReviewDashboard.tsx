@@ -3,7 +3,7 @@
 import { useState } from "react";
 import {
     ShieldCheck,
-    AlertCircle,
+    AlertTriangle,
     CheckCircle2,
     Clock,
     FileText,
@@ -260,7 +260,7 @@ function DocStatusBadge({ status }: { status: Document["status"] }) {
     return (
         <span className={cn("text-[10px] font-black uppercase", styles[status])}>
             {status === 'APPROVED' && <CheckCircle2 className="h-3 w-3" />}
-            {status === 'REJECTED' && <AlertCircle className="h-3 w-3" />}
+            {status === 'REJECTED' && <AlertTriangle className="h-3 w-3" />}
             {status}
         </span>
     );

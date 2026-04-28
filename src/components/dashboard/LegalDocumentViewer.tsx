@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { FileText, Download, CheckCircle2, XCircle, Eye, Loader2, ShieldCheck, AlertCircle } from "lucide-react";
+import { FileText, Download, CheckCircle2, XCircle, Eye, Loader2, ShieldCheck, AlertTriangle } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 
@@ -179,7 +179,7 @@ export function LegalDocumentViewer({ documents, onAction }: LegalDocumentViewer
                                             {analysisResult.isValid ? (
                                                 <CheckCircle2 className="h-6 w-6 text-green-600 dark:text-green-400" />
                                             ) : (
-                                                <AlertCircle className="h-6 w-6 text-red-600 dark:text-red-400" />
+                                                <AlertTriangle className="h-6 w-6 text-red-600 dark:text-red-400" />
                                             )}
                                             <h4 className={cn(
                                                 "font-black text-lg uppercase",

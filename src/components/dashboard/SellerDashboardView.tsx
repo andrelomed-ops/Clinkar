@@ -1,6 +1,6 @@
 "use client";
 
-import { CheckCircle2, Clock, Wallet, FileCheck, Loader2, Settings2, Unlock, AlertCircle, Gavel, ShieldCheck } from "lucide-react";
+import { CheckCircle2, Clock, Wallet, FileCheck, Loader2, Settings2, Unlock, Gavel, ShieldCheck } from "lucide-react";
 import LEGAL_TEXTS from "@/data/legal_texts.json";
 import { useEffect, useState } from "react";
 import { getTicketAction } from "@/app/actions_demo";

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import { Ban, Loader2, Upload, X, Check, Save, Zap, Settings, ShieldCheck, Camera as CameraIcon, Layers, ChevronDown, Search } from "lucide-react";
+import { Ban, Loader2, Upload, X, Check, Save, Zap, Settings, ShieldCheck, Camera as CameraIcon, Layers, ChevronDown, Search, AlertTriangle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
@@ -315,7 +315,7 @@ export function CarFormModal({ isOpen, onClose, onSubmit, initialData, isLoading
                             <FormGroup label="Piso de Venta (Mínimo Aceptable MXN)">
                                 <div className="relative">
                                     <input type="number" value={formData.minimum_price || formData.price} className="form-input text-red-500 font-bold pr-10" onChange={e => setFormData({...formData, minimum_price: parseFloat(e.target.value)})} />
-                                    <AlertCircle className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-red-500" />
+                                    <AlertTriangle className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-red-500" />
                                 </div>
                             </FormGroup>
                             <FormGroup label={

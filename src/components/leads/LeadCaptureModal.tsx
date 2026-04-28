@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Shield, Send, CheckCircle2, AlertCircle, Info, CarFront, Car } from "lucide-react";
+import { Shield, Send, CheckCircle2, Info, CarFront, Car } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { ReferralCertificate } from "./ReferralCertificate";
 

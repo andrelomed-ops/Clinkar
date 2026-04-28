@@ -37,6 +37,9 @@ export default function SellOnboardingPage() {
     const model = searchParams.get('model') || "";
     const km = searchParams.get('km') || "0";
     const isAdmin = searchParams.get('admin') === 'true';
+    const mktCat = searchParams.get('mkt_cat') || 'REGULAR';
+    const agencyName = searchParams.get('agency') || '';
+    const bonusText = searchParams.get('bonus') || '';
     
     const categoryInfo = VEHICLE_CATEGORIES.find(c => c.id === categoryId);
     
@@ -99,14 +102,24 @@ export default function SellOnboardingPage() {
 
             // 1. Create the car in Draft/Pending status
             const { data: carData, error: carError } = await supabase.from('cars').insert({
-                seller_id: user?.id || '00000000-0000-0000-0000-000000000000', // Mock UUID if admin without user
+                seller_id: user?.id || '00000000-0000-0000-0000-000000000000',
                 make,
                 model,
                 year: parseInt(year) || new Date().getFullYear(),
-                price: 0, // To be defined after inspection/agreement
+                price: 0,
                 status: 'pending_inspection',
                 mileage: parseInt(km),
-                description: `Registro vía Wizard. Categoría: ${categoryInfo?.title}. Ubicación: ${finalAddress}`
+                has_clinkar_seal: mktCat === 'CERTIFIED',
+                market_data: {
+                    flashSale: mktCat === 'FLASH_SALE',
+                    isBorder: mktCat === 'BORDER',
+                    investorOnly: mktCat === 'INVESTOR',
+                    isNew: mktCat === 'NEW_CAR',
+                    agency: agencyName,
+                    bonus: bonusText,
+                    original_category: categoryId
+                },
+                description: `Registro vía Wizard. Mercado: ${mktCat}. Ubicación: ${finalAddress}`
             }).select('id').single();
 
             if (carError || !carData) throw new Error("Error creando pre-registro del auto.");

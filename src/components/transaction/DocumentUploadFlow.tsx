@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { CameraUpload } from "../ui/CameraUpload";
-import { FileText, ShieldCheck, AlertCircle } from "lucide-react";
+import { FileText, ShieldCheck, AlertTriangle } from "lucide-react";
 import { Button } from "../ui/button";
 
 interface DocumentUploadFlowProps {
@@ -53,7 +53,7 @@ export function DocumentUploadFlow({ transactionId, onComplete }: DocumentUpload
             <div className="flex flex-col items-center gap-4 pt-4 border-t border-border">
                 {!isComplete ? (
                     <div className="flex items-center gap-2 text-amber-500 bg-amber-500/10 px-4 py-2 rounded-full">
-                        <AlertCircle className="h-4 w-4" />
+                        <AlertTriangle className="h-4 w-4" />
                         <span className="text-xs font-bold uppercase tracking-wider">Documentos pendientes</span>
                     </div>
                 ) : (

@@ -1,6 +1,6 @@
 "use client";
 
-import { Car, ChevronRight, Clock, Shield, AlertCircle, CheckCircle2 } from "lucide-react";
+import { Car, ChevronRight, Clock, Shield, CheckCircle2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface Transaction {

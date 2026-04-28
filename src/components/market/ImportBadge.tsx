@@ -1,6 +1,6 @@
 "use client";
 
-import { Globe, ShieldCheck, AlertCircle } from "lucide-react";
+import { Globe, ShieldCheck, AlertTriangle } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface ImportBadgeProps {
@@ -37,7 +37,7 @@ export function ImportBadge({ type, className }: ImportBadgeProps) {
                 </p>
             </div>
 
-            <AlertCircle className="h-4 w-4 text-zinc-300 cursor-help" />
+            <AlertTriangle className="h-4 w-4 text-zinc-300 cursor-help" />
         </div>
     );
 }

@@ -3,7 +3,7 @@
 import { downloadContractClient, downloadResponsivaClient } from "@/lib/documents/clientGenerator";
 
 import { useState, useEffect } from "react";
-import { Search, Filter, MoreHorizontal, CheckCircle2, AlertCircle, Clock, Ban, ShieldAlert, ExternalLink, Users, DollarSign, Loader2 } from "lucide-react";
+import { Search, Filter, MoreHorizontal, CheckCircle2, AlertTriangle, Clock, Ban, ShieldAlert, ExternalLink, Users, DollarSign, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { getPendingReferralPayouts, processReferralPayout } from "@/app/actions/admin";
 import { getLegalTransactionsAction, overrideTransactionStatusAction } from "@/app/actions/transaction";
@@ -134,7 +134,7 @@ export default function AdminLegalDashboard() {
                             <div className="bg-zinc-950/50 border border-amber-500/20 rounded-xl p-4 flex items-start justify-between">
                                 <div className="flex gap-4">
                                     <div className="h-10 w-10 bg-amber-500/10 rounded-lg flex items-center justify-center text-amber-500">
-                                        <AlertCircle className="h-5 w-5" />
+                                        <AlertTriangle className="h-5 w-5" />
                                     </div>
                                     <div>
                                         <h4 className="font-bold text-zinc-200">Facturera del Norte S.A.</h4>
@@ -212,7 +212,7 @@ export default function AdminLegalDashboard() {
                                 <tr key={tx.id} className="hover:bg-zinc-800/30 transition-colors">
                                     <td className="px-6 py-4 font-mono text-zinc-400 text-xs">{tx.id.substring(0, 8)}...</td>
                                     <td className="px-6 py-4 font-bold">
-                                        {tx.car?.make} {tx.car?.model} {tx.car?.year}
+                                        {tx.cars?.make} {tx.cars?.model} {tx.cars?.year}
                                     </td>
                                     <td className="px-6 py-4 text-zinc-300">Usuario #{tx.seller_id?.substring(0, 5)}</td>
                                     <td className="px-6 py-4">
@@ -227,14 +227,40 @@ export default function AdminLegalDashboard() {
                                     <td className="px-6 py-4">
                                         <div className="flex gap-2">
                                              <button 
-                                                 onClick={() => downloadContractClient({ transactionId: tx.id, carPrice: tx.car_price || 0, carDetails: { make: tx.cars?.make || 'Auto', model: tx.cars?.model || '', year: tx.cars?.year || 0 }, date: new Date().toLocaleDateString('es-MX') })}
+                                                 onClick={() => downloadContractClient({ 
+                                                     transactionId: tx.id, 
+                                                     carPrice: tx.car_price || 0, 
+                                                     carDetails: { 
+                                                         make: tx.cars?.make || 'Auto', 
+                                                         model: tx.cars?.model || '', 
+                                                         year: tx.cars?.year || 0,
+                                                         vin: tx.cars?.vin,
+                                                         plates: tx.cars?.plates,
+                                                         color: tx.cars?.color,
+                                                         km: tx.cars?.mileage?.toString()
+                                                     }, 
+                                                     date: new Date().toLocaleDateString('es-MX') 
+                                                 })}
                                                  className="px-2 py-1 bg-zinc-800 hover:bg-zinc-700 text-[9px] font-black uppercase rounded border border-zinc-700 transition-all"
                                                  title="Contrato PROFECO"
                                              >
                                                  Contrato
                                              </button>
                                              <button 
-                                                 onClick={() => downloadResponsivaClient({ transactionId: tx.id, carPrice: tx.car_price || 0, carDetails: { make: tx.cars?.make || 'Auto', model: tx.cars?.model || '', year: tx.cars?.year || 0 }, date: new Date().toLocaleDateString('es-MX') })}
+                                                 onClick={() => downloadResponsivaClient({ 
+                                                     transactionId: tx.id, 
+                                                     carPrice: tx.car_price || 0, 
+                                                     carDetails: { 
+                                                         make: tx.cars?.make || 'Auto', 
+                                                         model: tx.cars?.model || '', 
+                                                         year: tx.cars?.year || 0,
+                                                         vin: tx.cars?.vin,
+                                                         plates: tx.cars?.plates,
+                                                         color: tx.cars?.color,
+                                                         km: tx.cars?.mileage?.toString()
+                                                     }, 
+                                                     date: new Date().toLocaleDateString('es-MX') 
+                                                 })}
                                                  className="px-2 py-1 bg-zinc-800 hover:bg-zinc-700 text-[9px] font-black uppercase rounded border border-zinc-700 transition-all"
                                                  title="Carta Responsiva"
                                              >

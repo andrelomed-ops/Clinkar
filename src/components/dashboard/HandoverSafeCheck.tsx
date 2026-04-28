@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { ClipboardCheck, AlertCircle, CheckCircle2, MapPin } from "lucide-react";
+import { ClipboardCheck, AlertTriangle, CheckCircle2, MapPin } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface HandoverSafeCheckProps {
@@ -106,7 +106,7 @@ export function HandoverSafeCheck({ onComplete, onNegotiate, isProcessing, role 
                 {!allPassed ? (
                     <div className="space-y-4">
                         <div className="flex items-center gap-3 bg-amber-500/5 p-4 rounded-2xl border border-amber-500/10">
-                            <AlertCircle className="h-5 w-5 text-amber-600 shrink-0" />
+                            <AlertTriangle className="h-5 w-5 text-amber-600 shrink-0" />
                             <p className="text-[10px] text-amber-800 leading-relaxed text-justify font-medium">
                                 {role === 'buyer' 
                                     ? 'Si algún punto no se cumple, tienes derecho a negociar antes de liberar el pago.' 
@@ -118,7 +118,7 @@ export function HandoverSafeCheck({ onComplete, onNegotiate, isProcessing, role 
                                 onClick={onNegotiate}
                                 className="w-full h-16 bg-amber-50 hover:bg-amber-100 text-amber-700 font-black rounded-2xl border-2 border-amber-200 transition-all flex items-center justify-center gap-3 text-xs uppercase tracking-[0.2em] shadow-lg shadow-amber-500/5 hover:scale-[1.02] active:scale-95"
                             >
-                                <AlertCircle className="h-5 w-5" />
+                                <AlertTriangle className="h-5 w-5" />
                                 Reportar Discrepancia y Negociar
                             </button>
                         )}
