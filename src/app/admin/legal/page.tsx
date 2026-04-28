@@ -1,5 +1,7 @@
 "use client";
 
+import { downloadContractClient, downloadResponsivaClient } from "@/lib/documents/clientGenerator";
+
 import { useState, useEffect } from "react";
 import { Search, Filter, MoreHorizontal, CheckCircle2, AlertCircle, Clock, Ban, ShieldAlert, ExternalLink, Users, DollarSign, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -224,21 +226,21 @@ export default function AdminLegalDashboard() {
                                     </td>
                                     <td className="px-6 py-4">
                                         <div className="flex gap-2">
-                                            <button 
-                                                onClick={() => window.open(`/api/documents/contract?id=${tx.id}`, '_blank')}
-                                                className="px-2 py-1 bg-zinc-800 hover:bg-zinc-700 text-[9px] font-black uppercase rounded border border-zinc-700 transition-all"
-                                                title="Contrato PROFECO"
-                                            >
-                                                Contrato
-                                            </button>
-                                            <button 
-                                                onClick={() => window.open(`/api/documents/responsiva?id=${tx.id}`, '_blank')}
-                                                className="px-2 py-1 bg-zinc-800 hover:bg-zinc-700 text-[9px] font-black uppercase rounded border border-zinc-700 transition-all"
-                                                title="Carta Responsiva"
-                                            >
-                                                Responsiva
-                                            </button>
-                                        </div>
+                                             <button 
+                                                 onClick={() => downloadContractClient({ transactionId: tx.id, carPrice: tx.car_price || 0, carDetails: { make: tx.cars?.make || 'Auto', model: tx.cars?.model || '', year: tx.cars?.year || 0 }, date: new Date().toLocaleDateString('es-MX') })}
+                                                 className="px-2 py-1 bg-zinc-800 hover:bg-zinc-700 text-[9px] font-black uppercase rounded border border-zinc-700 transition-all"
+                                                 title="Contrato PROFECO"
+                                             >
+                                                 Contrato
+                                             </button>
+                                             <button 
+                                                 onClick={() => downloadResponsivaClient({ transactionId: tx.id, carPrice: tx.car_price || 0, carDetails: { make: tx.cars?.make || 'Auto', model: tx.cars?.model || '', year: tx.cars?.year || 0 }, date: new Date().toLocaleDateString('es-MX') })}
+                                                 className="px-2 py-1 bg-zinc-800 hover:bg-zinc-700 text-[9px] font-black uppercase rounded border border-zinc-700 transition-all"
+                                                 title="Carta Responsiva"
+                                             >
+                                                 Responsiva
+                                             </button>
+                                         </div>
                                     </td>
                                     <td className="px-6 py-4 text-right font-mono text-zinc-300">
                                         ${tx.total_amount?.toLocaleString() || tx.car_price?.toLocaleString()}
