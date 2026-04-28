@@ -482,10 +482,11 @@ export class TransactionService extends BaseService {
             return { success: false, error: 'TRANSACCION_NO_ENCONTRADA' };
         }
 
-        // 2. Validate status (Must be P2P_VALIDATED, HANDOVER_SCHEDULED, or RESERVED)
-        if (!['P2P_VALIDATED', 'HANDOVER_SCHEDULED', 'RESERVED'].includes(transaction.status)) {
+        // 2. Validate status (Must be P2P_VALIDATED, HANDOVER_SCHEDULED, RESERVED, or PENDING)
+        const allowedStatuses = ['P2P_VALIDATED', 'HANDOVER_SCHEDULED', 'RESERVED', 'PENDING'];
+        if (!allowedStatuses.includes(transaction.status)) {
             Logger.warn(`[Security] Attempt to confirm handover for tx ${transactionId} in status ${transaction.status}`);
-            return { success: false, error: `[V3] ESTADO_INVALIDO: El estado actual es ${transaction.status}. Se requiere validación o reserva.` };
+            return { success: false, error: `[V4] ESTADO_INVALIDO: El estado actual es ${transaction.status}. Se requiere PENDING, RESERVED o VALIDATED.` };
         }
 
         // 3. Update status to RELEASED

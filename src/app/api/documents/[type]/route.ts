@@ -93,8 +93,14 @@ export async function GET(
                 "Content-Disposition": `attachment; filename="${type}_${transactionId}.pdf"`,
             },
         });
-    } catch (e) {
+    } catch (e: any) {
         console.error("PDF Generation error:", e);
-        return NextResponse.json({ error: "Failed to generate PDF" }, { status: 500 });
+        return NextResponse.json({ 
+            error: "Failed to generate PDF", 
+            details: e.message,
+            stack: e.stack,
+            type: type,
+            id: transactionId
+        }, { status: 500 });
     }
 }
