@@ -18,6 +18,7 @@ import { StarterKarEvolutionHub } from "@/components/dashboard/StarterKarEvoluti
 import { SidebarPromo } from "@/components/dashboard/SidebarPromo";
 import { Skeleton } from "@/components/ui/skeleton";
 import { RecommendedSection } from "@/components/dashboard/RecommendedSection";
+import { EcosystemHub } from "@/components/dashboard/EcosystemHub";
 import Image from "next/image";
 import { FavoriteService } from "@/services/FavoriteService";
 import { CarCard } from "@/components/market/CarCard";
@@ -573,7 +574,7 @@ export default function DashboardPage() {
 
                                 {favoriteCars.length > 0 ? (
                                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                                        {favoriteCars.map(car => (
+                                        {favoriteCars.filter(c => c && c.id).map(car => (
                                             <div key={car.id} className="h-[380px]">
                                                 <CarCard
                                                     car={car}
@@ -803,136 +804,12 @@ export default function DashboardPage() {
                                 )}
                             </div>
 
-                            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                                {/* Action Card */}
-                                <div className="bg-gradient-to-br from-indigo-600 via-indigo-700 to-purple-800 rounded-[2.5rem] p-8 text-white relative overflow-hidden group shadow-2xl shadow-indigo-500/30 animate-reveal stagger-1 flex flex-col justify-between min-h-[320px]">
-                                    <div className="absolute top-0 right-0 p-8 opacity-10 group-hover:scale-125 group-hover:rotate-12 transition-transform duration-1000">
-                                        <QrCode className="h-48 w-48" />
-                                    </div>
-                                    <div className="relative z-10">
-                                        <h3 className="text-3xl font-black mb-3 tracking-tighter italic uppercase">Gestión de Ventas</h3>
-                                        <p className="text-indigo-100/80 mb-8 font-bold text-sm leading-snug">
-                                            Revisa el estado de tus publicaciones, carga de documentos y depósitos en Bóveda.
-                                        </p>
-                                    </div>
-                                    <div className="flex flex-col gap-3 relative z-10 w-full">
-                                        <Button asChild variant="secondary" className="w-full rounded-2xl h-14 font-black text-indigo-700 bg-white hover:bg-neutral-50 shadow-lg transition-all hover:scale-[1.02] active:scale-95">
-                                            <Link href="/dashboard/sell">
-                                                Mi Bóveda de Venta <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
-                                            </Link>
-                                        </Button>
-                                        <Link href="/sell" className="text-center text-[10px] font-bold text-indigo-300 hover:text-white uppercase tracking-widest transition-colors py-2">
-                                            Vender otro vehículo
-                                        </Link>
-                                    </div>
-                                </div>
-
-                                {/* Active Inspection Card */}
-                                {activeInspections.length > 0 ? activeInspections.map(insp => (
-                                    <div key={insp.id} className="bg-card border border-border rounded-[2.5rem] p-8 relative overflow-hidden group hover:border-indigo-500/50 transition-colors shadow-sm">
-                                        <div className="flex items-start justify-between mb-8">
-                                            <div className="p-4 bg-amber-100 dark:bg-amber-900/30 text-amber-600 rounded-2xl shadow-inner">
-                                                <Wrench className="h-6 w-6" />
-                                            </div>
-                                            <div className="px-4 py-1.5 bg-indigo-50 dark:bg-indigo-900/20 rounded-full text-[10px] font-black text-indigo-600 uppercase tracking-widest border border-indigo-100 dark:border-indigo-900/40">
-                                                Agendada
-                                            </div>
-                                        </div>
-                                        <h3 className="font-black text-2xl mb-1 tracking-tight italic">{insp.car}</h3>
-                                        <p className="text-xs text-muted-foreground mb-6 font-bold uppercase tracking-tight">Reporte Técnico StarterKar</p>
-
-                                        <div className="space-y-5 pt-6 border-t border-dashed border-border group-hover:border-indigo-500/20 transition-colors">
-                                            <div className="flex items-center gap-4 text-xs">
-                                                <div className="h-10 w-10 rounded-xl bg-secondary flex items-center justify-center">
-                                                    <Clock className="h-5 w-5 text-indigo-600/50" />
-                                                </div>
-                                                <div>
-                                                    <p className="text-[10px] text-muted-foreground font-black uppercase tracking-widest">Cita Programada</p>
-                                                    <p className="font-black text-base text-zinc-800 dark:text-zinc-200">{insp.date}</p>
-                                                </div>
-                                            </div>
-                                            <div className="flex items-center gap-4 text-xs">
-                                                <div className="h-10 w-10 rounded-xl bg-secondary flex items-center justify-center">
-                                                    <Search className="h-5 w-5 text-indigo-600/50" />
-                                                </div>
-                                                <div>
-                                                    <p className="text-[10px] text-muted-foreground font-black uppercase tracking-widest">Mecánico Asignado</p>
-                                                    <p className="font-black text-base text-zinc-800 dark:text-zinc-200">{insp.inspector}</p>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                )) : null}
-
-                                {/* Investor Membership Card */}
-                                {userProfile?.role !== 'investor' && (
-                                    <div className={cn(
-                                        "rounded-[2.5rem] p-8 relative overflow-hidden group shadow-2xl animate-reveal stagger-2 flex flex-col justify-between min-h-[320px] border",
-                                        investorApp?.status === 'pending' 
-                                            ? "bg-amber-50 border-amber-200" 
-                                            : "bg-gradient-to-br from-indigo-900 to-zinc-950 border-zinc-800"
-                                    )}>
-                                        <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 blur-[80px] -translate-y-12 translate-x-12" />
-                                        <div className="relative z-10">
-                                            <div className={cn(
-                                                "flex items-center gap-3 mb-6",
-                                                investorApp?.status === 'pending' ? "text-amber-600" : "text-indigo-400"
-                                            )}>
-                                                <ShieldCheck className="h-5 w-5" />
-                                                <span className="text-[10px] font-black uppercase tracking-[0.2em]">StarterKar Inversionista</span>
-                                            </div>
-                                            
-                                            {investorApp?.status === 'pending' ? (
-                                                <>
-                                                    <h3 className="text-2xl font-black text-amber-900 mb-2 tracking-tighter italic uppercase">Solicitud en Revisión</h3>
-                                                    <p className="text-amber-800/70 text-sm font-medium leading-relaxed">
-                                                        Estamos validando tu Constancia Fiscal y el pago de tu membresía <span className="font-black italic underline">{investorApp.tier_id?.toUpperCase()}</span>.
-                                                    </p>
-                                                    <div className="mt-6 flex items-center gap-2 text-[10px] font-black text-amber-600 uppercase tracking-widest bg-white/50 w-fit px-4 py-2 rounded-full border border-amber-200">
-                                                        <Clock className="h-3 w-3 animate-spin-slow" />
-                                                        Validación en proceso (24h)
-                                                    </div>
-                                                </>
-                                            ) : (
-                                                <>
-                                                    <h3 className="text-2xl font-black text-white mb-2 tracking-tighter italic uppercase">Haz crecer tu capital</h3>
-                                                    <p className="text-zinc-500 text-sm mb-8 font-medium leading-relaxed">
-                                                        Accede a precios <span className="text-white font-bold">15% por debajo del mercado</span>, inventario exclusivo y compra por volumen.
-                                                    </p>
-                                                    <Button asChild className="relative z-10 w-full rounded-2xl h-14 bg-indigo-600 text-white font-black hover:bg-indigo-700 transition-all shadow-xl shadow-indigo-600/20 active:scale-95">
-                                                        <Link href="/investor/apply">
-                                                            Solicitar Acceso Inversionista <ArrowRight className="ml-2 h-4 w-4" />
-                                                        </Link>
-                                                    </Button>
-                                                </>
-                                            )}
-                                        </div>
-                                    </div>
-                                )}
-
-                                {/* Referral Promo Card (NEW) */}
-                                <ReferralPromoCard />
-
-                                {/* Trade-in Promo Card */}
-                                <div className="bg-zinc-950 border border-zinc-800 rounded-[2.5rem] p-8 relative overflow-hidden group shadow-2xl animate-reveal stagger-3 flex flex-col justify-between min-h-[320px]">
-                                    <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-500/10 blur-[80px] -translate-y-12 translate-x-12" />
-                                    <div className="relative z-10">
-                                        <div className="flex items-center gap-3 text-indigo-400 mb-6">
-                                            <CarFront className="h-5 w-5" />
-                                            <span className="text-[10px] font-black uppercase tracking-[0.2em]">Upgrade StarterKar</span>
-                                        </div>
-                                        <h3 className="text-2xl font-black text-white mb-2 tracking-tighter italic uppercase">¿Buscas algo nuevo?</h3>
-                                        <p className="text-zinc-500 text-sm mb-8 font-medium leading-relaxed">
-                                            Vende tu usado al precio real de mercado y úsalo para estrenar un <span className="text-white font-bold">BMW, Tesla o Toyota</span> con beneficios de nuestras agencias aliadas.
-                                        </p>
-                                    </div>
-                                    <Button asChild className="relative z-10 w-full rounded-2xl h-14 bg-white text-zinc-950 font-black hover:bg-zinc-200 transition-all shadow-xl">
-                                        <Link href="/new-cars">
-                                            Explorar Autos Nuevos <ArrowRight className="ml-2 h-4 w-4" />
-                                        </Link>
-                                    </Button>
-                                </div>
-                            </div>
+                            {/* Ecosystem Hub (Redesigned) */}
+                            <EcosystemHub 
+                                userProfile={userProfile}
+                                activeInspections={activeInspections}
+                                investorApp={investorApp}
+                            />
                         </div>
                     )}
                 </main>

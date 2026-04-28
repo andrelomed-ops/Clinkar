@@ -33,7 +33,6 @@ export class FavoriteService {
         const dbFavorites = dbData.map(f => f.car_id);
 
         // 4. Sincronización Perezosa (Lazy Sync): Si hay locales que no están en DB, subirlos.
-        // Solo sincronizar carIds que sean UUID válidos
         const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
         const missingInDb = localFavorites.filter(fid => 
             !dbFavorites.includes(fid) && uuidRegex.test(fid)
@@ -41,10 +40,10 @@ export class FavoriteService {
 
         if (missingInDb.length > 0) {
             await this.syncFavoritesToDb(supabase, user.id, missingInDb);
-            return [...new Set([...dbFavorites, ...missingInDb])];
         }
 
-        return dbFavorites;
+        // 5. Devolver la unión de DB + Locales (para no perder mocks)
+        return [...new Set([...dbFavorites, ...localFavorites])];
     }
 
     /**
