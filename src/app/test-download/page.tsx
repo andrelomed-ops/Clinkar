@@ -1,6 +1,11 @@
 "use client";
 
+import { useState } from "react";
+
 export default function TestDownloadPage() {
+    const [status, setStatus] = useState("");
+    const [error, setError] = useState("");
+
     const testData = {
         transactionId: "TEST-001",
         carPrice: 350000,
@@ -11,20 +16,38 @@ export default function TestDownloadPage() {
     };
 
     const handleContract = async () => {
-        const { downloadContractClient } = await import("@/lib/documents/clientGenerator");
-        await downloadContractClient(testData);
+        setStatus("Generando contrato...");
+        setError("");
+        try {
+            const mod = await import("@/lib/documents/clientGenerator");
+            await mod.downloadContractClient(testData);
+            setStatus("Contrato generado exitosamente.");
+        } catch (e: any) {
+            setError("ERROR CONTRATO: " + (e?.message || String(e)));
+            setStatus("");
+            console.error(e);
+        }
     };
 
     const handleResponsiva = async () => {
-        const { downloadResponsivaClient } = await import("@/lib/documents/clientGenerator");
-        await downloadResponsivaClient(testData);
+        setStatus("Generando carta responsiva...");
+        setError("");
+        try {
+            const mod = await import("@/lib/documents/clientGenerator");
+            await mod.downloadResponsivaClient(testData);
+            setStatus("Carta responsiva generada exitosamente.");
+        } catch (e: any) {
+            setError("ERROR RESPONSIVA: " + (e?.message || String(e)));
+            setStatus("");
+            console.error(e);
+        }
     };
 
     return (
-        <div style={{ padding: 40, fontFamily: "sans-serif", maxWidth: 600 }}>
+        <div style={{ padding: 40, fontFamily: "sans-serif", maxWidth: 640 }}>
             <h1 style={{ marginBottom: 8 }}>Test de Descarga de Documentos</h1>
             <p style={{ color: "#6b7280", marginBottom: 24 }}>
-                Presiona los botones para generar y descargar los documentos legales de StarterKar.
+                Presiona los botones para generar los documentos legales.
             </p>
             <div style={{ display: "flex", gap: 16, flexWrap: "wrap" }}>
                 <button
@@ -40,6 +63,18 @@ export default function TestDownloadPage() {
                     Descargar Carta Responsiva
                 </button>
             </div>
+
+            {status && (
+                <div style={{ marginTop: 20, padding: 12, background: "#d1fae5", borderRadius: 8, color: "#065f46", fontWeight: "bold" }}>
+                    {status}
+                </div>
+            )}
+
+            {error && (
+                <div style={{ marginTop: 20, padding: 12, background: "#fee2e2", borderRadius: 8, color: "#991b1b", fontFamily: "monospace", fontSize: 13, wordBreak: "break-all" }}>
+                    {error}
+                </div>
+            )}
         </div>
     );
 }
