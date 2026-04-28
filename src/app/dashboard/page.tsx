@@ -54,7 +54,8 @@ export default function DashboardPage() {
     }, [isAdmin, userProfile]);
     const [ownedCars, setOwnedCars] = useState<any[]>([]);
     const [favoriteCars, setFavoriteCars] = useState<any[]>([]);
-    const [activeTab, setActiveTab] = useState<"buying" | "selling">("buying");
+    const [favoriteIds, setFavoriteIds] = useState<string[]>([]);
+    const [activeTab, setActiveTab] = useState<"buying" | "selling" | "completed">("buying");
     const [investorApp, setInvestorApp] = useState<any>(null);
 
     const supabase = useMemo(() => createBrowserClient(), []);
@@ -126,6 +127,32 @@ export default function DashboardPage() {
         }
     };
 
+    const handleToggleFavorite = async (e: React.MouseEvent, carId: string) => {
+        e.preventDefault();
+        e.stopPropagation();
+        
+        const isCurrentlyFavorite = favoriteIds.includes(carId);
+        
+        // Optimistic Update
+        if (isCurrentlyFavorite) {
+            setFavoriteIds(prev => prev.filter(id => id !== carId));
+            setFavoriteCars(prev => prev.filter(c => c.id !== carId));
+            toast.info("Eliminado de favoritos");
+        } else {
+            setFavoriteIds(prev => [...prev, carId]);
+            // If it was in the owned cars or we need to fetch it... 
+            // but usually we just need the ID for the icons.
+            toast.success("Agregado a favoritos");
+        }
+
+        try {
+            const { FavoriteService } = await import('@/services/FavoriteService');
+            await FavoriteService.toggleFavorite(supabase, carId);
+        } catch (err) {
+            console.error("Error toggling favorite:", err);
+        }
+    };
+
     useEffect(() => {
         const loadProfile = async () => {
             const { data: { user } } = await supabase.auth.getUser();
@@ -190,15 +217,57 @@ export default function DashboardPage() {
                     setTransactions([]);
                 }
 
-                // Fetch published cars
+                // Fetch published cars (Available + Sold to show history)
                 const { data: cars } = await supabase
                     .from("cars")
                     .select("*")
                     .eq("seller_id", user.id)
-                    .eq("status", "available");
+                    .in("status", ["available", "AVAILABLE", "published", "PUBLISHED", "certified", "CERTIFIED", "SOLD", "sold"]);
                 if (cars) setOwnedCars(cars);
 
-                setFavoriteCars([]);
+                // ── FAVORITES: load real car data ──────────────────────
+                try {
+                    const { FavoriteService } = await import('@/services/FavoriteService');
+                    const favIds = await FavoriteService.getFavorites(supabase);
+                    setFavoriteIds(favIds);
+
+                    if (favIds.length > 0) {
+                        // Fetch cars from DB for UUID favorites
+                        const uuidIds = favIds.filter(id => /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id));
+                        const mockIds = favIds.filter(id => !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id));
+
+                        let dbFavCars: any[] = [];
+                        if (uuidIds.length > 0) {
+                            const { data: dbCars } = await supabase
+                                .from('cars')
+                                .select('*')
+                                .in('id', uuidIds);
+                            if (dbCars) {
+                                dbFavCars = dbCars.map((d: any) => ({
+                                    ...d,
+                                    location: d.market_data?.location || d.location || 'México',
+                                    distance: d.mileage || 0,
+                                    fuel: d.fuel_type || 'Gasolina',
+                                    images: Array.isArray(d.images) ? d.images : [],
+                                    condition: d.condition || 'Seminuevo',
+                                    category: d.category || 'Car',
+                                    marketValue: d.market_data?.marketValue || d.price,
+                                }));
+                            }
+                        }
+
+                        // Fallback to mock data for non-UUID ids
+                        const { ALL_CARS } = await import('@/data/cars');
+                        const mockFavCars = ALL_CARS.filter(c => mockIds.includes(c.id));
+
+                        setFavoriteCars([...dbFavCars, ...mockFavCars]);
+                    } else {
+                        setFavoriteCars([]);
+                    }
+                } catch (favErr) {
+                    console.error('Error loading favorites:', favErr);
+                    setFavoriteCars([]);
+                }
             } catch (err: any) {
                 console.error("Dashboard Fetch Error:", err);
             } finally {
@@ -350,32 +419,56 @@ export default function DashboardPage() {
                         </div>
                     </div>
 
-                    <div className="flex border-b border-border mb-8">
+                    <div className="flex border-b border-border mb-8 gap-1">
                         <button 
                             onClick={() => setActiveTab("buying")}
                             className={cn(
-                                "px-6 py-3 text-sm font-black uppercase tracking-widest transition-all border-b-2",
+                                "px-5 py-3 text-sm font-black uppercase tracking-widest transition-all border-b-2 relative",
                                 activeTab === "buying" ? "border-indigo-600 text-indigo-600" : "border-transparent text-muted-foreground hover:text-foreground"
                             )}
                         >
-                            Comprando
+                            🛒 Comprando
+                            {transactions.filter(tx => tx.role === 'buyer' && tx.status !== 'RELEASED').length > 0 && (
+                                <span className="ml-2 px-1.5 py-0.5 bg-indigo-600 text-white text-[9px] rounded-full font-black">
+                                    {transactions.filter(tx => tx.role === 'buyer' && tx.status !== 'RELEASED').length}
+                                </span>
+                            )}
                         </button>
                         <button 
                             onClick={() => setActiveTab("selling")}
                             className={cn(
-                                "px-6 py-3 text-sm font-black uppercase tracking-widest transition-all border-b-2",
+                                "px-5 py-3 text-sm font-black uppercase tracking-widest transition-all border-b-2 relative",
                                 activeTab === "selling" ? "border-indigo-600 text-indigo-600" : "border-transparent text-muted-foreground hover:text-foreground"
                             )}
                         >
-                            Vendiendo
+                            🏷️ Vendiendo
+                            {transactions.filter(tx => tx.role === 'seller' && tx.status !== 'RELEASED').length > 0 && (
+                                <span className="ml-2 px-1.5 py-0.5 bg-emerald-600 text-white text-[9px] rounded-full font-black">
+                                    {transactions.filter(tx => tx.role === 'seller' && tx.status !== 'RELEASED').length}
+                                </span>
+                            )}
+                        </button>
+                        <button 
+                            onClick={() => setActiveTab("completed")}
+                            className={cn(
+                                "px-5 py-3 text-sm font-black uppercase tracking-widest transition-all border-b-2 relative",
+                                activeTab === "completed" ? "border-zinc-600 text-zinc-900 dark:text-zinc-100" : "border-transparent text-muted-foreground hover:text-foreground"
+                            )}
+                        >
+                            ✅ Completadas
+                            {transactions.filter(tx => tx.status === 'RELEASED').length > 0 && (
+                                <span className="ml-2 px-1.5 py-0.5 bg-zinc-500 text-white text-[9px] rounded-full font-black">
+                                    {transactions.filter(tx => tx.status === 'RELEASED').length}
+                                </span>
+                            )}
                         </button>
                     </div>
 
                     {activeTab === "buying" ? (
                         <div className="space-y-6 animate-in slide-in-from-left-4 duration-300">
-                            {transactions.filter(tx => tx.role === 'buyer').length > 0 ? (
+                            {transactions.filter(tx => tx.role === 'buyer' && tx.status !== 'RELEASED').length > 0 ? (
                                 <div className="grid gap-6">
-                                    {transactions.filter(tx => tx.role === 'buyer').map((tx, idx) => (
+                                    {transactions.filter(tx => tx.role === 'buyer' && tx.status !== 'RELEASED').map((tx, idx) => (
                                         <Link href={`/dashboard/handover/${tx.id}`} key={tx.id} className={cn(
                                             "glass-card rounded-3xl p-6 flex items-center justify-between hover:shadow-2xl hover:shadow-indigo-500/10 transition-all group animate-reveal",
                                             idx === 0 ? "stagger-1" : idx === 1 ? "stagger-2" : "stagger-3"
@@ -485,13 +578,7 @@ export default function DashboardPage() {
                                                 <CarCard
                                                     car={car}
                                                     isFavorite={true}
-                                                    onToggleFavorite={async (e) => {
-                                                        e.preventDefault();
-                                                        e.stopPropagation();
-                                                        // Optimistic remove
-                                                        setFavoriteCars(prev => prev.filter(c => c.id !== car.id));
-                                                        await FavoriteService.toggleFavorite(supabase, car.id);
-                                                    }}
+                                                    onToggleFavorite={(e) => handleToggleFavorite(e, car.id)}
                                                 />
                                             </div>
                                         ))}
@@ -506,7 +593,49 @@ export default function DashboardPage() {
                                 )}
                             </div>
 
-                            <RecommendedSection />
+                            <RecommendedSection 
+                                favoriteIds={favoriteIds} 
+                                onToggleFavorite={handleToggleFavorite}
+                            />
+                        </div>
+                    ) : activeTab === "completed" ? (
+                        <div className="space-y-6 animate-in slide-in-from-right-4 duration-300">
+                            {transactions.filter(tx => tx.status === 'RELEASED').length > 0 ? (
+                                <div className="grid gap-4">
+                                    {transactions.filter(tx => tx.status === 'RELEASED').map((tx) => (
+                                        <div key={tx.id} className="glass-card rounded-3xl p-6 flex items-center justify-between opacity-80 hover:opacity-100 transition-all group">
+                                            <div className="flex items-center gap-6">
+                                                <div className="h-20 w-32 bg-secondary rounded-2xl overflow-hidden relative shadow-inner shrink-0">
+                                                    {tx.image ? (
+                                                        <Image src={tx.image} alt={tx.carName} fill className="object-cover" />
+                                                    ) : (
+                                                        <div className="w-full h-full flex items-center justify-center bg-muted"><Car className="h-8 w-8 text-muted-foreground/20" /></div>
+                                                    )}
+                                                </div>
+                                                <div>
+                                                    <h3 className="font-black text-xl italic tracking-tight">{tx.carName}</h3>
+                                                    <p className="text-sm font-bold text-muted-foreground uppercase tracking-widest">{tx.year} • {tx.role === 'buyer' ? 'Comprado' : 'Vendido'}</p>
+                                                    <div className="flex items-center gap-3 mt-2">
+                                                        <div className="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border bg-zinc-100 text-zinc-600 border-zinc-200 italic flex items-center gap-1.5">
+                                                            <CheckCircle2 className="h-3 w-3 text-emerald-500" />
+                                                            {tx.role === 'buyer' ? 'Vehículo Recibido' : 'Venta Completada'}
+                                                        </div>
+                                                        <span className="text-[10px] font-black text-zinc-400 uppercase tracking-tighter">REF: {tx.id.slice(0, 8)}</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div className="text-right">
+                                                <p className="font-black text-xl text-zinc-900 dark:text-white">${tx.price?.toLocaleString()} MXN</p>
+                                                <Link href={`/dashboard/handover/${tx.id}`} className="text-[10px] font-bold text-indigo-600 hover:underline mt-1 block">Ver documentos →</Link>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            ) : (
+                                <div className="py-16 text-center rounded-[2rem] bg-zinc-50 border border-dashed border-zinc-200">
+                                    <p className="text-sm font-medium text-muted-foreground">Aún no tienes operaciones completadas.</p>
+                                </div>
+                            )}
                         </div>
                     ) : (
                         <div className="space-y-12 animate-in slide-in-from-right-4 duration-300">
@@ -517,9 +646,9 @@ export default function DashboardPage() {
                                     <Link href="/sell" className="text-xs font-bold text-indigo-600 hover:underline">Publicar otro auto</Link>
                                 </div>
 
-                                {transactions.filter(tx => tx.role === 'seller').length > 0 ? (
+                                {transactions.filter(tx => tx.role === 'seller' && tx.status !== 'RELEASED').length > 0 ? (
                                     <div className="grid gap-8">
-                                        {transactions.filter(tx => tx.role === 'seller').map((tx) => (
+                                        {transactions.filter(tx => tx.role === 'seller' && tx.status !== 'RELEASED').map((tx) => (
                                             <div key={tx.id} className="space-y-4">
                                                 {/* Billing Semaphore Integration */}
                                                 {(tx.status === 'RELEASED' || tx.status === 'HANDOVER_SCHEDULED') && (
@@ -611,7 +740,15 @@ export default function DashboardPage() {
                                                         ) : <Car className="h-8 w-8 m-4 text-muted-foreground/20" />}
                                                     </div>
                                                     <div className="min-w-0 flex-1">
-                                                        <h3 className="font-black text-lg italic truncate">{car.make} {car.model}</h3>
+                                                        <div className="flex items-center gap-2">
+                                                            <h3 className="font-black text-lg italic truncate">{car.make} {car.model}</h3>
+                                                            {car.status?.toUpperCase() === 'SOLD' && (
+                                                                <span className="px-2 py-0.5 rounded-full bg-zinc-900 text-white text-[8px] font-black uppercase tracking-tighter flex items-center gap-1">
+                                                                    <CheckCircle2 className="h-2.5 w-2.5 text-emerald-400" />
+                                                                    Vendido
+                                                                </span>
+                                                            )}
+                                                        </div>
                                                         <div className="flex flex-col gap-1">
                                                             <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">{car.year} • {car.transmission}</p>
                                                             

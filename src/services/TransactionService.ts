@@ -473,7 +473,7 @@ export class TransactionService extends BaseService {
         // 1. Fetch transaction details
         const { data: transaction, error: fetchError } = await (supabase
             .from('transactions') as any)
-            .select('id, buyer_id, seller_id, status, car_price')
+            .select('id, buyer_id, seller_id, status, car_price, car_id')
             .eq('id', transactionId)
             .single();
 
@@ -501,6 +501,13 @@ export class TransactionService extends BaseService {
         if (updateError) {
             Logger.error('Error updating transaction status to RELEASED:', updateError);
             return { success: false, error: updateError.message };
+        }
+
+        // 3.1 Update car status to SOLD
+        if ((transaction as any).car_id) {
+            await (supabase.from('cars') as any)
+                .update({ status: 'SOLD' })
+                .eq('id', (transaction as any).car_id);
         }
 
         // 4. Trigger Referral Rewards
