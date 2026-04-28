@@ -367,14 +367,17 @@ export default function DashboardPage() {
             </nav>
 
             <div className="flex flex-1 overflow-hidden">
-                <main className="flex-1 h-full overflow-y-auto custom-scrollbar p-6 md:p-12">
-                    <div className="max-w-5xl mx-auto w-full">
+                <main className="flex-1 h-full overflow-y-auto custom-scrollbar">
+                    <div className="max-w-7xl mx-auto w-full p-6 md:p-12">
+                        <div className="flex flex-col lg:flex-row gap-12">
+                            {/* Main Content Area (70%) */}
+                            <div className="flex-1 space-y-8">
                         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8 uppercase tracking-tighter">
                             <div className="animate-reveal">
-                                <h1 className="text-4xl font-black tracking-tight mb-2">
+                                <h1 className="text-4xl font-black tracking-tight mb-2 italic uppercase">
                                     {new Date().getHours() < 12 ? 'Buenos días' : new Date().getHours() < 19 ? 'Buenas tardes' : 'Buenas noches'}, {userProfile?.full_name?.split(' ')[0] || 'Usuario'} 👋
                                 </h1>
-                                <p className="text-muted-foreground font-medium text-sm">
+                                <p className="text-zinc-400 font-bold text-xs uppercase tracking-widest">
                                     {transactions.length > 0 || ownedCars.length > 0
                                         ? `${transactions.length + ownedCars.length} operación${transactions.length + ownedCars.length !== 1 ? 'es' : ''} activa${transactions.length + ownedCars.length !== 1 ? 's' : ''}`
                                         : 'Tu garage digital te espera'}
@@ -804,14 +807,18 @@ export default function DashboardPage() {
                                 )}
                             </div>
 
-                            {/* Ecosystem Hub (Redesigned) */}
-                            <EcosystemHub 
-                                userProfile={userProfile}
-                                activeInspections={activeInspections}
-                                investorApp={investorApp}
-                            />
+                            </div>
+
+                            {/* Sidebar Ecosystem Area (30%) */}
+                            <aside className="lg:w-80 shrink-0 space-y-8">
+                                <EcosystemHub 
+                                    userProfile={userProfile}
+                                    activeInspections={activeInspections}
+                                    investorApp={investorApp}
+                                />
+                            </aside>
                         </div>
-                    )}
+                    </div>
                 </main>
             </div>
         </div>
