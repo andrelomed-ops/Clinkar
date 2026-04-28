@@ -38,8 +38,12 @@ export function CheckoutAction({ carId, carPrice, carLocation, category }: { car
     }, [category]);
 
     const handleAction = async () => {
-        if (!scheduledDate || !scheduledTime || !selectedWorkshop) {
-            toast.error("Por favor, selecciona taller, fecha y hora");
+        if (!scheduledDate || !scheduledTime) {
+            toast.error("Por favor, selecciona fecha y hora de entrega");
+            return;
+        }
+        if (partners.length > 0 && !selectedWorkshop) {
+            toast.error("Por favor, selecciona un taller");
             return;
         }
 
@@ -48,10 +52,10 @@ export function CheckoutAction({ carId, carPrice, carLocation, category }: { car
         
         try {
             const result = await startTransaction(carId, {
-                deliveryType: 'workshop',
+                deliveryType: selectedWorkshop ? 'workshop' : 'home',
                 scheduledDate,
                 scheduledTime,
-                workshopId: selectedWorkshop
+                workshopId: selectedWorkshop || undefined
             });
 
             console.log("[StarterKar] Resultado del servidor:", result);
@@ -106,10 +110,22 @@ export function CheckoutAction({ carId, carPrice, carLocation, category }: { car
                             value={selectedWorkshop}
                             onChange={(e) => setSelectedWorkshop(e.target.value)}
                         >
-                            {partners.length === 0 && <option value="">No hay talleres disponibles para esta categoría</option>}
+                        {partners.length === 0 && (
+                            <div className="w-full h-14 px-5 rounded-2xl border-2 border-amber-200 bg-amber-50 dark:bg-amber-900/20 dark:border-amber-800 text-sm font-medium text-amber-700 dark:text-amber-300 flex items-center">
+                                Entrega coordinada directamente — sin taller intermedio
+                            </div>
+                        )}
+                        {partners.length > 0 && (
+                        <select 
+                            className="w-full h-14 px-5 rounded-2xl border-2 border-zinc-100 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950 text-sm font-black focus:border-indigo-600 outline-none transition-all"
+                            value={selectedWorkshop}
+                            onChange={(e) => setSelectedWorkshop(e.target.value)}
+                        >
                             {partners.map(p => (
                                 <option key={p.id} value={p.id}>{p.name} - {p.city}</option>
                             ))}
+                        </select>
+                        )}
                         </select>
                     </div>
                 </div>

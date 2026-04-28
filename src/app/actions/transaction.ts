@@ -143,7 +143,7 @@ export async function getLegalTransactionsAction() {
             .select("*")
             .eq("id", tx.car_id)
             .single();
-        return { ...tx, car };
+        return { ...tx, cars: car };
     }));
 
     return txsWithCars;
