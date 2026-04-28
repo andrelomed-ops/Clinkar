@@ -143,16 +143,16 @@ export function RecommendedSection({ favoriteIds = [], onToggleFavorite }: Recom
         <section className="mt-16 animate-reveal stagger-4">
             <div className="flex items-center justify-between mb-8">
                 <div className="flex items-center gap-3">
-                    <div className="h-10 w-10 bg-gradient-to-br from-indigo-500 to-violet-600 rounded-full flex items-center justify-center shadow-lg shadow-indigo-500/20">
+                    <div className="h-10 w-10 bg-zinc-100 dark:bg-zinc-800 rounded-full flex items-center justify-center border border-zinc-200 dark:border-zinc-700">
                         {favoriteIds.length > 0 
-                            ? <Brain className="h-5 w-5 text-white" />
-                            : <CarFront className="h-5 w-5 text-white" />
+                            ? <Brain className="h-5 w-5 text-indigo-600/70" />
+                            : <CarFront className="h-5 w-5 text-zinc-500" />
                         }
                     </div>
                     <div>
-                        <h2 className="text-xl font-black tracking-tight flex items-center gap-2">
-                            Sugerencias IA para ti
-                            <Sparkles className="h-4 w-4 text-indigo-500 animate-pulse" />
+                        <h2 className="text-xl font-black tracking-tight flex items-center gap-2 italic uppercase">
+                            Recomendaciones IA
+                            <Sparkles className="h-3 w-3 text-indigo-500/40" />
                         </h2>
                         <p className="text-xs text-muted-foreground uppercase font-bold tracking-widest">{reasonLabel}</p>
                     </div>
