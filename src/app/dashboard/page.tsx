@@ -362,16 +362,16 @@ export default function DashboardPage() {
                         className="h-10 w-10 rounded-full bg-indigo-100 hover:bg-indigo-200 flex items-center justify-center text-xs font-bold text-indigo-700 border border-indigo-200 transition-all hover:scale-110 active:scale-95"
                     >
                         {userProfile?.full_name ? userProfile.full_name.split(' ').map((n: string) => n[0]).join('') : 'U'}
-                    </Link>
-                </div>
-            </nav>
-
-            <div className="flex flex-1 overflow-hidden">
+                                <div className="flex flex-1 overflow-hidden">
                 <main className="flex-1 h-full overflow-y-auto custom-scrollbar">
-                    <div className="max-w-7xl mx-auto w-full p-6 md:p-12">
-                        <div className="flex flex-col lg:flex-row gap-12">
-                            {/* Main Content Area (70%) */}
-                            <div className="flex-1 space-y-8">
+                    {/* Service Ribbon (Above the fold) */}
+                    <EcosystemHub 
+                        userProfile={userProfile}
+                        activeInspections={activeInspections}
+                        investorApp={investorApp}
+                    />
+
+                    <div className="max-w-5xl mx-auto w-full p-6 md:p-12 pt-0">
                         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8 uppercase tracking-tighter">
                             <div className="animate-reveal">
                                 <h1 className="text-4xl font-black tracking-tight mb-2 italic uppercase">
@@ -383,7 +383,7 @@ export default function DashboardPage() {
                                         : 'Tu garage digital te espera'}
                                 </p>
                             </div>
-
+                            
                             {/* Role-gated admin tools — solo admin/inspector */}
                             <div className="w-full md:w-auto flex flex-wrap gap-3">
                                 {isAdmin && (
@@ -420,6 +420,7 @@ export default function DashboardPage() {
                                     </>
                                 )}
                             </div>
+                        </div>                        </div>
                         </div>
                     </div>
 
@@ -806,19 +807,8 @@ export default function DashboardPage() {
                                     </div>
                                 )}
                             </div>
-
-                            </div>
-
-                            {/* Sidebar Ecosystem Area (30%) */}
-                            <aside className="lg:w-80 shrink-0 space-y-8">
-                                <EcosystemHub 
-                                    userProfile={userProfile}
-                                    activeInspections={activeInspections}
-                                    investorApp={investorApp}
-                                />
-                            </aside>
                         </div>
-                    </div>
+                    )}
                 </main>
             </div>
         </div>
