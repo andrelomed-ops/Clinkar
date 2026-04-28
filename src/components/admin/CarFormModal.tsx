@@ -377,7 +377,7 @@ export function CarFormModal({ isOpen, onClose, onSubmit, initialData, isLoading
                                         onChange={v => setFormData({...formData, is_imported: v})} 
                                     />
                                     <ToggleGroup 
-                                        label="Sello Clinkar" 
+                                        label="Sello StarterKar" 
                                         checked={formData.has_clinkar_seal} 
                                         onChange={v => setFormData({...formData, has_clinkar_seal: v})} 
                                     />
