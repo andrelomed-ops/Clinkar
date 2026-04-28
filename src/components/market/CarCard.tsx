@@ -14,8 +14,16 @@ interface CarCardProps {
 }
 
 export function CarCard({ car, isFavorite = false, onToggleFavorite }: CarCardProps) {
-    const priceDiff = car.marketValue ? car.marketValue - car.price : 0;
-    const savingsPercent = car.marketValue ? (priceDiff / car.marketValue) * 100 : 0;
+    const priceDiff = (car.marketValue && car.price) ? car.marketValue - car.price : 0;
+    const savingsPercent = (car.marketValue && car.price) ? (priceDiff / car.marketValue) * 100 : 0;
+    const carMake = car.make || 'Auto';
+    const carModel = car.model || '';
+    const carYear = car.year || '';
+    const carLocation = car.location || 'México';
+    const carFuel = car.fuel || (car as any).fuel_type || 'Gasolina';
+    const carDistance = car.distance ?? (car as any).mileage ?? 0;
+    const carCondition = car.condition || 'Seminuevo';
+    const carImages = Array.isArray(car.images) ? car.images : [];
 
     const getPriceLabel = () => {
         if (savingsPercent > 10) return { label: "Gran Oferta", color: "bg-emerald-500", icon: <TrendingDown className="h-3 w-3" /> };
@@ -31,10 +39,10 @@ export function CarCard({ car, isFavorite = false, onToggleFavorite }: CarCardPr
             <div className="h-full glass-card border-zinc-200 dark:border-zinc-800 rounded-2xl overflow-hidden hover:border-indigo-500/20 hover:shadow-2xl hover:shadow-indigo-500/10 transition-all duration-500 flex flex-col">
                 {/* Image Section */}
                 <div className="relative aspect-[4/3] overflow-hidden bg-zinc-100 dark:bg-zinc-800">
-                    {car.images?.[0] ? (
+                    {carImages[0] ? (
                         <Image
-                            src={car.images[0]}
-                            alt={`${car.make} ${car.model}`}
+                            src={carImages[0]}
+                            alt={`${carMake} ${carModel}`}
                             fill
                             className="object-cover transform group-hover:scale-105 transition-transform duration-500"
                             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
@@ -118,11 +126,11 @@ export function CarCard({ car, isFavorite = false, onToggleFavorite }: CarCardPr
                     <div className="mb-4">
                         <div className="flex justify-between items-start mb-1">
                             <h3 className="font-bold text-lg text-zinc-900 dark:text-white leading-tight group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
-                                {car.make} {car.model}
+                                {carMake} {carModel}
                             </h3>
                         </div>
                         <p className="text-sm text-zinc-500 dark:text-zinc-400 font-medium">
-                            {car.year} • {car.condition}
+                            {carYear} • {carCondition}
                         </p>
                     </div>
 
@@ -130,15 +138,15 @@ export function CarCard({ car, isFavorite = false, onToggleFavorite }: CarCardPr
                     <div className="grid grid-cols-2 gap-y-2 gap-x-4 mb-6 pt-4 border-t border-zinc-100 dark:border-zinc-800">
                         <div className="flex items-center gap-2 text-xs text-zinc-600 dark:text-zinc-400">
                             <Gauge className="h-3.5 w-3.5 text-zinc-400" />
-                            {car.distance ? car.distance.toLocaleString() : '0'} km
+                            {carDistance ? carDistance.toLocaleString() : '0'} km
                         </div>
                         <div className="flex items-center gap-2 text-xs text-zinc-600 dark:text-zinc-400">
                             <Fuel className="h-3.5 w-3.5 text-zinc-400" />
-                            {car.fuel}
+                            {carFuel}
                         </div>
                         <div className="flex items-center gap-2 text-xs text-zinc-600 dark:text-zinc-400 col-span-2">
                             <MapPin className="h-3.5 w-3.5 text-zinc-400" />
-                            {car.location}
+                            {carLocation}
                         </div>
                     </div>
 

@@ -68,11 +68,14 @@ export class CarService {
 
         return (data as any[] || []).map(d => ({
             ...d,
-            location: (d as any).market_data?.location || 'CDMX',
+            location: (d as any).market_data?.location || (d as any).location || 'México',
             distance: (d as any).mileage || 0,
-            fuel: (d as any).fuel_type || 'Gasoline',
-            transmission: (d as any).transmission || 'Automatic',
-            marketValue: (d as any).market_data?.marketValue || (d as any).price
+            fuel: (d as any).fuel_type || 'Gasolina',
+            transmission: (d as any).transmission || 'Automática',
+            marketValue: (d as any).market_data?.marketValue || (d as any).price,
+            images: Array.isArray((d as any).images) ? (d as any).images : [],
+            condition: (d as any).condition || 'Seminuevo',
+            category: (d as any).category || 'Car',
         }));
     }
 

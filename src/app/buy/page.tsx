@@ -129,6 +129,9 @@ export default function BuyPage() {
 
     const filteredCars = useMemo(() => {
         return cars.filter(car => {
+            // Skip cars with no essential data
+            if (!car || !car.id) return false;
+            
             if (showFavoritesOnly && !favorites.includes(car.id)) return false;
 
             if (filters.category && filters.category.length > 0) {
@@ -140,16 +143,20 @@ export default function BuyPage() {
 
             if (filters.searchQuery) {
                 const query = filters.searchQuery.toLowerCase();
+                const carMake = (car.make || '').toLowerCase();
+                const carModel = (car.model || '').toLowerCase();
+                const carLocation = (car.location || '').toLowerCase();
                 const match =
-                    car.make.toLowerCase().includes(query) ||
-                    car.model.toLowerCase().includes(query) ||
-                    car.location.toLowerCase().includes(query) ||
-                    `${car.make} ${car.model}`.toLowerCase().includes(query);
+                    carMake.includes(query) ||
+                    carModel.includes(query) ||
+                    carLocation.includes(query) ||
+                    `${carMake} ${carModel}`.includes(query);
                 if (!match) return false;
             }
 
             if (filters.location && filters.location.length > 0) {
-                const match = filters.location.some((loc: string) => car.location.toLowerCase().includes(loc.toLowerCase()));
+                const carLocation = (car.location || '').toLowerCase();
+                const match = filters.location.some((loc: string) => carLocation.includes(loc.toLowerCase()));
                 if (!match) return false;
             }
             if (filters.makes && filters.makes.length > 0 && !filters.makes.includes(car.make)) return false;
@@ -159,9 +166,9 @@ export default function BuyPage() {
 
             return true;
         }).sort((a, b) => {
-            if (sortBy === 'price_asc') return a.price - b.price;
-            if (sortBy === 'price_desc') return b.price - a.price;
-            if (sortBy === 'newest') return b.year - a.year;
+            if (sortBy === 'price_asc') return (a.price || 0) - (b.price || 0);
+            if (sortBy === 'price_desc') return (b.price || 0) - (a.price || 0);
+            if (sortBy === 'newest') return (b.year || 0) - (a.year || 0);
             return 0;
         });
     }, [cars, filters, sortBy, favorites, showFavoritesOnly]);
