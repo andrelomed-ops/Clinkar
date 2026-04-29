@@ -510,13 +510,29 @@ export class TransactionService extends BaseService {
                 .eq('id', (transaction as any).car_id);
         }
 
-        // 4. Trigger Referral Rewards
+        // 4. Trigger Referral Rewards & Admin Notification
         try {
             await ReferralService.markOperationAsClosed(supabase, transactionId);
-            Logger.info(`[REFERRAL] Recompensas procesadas para tx ${transactionId}`);
+            
+            // [NEW] Notify Admin for Commission Tracking
+            const { data: carData } = await supabase.from('cars').select('make, model, price').eq('id', transaction.car_id).single();
+            await NotificationService.notifyAdmin(supabase, {
+                action: 'VENTA_P2P_FINALIZADA',
+                entityType: 'TRANSACTION',
+                entityId: transactionId,
+                metadata: {
+                    car: carData ? `${carData.make} ${carData.model}` : 'Vehículo',
+                    amount: carData?.price || transaction.car_price,
+                    seller_id: transaction.seller_id,
+                    buyer_id: transaction.buyer_id
+                }
+            });
+
+            Logger.info(`[P2P-SUCCESS] Admin notified for tx ${transactionId}`);
         } catch (err) {
-            Logger.error(`[REFERRAL] Error procesando recompensas de referido:`, err);
+            Logger.error(`[P2P-SUCCESS] Background tasks error:`, err);
         }
+
 
         // 5. Notify both parties
         await NotificationService.notifyMultiple(supabase, [

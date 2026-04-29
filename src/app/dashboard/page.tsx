@@ -284,23 +284,47 @@ export default function DashboardPage() {
                         )}
 
                         {activeTab === "completed" && (
-                            <>
-                                <h2 className="text-xl font-black italic uppercase text-zinc-500">Historial</h2>
-                                {transactions.filter(tx => tx.status === "RELEASED").map(tx => (
-                                    <div key={tx.id} className="glass-card rounded-[2rem] p-8 flex items-center justify-between opacity-60">
-                                        <h3 className="font-black text-xl italic uppercase">{tx.carName}</h3>
-                                        <Link href={"/dashboard/handover/" + tx.id} className="text-xs font-bold uppercase underline">Expediente</Link>
+                            <div className="space-y-6">
+                                <h2 className="text-xl font-black italic uppercase text-zinc-500 mb-8">Historial de Operaciones</h2>
+                                {transactions.filter(tx => tx.status === "RELEASED").length > 0 ? (
+                                    transactions.filter(tx => tx.status === "RELEASED").map(tx => (
+                                        <div key={tx.id} className="glass-card rounded-[2rem] p-8 flex items-center justify-between group hover:border-emerald-500/30 transition-all border border-zinc-100/50">
+                                            <div className="flex items-center gap-8">
+                                                <div className="h-24 w-40 bg-zinc-100 rounded-3xl overflow-hidden relative opacity-70 grayscale hover:grayscale-0 transition-all">
+                                                    {tx.image ? <Image src={tx.image} alt={tx.carName} fill className="object-cover" /> : <Car className="h-10 w-10 m-auto text-muted-foreground/20" />}
+                                                </div>
+                                                <div>
+                                                    <h3 className="font-black text-2xl italic uppercase text-zinc-600">{tx.carName}</h3>
+                                                    <div className="flex items-center gap-2 mt-2">
+                                                        <CheckCircle2 className="h-4 w-4 text-emerald-500" />
+                                                        <p className="text-[10px] font-black text-emerald-600 uppercase tracking-widest">Operación Exitosa</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div className="text-right">
+                                                <p className="text-xs font-black text-zinc-400 mb-2">${tx.price?.toLocaleString()} MXN</p>
+                                                <Link href={"/dashboard/handover/" + tx.id} className="inline-flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-indigo-600 hover:text-indigo-700 underline underline-offset-4">
+                                                    Ver Expediente <ArrowRight className="h-3 w-3" />
+                                                </Link>
+                                            </div>
+                                        </div>
+                                    ))
+                                ) : (
+                                    <div className="p-20 border-2 border-dashed border-zinc-100 rounded-[3rem] text-center">
+                                        <Clock className="h-12 w-12 text-zinc-200 mx-auto mb-4" />
+                                        <p className="text-sm font-bold text-zinc-400 uppercase tracking-widest">No hay transacciones finalizadas aún</p>
                                     </div>
-                                ))}
-                            </>
+                                )}
+                            </div>
                         )}
+
                     </div>
                 </div>
             </main>
             <footer className="h-8 border-t border-border/40 bg-zinc-50 flex items-center justify-between px-6 shrink-0">
                 <div className="text-[9px] font-black text-zinc-400 uppercase tracking-widest flex items-center gap-2">
                     <span className="h-1.5 w-1.5 bg-emerald-500 rounded-full" />
-                    StarterKar Garage • v4.8.1 Deployment
+                    StarterKar Garage • v4.8.2 Deployment
                 </div>
                 <div className="text-[9px] font-bold text-zinc-300 italic">
                     P2P Mediation Engine • Real-time Sync Active
