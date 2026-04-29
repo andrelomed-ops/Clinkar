@@ -108,11 +108,28 @@ export async function deleteCarAction(id: string) {
             return { success: false, message: "No tienes permisos para eliminar vehículos." };
         }
 
-        console.log(`[Action] START DELETION: Car ${id} by ${userEmail} (v4.7-SERVER)`);
+        console.log(`[Action] START DELETION: Car ${id} by ${userEmail} (v4.7.6-SERVER)`);
+
+        // 0. Resolve full UUID if short ID is provided
+        let targetId = id;
+        if (id.length < 36) {
+            console.log(`[Action] Resolving short ID: ${id}`);
+            const { data: resolvedCar } = await supabase
+                .from('cars')
+                .select('id')
+                .filter('id', 'ilike', `${id}%`)
+                .maybeSingle();
+            
+            if (!resolvedCar) {
+                return { success: false, message: "ID corto no encontrado o ambiguo." };
+            }
+            targetId = resolvedCar.id;
+        }
 
         // 1. Collect all transaction IDs for this car
-        const { data: txs } = await supabase.from("transactions").select("id").eq("car_id", id);
+        const { data: txs } = await supabase.from("transactions").select("id").eq("car_id", targetId);
         const txIds = (txs || []).map(t => t.id);
+
 
         // 2. Robust Sequential Deletion
         const safeDelete = async (table: string, column: string, values: any[]) => {
@@ -133,10 +150,10 @@ export async function deleteCarAction(id: string) {
         // --- ORDER MATTERS FOR FK CONSTRAINTS ---
         
         // A. Repair Quotations (References both car and inspection)
-        await safeDelete("repair_quotations", "car_id", [id]);
+        await safeDelete("repair_quotations", "car_id", [targetId]);
 
         // B. Inspection Reports
-        await safeDelete("inspection_reports_150", "car_id", [id]);
+        await safeDelete("inspection_reports_150", "car_id", [targetId]);
 
         // C. Transaction Dependents
         if (txIds.length > 0) {
@@ -152,17 +169,17 @@ export async function deleteCarAction(id: string) {
 
         // D. Car Dependents (Directly linked to car_id)
         const carDirectDeps = [
-            safeDelete("user_favorites", "car_id", [id]),
-            safeDelete("car_locks", "car_id", [id]),
-            safeDelete("car_waitlists", "car_id", [id]),
-            safeDelete("service_tickets", "car_id", [id]),
-            safeDelete("audit_logs", "entity_id", [id])
+            safeDelete("user_favorites", "car_id", [targetId]),
+            safeDelete("car_locks", "car_id", [targetId]),
+            safeDelete("car_waitlists", "car_id", [targetId]),
+            safeDelete("service_tickets", "car_id", [targetId]),
+            safeDelete("audit_logs", "entity_id", [targetId])
         ];
         await Promise.allSettled(carDirectDeps);
 
         // 3. FINAL STEP: Delete the car itself
         console.log(`[Action] EXECUTING FINAL DELETE for Car ${id}`);
-        const { error: carDeleteError } = await supabase.from("cars").delete().eq("id", id);
+        const { error: carDeleteError } = await supabase.from("cars").delete().eq("id", targetId);
         
         if (carDeleteError) {
             console.error("[Action] FINAL DELETION ERROR:", carDeleteError);
