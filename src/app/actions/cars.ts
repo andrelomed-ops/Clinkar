@@ -101,54 +101,94 @@ export async function deleteCarAction(id: string) {
 
     try {
         const { data: profile } = await supabase.from("profiles").select("role").eq("id", user.id).single();
-        if (profile?.role !== 'admin' && user.email !== 'StarterKar@hotmail.com') throw new Error("Forbidden");
+        const userEmail = user.email?.toLowerCase();
+        
+        if (profile?.role !== 'admin' && userEmail !== 'starterkar@hotmail.com') {
+            console.error(`[Action] Forbidden: User ${userEmail} is not an admin.`);
+            return { success: false, message: "No tienes permisos para eliminar vehículos." };
+        }
 
-        console.log(`[Action] START DELETION: Car ${id}`);
+        console.log(`[Action] START DELETION: Car ${id} by ${userEmail} (v4.7-SERVER)`);
 
         // 1. Collect all transaction IDs for this car
         const { data: txs } = await supabase.from("transactions").select("id").eq("car_id", id);
         const txIds = (txs || []).map(t => t.id);
 
-        // 2. Sequential Safe Deletion (Protect against FK and Table Missing errors)
+        // 2. Robust Sequential Deletion
         const safeDelete = async (table: string, column: string, values: any[]) => {
             if (!values || values.length === 0) return;
             try {
                 const { error } = await supabase.from(table as any).delete().in(column, values);
-                if (error) console.warn(`[Action] Non-fatal error deleting from ${table}:`, error.message);
+                if (error) {
+                    console.warn(`[Action] Non-fatal error deleting from ${table}:`, error.message);
+                    return false;
+                }
+                return true;
             } catch (e) {
                 console.warn(`[Action] Exception deleting from ${table}:`, e);
+                return false;
             }
         };
 
-        // Cleanup Dependencies by Car ID
-        await safeDelete("user_favorites", "car_id", [id]);
-        await safeDelete("car_locks", "car_id", [id]);
-        await safeDelete("car_waitlists", "car_id", [id]);
-        await safeDelete("service_tickets", "car_id", [id]);
-        await safeDelete("warranty_policies", "car_id", [id]);
-        await safeDelete("audit_logs", "entity_id", [id]);
+        // --- ORDER MATTERS FOR FK CONSTRAINTS ---
+        
+        // A. Repair Quotations (References both car and inspection)
+        await safeDelete("repair_quotations", "car_id", [id]);
 
-        // Cleanup Dependencies by Transaction ID
+        // B. Inspection Reports
+        await safeDelete("inspection_reports_150", "car_id", [id]);
+
+        // C. Transaction Dependents
         if (txIds.length > 0) {
-            await safeDelete("logistics_orders", "transaction_id", txIds);
             await safeDelete("referrals", "transaction_id", txIds);
+            await safeDelete("logistics_orders", "transaction_id", txIds);
             await safeDelete("warranty_policies", "transaction_id", txIds);
+            await safeDelete("reviews", "transaction_id", txIds); // If any
             await safeDelete("audit_logs", "entity_id", txIds);
+            
+            // Final Transaction Deletion
             await safeDelete("transactions", "id", txIds);
         }
 
+        // D. Car Dependents (Directly linked to car_id)
+        const carDirectDeps = [
+            safeDelete("user_favorites", "car_id", [id]),
+            safeDelete("car_locks", "car_id", [id]),
+            safeDelete("car_waitlists", "car_id", [id]),
+            safeDelete("service_tickets", "car_id", [id]),
+            safeDelete("audit_logs", "entity_id", [id])
+        ];
+        await Promise.allSettled(carDirectDeps);
+
         // 3. FINAL STEP: Delete the car itself
+        console.log(`[Action] EXECUTING FINAL DELETE for Car ${id}`);
         const { error: carDeleteError } = await supabase.from("cars").delete().eq("id", id);
         
         if (carDeleteError) {
             console.error("[Action] FINAL DELETION ERROR:", carDeleteError);
-            return { success: false, message: carDeleteError.message };
+            
+            // Helpful hint for the user
+            let customHint = carDeleteError.hint || "";
+            if (carDeleteError.code === "23503") {
+                customHint = "RESTRICCIÓN DE BASE DE DATOS: Hay registros en otras tablas que dependen de este auto y no se pudieron borrar automáticamente. Verifica las políticas de RLS en Supabase.";
+            }
+
+            return { 
+                success: false, 
+                message: carDeleteError.message, 
+                details: carDeleteError.details,
+                hint: customHint,
+                code: carDeleteError.code
+            };
         }
 
+        console.log(`[Action] DELETION SUCCESS: Car ${id}`);
         revalidatePath("/admin");
         revalidatePath("/buy");
         
         return { success: true };
+
+
 
     } catch (err: any) {
         console.error("[Action] CRITICAL DELETION FAILURE:", err);

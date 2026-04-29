@@ -263,3 +263,54 @@ export async function rejectInvestorApplicationAction(applicationId: string) {
     revalidatePath("/admin");
     return { success: true };
 }
+
+export async function matchDemandAction(demandId: string, carId: string) {
+    const supabase = await createClient();
+
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) throw new Error("Unauthorized");
+
+    const { data: profile } = await supabase
+        .from("profiles")
+        .select("role")
+        .eq("id", user.id)
+        .single();
+
+    const userEmail = user.email?.toLowerCase();
+    if (profile?.role !== 'admin' && userEmail !== 'starterkar@hotmail.com') {
+        throw new Error("Forbidden");
+    }
+
+    // 1. Update Demand Registry
+    const { error: demandError } = await supabase
+        .from("demand_registry")
+        .update({ 
+            status: 'completed',
+            metadata: { 
+                matched_car_id: carId,
+                matched_at: new Date().toISOString(),
+                matched_by: user.id
+            } 
+        })
+        .eq("id", demandId);
+
+    if (demandError) throw demandError;
+
+    // 2. Audit Log
+    await supabase.from("audit_logs").insert({
+        user_id: user.id,
+        action: "DEMAND_MATCH",
+        entity_id: demandId,
+        details: { car_id: carId }
+    });
+
+    revalidatePath("/admin");
+    return { success: true };
+}
+
+export async function getGlobalConcurrencyStatsAction() {
+    const supabase = await createClient();
+    const { LockService } = await import("@/services/LockService");
+    return await LockService.getGlobalConcurrencyStats(supabase);
+}
+

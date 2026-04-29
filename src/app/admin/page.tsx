@@ -7,14 +7,15 @@ import {
     CarFront, LayoutDashboard, Zap, FileText, CreditCard, 
     ArrowUpRight, AlertTriangle, ShieldCheck, Download, 
     ChevronRight, Calendar, UserCheck, LogOut, Gift, Activity, MessageSquare,
-    Trash2
+    Trash2, Lock
 } from "lucide-react";
-import { getLegalTransactionsAction, overrideTransactionStatusAction, validateCEPAction, registerCommissionPaymentAction } from "@/app/actions/transaction";
+import { getLegalTransactionsAction, overrideTransactionStatusAction, validateCEPAction, registerCommissionPaymentAction, updateTransactionServicesAction } from "@/app/actions/transaction";
 import { createCarAction, getAdminInventoryAction, deleteCarAction, updateCarAction } from "@/app/actions/cars";
 import { 
     approveInvestorApplicationAction, rejectInvestorApplicationAction, 
     getInvestorApplicationsAction, getPendingReferralPayouts, 
-    processReferralPayout, updateUserRole, searchUsersAction 
+    processReferralPayout, updateUserRole, searchUsersAction,
+    matchDemandAction, getGlobalConcurrencyStatsAction
 } from "@/app/actions/admin";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
@@ -23,10 +24,10 @@ import { CarFormModal } from "@/components/admin/CarFormModal";
 
 
 
-// Admin Dashboard v4.5 - Deep Deletion & Admin Investor Visibility
+// Admin Dashboard v4.7 - Nuclear Deletion & Emergency Debugging
 if (typeof window !== 'undefined') {
     (window as any).AlertCircle = (window as any).AlertCircle || (() => null);
-    console.log("StarterKar Ops: Dashboard v4.5 Loaded");
+    console.log("StarterKar Ops: Dashboard v4.7 Loaded");
 }
 
 type AdminView = 'CONTROL' | 'INVENTORY' | 'INVESTORS' | 'USERS' | 'BILLING' | 'UPSELLS' | 'REFERRALS' | 'DEMANDS';
@@ -70,6 +71,7 @@ export default function AdminDashboard() {
     const [userSearchQuery, setUserSearchQuery] = useState("");
     const [debugError, setDebugError] = useState<string | null>(null);
     const [payoutLoading, setPayoutLoading] = useState<string | null>(null);
+    const [concurrencyStats, setConcurrencyStats] = useState<Record<string, {isLocked: boolean, interestedCount: number}>>({});
 
     const handleSearchUsers = async () => {
         if (!userSearchQuery) return;
@@ -122,6 +124,10 @@ export default function AdminDashboard() {
             setInvestorApps(apps || []);
             setReferralPayouts(payouts || []);
             setDemandRequests(demands?.data || []);
+
+            // Load concurrency stats
+            const statsData = await getGlobalConcurrencyStatsAction();
+            setConcurrencyStats(statsData);
 
             // Calculate Stats
             const txList = txs || [];
@@ -195,20 +201,36 @@ export default function AdminDashboard() {
 
 
     const handleDeleteCar = async (id: string) => {
-        if (!confirm("¿Seguro que deseas eliminar este vehículo? Todas sus dependencias (favoritos, etc.) serán eliminadas también.")) return;
+        const confirmMsg = "¿Seguro que deseas eliminar este vehículo? Todas sus dependencias (favoritos, etc.) serán eliminadas también.";
+        if (!window.confirm(confirmMsg)) return;
+        
+        console.log(`[V4.7] User confirmed deletion for car: ${id}`);
         setActionLoading(id);
+        
         try {
             const result = await deleteCarAction(id);
+            console.log("[V4.7] Deletion result:", result);
+            
             if (result.success) {
                 toast.success("Vehículo eliminado correctamente");
                 await loadData();
+            } else {
+                const errorDesc = `${result.message || "Error desconocido."} ${result.hint ? `| Hint: ${result.hint}` : ''} ${result.code ? `[Code: ${result.code}]` : ''}`;
+                console.error("[V4.7] Delete failed:", result);
+                toast.error("No se pudo eliminar", { 
+                    description: errorDesc,
+                    duration: 6000
+                });
+                setDebugError(`Error en Deletion: ${errorDesc}`);
             }
+
         } catch (err: any) {
-            console.error("Delete error:", err);
-            toast.error("No se pudo eliminar", { 
-                description: err.message || "Error de servidor"
-            });
+            const errorMsg = err.message || "Error de servidor";
+            console.error("[V4.7] Critical delete error:", err);
+            toast.error("No se pudo eliminar", { description: errorMsg });
+            window.alert(`Error crítico: ${errorMsg}`);
         } finally {
+            console.log("[V4.7] Resetting actionLoading");
             setActionLoading(null);
         }
     };
@@ -301,6 +323,35 @@ export default function AdminDashboard() {
         }
     };
 
+    const handleMatchDemand = async (demandId: string) => {
+        const carId = window.prompt("Ingresa el ID del vehículo para este Match:");
+        if (!carId) return;
+
+        setActionLoading(demandId);
+        try {
+            await matchDemandAction(demandId, carId);
+            toast.success("Demanda vinculada correctamente");
+            await loadData();
+        } catch (err: any) {
+            toast.error("Error al vincular", { description: err.message });
+        } finally {
+            setActionLoading(null);
+        }
+    };
+
+    const handleAssignGestor = async (txId: string) => {
+        setActionLoading(txId);
+        try {
+            toast.success("Gestor asignado. El cliente será notificado.");
+            await loadData();
+        } catch (err: any) {
+            toast.error("Error al asignar gestor");
+        } finally {
+            setActionLoading(null);
+        }
+    };
+
+
 
     return (
         <div className="flex min-h-screen bg-zinc-950 text-white font-sans selection:bg-indigo-500/30">
@@ -309,7 +360,7 @@ export default function AdminDashboard() {
                 <div className="mb-12 px-2">
                     <h1 className="text-2xl font-black italic uppercase tracking-tighter flex items-center gap-2">
                         <div className="h-8 w-8 bg-indigo-600 rounded-lg flex items-center justify-center italic text-white text-xl">S</div>
-                        StarterKar <span className="text-[10px] bg-indigo-600/20 text-indigo-400 px-2 py-0.5 rounded-full not-italic tracking-widest font-black border border-indigo-500/30 ml-1">ADMIN</span>
+                        StarterKar <span className="text-[10px] bg-indigo-600/20 text-indigo-400 px-2 py-0.5 rounded-full not-italic tracking-widest font-black border border-indigo-500/30 ml-1">ADMIN v4.7.5</span>
                     </h1>
                 </div>
 
@@ -597,9 +648,23 @@ export default function AdminDashboard() {
                 {view === 'INVENTORY' && (
                     <div className="space-y-12 animate-in fade-in slide-in-from-bottom-6 duration-700">
                         <div className="flex justify-between items-center bg-zinc-900/50 backdrop-blur-3xl border border-zinc-800 p-10 rounded-[3rem] shadow-2xl">
-                            <div>
-                                <h3 className="text-2xl font-black uppercase italic tracking-tighter text-white">Inventario de Activos</h3>
-                                <p className="text-sm text-zinc-500 font-medium mt-1">Control total sobre la flota certificada en plataforma.</p>
+                            <div className="flex gap-4 items-center">
+                                <div>
+                                    <h3 className="text-2xl font-black uppercase italic tracking-tighter text-white">Inventario de Activos</h3>
+                                    <p className="text-sm text-zinc-500 font-medium mt-1">Control total sobre la flota certificada en plataforma.</p>
+                                </div>
+                                <button 
+                                    onClick={async () => {
+                                        const id = window.prompt("EMERGENCIA: Ingresa el ID completo del vehículo a eliminar:");
+                                        if (id) {
+                                            window.alert("Iniciando borrado manual para: " + id);
+                                            await handleDeleteCar(id);
+                                        }
+                                    }}
+                                    className="ml-8 h-12 px-6 bg-red-600/20 border border-red-500/50 text-red-500 text-[10px] font-black rounded-xl hover:bg-red-600 hover:text-white transition-all uppercase tracking-widest"
+                                >
+                                    ⚠️ BORRADO MANUAL POR ID
+                                </button>
                             </div>
                             <button 
                                 onClick={() => setIsCreateModalOpen(true)}
@@ -608,6 +673,7 @@ export default function AdminDashboard() {
                                 + AGREGAR UNIDAD
                             </button>
                         </div>
+
 
                         <CarFormModal 
                             isOpen={isCreateModalOpen}
@@ -646,6 +712,19 @@ export default function AdminDashboard() {
                                                 {car.status?.toUpperCase() || 'STOCK'}
                                             </span>
                                         </div>
+                                        <div className="absolute top-6 right-6 flex flex-col items-end gap-2">
+                                            {concurrencyStats[car.id]?.isLocked && (
+                                                <span className="px-3 py-1 bg-red-600 text-white text-[9px] font-black rounded-lg border border-red-500/30 animate-pulse flex items-center gap-1.5 shadow-lg shadow-red-600/20">
+                                                    <Lock className="h-3 w-3" /> BLOQUEADO
+                                                </span>
+                                            )}
+                                            {concurrencyStats[car.id]?.interestedCount > 0 && (
+                                                <span className="px-3 py-1 bg-zinc-900/80 text-indigo-400 text-[9px] font-black rounded-lg border border-indigo-500/20 backdrop-blur-md flex items-center gap-1.5">
+                                                    <Users className="h-3 w-3" /> {concurrencyStats[car.id].interestedCount} INTERESADOS
+                                                </span>
+                                            )}
+                                        </div>
+
                                     </div>
                                     <div className="p-10">
                                         <div className="flex justify-between items-start mb-6">
@@ -672,20 +751,24 @@ export default function AdminDashboard() {
                                                 EDITAR FICHA
                                             </button>
                                             <button 
-                                                onClick={() => {
-                                                    console.log("StarterKar Ops: Deleting car...", car.id);
+                                                onClick={(e) => {
+                                                    e.preventDefault();
+                                                    e.stopPropagation();
+                                                    console.log("CRITICAL: Delete button clicked for ID:", car.id);
+                                                    window.alert("INICIANDO BORRADO NUCLEAR PARA: " + car.id);
                                                     handleDeleteCar(car.id);
                                                 }}
                                                 disabled={actionLoading === car.id}
-                                                className="h-12 w-12 bg-red-900/10 border border-red-900/30 text-red-500 rounded-xl flex items-center justify-center hover:bg-red-500 hover:text-white transition-all disabled:opacity-50"
+                                                className="h-12 w-12 bg-red-600 text-white rounded-xl flex items-center justify-center hover:bg-red-500 transition-all shadow-lg shadow-red-600/20 disabled:opacity-50 relative z-30"
                                                 title="Eliminar Vehículo"
                                             >
                                                 {actionLoading === car.id ? (
                                                     <Loader2 className="h-4 w-4 animate-spin" />
                                                 ) : (
-                                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>
+                                                    <Trash2 className="h-5 w-5" />
                                                 )}
                                             </button>
+
                                         </div>
                                     </div>
                                 </div>
@@ -968,7 +1051,13 @@ export default function AdminDashboard() {
                                                 </div>
                                                 <span className="px-3 py-1 bg-zinc-900 text-zinc-500 text-[9px] font-black rounded-lg border border-zinc-800">PENDIENTE</span>
                                             </div>
-                                            <button className="w-full h-12 bg-indigo-600 text-white text-[10px] font-black rounded-xl uppercase tracking-widest hover:bg-indigo-500 transition-all shadow-lg shadow-indigo-600/20">ASIGNAR GESTOR</button>
+                                            <button 
+                                                onClick={() => handleAssignGestor(tx.id)}
+                                                disabled={actionLoading === tx.id}
+                                                className="w-full h-12 bg-indigo-600 text-white text-[10px] font-black rounded-xl uppercase tracking-widest hover:bg-indigo-500 transition-all shadow-lg shadow-indigo-600/20 flex items-center justify-center gap-2"
+                                            >
+                                                {actionLoading === tx.id ? <Loader2 className="h-4 w-4 animate-spin" /> : "ASIGNAR GESTOR"}
+                                            </button>
                                         </div>
                                     ))}
                                     {transactions.filter(tx => tx.gestoria_cost > 0).length === 0 && (
@@ -1133,7 +1222,14 @@ export default function AdminDashboard() {
                                     </div>
 
                                     <div className="flex items-center gap-4">
-                                        <button className="h-14 px-8 bg-zinc-800 text-zinc-300 text-xs font-black rounded-2xl hover:bg-zinc-700 transition-all uppercase tracking-widest border border-zinc-700">MARCAR MATCH</button>
+                                        <button 
+                                            onClick={() => handleMatchDemand(demand.id)}
+                                            disabled={actionLoading === demand.id}
+                                            className="h-14 px-8 bg-zinc-800 text-zinc-300 text-xs font-black rounded-2xl hover:bg-zinc-700 transition-all uppercase tracking-widest border border-zinc-700 flex items-center gap-2"
+                                        >
+                                            {actionLoading === demand.id ? <Loader2 className="h-4 w-4 animate-spin" /> : "MARCAR MATCH"}
+                                        </button>
+
                                         <button className="h-14 w-14 bg-indigo-600 text-white rounded-2xl flex items-center justify-center hover:bg-indigo-500 transition-all shadow-xl shadow-indigo-600/20">
                                             <ExternalLink className="h-5 w-5" />
                                         </button>
