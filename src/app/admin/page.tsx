@@ -597,24 +597,24 @@ export default function AdminDashboard() {
                                                     <div className="flex gap-8 items-center">
                                                         <div className={cn(
                                                             "h-16 w-16 border rounded-[1.5rem] flex items-center justify-center shadow-inner",
-                                                            tx.status === 'P2P_WAITING_PROOF' ? "bg-amber-500/5 border-amber-500/20" : "bg-emerald-500/5 border-emerald-500/20"
+                                                            tx.status?.toLowerCase() === 'p2p_waiting_proof' ? "bg-amber-500/5 border-amber-500/20" : "bg-emerald-500/5 border-emerald-500/20"
                                                         )}>
-                                                            {tx.status === 'P2P_WAITING_PROOF' ? <CreditCard className="h-8 w-8 text-amber-500" /> : <ShieldCheck className="h-8 w-8 text-emerald-500" />}
+                                                            {tx.status?.toLowerCase() === 'p2p_waiting_proof' ? <CreditCard className="h-8 w-8 text-amber-500" /> : <ShieldCheck className="h-8 w-8 text-emerald-500" />}
                                                         </div>
                                                         <div className="flex-1">
                                                             <div className="flex items-center gap-3 mb-1">
                                                                 <p className={cn(
                                                                     "text-[10px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full border",
-                                                                    txStatus === 'p2p_waiting_proof' ? "text-amber-500 border-amber-500/20 bg-amber-500/5" : "text-emerald-500 border-emerald-500/20 bg-emerald-500/5"
+                                                                    tx.status?.toLowerCase() === 'p2p_waiting_proof' ? "text-amber-500 border-amber-500/20 bg-amber-500/5" : "text-emerald-500 border-emerald-500/20 bg-emerald-500/5"
                                                                 )}>
-                                                                    {STATUS_MAP[txStatus]?.label || STATUS_MAP[tx.status]?.label || tx.status}
+                                                                    {STATUS_MAP[tx.status?.toLowerCase() || '']?.label || tx.status}
                                                                 </p>
                                                                 <span className="text-zinc-700 text-xs">•</span>
                                                                 <span className="text-zinc-500 text-[10px] font-bold">Folio: {tx.id.slice(0, 8)}</span>
                                                                 <span className="text-zinc-700 text-xs">•</span>
                                                                 <div className="flex items-center gap-1.5 bg-zinc-900 px-2 py-0.5 rounded-full border border-zinc-800">
-                                                                    <div className={cn("h-1.5 w-1.5 rounded-full", carStatus === 'sold' ? "bg-zinc-500" : "bg-amber-500 animate-pulse")} />
-                                                                    <span className="text-[9px] font-black uppercase text-zinc-400">Auto: {STATUS_MAP[carStatus]?.label || STATUS_MAP[tx.cars?.status]?.label || tx.cars?.status}</span>
+                                                                    <div className={cn("h-1.5 w-1.5 rounded-full", tx.cars?.status?.toLowerCase() === 'sold' ? "bg-zinc-500" : "bg-amber-500 animate-pulse")} />
+                                                                    <span className="text-[9px] font-black uppercase text-zinc-400">Auto: {STATUS_MAP[tx.cars?.status?.toLowerCase() || '']?.label || tx.cars?.status}</span>
                                                                 </div>
                                                             </div>
                                                             <h4 className="text-xl font-black text-white italic tracking-tighter">
@@ -653,7 +653,7 @@ export default function AdminDashboard() {
                                                     </div>
                                                 </div>
                                             </div>
-                                        ))}
+                                        ))
 
                                         {transactions.filter(tx => {
                                             const txStatus = tx.status?.toLowerCase();
@@ -845,7 +845,7 @@ export default function AdminDashboard() {
                                         </div>
                                     </div>
                                 </div>
-                            ))}
+                            ))
                         </div>
                     </div>
                 )}
@@ -923,7 +923,7 @@ export default function AdminDashboard() {
                                         )}
                                     </div>
                                 </div>
-                            ))}
+                            ))
                             {investorApps.length === 0 && (
                                 <div className="py-32 text-center border-2 border-dashed border-zinc-800 rounded-[3rem] bg-zinc-900/20">
                                     <UserCheck className="h-12 w-12 text-zinc-800 mx-auto mb-4 opacity-50" />
@@ -1018,7 +1018,7 @@ export default function AdminDashboard() {
                                         </div>
                                     </div>
                                 </div>
-                            ))}
+                            ))
                             {userSearchQuery && users.length === 0 && !loading && (
                                 <div className="py-20 text-center border-2 border-dashed border-zinc-800 rounded-[3rem] bg-zinc-950/20">
                                     <p className="text-zinc-600 font-black uppercase tracking-[0.4em] italic text-xs">No se encontraron usuarios</p>
@@ -1080,7 +1080,7 @@ export default function AdminDashboard() {
                                         </div>
                                     </div>
                                 </div>
-                            ))}
+                            ))
                             {transactions.filter(tx => tx.status === 'RELEASED' && !tx.commission_paid).length === 0 && (
                                 <div className="py-32 text-center border-2 border-dashed border-zinc-800 rounded-[3rem] bg-zinc-900/20">
                                     <DollarSign className="h-12 w-12 text-zinc-800 mx-auto mb-4 opacity-50" />
@@ -1132,7 +1132,7 @@ export default function AdminDashboard() {
                                                 {actionLoading === tx.id ? <Loader2 className="h-4 w-4 animate-spin" /> : "ASIGNAR GESTOR"}
                                             </button>
                                         </div>
-                                    ))}
+                                    ))
                                     {transactions.filter(tx => tx.gestoria_cost > 0).length === 0 && (
                                         <div className="py-12 text-center border border-dashed border-zinc-800 rounded-3xl opacity-30">
                                             <p className="text-[10px] font-black uppercase tracking-widest">Sin trámites pendientes</p>
@@ -1163,7 +1163,7 @@ export default function AdminDashboard() {
                                             </div>
                                             <button className="w-full h-12 bg-emerald-600 text-white text-[10px] font-black rounded-xl uppercase tracking-widest hover:bg-emerald-500 transition-all shadow-lg shadow-emerald-600/20">EMITIR PÓLIZA PDF</button>
                                         </div>
-                                    ))}
+                                    ))
                                     {transactions.filter(tx => tx.warranty_cost > 0 || tx.insurance_cost > 0).length === 0 && (
                                         <div className="py-12 text-center border border-dashed border-zinc-800 rounded-3xl opacity-30">
                                             <p className="text-[10px] font-black uppercase tracking-widest">Sin pólizas por generar</p>
@@ -1228,7 +1228,7 @@ export default function AdminDashboard() {
                                         </button>
                                     </div>
                                 </div>
-                            ))}
+                            ))
                             {referralPayouts.length === 0 && (
                                 <div className="py-32 text-center border-2 border-dashed border-zinc-800 rounded-[3rem] bg-zinc-900/20">
                                     <Users className="h-12 w-12 text-zinc-800 mx-auto mb-4 opacity-50" />
@@ -1308,7 +1308,7 @@ export default function AdminDashboard() {
                                         </button>
                                     </div>
                                 </div>
-                            ))}
+                            ))
                             {demandRequests.length === 0 && (
                                 <div className="py-32 text-center border-2 border-dashed border-zinc-800 rounded-[3rem] bg-zinc-900/20">
                                     <MessageSquare className="h-12 w-12 text-zinc-800 mx-auto mb-4 opacity-50" />
