@@ -99,44 +99,61 @@ export async function deleteCarAction(id: string) {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) throw new Error("Unauthorized");
 
-    const { data: profile } = await supabase.from("profiles").select("role").eq("id", user.id).single();
-    if (profile?.role !== 'admin' && user.email !== 'StarterKar@hotmail.com') throw new Error("Forbidden");
+    try {
+        const { data: profile } = await supabase.from("profiles").select("role").eq("id", user.id).single();
+        if (profile?.role !== 'admin' && user.email !== 'StarterKar@hotmail.com') throw new Error("Forbidden");
 
-    console.log(`[Action] Deleting car ${id} and its dependencies...`);
+        console.log(`[Action] START DELETION: Car ${id}`);
 
-    // 1. Delete Dependencies first to avoid FK constraints
-    await supabase.from("user_favorites").delete().eq("car_id", id);
-    await supabase.from("car_locks").delete().eq("car_id", id);
-    await supabase.from("car_waitlists").delete().eq("car_id", id);
-    await supabase.from("service_tickets").delete().eq("car_id", id);
-    await supabase.from("warranty_policies").delete().eq("car_id", id);
-    
-    // Deeper cleanup for transactions and dependencies
-    const { data: txs } = await supabase.from("transactions").select("id").eq("car_id", id);
-    if (txs && txs.length > 0) {
-        const txIds = txs.map(t => t.id);
-        // Delete dependencies linked to transactions
-        await supabase.from("logistics_orders").delete().in("transaction_id", txIds);
-        await supabase.from("referrals" as any).delete().in("transaction_id", txIds);
-        await supabase.from("audit_logs").delete().in("entity_id", txIds);
-        await supabase.from("transactions").delete().in("id", txIds);
+        // 1. Collect all transaction IDs for this car
+        const { data: txs } = await supabase.from("transactions").select("id").eq("car_id", id);
+        const txIds = (txs || []).map(t => t.id);
+
+        // 2. Sequential Safe Deletion (Protect against FK and Table Missing errors)
+        const safeDelete = async (table: string, column: string, values: any[]) => {
+            if (!values || values.length === 0) return;
+            try {
+                const { error } = await supabase.from(table as any).delete().in(column, values);
+                if (error) console.warn(`[Action] Non-fatal error deleting from ${table}:`, error.message);
+            } catch (e) {
+                console.warn(`[Action] Exception deleting from ${table}:`, e);
+            }
+        };
+
+        // Cleanup Dependencies by Car ID
+        await safeDelete("user_favorites", "car_id", [id]);
+        await safeDelete("car_locks", "car_id", [id]);
+        await safeDelete("car_waitlists", "car_id", [id]);
+        await safeDelete("service_tickets", "car_id", [id]);
+        await safeDelete("warranty_policies", "car_id", [id]);
+        await safeDelete("audit_logs", "entity_id", [id]);
+
+        // Cleanup Dependencies by Transaction ID
+        if (txIds.length > 0) {
+            await safeDelete("logistics_orders", "transaction_id", txIds);
+            await safeDelete("referrals", "transaction_id", txIds);
+            await safeDelete("warranty_policies", "transaction_id", txIds);
+            await safeDelete("audit_logs", "entity_id", txIds);
+            await safeDelete("transactions", "id", txIds);
+        }
+
+        // 3. FINAL STEP: Delete the car itself
+        const { error: carDeleteError } = await supabase.from("cars").delete().eq("id", id);
+        
+        if (carDeleteError) {
+            console.error("[Action] FINAL DELETION ERROR:", carDeleteError);
+            return { success: false, message: carDeleteError.message };
+        }
+
+        revalidatePath("/admin");
+        revalidatePath("/buy");
+        
+        return { success: true };
+
+    } catch (err: any) {
+        console.error("[Action] CRITICAL DELETION FAILURE:", err);
+        return { success: false, message: err.message || "Internal Server Error" };
     }
-
-    // Direct car audit logs
-    await supabase.from("audit_logs").delete().eq("entity_id", id);
-    
-    // 2. Finally delete the car
-    const { error } = await supabase.from("cars").delete().eq("id", id);
-    
-    if (error) {
-        console.error("[Action] Delete Car Error:", error);
-        throw new Error(`No se pudo eliminar: ${error.message}`);
-    }
-
-    revalidatePath("/admin");
-    revalidatePath("/buy");
-
-    return { success: true };
 }
 
 export async function getAutomatedSpecsAction(make: string, model: string) {
