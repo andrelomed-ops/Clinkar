@@ -123,7 +123,14 @@ export default function DashboardPage() {
         };
         checkAuth();
         loadDashboard();
-    }, [supabase]);
+
+        // [NEW] Sync tab with URL
+        const tab = searchParams.get("tab");
+        if (tab === "buying" || tab === "selling" || tab === "completed") {
+            setActiveTab(tab as any);
+        }
+    }, [supabase, searchParams]);
+
 
     const handleToggleFavorite = async (e: any, id: string) => {
         e.preventDefault();
@@ -315,7 +322,7 @@ export default function DashboardPage() {
             <footer className="h-8 border-t border-border/40 bg-zinc-50 flex items-center justify-between px-6 shrink-0">
                 <div className="text-[9px] font-black text-zinc-400 uppercase tracking-widest flex items-center gap-2">
                     <span className="h-1.5 w-1.5 bg-emerald-500 rounded-full" />
-                    StarterKar Garage • v4.8.8 Deployment
+                    StarterKar Garage • v4.8.9 Deployment
                 </div>
                 <div className="text-[9px] font-bold text-zinc-300 italic">
                     P2P Mediation Engine • Real-time Sync Active
