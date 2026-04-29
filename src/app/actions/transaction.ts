@@ -199,21 +199,22 @@ export async function updateTransactionServicesAction(transactionId: string, ser
 
 export async function confirmP2PHandoverAction(transactionId: string) {
     const supabase = await createClient();
-    
-    // Auth check
     const { data: { user } } = await supabase.auth.getUser();
-    if (!user) {
-        // Allow demo users
-        const { cookies } = await import('next/headers');
-        const cookieStore = await cookies();
-        const demoRole = cookieStore.get('starterkar_role')?.value;
-        if (!demoRole) throw new Error("Unauthorized");
-        
-        if (transactionId.startsWith('mock-') || transactionId.startsWith('demo-')) {
-            return { success: true };
+    
+    // 1. Handle Mocks/Demos First
+    if (transactionId.startsWith('mock-') || transactionId.startsWith('demo-')) {
+        console.log(`[Handover] Simulation completed for ${transactionId}`);
+        const carId = transactionId.split('-').pop();
+        if (carId && carId.length > 20) {
+            await CarService.updateCarStatus(supabase, carId, 'SOLD');
         }
+        revalidatePath('/dashboard');
+        return { success: true };
     }
 
+    // 2. Real Transaction Flow
+    if (!user) throw new Error("Unauthorized");
+    
     const result = await TransactionService.confirmP2PHandover(supabase, transactionId);
     if (result.success) {
         revalidatePath('/dashboard');
@@ -221,6 +222,7 @@ export async function confirmP2PHandoverAction(transactionId: string) {
     }
     return result;
 }
+
 
 export async function reportDiscrepancyAction(transactionId: string, details: {
     reason: string;

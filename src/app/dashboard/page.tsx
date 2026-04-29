@@ -177,13 +177,39 @@ export default function DashboardPage() {
                         </div>
                     </div>
 
-                    <div className="flex border-b border-border/40 mb-10">
-                        {(["buying", "selling", "completed"] as const).map((tab) => (
-                            <button key={tab} onClick={() => setActiveTab(tab)} className={cn("px-8 py-4 text-xs font-black uppercase tracking-widest", activeTab === tab ? "text-indigo-600 border-b-2 border-indigo-600" : "text-zinc-400")}>
-                                {tab === "buying" ? "🛒 Comprando" : tab === "selling" ? "🏷️ Vendiendo" : "✅ Completadas"}
-                            </button>
-                        ))}
+                    <div className="flex border-b border-border/40 mb-10 overflow-x-auto no-scrollbar">
+                        {(["buying", "selling", "completed"] as const).map((tab) => {
+                            const count = tab === "buying" 
+                                ? transactions.filter(tx => tx.role === "buyer" && tx.status !== "RELEASED").length
+                                : tab === "selling"
+                                ? transactions.filter(tx => tx.role === "seller" && tx.status !== "RELEASED").length
+                                : transactions.filter(tx => tx.status === "RELEASED").length;
+
+                            return (
+                                <button 
+                                    key={tab} 
+                                    onClick={() => setActiveTab(tab)} 
+                                    className={cn(
+                                        "px-8 py-4 text-[10px] font-black uppercase tracking-[0.2em] flex items-center gap-3 transition-all", 
+                                        activeTab === tab ? "text-indigo-600 border-b-2 border-indigo-600 bg-indigo-50/50" : "text-zinc-400 hover:text-zinc-600"
+                                    )}
+                                >
+                                    <span>
+                                        {tab === "buying" ? "🛒 Comprando" : tab === "selling" ? "🏷️ Vendiendo" : "✅ Completadas"}
+                                    </span>
+                                    {count > 0 && (
+                                        <span className={cn(
+                                            "h-5 w-5 rounded-full flex items-center justify-center text-[9px] font-black",
+                                            activeTab === tab ? "bg-indigo-600 text-white" : "bg-zinc-100 text-zinc-500"
+                                        )}>
+                                            {count}
+                                        </span>
+                                    )}
+                                </button>
+                            );
+                        })}
                     </div>
+
 
                     <div className="space-y-12">
                         {activeTab === "buying" && (
