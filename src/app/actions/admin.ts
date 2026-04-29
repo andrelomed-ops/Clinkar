@@ -128,7 +128,12 @@ export async function getPendingReferralPayouts() {
         throw new Error("Forbidden");
     }
 
-    return await ReferralPayoutService.getPendingPayouts(supabase);
+    try {
+        return await ReferralPayoutService.getPendingPayouts(supabase);
+    } catch (err) {
+        console.error("[Admin] Referral fetch failed:", err);
+        return []; // Suppress error to keep dashboard alive
+    }
 }
 
 export async function getInspectorScheduleAction() {

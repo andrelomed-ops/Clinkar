@@ -147,12 +147,17 @@ export async function getLegalTransactionsAction() {
 
     // Manual join to bypass FK issues
     const txsWithCars = await Promise.all((txs || []).map(async (tx) => {
-        const { data: car } = await supabase
-            .from("cars")
-            .select("*")
-            .eq("id", tx.car_id)
-            .single();
-        return { ...tx, cars: car };
+        try {
+            const { data: car } = await supabase
+                .from("cars")
+                .select("*")
+                .eq("id", tx.car_id)
+                .maybeSingle();
+            return { ...tx, cars: car || null };
+        } catch (e) {
+            console.error(`[Admin] Failed to fetch car for tx ${tx.id}`, e);
+            return { ...tx, cars: null };
+        }
     }));
 
     return txsWithCars;

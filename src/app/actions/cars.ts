@@ -110,6 +110,7 @@ export async function deleteCarAction(id: string) {
     await supabase.from("car_waitlists").delete().eq("car_id", id);
     await supabase.from("service_tickets").delete().eq("car_id", id);
     await supabase.from("warranty_policies").delete().eq("car_id", id);
+    await supabase.from("transactions").delete().eq("car_id", id);
     
     // 2. Finally delete the car
     const { error } = await supabase.from("cars").delete().eq("id", id);
