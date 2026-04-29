@@ -108,27 +108,27 @@ export async function deleteCarAction(id: string) {
             return { success: false, message: "No tienes permisos para eliminar vehículos." };
         }
 
-        console.log(`[Action] START DELETION: Car ${id} by ${userEmail} (v4.7.6-SERVER)`);
+        console.log(`[Action] START DELETION: Car ${id} by ${userEmail} (v4.7.7-SERVER)`);
 
-        // 0. Resolve full UUID if short ID is provided
+        // 0. Resolve full UUID (Robust JS-side resolution)
         let targetId = id;
         if (id.length < 36) {
-            console.log(`[Action] Resolving short ID: ${id}`);
-            const { data: resolvedCar } = await supabase
-                .from('cars')
-                .select('id')
-                .filter('id', 'ilike', `${id}%`)
-                .maybeSingle();
+            console.log(`[Action] Short ID detected: ${id}. Resolving via inventory scan...`);
+            const { data: allCars } = await supabase.from('cars').select('id');
+            const match = allCars?.find(c => c.id.toLowerCase().startsWith(id.toLowerCase()));
             
-            if (!resolvedCar) {
-                return { success: false, message: "ID corto no encontrado o ambiguo." };
+            if (!match) {
+                console.error(`[Action] Resolution failed for: ${id}`);
+                return { success: false, message: `ID "${id}" no encontrado en el inventario actual.` };
             }
-            targetId = resolvedCar.id;
+            targetId = match.id;
+            console.log(`[Action] Resolved ${id} -> ${targetId}`);
         }
 
         // 1. Collect all transaction IDs for this car
         const { data: txs } = await supabase.from("transactions").select("id").eq("car_id", targetId);
         const txIds = (txs || []).map(t => t.id);
+
 
 
         // 2. Robust Sequential Deletion
