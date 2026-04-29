@@ -360,7 +360,7 @@ export default function AdminDashboard() {
                 <div className="mb-12 px-2">
                     <h1 className="text-2xl font-black italic uppercase tracking-tighter flex items-center gap-2">
                         <div className="h-8 w-8 bg-indigo-600 rounded-lg flex items-center justify-center italic text-white text-xl">S</div>
-                        StarterKar <span className="text-[10px] bg-indigo-600/20 text-indigo-400 px-2 py-0.5 rounded-full not-italic tracking-widest font-black border border-indigo-500/30 ml-1">ADMIN v4.7.5</span>
+                        StarterKar <span className="text-[10px] bg-indigo-600/20 text-indigo-400 px-2 py-0.5 rounded-full not-italic tracking-widest font-black border border-indigo-500/30 ml-1">ADMIN v4.8.7</span>
                     </h1>
                 </div>
 
@@ -536,12 +536,19 @@ export default function AdminDashboard() {
                                             Centro de Triage Operativo
                                         </h3>
                                         <div className="flex items-center gap-3">
-                                            <span className="h-2 w-2 bg-emerald-500 rounded-full animate-pulse" />
-                                            <span className="text-[10px] font-black uppercase tracking-widest text-zinc-400">
+                                            {/* [NEW] Alert for completed sales */}
+                                            {transactions.some(tx => tx.status === 'RELEASED') && (
+                                                <div className="flex items-center gap-2 px-4 py-2 bg-emerald-500/10 border border-emerald-500/20 rounded-full animate-bounce">
+                                                    <div className="h-1.5 w-1.5 bg-emerald-500 rounded-full" />
+                                                    <span className="text-[9px] font-black uppercase tracking-widest text-emerald-500">Comisión de Éxito Lista</span>
+                                                </div>
+                                            )}
+                                            <span className="text-[10px] font-black uppercase tracking-widest text-zinc-400 ml-4">
                                                 {transactions.filter(tx => tx.status === 'P2P_WAITING_PROOF' || tx.status === 'HANDOVER_SCHEDULED').length} Bloqueos Detectados
                                             </span>
                                         </div>
                                     </div>
+
 
                                     <div className="space-y-4 relative z-10">
                                         {transactions.filter(tx => tx.status === 'P2P_WAITING_PROOF' || tx.status === 'HANDOVER_SCHEDULED').map(tx => (
