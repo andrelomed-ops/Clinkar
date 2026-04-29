@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { ChevronDown, ChevronUp, Search, MapPin, Calendar, Gauge, Globe, TrendingDown, ShieldCheck } from "lucide-react";
+import { ChevronDown, ChevronUp, Search, MapPin, Calendar, Gauge, Globe, TrendingDown, ShieldCheck, Zap } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface MarketFiltersProps {
