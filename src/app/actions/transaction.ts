@@ -331,7 +331,7 @@ export async function registerCommissionPaymentAction(transactionId: string, pay
     if (!user) throw new Error("Unauthorized");
 
     const { data: profile } = await supabase.from("profiles").select("role").eq("id", user.id).single();
-    if (profile?.role !== 'admin' && user.email !== 'StarterKar@hotmail.com') throw new Error("Forbidden");
+    if (profile?.role !== 'admin' && user.email?.toLowerCase() !== 'starterkar@hotmail.com') throw new Error("Forbidden: No tienes permisos de administrador.");
 
     const { error } = await supabase.from("transactions").update({
         commission_paid: true,

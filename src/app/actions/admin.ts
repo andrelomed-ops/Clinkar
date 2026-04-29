@@ -314,3 +314,22 @@ export async function getGlobalConcurrencyStatsAction() {
     return await LockService.getGlobalConcurrencyStats(supabase);
 }
 
+
+export async function getRecentUsersAction() {
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) throw new Error("Unauthorized");
+
+    const { data: profile } = await supabase.from("profiles").select("role").eq("id", user.id).single();
+    const userEmail = user.email?.toLowerCase();
+    if (profile?.role !== 'admin' && userEmail !== 'starterkar@hotmail.com') throw new Error("Forbidden");
+
+    const { data, error } = await supabase
+        .from("profiles")
+        .select("*")
+        .order("created_at", { ascending: false })
+        .limit(20);
+
+    if (error) return [];
+    return data || [];
+}

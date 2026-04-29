@@ -15,7 +15,7 @@ import {
     approveInvestorApplicationAction, rejectInvestorApplicationAction, 
     getInvestorApplicationsAction, getPendingReferralPayouts, 
     processReferralPayout, updateUserRole, searchUsersAction,
-    matchDemandAction, getGlobalConcurrencyStatsAction
+    matchDemandAction, getGlobalConcurrencyStatsAction, getRecentUsersAction
 } from "@/app/actions/admin";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
@@ -129,10 +129,11 @@ export default function AdminDashboard() {
                 getLegalTransactionsAction().catch(e => { console.error("Tx error:", e); return null; }),
                 getInvestorApplicationsAction().catch(e => { console.error("Apps error:", e); return null; }),
                 getPendingReferralPayouts().catch(e => { console.error("Payouts error:", e); return null; }),
-                supabase.from('demand_registry').select('*').order('created_at', { ascending: false })
+                supabase.from('demand_registry').select('*').order('created_at', { ascending: false }),
+                getRecentUsersAction().catch(e => { console.error("Users error:", e); return []; })
             ];
 
-            const [cars, txs, apps, payouts, demands] = await Promise.all(fetchers);
+            const [cars, txs, apps, payouts, demands, initialUsers] = await Promise.all(fetchers);
             
             if (cars === null) setDebugError(prev => (prev ? prev + " | " : "") + "Error en Inventario");
             if (txs === null) setDebugError(prev => (prev ? prev + " | " : "") + "Error en Transacciones");
@@ -144,6 +145,7 @@ export default function AdminDashboard() {
             setInvestorApps(apps || []);
             setReferralPayouts(payouts || []);
             setDemandRequests(demands?.data || []);
+            setUsers(initialUsers || []);
 
             // Load concurrency stats
             const statsData = await getGlobalConcurrencyStatsAction();
@@ -294,7 +296,7 @@ export default function AdminDashboard() {
             toast.success("Pago de comisión registrado correctamente");
             await loadData();
         } catch (err: any) {
-            toast.error("Error al registrar pago");
+            toast.error("Error al registrar pago", { description: err.message || "Error desconocido" });
         } finally {
             setActionLoading(null);
         }
