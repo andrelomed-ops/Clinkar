@@ -194,7 +194,7 @@ export default function BuyPage() {
     const filteredCars = useMemo(() => {
         try {
             return cars.filter(car => {
-                if (!car || !car.id) return false;
+                if (!car || !car.id || (Number(car.price) || 0) <= 0) return false;
                 
                 if (showFavoritesOnly && !favorites.includes(car.id)) return false;
 
@@ -226,7 +226,7 @@ export default function BuyPage() {
                 if (filters.makes && filters.makes.length > 0 && !filters.makes.includes(car.make)) return false;
                 if (filters.minPrice && car.price < Number(filters.minPrice)) return false;
                 if (filters.maxPrice && car.price > Number(filters.maxPrice)) return false;
-                const isUserInvestor = userRole?.toLowerCase() === 'investor';
+                const isUserInvestor = userRole?.toLowerCase() === 'investor' || userRole?.toLowerCase() === 'admin';
 
                 if (filters.certifiedOnly && !car.has_clinkar_seal) return false;
                 if (filters.flashSale && !car.flashSale) return false;
@@ -234,6 +234,7 @@ export default function BuyPage() {
                 if (filters.investorOnly && !car.is_investor_only) return false;
                 if (filters.newCars && !car.is_new) return false;
 
+                // RESTRICTION: Investor-only cars are ONLY visible to users with 'investor' or 'admin' role
                 if (car.is_investor_only && !isUserInvestor) return false;
 
                 return true;
