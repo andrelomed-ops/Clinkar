@@ -508,6 +508,25 @@ export default function AdminDashboard() {
                     </div>
                 </header>
 
+                {/* Identity Debug v4.7.9 */}
+                <div className="mx-12 mt-6 p-4 bg-zinc-900 border border-zinc-800 rounded-2xl flex items-center justify-between shadow-2xl">
+                    <div className="flex items-center gap-6">
+                        <div className="flex items-center gap-2">
+                            <span className="text-[10px] font-black text-zinc-500 uppercase tracking-widest">Status:</span>
+                            <span className="px-2 py-0.5 bg-emerald-500/10 text-emerald-500 text-[9px] font-black rounded-md border border-emerald-500/20">CONNECTED</span>
+                        </div>
+                        <div className="h-4 w-[1px] bg-zinc-800" />
+                        <div className="flex items-center gap-2">
+                            <span className="text-[10px] font-black text-zinc-500 uppercase tracking-widest">Version:</span>
+                            <span className="text-[10px] font-black text-indigo-400">v4.7.9-STABLE</span>
+                        </div>
+                    </div>
+                    <div className="text-[9px] font-black text-zinc-600 uppercase tracking-widest">
+                        StarterKar Central Ops • Dashboard Operativo
+                    </div>
+                </div>
+
+
                 {/* Content Views */}
                 {view === 'CONTROL' && (
                     <div className="space-y-12 animate-in fade-in slide-in-from-bottom-6 duration-700">
