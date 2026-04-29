@@ -103,9 +103,10 @@ export default function DashboardPage() {
             // 4. Load Inspections (Safe Fetch)
             try {
                 const { data: insps, error: inspError } = await supabase
-                    .from("inspections")
+                    .from("inspection_reports_150")
                     .select("*, cars(*)")
                     .eq("status", "SCHEDULED");
+
                 
                 if (inspError) throw inspError;
 
@@ -334,7 +335,7 @@ export default function DashboardPage() {
             <footer className="h-8 border-t border-border/40 bg-zinc-50 flex items-center justify-between px-6 shrink-0">
                 <div className="text-[9px] font-black text-zinc-400 uppercase tracking-widest flex items-center gap-2">
                     <span className="h-1.5 w-1.5 bg-emerald-500 rounded-full" />
-                    StarterKar Garage • v4.8.4 Deployment
+                    StarterKar Garage • v4.8.5 Deployment
                 </div>
                 <div className="text-[9px] font-bold text-zinc-300 italic">
                     P2P Mediation Engine • Real-time Sync Active
