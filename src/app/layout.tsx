@@ -108,15 +108,19 @@ export default function RootLayout({
         {/* Cache Buster: v1.1.2 - Force refresh and provide AlertCircle fallback */}
         <meta name="version" content="1.1.5" />
         <script dangerouslySetInnerHTML={{ __html: `
-          // 🚨 NUCLEAR CACHE CLEARING - EMERGENCY FIX v4.2
+          // 🚨 NUCLEAR CACHE CLEARING - EMERGENCY FIX v4.3
           (function() {
             if (typeof window !== 'undefined') {
-              const VERSION = '4.2';
+              const VERSION = '4.3';
               const dummy = function() { return null; };
               
               // Immediate Fallbacks for phantom references
               window.AlertCircle = window.AlertCircle || dummy;
-              if (typeof globalThis !== 'undefined') globalThis.AlertCircle = globalThis.AlertCircle || dummy;
+              window.Zap = window.Zap || dummy;
+              if (typeof globalThis !== 'undefined') {
+                globalThis.AlertCircle = globalThis.AlertCircle || dummy;
+                globalThis.Zap = globalThis.Zap || dummy;
+              }
 
               if (localStorage.getItem('clinkar_reset_v') !== VERSION) {
                 console.log("StarterKar: Triggering Nuclear Cache Reset v" + VERSION + "...");

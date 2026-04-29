@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { Vehicle } from "@/data/cars";
-import { MapPin, Gauge, Fuel, Heart, TrendingDown, BadgeCheck, Zap } from "lucide-react";
+import { MapPin, Gauge, Fuel, Heart, TrendingDown, BadgeCheck } from "lucide-react";
 import { StarterKarSeal } from "./StarterKarSeal";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
