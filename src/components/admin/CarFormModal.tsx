@@ -353,6 +353,8 @@ export function CarFormModal({ isOpen, onClose, onSubmit, initialData, isLoading
                              <FormGroup label="Estatus">
                                 <select value={formData.status} className="form-input" onChange={e => setFormData({...formData, status: e.target.value})}>
                                     <option value="published">PUBLICADO</option>
+                                    <option value="pending_inspection">EN REVISIÓN</option>
+                                    <option value="reserved">RESERVADO</option>
                                     <option value="draft">BORRADOR</option>
                                     <option value="archived">ARCHIVADO</option>
                                 </select>

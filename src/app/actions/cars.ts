@@ -110,7 +110,15 @@ export async function deleteCarAction(id: string) {
     await supabase.from("car_waitlists").delete().eq("car_id", id);
     await supabase.from("service_tickets").delete().eq("car_id", id);
     await supabase.from("warranty_policies").delete().eq("car_id", id);
-    await supabase.from("transactions").delete().eq("car_id", id);
+    
+    // Deeper cleanup for transactions and referrals
+    const { data: txs } = await supabase.from("transactions").select("id").eq("car_id", id);
+    if (txs && txs.length > 0) {
+        const txIds = txs.map(t => t.id);
+        // Delete referrals that point to these transactions
+        await supabase.from("referrals" as any).delete().in("transaction_id", txIds);
+        await supabase.from("transactions").delete().in("id", txIds);
+    }
     
     // 2. Finally delete the car
     const { error } = await supabase.from("cars").delete().eq("id", id);

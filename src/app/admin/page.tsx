@@ -438,6 +438,19 @@ export default function AdminDashboard() {
                                 placeholder="Buscar Folio, VIN o Cliente..." 
                             />
                         </div>
+                        <button 
+                            onClick={() => {
+                                if (confirm("¿Forzar recarga nuclear del sistema? Se limpiará la caché y se cerrarán sesiones temporales.")) {
+                                    localStorage.clear();
+                                    sessionStorage.clear();
+                                    window.location.reload(true as any);
+                                }
+                            }}
+                            className="h-14 px-6 bg-red-600/10 border border-red-500/30 rounded-2xl flex items-center gap-3 text-red-500 hover:bg-red-600 hover:text-white transition-all group"
+                        >
+                            <Zap className="h-5 w-5 group-hover:animate-bounce" />
+                            <span className="text-[10px] font-black uppercase tracking-widest">Forzar Recarga</span>
+                        </button>
                         <button className="h-14 w-14 bg-zinc-900 border border-zinc-800 rounded-2xl flex items-center justify-center hover:bg-zinc-800 hover:border-zinc-700 transition-all active:scale-95 shadow-xl">
                             <Filter className="h-5 w-5 text-zinc-400" />
                         </button>
