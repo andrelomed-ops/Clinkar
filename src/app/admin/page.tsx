@@ -29,9 +29,29 @@ if (typeof window !== 'undefined') {
     (window as any).AlertCircle = (window as any).AlertCircle || (() => null);
     console.log("StarterKar Ops: Dashboard v4.7 Loaded");
 }
-
 type AdminView = 'CONTROL' | 'INVENTORY' | 'INVESTORS' | 'USERS' | 'BILLING' | 'UPSELLS' | 'REFERRALS' | 'DEMANDS';
 
+const STATUS_MAP: Record<string, { label: string, color: string }> = {
+    // Car Statuses (Normalized to lowercase keys)
+    'published': { label: 'PUBLICADO', color: 'text-emerald-500 bg-emerald-500/10 border-emerald-500/20' },
+    'certified': { label: 'CERTIFICADO', color: 'text-emerald-500 bg-emerald-500/10 border-emerald-500/20' },
+    'reserved': { label: 'RESERVADO', color: 'text-amber-500 bg-amber-500/10 border-amber-500/20' },
+    'sold': { label: 'VENDIDO', color: 'text-zinc-400 bg-zinc-400/10 border-zinc-400/20' },
+    'archived': { label: 'ARCHIVADO', color: 'text-red-500 bg-red-500/10 border-red-500/20' },
+    'draft': { label: 'BORRADOR', color: 'text-zinc-500 bg-zinc-500/10 border-zinc-500/20' },
+    'legal_review': { label: 'REVISIÓN LEGAL', color: 'text-blue-500 bg-blue-500/10 border-blue-500/20' },
+    'inspection_scheduled': { label: 'INSPECCIÓN PROG.', color: 'text-purple-500 bg-purple-500/10 border-purple-500/20' },
+    'pending_inspection': { label: 'EN REVISIÓN', color: 'text-amber-400 bg-amber-400/10 border-amber-400/20' },
+    
+    // Transaction Statuses (Uppercase as they are mostly standardized)
+    'PENDING': { label: 'PENDIENTE', color: 'text-amber-500' },
+    'P2P_WAITING_PROOF': { label: 'ESPERANDO PAGO', color: 'text-amber-500' },
+    'P2P_VALIDATED': { label: 'PAGO VALIDADO', color: 'text-emerald-500' },
+    'HANDOVER_SCHEDULED': { label: 'ENTREGA PROG.', color: 'text-emerald-500' },
+    'RELEASED': { label: 'FINALIZADO', color: 'text-zinc-400' },
+    'CANCELLED': { label: 'CANCELADO', color: 'text-red-500' },
+    'DISPUTED': { label: 'DISPUTA', color: 'text-red-500' }
+};
 
 export default function AdminDashboard() {
     const supabase = createBrowserClient();
@@ -277,7 +297,7 @@ export default function AdminDashboard() {
         setActionLoading(txId);
         try {
             await overrideTransactionStatusAction(txId, nextStatus);
-            toast.success(`Estatus actualizado a ${nextStatus}`);
+            toast.success(`Estatus actualizado a ${STATUS_MAP[nextStatus]?.label || nextStatus}`);
             await loadData();
         } catch (err) {
             toast.error("Error al actualizar estatus");
@@ -285,6 +305,20 @@ export default function AdminDashboard() {
             setActionLoading(null);
         }
     };
+
+    const handleUpdateCarStatus = async (carId: string, newStatus: string) => {
+        setActionLoading(carId);
+        try {
+            await updateCarAction(carId, { status: newStatus });
+            toast.success(`Vehículo actualizado a ${STATUS_MAP[newStatus]?.label || newStatus}`);
+            await loadData();
+        } catch (err: any) {
+            toast.error("Error al actualizar estatus del vehículo");
+        } finally {
+            setActionLoading(null);
+        }
+    };
+
 
     const handleProcessReferralPayout = async (payoutId: string, amount: number, name: string) => {
         setPayoutLoading(payoutId);
@@ -357,10 +391,10 @@ export default function AdminDashboard() {
         <div className="flex min-h-screen bg-zinc-950 text-white font-sans selection:bg-indigo-500/30">
             {/* Sidebar Navigation */}
             <aside className="w-72 border-r border-zinc-800 flex flex-col p-6 fixed h-screen bg-zinc-950/50 backdrop-blur-xl z-20">
-                <div className="mb-12 px-2">
+                        <div className="mb-12 px-2">
                     <h1 className="text-2xl font-black italic uppercase tracking-tighter flex items-center gap-2">
                         <div className="h-8 w-8 bg-indigo-600 rounded-lg flex items-center justify-center italic text-white text-xl">S</div>
-                        StarterKar <span className="text-[10px] bg-indigo-600/20 text-indigo-400 px-2 py-0.5 rounded-full not-italic tracking-widest font-black border border-indigo-500/30 ml-1">ADMIN v4.8.7</span>
+                        StarterKar <span className="text-[10px] bg-indigo-600/20 text-indigo-400 px-2 py-0.5 rounded-full not-italic tracking-widest font-black border border-indigo-500/30 ml-1">ADMIN v4.9.1</span>
                     </h1>
                 </div>
 
@@ -551,7 +585,11 @@ export default function AdminDashboard() {
 
 
                                     <div className="space-y-4 relative z-10">
-                                        {transactions.filter(tx => tx.status === 'P2P_WAITING_PROOF' || tx.status === 'HANDOVER_SCHEDULED').map(tx => (
+                                        {transactions.filter(tx => 
+                                            tx.status === 'P2P_WAITING_PROOF' || 
+                                            tx.status === 'HANDOVER_SCHEDULED' ||
+                                            (tx.status === 'RELEASED' && tx.cars?.status === 'RESERVED')
+                                        ).map(tx => (
                                             <div key={tx.id} className="group bg-zinc-950/50 border border-zinc-800/50 p-8 rounded-[2rem] hover:border-indigo-500/50 transition-all hover:bg-zinc-900/50">
                                                 <div className="flex items-center justify-between">
                                                     <div className="flex gap-8 items-center">
@@ -561,16 +599,21 @@ export default function AdminDashboard() {
                                                         )}>
                                                             {tx.status === 'P2P_WAITING_PROOF' ? <CreditCard className="h-8 w-8 text-amber-500" /> : <ShieldCheck className="h-8 w-8 text-emerald-500" />}
                                                         </div>
-                                                        <div>
+                                                        <div className="flex-1">
                                                             <div className="flex items-center gap-3 mb-1">
                                                                 <p className={cn(
                                                                     "text-[10px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full border",
                                                                     tx.status === 'P2P_WAITING_PROOF' ? "text-amber-500 border-amber-500/20 bg-amber-500/5" : "text-emerald-500 border-emerald-500/20 bg-emerald-500/5"
                                                                 )}>
-                                                                    {tx.status === 'P2P_WAITING_PROOF' ? "Validación CEP SPEI" : "Confirmación de Entrega"}
+                                                                    {STATUS_MAP[tx.status]?.label || tx.status}
                                                                 </p>
                                                                 <span className="text-zinc-700 text-xs">•</span>
                                                                 <span className="text-zinc-500 text-[10px] font-bold">Folio: {tx.id.slice(0, 8)}</span>
+                                                                <span className="text-zinc-700 text-xs">•</span>
+                                                                <div className="flex items-center gap-1.5 bg-zinc-900 px-2 py-0.5 rounded-full border border-zinc-800">
+                                                                    <div className={cn("h-1.5 w-1.5 rounded-full", tx.cars?.status === 'SOLD' ? "bg-zinc-500" : "bg-amber-500 animate-pulse")} />
+                                                                    <span className="text-[9px] font-black uppercase text-zinc-400">Auto: {STATUS_MAP[tx.cars?.status]?.label || tx.cars?.status}</span>
+                                                                </div>
                                                             </div>
                                                             <h4 className="text-xl font-black text-white italic tracking-tighter">
                                                                 {tx.cars?.make} {tx.cars?.model} <span className="text-zinc-600 font-medium not-italic ml-2">({tx.cars?.year})</span>
@@ -579,6 +622,14 @@ export default function AdminDashboard() {
                                                         </div>
                                                     </div>
                                                     <div className="flex gap-3">
+                                                        {tx.cars?.status === 'RESERVED' && tx.status === 'RELEASED' && (
+                                                            <button 
+                                                                onClick={() => handleUpdateCarStatus(tx.cars.id, 'SOLD')}
+                                                                className="h-14 px-6 bg-zinc-800 text-zinc-400 text-[10px] font-black rounded-2xl uppercase tracking-widest hover:bg-zinc-700 transition-all border border-zinc-700"
+                                                            >
+                                                                MARCAR VENDIDO
+                                                            </button>
+                                                        )}
                                                         {tx.status === 'P2P_WAITING_PROOF' ? (
                                                             <button 
                                                                 onClick={() => handleValidateCEP(tx.id)}
@@ -602,7 +653,11 @@ export default function AdminDashboard() {
                                             </div>
                                         ))}
 
-                                        {transactions.filter(tx => tx.status === 'P2P_WAITING_PROOF' || tx.status === 'HANDOVER_SCHEDULED').length === 0 && (
+                                        {transactions.filter(tx => 
+                                            tx.status === 'P2P_WAITING_PROOF' || 
+                                            tx.status === 'HANDOVER_SCHEDULED' ||
+                                            (tx.status === 'RELEASED' && tx.cars?.status === 'RESERVED')
+                                        ).length === 0 && (
                                             <div className="py-20 text-center border border-dashed border-zinc-800/50 rounded-[2.5rem] bg-zinc-950/30">
                                                 <Zap className="h-12 w-12 text-zinc-800 mx-auto mb-4 opacity-50" />
                                                 <p className="text-zinc-600 font-black uppercase tracking-[0.3em] text-xs italic">Cero bloqueos en el flujo actual</p>
@@ -714,12 +769,18 @@ export default function AdminDashboard() {
                                             <CarFront className="h-24 w-24 text-zinc-800/50 group-hover:scale-110 group-hover:text-indigo-500/20 transition-all duration-700" />
                                         )}
                                         <div className="absolute top-6 left-6">
-                                            <span className={cn(
-                                                "px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest border backdrop-blur-md",
-                                                car.status === 'published' ? "bg-emerald-500/10 text-emerald-500 border-emerald-500/20" : "bg-amber-500/10 text-amber-500 border-amber-500/20"
-                                            )}>
-                                                {car.status?.toUpperCase() || 'STOCK'}
-                                            </span>
+                                            {(() => {
+                                                const normalized = car.status?.trim().toLowerCase();
+                                                const info = STATUS_MAP[normalized] || STATUS_MAP[car.status];
+                                                return (
+                                                    <span className={cn(
+                                                        "px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest border backdrop-blur-md shadow-2xl",
+                                                        info?.color || "bg-zinc-500/10 text-zinc-500 border-zinc-500/20"
+                                                    )}>
+                                                        {info?.label || car.status?.toUpperCase() || 'STOCK'}
+                                                    </span>
+                                                );
+                                            })()}
                                         </div>
                                         <div className="absolute top-6 right-6 flex flex-col items-end gap-2">
                                             {concurrencyStats[car.id]?.isLocked && (

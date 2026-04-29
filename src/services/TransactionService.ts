@@ -385,6 +385,16 @@ export class TransactionService extends BaseService {
                 }
             ]);
 
+            // [FIX] Update Car Status based on terminal transaction states
+            const { data: txData } = await (supabase.from('transactions') as any).select('car_id').eq('id', id).single();
+            if (txData?.car_id) {
+                if (status === 'RELEASED') {
+                    await (supabase.from('cars') as any).update({ status: 'SOLD' }).eq('id', txData.car_id);
+                } else if (status === 'CANCELLED') {
+                    await (supabase.from('cars') as any).update({ status: 'CERTIFIED' }).eq('id', txData.car_id);
+                }
+            }
+
             // [NEW] Trigger referral rewards if manual override to RELEASED
             if (status === 'RELEASED') {
                 try {

@@ -355,6 +355,7 @@ export function CarFormModal({ isOpen, onClose, onSubmit, initialData, isLoading
                                     <option value="published">PUBLICADO</option>
                                     <option value="pending_inspection">EN REVISIÓN</option>
                                     <option value="reserved">RESERVADO</option>
+                                    <option value="SOLD">VENDIDO</option>
                                     <option value="draft">BORRADOR</option>
                                     <option value="archived">ARCHIVADO</option>
                                 </select>
