@@ -124,10 +124,17 @@ export default function DashboardPage() {
         checkAuth();
         loadDashboard();
 
-        // [NEW] Sync tab with URL
+        // [NEW] Sync tab with URL and scroll to it
         const tab = searchParams.get("tab");
         if (tab === "buying" || tab === "selling" || tab === "completed") {
             setActiveTab(tab as any);
+            // Smooth scroll to the tabs section
+            setTimeout(() => {
+                const element = document.getElementById("garage-tabs");
+                if (element) {
+                    element.scrollIntoView({ behavior: "smooth", block: "start" });
+                }
+            }, 500);
         }
     }, [supabase, searchParams]);
 
@@ -175,7 +182,7 @@ export default function DashboardPage() {
                         </div>
                     </div>
 
-                    <div className="flex border-b border-border/40 mb-10 overflow-x-auto no-scrollbar">
+                    <div id="garage-tabs" className="flex border-b border-border/40 mb-10 overflow-x-auto no-scrollbar">
                         {(["buying", "selling", "completed"] as const).map((tab) => {
                             const count = tab === "buying" 
                                 ? transactions.filter(tx => tx.role === "buyer" && tx.status !== "RELEASED").length
@@ -322,7 +329,7 @@ export default function DashboardPage() {
             <footer className="h-8 border-t border-border/40 bg-zinc-50 flex items-center justify-between px-6 shrink-0">
                 <div className="text-[9px] font-black text-zinc-400 uppercase tracking-widest flex items-center gap-2">
                     <span className="h-1.5 w-1.5 bg-emerald-500 rounded-full" />
-                    StarterKar Garage • v4.8.9 Deployment
+                    StarterKar Garage • v4.9.0 Deployment
                 </div>
                 <div className="text-[9px] font-bold text-zinc-300 italic">
                     P2P Mediation Engine • Real-time Sync Active
