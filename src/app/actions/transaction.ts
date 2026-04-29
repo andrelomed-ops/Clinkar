@@ -51,14 +51,14 @@ export async function startTransaction(carId: string, addOns?: {
     }
 
     // 3. SELLER RESOLUTION
-    // If car has no seller_id (legacy/mock), use a dedicated System ID or Admin to avoid Buyer-as-Seller bug
-    const SYSTEM_SELLER_ID = '00000000-0000-0000-0000-000000000000'; 
-    const sellerId = car.seller_id || SYSTEM_SELLER_ID;
+    // [FIX V4.8.8] Use Admin as fallback for system/mock cars to avoid FK violations
+    const MASTER_ADMIN_ID = '964831ea-da63-414f-a65a-47444a295e03';
+    const sellerId = car.seller_id || MASTER_ADMIN_ID;
 
-    if (sellerId === buyerId) {
-        console.warn(`[Security] Buyer ${buyerId} is trying to buy their own car or seller is missing.`);
-        // Note: We allow this for testing but ideally should block in prod
+    if (sellerId === buyerId && sellerId !== MASTER_ADMIN_ID) {
+        console.warn(`[Security] Buyer ${buyerId} is trying to buy their own car.`);
     }
+
 
     const mockStripeSessionId = `sess_${crypto.randomUUID()}`;
 
