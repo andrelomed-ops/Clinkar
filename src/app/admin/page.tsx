@@ -657,7 +657,7 @@ export default function AdminDashboard() {
                                                     </div>
                                                 </div>
                                             </div>
-                                        )}
+                                        ))}
 
                                         {transactions.filter(tx => {
                                             const txStatus = tx.status?.toLowerCase();
