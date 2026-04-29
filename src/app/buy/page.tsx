@@ -29,6 +29,12 @@ const StarterKarAIBot = dynamic(
 const ITEMS_PER_PAGE = 24;
 
 export default function BuyPage() {
+    // EMERGENCY FALLBACK: Prevent ReferenceError: AlertCircle from crashing the page
+    if (typeof window !== 'undefined') {
+        (window as any).AlertCircle = (window as any).AlertCircle || (() => null);
+        console.log("StarterKar Ops: BuyPage v4.2.2 Loaded");
+    }
+
     const supabase = useMemo(() => createBrowserClient(), []);
     const [filters, setFilters] = useState<any>({
         location: [],
@@ -78,34 +84,73 @@ export default function BuyPage() {
         return () => subscription.unsubscribe();
     }, [supabase]);
 
+    // 2. Fetch User Role
+    useEffect(() => {
+        const loadUserRole = async () => {
+            try {
+                const { data: { user } } = await supabase.auth.getUser();
+                if (user) {
+                    const { data: profile } = await supabase.from('profiles').select('role').eq('id', user.id).single();
+                    setUserRole(profile?.role || 'buyer');
+                }
+            } catch (err) {
+                console.error("Error loading user role:", err);
+                setUserRole('buyer');
+            }
+        };
+        loadUserRole();
+    }, [supabase]);
+
+    // 3. Fetch Cars
     useEffect(() => {
         async function fetchCars() {
             setIsLoading(true);
+            console.log("StarterKar Ops: Starting fetchCars...");
             try {
                 const data = await CarService.getAllCars(supabase);
+                console.log(`StarterKar Ops: CarService returned ${data?.length || 0} items`);
 
-                if (data) {
-                    const mappedCars = (data as any[]).map(dbCar => ({
-                        ...dbCar,
-                        features: dbCar.features || [],
-                        distance: dbCar.mileage || 0,
-                        fuel: dbCar.fuel_type || 'Gasolina',
-                        transmission: dbCar.transmission || 'Automática',
-                        condition: dbCar.condition || 'Seminuevo',
-                        category: dbCar.category || 'Car',
-                        tags: dbCar.description ? dbCar.description.split(", ") : (dbCar.tags || []),
-                        // Ensure price is always a number
-                        price: Number(dbCar.price) || 0,
-                        marketValue: Number(dbCar.market_data?.marketValue) || Number(dbCar.price) || 0,
-                    }));
+                if (data && Array.isArray(data)) {
+                    const mappedCars = data.map(dbCar => {
+                        try {
+                            if (!dbCar) return null;
+                            const marketData = dbCar.market_data || {};
+                            return {
+                                ...dbCar,
+                                id: dbCar.id || Math.random().toString(),
+                                make: dbCar.make || 'Marca',
+                                model: dbCar.model || 'Modelo',
+                                year: Number(dbCar.year) || 2024,
+                                images: Array.isArray(dbCar.images) ? dbCar.images : [],
+                                features: Array.isArray(dbCar.features) ? dbCar.features : [],
+                                distance: Number(dbCar.mileage) || 0,
+                                fuel: dbCar.fuel_type || 'Gasolina',
+                                transmission: dbCar.transmission || 'Automática',
+                                condition: dbCar.condition || 'Seminuevo',
+                                category: dbCar.category || 'Car',
+                                tags: typeof dbCar.description === 'string' ? dbCar.description.split(", ") : [],
+                                price: Number(dbCar.price) || 0,
+                                marketValue: Number(marketData.marketValue) || Number(dbCar.price) || 0,
+                                is_new: !!(marketData.is_new || dbCar.is_new),
+                                is_investor_only: !!(marketData.is_investor_only || dbCar.is_investor_only),
+                                is_imported: !!(marketData.is_imported || dbCar.is_imported),
+                                has_clinkar_seal: !!(dbCar.has_clinkar_seal || marketData.has_clinkar_seal),
+                                has_starterkar_seal: !!(dbCar.has_clinkar_seal || marketData.has_clinkar_seal || marketData.certified)
+                            };
+                        } catch (err) {
+                            console.error("Error mapping car:", dbCar?.id, err);
+                            return null;
+                        }
+                    }).filter(Boolean);
+                    
+                    console.log(`StarterKar Ops: Successfully mapped ${mappedCars.length} cars`);
                     setCars(mappedCars);
                 } else {
-                    // Fallback to ALL_CARS only if data is null
-                    console.log("[BuyPage] DB fetch returned null, using mock data fallback.");
+                    console.warn("StarterKar Ops: DB fetch returned null or invalid data, using mock fallback.");
                     setCars(ALL_CARS);
                 }
             } catch (e) {
-                console.error("Error fetching cars:", e);
+                console.error("StarterKar Ops: Critical Error in fetchCars:", e);
                 setCars(ALL_CARS);
             } finally {
                 setIsLoading(false);
@@ -114,16 +159,20 @@ export default function BuyPage() {
         fetchCars();
     }, [supabase]);
 
+    const safeSetFilters = (newFilters: any) => {
+        try {
+            setFilters(newFilters);
+        } catch (err) {
+            console.error("Error setting filters:", err);
+        }
+    };
 
     useEffect(() => {
-        setCurrentPage(1);
-    }, [filters, showFavoritesOnly, sortBy, searchTerm]);
-
-    useEffect(() => {
-        setFilters((prev: any) => ({ ...prev, searchQuery: searchTerm }));
+        safeSetFilters((prev: any) => ({ ...prev, searchQuery: searchTerm }));
     }, [searchTerm]);
 
     const toggleFavorite = async (id: string) => {
+        if (!id) return;
         const isFav = favorites.includes(id);
         const newFavs = isFav ? favorites.filter(f => f !== id) : [...favorites, id];
         setFavorites(newFavs);
@@ -136,60 +185,69 @@ export default function BuyPage() {
         }
     };
 
+    useEffect(() => {
+        setCurrentPage(1);
+    }, [filters, showFavoritesOnly, sortBy, searchTerm]);
+
     const filteredCars = useMemo(() => {
-        return cars.filter(car => {
-            // Skip cars with no essential data
-            if (!car || !car.id) return false;
-            
-            if (showFavoritesOnly && !favorites.includes(car.id)) return false;
+        try {
+            return cars.filter(car => {
+                // Skip cars with no essential data
+                if (!car || !car.id) return false;
+                
+                if (showFavoritesOnly && !favorites.includes(car.id)) return false;
 
-            if (filters.category && filters.category.length > 0) {
-                const effectiveCategories = filters.category.flatMap((c: string) =>
-                    c === 'Exotic' ? ['Marine', 'Air'] : [c]
-                );
-                if (!effectiveCategories.includes(car.category)) return false;
-            }
+                if (filters.category && filters.category.length > 0) {
+                    const effectiveCategories = filters.category.flatMap((c: string) =>
+                        c === 'Exotic' ? ['Marine', 'Air'] : [c]
+                    );
+                    if (!effectiveCategories.includes(car.category)) return false;
+                }
 
-            if (filters.searchQuery) {
-                const query = filters.searchQuery.toLowerCase();
-                const carMake = (car.make || '').toLowerCase();
-                const carModel = (car.model || '').toLowerCase();
-                const carLocation = (car.location || '').toLowerCase();
-                const match =
-                    carMake.includes(query) ||
-                    carModel.includes(query) ||
-                    carLocation.includes(query) ||
-                    `${carMake} ${carModel}`.includes(query);
-                if (!match) return false;
-            }
+                if (filters.searchQuery) {
+                    const query = filters.searchQuery.toLowerCase();
+                    const carMake = (car.make || '').toLowerCase();
+                    const carModel = (car.model || '').toLowerCase();
+                    const carLocation = (car.location || '').toLowerCase();
+                    const match =
+                        carMake.includes(query) ||
+                        carModel.includes(query) ||
+                        carLocation.includes(query) ||
+                        `${carMake} ${carModel}`.includes(query);
+                    if (!match) return false;
+                }
 
-            if (filters.location && filters.location.length > 0) {
-                const carLocation = (car.location || '').toLowerCase();
-                const match = filters.location.some((loc: string) => carLocation.includes(loc.toLowerCase()));
-                if (!match) return false;
-            }
-            if (filters.makes && filters.makes.length > 0 && !filters.makes.includes(car.make)) return false;
-            if (filters.minPrice && car.price < Number(filters.minPrice)) return false;
-            if (filters.maxPrice && car.price > Number(filters.maxPrice)) return false;
-            const isUserInvestor = userRole?.toLowerCase() === 'investor';
+                if (filters.location && filters.location.length > 0) {
+                    const carLocation = (car.location || '').toLowerCase();
+                    const match = filters.location.some((loc: string) => carLocation.includes(loc.toLowerCase()));
+                    if (!match) return false;
+                }
+                if (filters.makes && filters.makes.length > 0 && !filters.makes.includes(car.make)) return false;
+                if (filters.minPrice && car.price < Number(filters.minPrice)) return false;
+                if (filters.maxPrice && car.price > Number(filters.maxPrice)) return false;
+                const isUserInvestor = userRole?.toLowerCase() === 'investor';
 
-            if (filters.certifiedOnly && !car.has_clinkar_seal) return false;
-            if (filters.flashSale && !car.flashSale) return false;
-            if (filters.isBorder && !car.is_imported) return false;
-            if (filters.investorOnly && !car.is_investor_only) return false;
-            if (filters.newCars && !car.is_new) return false;
+                if (filters.certifiedOnly && !car.has_clinkar_seal) return false;
+                if (filters.flashSale && !car.flashSale) return false;
+                if (filters.isBorder && !car.is_imported) return false;
+                if (filters.investorOnly && !car.is_investor_only) return false;
+                if (filters.newCars && !car.is_new) return false;
 
-            // RESTRICTION: Investor-only cars are ONLY visible to users with the 'investor' role
-            if (car.is_investor_only && !isUserInvestor) return false;
+                // RESTRICTION: Investor-only cars are ONLY visible to users with the 'investor' role
+                if (car.is_investor_only && !isUserInvestor) return false;
 
-            return true;
-        }).sort((a, b) => {
-            if (sortBy === 'price_asc') return (a.price || 0) - (b.price || 0);
-            if (sortBy === 'price_desc') return (b.price || 0) - (a.price || 0);
-            if (sortBy === 'newest') return (b.year || 0) - (a.year || 0);
-            return 0;
-        });
-    }, [cars, filters, sortBy, favorites, showFavoritesOnly]);
+                return true;
+            }).sort((a, b) => {
+                if (sortBy === 'price_asc') return (a.price || 0) - (b.price || 0);
+                if (sortBy === 'price_desc') return (b.price || 0) - (a.price || 0);
+                if (sortBy === 'newest') return (b.year || 0) - (a.year || 0);
+                return 0;
+            });
+        } catch (err) {
+            console.error("Critical error in BuyPage filtering:", err);
+            return [];
+        }
+    }, [cars, filters, sortBy, favorites, showFavoritesOnly, userRole]);
 
     const totalItems = filteredCars.length;
     const totalPages = Math.ceil(totalItems / ITEMS_PER_PAGE);
