@@ -29,7 +29,7 @@ if (typeof window !== 'undefined') {
     (window as any).AlertCircle = (window as any).AlertCircle || (() => null);
     console.log("StarterKar Ops: Dashboard v4.7 Loaded");
 }
-type AdminView = 'CONTROL' | 'INVENTORY' | 'INVESTORS' | 'USERS' | 'BILLING' | 'UPSELLS' | 'REFERRALS' | 'DEMANDS';
+type AdminView = 'CONTROL' | 'INVENTORY' | 'ARCHIVE' | 'INVESTORS' | 'USERS' | 'BILLING' | 'UPSELLS' | 'REFERRALS' | 'DEMANDS';
 
 const STATUS_MAP: Record<string, { label: string, color: string }> = {
     // Car Statuses (Normalized to lowercase keys)
@@ -398,7 +398,7 @@ export default function AdminDashboard() {
                         <div className="mb-12 px-2">
                     <h1 className="text-2xl font-black italic uppercase tracking-tighter flex items-center gap-2">
                         <div className="h-8 w-8 bg-indigo-600 rounded-lg flex items-center justify-center italic text-white text-xl">S</div>
-                        StarterKar <span className="text-[10px] bg-indigo-600/20 text-indigo-400 px-2 py-0.5 rounded-full not-italic tracking-widest font-black border border-indigo-500/30 ml-1">ADMIN v4.9.9</span>
+                        StarterKar <span className="text-[10px] bg-indigo-600/20 text-indigo-400 px-2 py-0.5 rounded-full not-italic tracking-widest font-black border border-indigo-500/30 ml-1">ADMIN v5.0.0</span>
                     </h1>
                 </div>
 
@@ -415,6 +415,12 @@ export default function AdminDashboard() {
                         label="Inventario" 
                         active={view === 'INVENTORY'} 
                         onClick={() => setView('INVENTORY')} 
+                    />
+                    <SidebarItem 
+                        icon={Clock} 
+                        label="Archivo de Ventas" 
+                        active={view === 'ARCHIVE'} 
+                        onClick={() => setView('ARCHIVE')} 
                     />
                     <SidebarItem 
                         icon={UserCheck} 
@@ -504,6 +510,7 @@ export default function AdminDashboard() {
                         <h2 className="text-4xl font-black uppercase italic tracking-tighter text-white">
                             {view === 'CONTROL' && "Torre de Control"}
                             {view === 'INVENTORY' && "Inventario Maestro"}
+                            {view === 'ARCHIVE' && "Archivo Histórico de Ventas"}
                             {view === 'INVESTORS' && "Red de Capital"}
                             {view === 'BILLING' && "Gestión de Tesorería"}
                             {view === 'UPSELLS' && "Servicios Plus"}
@@ -631,8 +638,9 @@ export default function AdminDashboard() {
                                                         {tx.cars?.status?.toLowerCase() === 'reserved' && tx.status?.toLowerCase() === 'released' && (
                                                             <button 
                                                                 onClick={() => handleUpdateCarStatus(tx.cars.id, 'SOLD')}
-                                                                className="h-14 px-6 bg-zinc-800 text-zinc-400 text-[10px] font-black rounded-2xl uppercase tracking-widest hover:bg-zinc-700 transition-all border border-zinc-700"
+                                                                className="h-14 px-6 bg-zinc-800 text-zinc-400 text-[10px] font-black rounded-2xl uppercase tracking-widest hover:bg-zinc-700 transition-all border border-zinc-700 flex items-center gap-2 group/sold"
                                                             >
+                                                                <ShoppingCart className="h-4 w-4 group-hover/sold:scale-110 transition-transform" />
                                                                 MARCAR VENDIDO
                                                             </button>
                                                         )}
@@ -768,7 +776,7 @@ export default function AdminDashboard() {
 
 
                         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
-                            {inventory.map(car => (
+                            {inventory.filter(car => car.status?.toLowerCase() !== 'sold').map(car => (
                                 <div key={car.id} className="bg-zinc-900/50 backdrop-blur-xl border border-zinc-800 rounded-[2.5rem] overflow-hidden hover:border-indigo-500/40 transition-all group shadow-xl">
                                     <div className="h-60 bg-zinc-950 flex items-center justify-center relative group-hover:bg-zinc-900 transition-colors">
                                         {car.images && car.images.length > 0 ? (
@@ -807,25 +815,29 @@ export default function AdminDashboard() {
                                     <div className="p-10">
                                         <div className="flex justify-between items-start mb-6">
                                             <div>
-                                                <h4 className="text-2xl font-black text-white italic tracking-tighter uppercase">{car.make} {car.model}</h4>
-                                                <div className="flex items-center gap-3 mt-1">
-                                                    <p className="text-zinc-500 font-black uppercase text-[10px] tracking-widest italic">{car.year} • {car.location}</p>
-                                                    <span className="text-zinc-800 text-[10px]">•</span>
-                                                    <p className="text-indigo-400 font-black uppercase text-[10px] tracking-widest">ID: {car.id.slice(0, 8)}</p>
+                                                <h4 className="text-lg font-black text-white italic tracking-tighter uppercase leading-tight">
+                                                    {car.make} <br/>
+                                                    <span className="text-indigo-400">{car.model}</span>
+                                                </h4>
+                                                <div className="flex items-center gap-2 mt-2">
+                                                    <p className="text-[9px] font-black text-zinc-500 uppercase tracking-widest italic">{car.year} • {car.location}</p>
+                                                    <span className="text-zinc-800 text-[8px]">•</span>
+                                                    <p className="text-[8px] font-bold text-indigo-500/80 uppercase">ID: {car.id.slice(0, 8)}</p>
                                                 </div>
                                                 <p className="text-zinc-600 font-bold text-[9px] uppercase tracking-widest mt-2">Publicado: {new Date(car.created_at).toLocaleDateString()}</p>
                                             </div>
                                             <div className="text-right">
-                                                <p className="text-[9px] font-black text-zinc-600 uppercase tracking-widest">Valor de Mercado</p>
-                                                <p className="text-xl font-black text-white italic">${car.price?.toLocaleString()}</p>
+                                                <p className="text-[8px] font-black text-zinc-600 uppercase tracking-widest mb-1 leading-none">VALOR DE MERCADO</p>
+                                                <p className="text-2xl font-black text-white italic tracking-tighter">${car.price?.toLocaleString()}</p>
                                             </div>
                                         </div>
                                         
                                         <div className="flex gap-3 mt-8">
                                             <button 
                                                 onClick={() => setEditingCar(car)}
-                                                className="flex-1 h-12 bg-zinc-800 text-white text-[10px] font-black rounded-xl hover:bg-zinc-700 transition-all uppercase tracking-widest"
+                                                className="flex-1 h-14 bg-zinc-800 text-white text-[10px] font-black rounded-2xl uppercase tracking-widest hover:bg-indigo-600 transition-all border border-zinc-700 hover:border-indigo-500 group/btn flex items-center justify-center gap-2 shadow-xl shadow-black/20"
                                             >
+                                                <FileText className="h-4 w-4 group-hover/btn:scale-110 transition-transform" />
                                                 EDITAR FICHA
                                             </button>
                                             <button 
@@ -835,14 +847,10 @@ export default function AdminDashboard() {
                                                     handleDeleteCar(car.id);
                                                 }}
                                                 disabled={actionLoading === car.id}
-                                                className="h-12 w-12 bg-red-900/10 border border-red-900/30 text-red-500 rounded-xl flex items-center justify-center hover:bg-red-500 hover:text-white transition-all disabled:opacity-50 relative z-10"
+                                                className="h-14 w-14 bg-red-900/10 border border-red-900/30 text-red-500 rounded-2xl flex items-center justify-center hover:bg-red-500 hover:text-white transition-all disabled:opacity-50 shadow-lg shadow-red-950/20"
                                                 title="Eliminar Vehículo"
                                             >
-                                                {actionLoading === car.id ? (
-                                                    <Loader2 className="h-4 w-4 animate-spin" />
-                                                ) : (
-                                                    <Trash2 className="h-5 w-5" />
-                                                )}
+                                                {actionLoading === car.id ? <Loader2 className="h-4 w-4 animate-spin" /> : <Trash2 className="h-5 w-5" />}
                                             </button>
 
 
@@ -850,6 +858,87 @@ export default function AdminDashboard() {
                                     </div>
                                 </div>
                             ))}
+                        </div>
+                    </div>
+                )}
+
+                {view === 'ARCHIVE' && (
+                    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-6 duration-700">
+                        <div className="bg-zinc-900/50 backdrop-blur-3xl border border-zinc-800 p-10 rounded-[3rem] shadow-2xl">
+                            <div className="flex items-center gap-8 mb-10">
+                                <div className="h-20 w-20 bg-emerald-500/10 rounded-3xl flex items-center justify-center border border-emerald-500/20">
+                                    <Clock className="h-10 w-10 text-emerald-500" />
+                                </div>
+                                <div>
+                                    <h3 className="text-2xl font-black uppercase italic tracking-tighter text-white">Archivo de Ventas</h3>
+                                    <p className="text-sm text-zinc-500 font-medium mt-1">Historial completo de unidades desplazadas y liquidadas.</p>
+                                </div>
+                            </div>
+
+                            <div className="bg-zinc-950/50 border border-zinc-800 rounded-[2rem] overflow-hidden">
+                                <table className="w-full text-left border-collapse">
+                                    <thead>
+                                        <tr className="border-b border-zinc-800 bg-zinc-900/30">
+                                            <th className="px-8 py-6 text-[10px] font-black uppercase tracking-widest text-zinc-500">Unidad</th>
+                                            <th className="px-8 py-6 text-[10px] font-black uppercase tracking-widest text-zinc-500">VIN / Folio</th>
+                                            <th className="px-8 py-6 text-[10px] font-black uppercase tracking-widest text-zinc-500">Precio Venta</th>
+                                            <th className="px-8 py-6 text-[10px] font-black uppercase tracking-widest text-zinc-500">Estatus Final</th>
+                                            <th className="px-8 py-6 text-[10px] font-black uppercase tracking-widest text-zinc-500 text-right">Acción</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody className="divide-y divide-zinc-800/50">
+                                        {inventory.filter(car => car.status?.toLowerCase() === 'sold').map(car => (
+                                            <tr key={car.id} className="hover:bg-zinc-900/30 transition-colors group">
+                                                <td className="px-8 py-6">
+                                                    <div className="flex items-center gap-4">
+                                                        <div className="h-12 w-16 bg-zinc-900 rounded-lg overflow-hidden border border-zinc-800">
+                                                            {car.images?.[0] ? (
+                                                                <img src={car.images[0]} alt="" className="h-full w-full object-cover" />
+                                                            ) : (
+                                                                <div className="h-full w-full flex items-center justify-center text-zinc-800">
+                                                                    <CarFront className="h-5 w-5" />
+                                                                </div>
+                                                            )}
+                                                        </div>
+                                                        <div>
+                                                            <p className="text-xs font-black text-white uppercase italic">{car.make} {car.model}</p>
+                                                            <p className="text-[10px] text-zinc-500">{car.year} • {car.location}</p>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                <td className="px-8 py-6">
+                                                    <span className="font-mono text-[10px] text-zinc-500 bg-zinc-900 px-2 py-1 rounded border border-zinc-800 uppercase">
+                                                        {car.vin?.slice(-8) || car.id.slice(0, 8)}
+                                                    </span>
+                                                </td>
+                                                <td className="px-8 py-6">
+                                                    <p className="text-sm font-black text-emerald-500 italic">${car.price.toLocaleString()}</p>
+                                                </td>
+                                                <td className="px-8 py-6">
+                                                    <span className="px-3 py-1 bg-zinc-900 text-zinc-500 text-[8px] font-black rounded-full border border-zinc-800 uppercase tracking-widest">
+                                                        LIQUIDADO
+                                                    </span>
+                                                </td>
+                                                <td className="px-8 py-6 text-right">
+                                                    <button 
+                                                        onClick={() => setEditingCar(car)}
+                                                        className="h-10 w-10 bg-zinc-900 border border-zinc-800 text-zinc-500 rounded-xl hover:bg-indigo-600 hover:text-white hover:border-indigo-500 transition-all flex items-center justify-center ml-auto"
+                                                    >
+                                                        <ExternalLink className="h-4 w-4" />
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        ))}
+                                        {inventory.filter(car => car.status?.toLowerCase() === 'sold').length === 0 && (
+                                            <tr>
+                                                <td colSpan={5} className="px-8 py-20 text-center text-zinc-600 font-bold uppercase text-[10px] tracking-[0.4em] italic opacity-50">
+                                                    No hay registros históricos aún
+                                                </td>
+                                            </tr>
+                                        )}
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                     </div>
                 )}
