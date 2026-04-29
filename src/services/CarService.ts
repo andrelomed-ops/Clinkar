@@ -59,7 +59,11 @@ export class CarService {
         const { data, error } = await supabase
             .from('cars')
             .select('*')
-            .in('status', ['available', 'PUBLISHED', 'CERTIFIED', 'AVAILABLE', 'certified', 'published', 'RESERVED', 'ACTIVE', 'active', 'pending_inspection']); 
+            .in('status', [
+                'available', 'PUBLISHED', 'CERTIFIED', 'AVAILABLE', 'certified', 'published', 
+                'RESERVED', 'ACTIVE', 'active', 'pending_inspection',
+                'PUBLICADO', 'RESERVADO', 'EN REVISIÓN', 'BORRADOR', 'ARCHIVADO'
+            ]); 
 
         if (error) {
             Logger.error('Error fetching cars:', error);
@@ -165,43 +169,42 @@ export class CarService {
 
     static async updateCar(supabase: SupabaseClient<Database>, id: string, carData: any): Promise<boolean> {
         // Explicitly map nested data to top-level columns if they exist
-        const fuel_type = carData.technical_specs?.performance?.fuelType || carData.fuel_type;
+        const fuel_type = carData.technical_specs?.engine?.fuel_type || carData.fuel_type;
         const transmission = carData.technical_specs?.performance?.transmission || carData.transmission;
-        const mileage = carData.mileage || carData.technical_specs?.performance?.mileage;
+        const mileage = Number(carData.mileage) || 0;
+        const price = Number(carData.price) || 0;
 
         const market_data = {
             ...(carData.market_data || {}),
             location: carData.location || 'CDMX',
             technical_specs: carData.technical_specs || {},
             category: carData.category || 'Car',
-            minimum_price: carData.minimum_price || carData.price,
-            is_new: carData.is_new !== undefined ? carData.is_new : (carData.market_data as any)?.is_new,
-            is_investor_only: carData.is_investor_only !== undefined ? carData.is_investor_only : (carData.market_data as any)?.is_investor_only,
-            is_imported: carData.is_imported !== undefined ? carData.is_imported : (carData.market_data as any)?.is_imported
+            minimum_price: Number(carData.minimum_price) || price,
+            is_new: !!carData.is_new,
+            is_investor_only: !!carData.is_investor_only,
+            is_imported: !!carData.is_imported
         };
 
         const dbReadyData: any = {
             market_data
         };
         
-        // Only include fields if they are provided
         if (carData.make) dbReadyData.make = carData.make;
         if (carData.model) dbReadyData.model = carData.model;
-        if (carData.year) dbReadyData.year = carData.year;
-        if (carData.price) dbReadyData.price = carData.price;
+        if (carData.year) dbReadyData.year = Number(carData.year);
+        if (price >= 0) dbReadyData.price = price;
         if (carData.status) dbReadyData.status = carData.status;
         if (carData.description) dbReadyData.description = carData.description;
         if (carData.images) dbReadyData.images = carData.images;
         if (carData.vin) dbReadyData.vin = carData.vin;
         if (fuel_type) dbReadyData.fuel_type = fuel_type;
         if (transmission) dbReadyData.transmission = transmission;
-        if (mileage) dbReadyData.mileage = mileage;
+        if (mileage >= 0) dbReadyData.mileage = mileage;
         if (carData.location) dbReadyData.location = carData.location;
         if (carData.category) dbReadyData.category = carData.category;
-        if (carData.technical_specs) dbReadyData.technical_specs = carData.technical_specs;
         
         const clinkarSeal = carData.has_clinkar_seal !== undefined ? carData.has_clinkar_seal : carData.has_starterkar_seal;
-        if (clinkarSeal !== undefined) dbReadyData.has_clinkar_seal = clinkarSeal;
+        if (clinkarSeal !== undefined) dbReadyData.has_clinkar_seal = !!clinkarSeal;
 
         const { error } = await (supabase.from('cars') as any)
             .update(dbReadyData)
