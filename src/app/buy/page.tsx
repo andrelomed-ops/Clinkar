@@ -82,35 +82,24 @@ export default function BuyPage() {
                 setFavorites(favs);
             }
         });
+            if (isMounted) setFavorites(favs);
 
-        return () => subscription.unsubscribe();
-    }, [supabase]);
-
-    // 2. Fetch User Role
-    useEffect(() => {
-        const loadUserRole = async () => {
             try {
+                // Fetch User Role first
                 const { data: { user } } = await supabase.auth.getUser();
-                if (user) {
+                if (user && isMounted) {
                     const { data: profile } = await supabase.from('profiles').select('role').eq('id', user.id).single();
-                    setUserRole(profile?.role || 'buyer');
+                    if (profile) {
+                        console.log("StarterKar Ops: User Role loaded:", profile.role);
+                        setUserRole(profile.role);
+                    }
                 }
-            } catch (err) {
-                console.error("Error loading user role:", err);
-                setUserRole('buyer');
-            }
-        };
-        loadUserRole();
-    }, [supabase]);
 
-    // 3. Fetch Cars
-    useEffect(() => {
-        async function fetchCars() {
-            setIsLoading(true);
-            console.log("StarterKar Ops: Starting fetchCars...");
-            try {
+                // Fetch Cars
                 const data = await CarService.getAllCars(supabase);
-                console.log(`StarterKar Ops: CarService returned ${data?.length || 0} items`);
+                if (!isMounted) return;
+
+                console.log(`StarterKar Ops: CarService returned ${data?.length || 0} raw items`);
 
                 if (data && Array.isArray(data)) {
                     const mappedCars = data.map(dbCar => {
@@ -133,9 +122,9 @@ export default function BuyPage() {
                                 tags: typeof dbCar.description === 'string' ? dbCar.description.split(", ") : [],
                                 price: Number(dbCar.price) || 0,
                                 marketValue: Number(marketData.marketValue) || Number(dbCar.price) || 0,
-                                is_new: !!(marketData.is_new || dbCar.is_new),
-                                is_investor_only: !!(marketData.is_investor_only || dbCar.is_investor_only),
-                                is_imported: !!(marketData.is_imported || dbCar.is_imported),
+                                is_new: !!(marketData.is_new || dbCar.is_new || dbCar.isNew),
+                                is_investor_only: !!(marketData.is_investor_only || dbCar.is_investor_only || dbCar.investorOnly),
+                                is_imported: !!(marketData.is_imported || dbCar.is_imported || dbCar.isBorder),
                                 has_clinkar_seal: !!(dbCar.has_clinkar_seal || marketData.has_clinkar_seal),
                                 has_starterkar_seal: !!(dbCar.has_clinkar_seal || marketData.has_clinkar_seal || marketData.certified)
                             };
@@ -145,20 +134,41 @@ export default function BuyPage() {
                         }
                     }).filter(Boolean);
                     
+                    if (mappedCars.length > 0) {
+                        console.log("StarterKar Ops: Sample Car Data:", {
+                            id: mappedCars[0].id,
+                            is_investor_only: mappedCars[0].is_investor_only,
+                            price: mappedCars[0].price
+                        });
+                    }
+                    
                     console.log(`StarterKar Ops: Successfully mapped ${mappedCars.length} cars`);
                     setCars(mappedCars);
                 } else {
-                    console.warn("StarterKar Ops: DB fetch returned null or invalid data, using mock fallback.");
+                    console.warn("StarterKar Ops: DB fetch returned null, using mock fallback.");
                     setCars(ALL_CARS);
                 }
             } catch (e) {
-                console.error("StarterKar Ops: Critical Error in fetchCars:", e);
-                setCars(ALL_CARS);
+                console.error("StarterKar Ops: Critical Error in initialization:", e);
+                if (isMounted) setCars(ALL_CARS);
             } finally {
-                setIsLoading(false);
+                if (isMounted) setIsLoading(false);
             }
         }
-        fetchCars();
+
+        initialize();
+
+        const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event) => {
+            if (event === 'SIGNED_IN' || event === 'SIGNED_OUT') {
+                const favs = await FavoriteService.getFavorites(supabase);
+                if (isMounted) setFavorites(favs);
+            }
+        });
+
+        return () => { 
+            isMounted = false; 
+            subscription.unsubscribe();
+        };
     }, [supabase]);
 
     const safeSetFilters = (newFilters: any) => {
