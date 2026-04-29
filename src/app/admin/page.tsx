@@ -398,7 +398,7 @@ export default function AdminDashboard() {
                         <div className="mb-12 px-2">
                     <h1 className="text-2xl font-black italic uppercase tracking-tighter flex items-center gap-2">
                         <div className="h-8 w-8 bg-indigo-600 rounded-lg flex items-center justify-center italic text-white text-xl">S</div>
-                        StarterKar <span className="text-[10px] bg-indigo-600/20 text-indigo-400 px-2 py-0.5 rounded-full not-italic tracking-widest font-black border border-indigo-500/30 ml-1">ADMIN v4.9.5</span>
+                        StarterKar <span className="text-[10px] bg-indigo-600/20 text-indigo-400 px-2 py-0.5 rounded-full not-italic tracking-widest font-black border border-indigo-500/30 ml-1">ADMIN v4.9.9</span>
                     </h1>
                 </div>
 
@@ -657,7 +657,7 @@ export default function AdminDashboard() {
                                                     </div>
                                                 </div>
                                             </div>
-                                        ))}
+                                        ))}}
 
                                         {transactions.filter(tx => {
                                             const txStatus = tx.status?.toLowerCase();
@@ -927,7 +927,7 @@ export default function AdminDashboard() {
                                         )}
                                     </div>
                                 </div>
-                            ))
+                            ))}
                             {investorApps.length === 0 && (
                                 <div className="py-32 text-center border-2 border-dashed border-zinc-800 rounded-[3rem] bg-zinc-900/20">
                                     <UserCheck className="h-12 w-12 text-zinc-800 mx-auto mb-4 opacity-50" />
@@ -1022,7 +1022,7 @@ export default function AdminDashboard() {
                                         </div>
                                     </div>
                                 </div>
-                            ))
+                            ))}
                             {userSearchQuery && users.length === 0 && !loading && (
                                 <div className="py-20 text-center border-2 border-dashed border-zinc-800 rounded-[3rem] bg-zinc-950/20">
                                     <p className="text-zinc-600 font-black uppercase tracking-[0.4em] italic text-xs">No se encontraron usuarios</p>
@@ -1084,7 +1084,7 @@ export default function AdminDashboard() {
                                         </div>
                                     </div>
                                 </div>
-                            ))
+                            ))}
                             {transactions.filter(tx => tx.status === 'RELEASED' && !tx.commission_paid).length === 0 && (
                                 <div className="py-32 text-center border-2 border-dashed border-zinc-800 rounded-[3rem] bg-zinc-900/20">
                                     <DollarSign className="h-12 w-12 text-zinc-800 mx-auto mb-4 opacity-50" />
@@ -1136,7 +1136,7 @@ export default function AdminDashboard() {
                                                 {actionLoading === tx.id ? <Loader2 className="h-4 w-4 animate-spin" /> : "ASIGNAR GESTOR"}
                                             </button>
                                         </div>
-                                    ))
+                                    ))}
                                     {transactions.filter(tx => tx.gestoria_cost > 0).length === 0 && (
                                         <div className="py-12 text-center border border-dashed border-zinc-800 rounded-3xl opacity-30">
                                             <p className="text-[10px] font-black uppercase tracking-widest">Sin trámites pendientes</p>
@@ -1167,7 +1167,7 @@ export default function AdminDashboard() {
                                             </div>
                                             <button className="w-full h-12 bg-emerald-600 text-white text-[10px] font-black rounded-xl uppercase tracking-widest hover:bg-emerald-500 transition-all shadow-lg shadow-emerald-600/20">EMITIR PÓLIZA PDF</button>
                                         </div>
-                                    ))
+                                    ))}
                                     {transactions.filter(tx => tx.warranty_cost > 0 || tx.insurance_cost > 0).length === 0 && (
                                         <div className="py-12 text-center border border-dashed border-zinc-800 rounded-3xl opacity-30">
                                             <p className="text-[10px] font-black uppercase tracking-widest">Sin pólizas por generar</p>
@@ -1232,7 +1232,7 @@ export default function AdminDashboard() {
                                         </button>
                                     </div>
                                 </div>
-                            ))
+                            ))}
                             {referralPayouts.length === 0 && (
                                 <div className="py-32 text-center border-2 border-dashed border-zinc-800 rounded-[3rem] bg-zinc-900/20">
                                     <Users className="h-12 w-12 text-zinc-800 mx-auto mb-4 opacity-50" />
@@ -1312,7 +1312,7 @@ export default function AdminDashboard() {
                                         </button>
                                     </div>
                                 </div>
-                            ))
+                            ))}
                             {demandRequests.length === 0 && (
                                 <div className="py-32 text-center border-2 border-dashed border-zinc-800 rounded-[3rem] bg-zinc-900/20">
                                     <MessageSquare className="h-12 w-12 text-zinc-800 mx-auto mb-4 opacity-50" />
