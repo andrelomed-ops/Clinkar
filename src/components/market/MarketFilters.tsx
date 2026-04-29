@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { ChevronDown, ChevronUp, Search, MapPin, Calendar, Gauge, Globe, TrendingDown, ShieldCheck, Zap } from "lucide-react";
+import { ChevronDown, ChevronUp, Search, MapPin, Calendar, Gauge, Globe, TrendingDown, ShieldCheck } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface MarketFiltersProps {
@@ -266,7 +266,7 @@ export function MarketFilters({ filters, setFilters }: MarketFiltersProps) {
             {/* NEW CARS TOGGLE */}
             <div className="bg-gradient-to-r from-indigo-50 to-blue-50 dark:from-indigo-900/10 dark:to-blue-900/10 p-4 rounded-2xl border border-indigo-100 dark:border-indigo-500/20 mb-6 relative overflow-hidden group/card shadow-sm hover:shadow-md transition-all duration-300">
                 <div className="absolute top-0 right-0 p-4 opacity-5 pointer-events-none">
-                    <Zap className="h-20 w-20 text-indigo-900 dark:text-indigo-400" />
+                    <ShieldCheck className="h-20 w-20 text-indigo-900 dark:text-indigo-400" />
                 </div>
 
                 <label className="flex items-center justify-between cursor-pointer relative z-10">
