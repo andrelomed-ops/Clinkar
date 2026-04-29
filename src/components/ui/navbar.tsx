@@ -47,7 +47,7 @@ export function Navbar({
             if (user) {
                 const { data: profile } = await supabase
                     .from('profiles')
-                    .select('role')
+                    .select('*')
                     .eq('id', user.id)
                     .single();
                 if (profile) setUserProfile(profile);
@@ -143,9 +143,14 @@ export function Navbar({
                                 className="hover:translate-y-[-2px] transition-all"
                             />
                             {user && userProfile?.role?.toLowerCase() === 'investor' && (
-                                <div className="hidden xl:flex items-center gap-2 px-4 py-1.5 rounded-full bg-gradient-to-r from-amber-500 to-amber-600 text-white border border-amber-400 shadow-lg shadow-amber-500/20 text-[10px] font-black uppercase tracking-[0.15em] animate-in fade-in zoom-in duration-500">
+                                <div className={cn(
+                                    "hidden xl:flex items-center gap-2 px-4 py-1.5 rounded-full text-white border shadow-lg text-[10px] font-black uppercase tracking-[0.15em] animate-in fade-in zoom-in duration-500",
+                                    userProfile?.investor_tier === 'elite' ? "bg-gradient-to-r from-indigo-600 to-purple-600 border-indigo-400 shadow-indigo-500/20" :
+                                    userProfile?.investor_tier === 'pro' ? "bg-gradient-to-r from-amber-500 to-amber-600 border-amber-400 shadow-amber-500/20" :
+                                    "bg-gradient-to-r from-zinc-400 to-zinc-500 border-zinc-300 shadow-zinc-500/20"
+                                )}>
                                     <span className="flex h-1.5 w-1.5 rounded-full bg-white animate-pulse" />
-                                    🎖️ Inversionista Pro
+                                    🎖️ Inversionista {userProfile?.investor_tier?.toUpperCase() || 'STARTER'}
                                 </div>
                             )}
                             {user && userProfile?.role?.toLowerCase() !== 'investor' && userProfile?.role?.toLowerCase() !== 'admin' && (
@@ -171,6 +176,7 @@ export function Navbar({
                             {user && (
                                 <EvolvedShield 
                                     role={userProfile?.role} 
+                                    tier={userProfile?.investor_tier}
                                     name={userProfile?.full_name} 
                                     size="md" 
                                     className="ml-2"

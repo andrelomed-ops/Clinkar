@@ -111,7 +111,7 @@ export default function RootLayout({
           // 🚨 NUCLEAR CACHE CLEARING - EMERGENCY FIX v4.7
           (function() {
             if (typeof window !== 'undefined') {
-              const VERSION = '4.7';
+              const VERSION = '5.1.0';
               const dummy = function() { return null; };
               
               // Immediate Fallbacks for phantom references

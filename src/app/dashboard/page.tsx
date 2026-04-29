@@ -168,6 +168,7 @@ export default function DashboardPage() {
                     <button onClick={() => { supabase.auth.signOut(); window.location.href="/"; }} className="text-[10px] font-black uppercase tracking-widest text-zinc-500 border border-zinc-200 dark:border-zinc-800 px-3 py-1.5 rounded-full hover:bg-red-50 hover:text-red-600 transition-all">Cerrar Sesion</button>
                     <EvolvedShield 
                         role={userProfile?.role} 
+                        tier={userProfile?.investor_tier}
                         name={userProfile?.full_name} 
                         size="md" 
                     />
@@ -179,21 +180,31 @@ export default function DashboardPage() {
                 
                 <div className="max-w-5xl mx-auto w-full p-6 md:p-12">
                     <div className="flex justify-between items-center mb-8">
-                        <div className="flex items-center gap-6">
-                            <EvolvedShield 
-                                role={userProfile?.role} 
-                                name={userProfile?.full_name} 
-                                size="xl" 
-                            />
-                            <div>
-                                <h1 className="text-4xl font-black italic uppercase leading-none">Hola, {userProfile?.full_name?.split(" ")[0]}</h1>
-                                {userProfile?.role?.toLowerCase() === 'investor' && (
-                                    <div className="inline-flex items-center gap-2 mt-2 px-3 py-1 bg-amber-500/10 text-amber-600 rounded-lg text-[10px] font-black uppercase tracking-widest border border-amber-500/20">
-                                        🎖️ Estatus Inversionista Pro
-                                    </div>
-                                )}
-                            </div>
-                        </div>
+                            <Link href="/dashboard/profile" className="flex items-center gap-6 hover:opacity-80 transition-opacity">
+                                <EvolvedShield 
+                                    role={userProfile?.role} 
+                                    tier={userProfile?.investor_tier}
+                                    name={userProfile?.full_name} 
+                                    size="xl" 
+                                />
+                                <div>
+                                    <h1 className="text-4xl font-black italic uppercase leading-none text-red-600">RECARGA FORZADA V5.0.5</h1>
+                                    {isAdmin ? (
+                                        <div className="inline-flex items-center gap-2 mt-2 px-3 py-1 bg-zinc-900 text-white rounded-lg text-[10px] font-black uppercase tracking-widest border border-zinc-800 shadow-xl shadow-black/20">
+                                            🛡️ Administrador Maestro
+                                        </div>
+                                    ) : userProfile?.role?.toLowerCase() === 'investor' && (
+                                        <div className={cn(
+                                            "inline-flex items-center gap-2 mt-2 px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-widest border",
+                                            userProfile?.investor_tier === 'elite' ? "bg-indigo-500/10 text-indigo-600 border-indigo-500/20" :
+                                            userProfile?.investor_tier === 'pro' ? "bg-amber-500/10 text-amber-600 border-amber-500/20" :
+                                            "bg-zinc-500/10 text-zinc-600 border-zinc-500/20"
+                                        )}>
+                                            🎖️ Inversionista {userProfile?.investor_tier?.toUpperCase() || 'STARTER'}
+                                        </div>
+                                    )}
+                                </div>
+                            </Link>
                         <div className="flex gap-2">
                             {isAdmin && <Link href="/admin" className="px-4 py-2 bg-zinc-900 text-white rounded-xl text-xs font-bold uppercase">Admin</Link>}
                         </div>
@@ -283,7 +294,7 @@ export default function DashboardPage() {
                                     </Link>
                                 ))}
                                 <div className="pt-12">
-                                    <h2 className="text-xl font-black italic uppercase mb-6">Mi Garage Digital</h2>
+                                    <h2 className="text-xl font-black italic uppercase">Mi Garage Digital</h2>
                                     <div className="grid md:grid-cols-2 gap-6">
                                         {ownedCars.map(car => (
                                             <Link key={car.id} href={"/dashboard/sell/" + car.id} className="block group">
@@ -343,10 +354,12 @@ export default function DashboardPage() {
                     </div>
                 </div>
             </main>
-            <footer className="h-8 border-t border-border/40 bg-zinc-50 flex items-center justify-between px-6 shrink-0">
-                <div className="text-[9px] font-black text-zinc-400 uppercase tracking-widest flex items-center gap-2">
-                    <span className="h-1.5 w-1.5 bg-emerald-500 rounded-full" />
-                    StarterKar Garage • v4.9.0 Deployment
+            <footer className="h-10 border-t border-border/40 bg-zinc-50/50 flex items-center justify-between px-8 shrink-0">
+                <div className="flex items-center gap-3">
+                    <div className="h-2 w-2 bg-emerald-500 rounded-full animate-pulse" />
+                    <p className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500">
+                        StarterKar Garage • v5.0.5 Deployment
+                    </p>
                 </div>
                 <div className="text-[9px] font-bold text-zinc-300 italic">
                     P2P Mediation Engine • Real-time Sync Active

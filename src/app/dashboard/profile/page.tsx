@@ -67,8 +67,7 @@ export default function ProfilePage() {
         try {
             const { error } = await supabase
                 .from("profiles")
-                .upsert({
-                    id: profile.id,
+                .update({
                     full_name: profile.full_name,
                     phone: profile.phone,
                     location: profile.location,
@@ -76,7 +75,8 @@ export default function ProfilePage() {
                     rfc: profile.rfc,
                     cif_url: profile.cif_url,
                     updated_at: new Date().toISOString()
-                });
+                })
+                .eq("id", user.id);
 
             if (error) {
                 console.error("Error saving profile:", error);
@@ -165,6 +165,19 @@ export default function ProfilePage() {
                                 <Shield className="h-4 w-4 text-indigo-600" />
                                 Bóveda Activa: Sí
                             </div>
+                            {profile?.role?.toLowerCase() === 'investor' && (
+                                <div className={cn(
+                                    "flex items-center gap-3 p-3 rounded-xl border mt-4",
+                                    profile?.investor_tier === 'elite' ? "bg-indigo-500/10 border-indigo-500/20 text-indigo-600" :
+                                    profile?.investor_tier === 'pro' ? "bg-amber-500/10 border-amber-500/20 text-amber-600" :
+                                    "bg-zinc-500/10 border-zinc-500/20 text-zinc-600"
+                                )}>
+                                    <Shield className="h-4 w-4" />
+                                    <span className="text-[10px] font-black uppercase tracking-widest">
+                                        Rango: {profile?.investor_tier?.toUpperCase() || 'STARTER'}
+                                    </span>
+                                </div>
+                            )}
                         </div>
                     </div>
 

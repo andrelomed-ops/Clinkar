@@ -53,7 +53,9 @@ const STATUS_MAP: Record<string, { label: string, color: string }> = {
     'DISPUTED': { label: 'DISPUTA', color: 'text-red-500' }
 };
 
-export default function AdminDashboard() {
+const ADMIN_VERSION = "5.0.5";
+
+export default function AdminDashboardV5() {
     const supabase = createBrowserClient();
     const [transactions, setTransactions] = useState<any[]>([]);
     const [inventory, setInventory] = useState<any[]>([]);
@@ -106,11 +108,11 @@ export default function AdminDashboard() {
         }
     };
 
-    const handleUpdateUserRole = async (userId: string, newRole: any) => {
+    const handleUpdateUserRole = async (userId: string, newRole: any, tier: any = null) => {
         setActionLoading(userId);
         try {
-            await updateUserRole(userId, newRole);
-            toast.success(`Rol actualizado a ${newRole}`);
+            await updateUserRole(userId, newRole, tier);
+            toast.success(`Rol actualizado a ${newRole} ${tier ? `(${tier.toUpperCase()})` : ''}`);
             await handleSearchUsers();
         } catch (err: any) {
             toast.error(err.message || "Error al actualizar rol");
@@ -404,7 +406,7 @@ export default function AdminDashboard() {
                         <div className="mb-12 px-2">
                     <h1 className="text-2xl font-black italic uppercase tracking-tighter flex items-center gap-2">
                         <div className="h-8 w-8 bg-indigo-600 rounded-lg flex items-center justify-center italic text-white text-xl">S</div>
-                        StarterKar <span className="text-[10px] bg-indigo-600/20 text-indigo-400 px-2 py-0.5 rounded-full not-italic tracking-widest font-black border border-indigo-500/30 ml-1">ADMIN v5.0.0</span>
+                        StarterKar <span className="text-[10px] bg-indigo-600/20 text-indigo-400 px-2 py-0.5 rounded-full not-italic tracking-widest font-black border border-indigo-500/30 ml-1">ADMIN v{ADMIN_VERSION}</span>
                     </h1>
                 </div>
 
@@ -1099,18 +1101,34 @@ export default function AdminDashboard() {
                                         
                                         <div className="h-10 w-[1px] bg-zinc-800" />
 
-                                        <div className="flex gap-2">
-                                            <button 
-                                                onClick={() => handleUpdateUserRole(u.id, 'investor')}
-                                                disabled={actionLoading === u.id || u.role === 'investor'}
-                                                className="h-12 px-6 bg-emerald-600 text-white text-[10px] font-black rounded-xl hover:bg-emerald-500 transition-all uppercase tracking-widest disabled:opacity-30"
-                                            >
-                                                PROMOVER A INVERSIONISTA
-                                            </button>
+                                        <div className="flex flex-col gap-2">
+                                            <div className="flex gap-2">
+                                                <button 
+                                                    onClick={() => handleUpdateUserRole(u.id, 'investor', 'starter')}
+                                                    disabled={actionLoading === u.id || (u.role === 'investor' && u.investor_tier === 'starter')}
+                                                    className="h-10 px-4 bg-zinc-400 text-black text-[9px] font-black rounded-lg hover:bg-zinc-300 transition-all uppercase tracking-widest disabled:opacity-30 border border-zinc-200/50"
+                                                >
+                                                    STARTER (PLATA)
+                                                </button>
+                                                <button 
+                                                    onClick={() => handleUpdateUserRole(u.id, 'investor', 'pro')}
+                                                    disabled={actionLoading === u.id || (u.role === 'investor' && u.investor_tier === 'pro')}
+                                                    className="h-10 px-4 bg-amber-500 text-black text-[9px] font-black rounded-lg hover:bg-amber-400 transition-all uppercase tracking-widest disabled:opacity-30 border border-amber-300/50"
+                                                >
+                                                    PRO (ORO)
+                                                </button>
+                                                <button 
+                                                    onClick={() => handleUpdateUserRole(u.id, 'investor', 'elite')}
+                                                    disabled={actionLoading === u.id || (u.role === 'investor' && u.investor_tier === 'elite')}
+                                                    className="h-10 px-4 bg-indigo-600 text-white text-[9px] font-black rounded-lg hover:bg-indigo-500 transition-all uppercase tracking-widest disabled:opacity-30 border border-indigo-400/50"
+                                                >
+                                                    ELITE (DIAMANTE)
+                                                </button>
+                                            </div>
                                             <button 
                                                 onClick={() => handleUpdateUserRole(u.id, 'buyer')}
                                                 disabled={actionLoading === u.id || u.role === 'buyer'}
-                                                className="h-12 px-6 bg-zinc-800 text-zinc-400 text-[10px] font-black rounded-xl hover:bg-zinc-700 transition-all uppercase tracking-widest disabled:opacity-30"
+                                                className="h-10 px-4 bg-zinc-800 text-zinc-400 text-[9px] font-black rounded-lg hover:bg-zinc-700 transition-all uppercase tracking-widest disabled:opacity-30 border border-zinc-700"
                                             >
                                                 REVERTIR A COMPRADOR
                                             </button>

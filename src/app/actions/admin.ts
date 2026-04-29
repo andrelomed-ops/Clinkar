@@ -6,7 +6,11 @@ import { revalidatePath } from "next/cache";
 import { ReferralPayoutService } from "@/services/ReferralPayoutService";
 import { ServiceTicketService } from "@/services/ServiceTicketService";
 
-export async function updateUserRole(targetUserId: string, newRole: 'admin' | 'inspector' | 'seller' | 'buyer' | 'investor') {
+export async function updateUserRole(
+    targetUserId: string, 
+    newRole: 'admin' | 'inspector' | 'seller' | 'buyer' | 'investor',
+    tier: 'starter' | 'pro' | 'elite' | null = null
+) {
     const supabase = await createClient();
 
     // 1. Verify Requestor is Admin
@@ -25,9 +29,16 @@ export async function updateUserRole(targetUserId: string, newRole: 'admin' | 'i
     }
 
     // 2. Perform Update
+    const updateData: any = { role: newRole };
+    if (newRole === 'investor') {
+        updateData.investor_tier = tier || 'starter';
+    } else {
+        updateData.investor_tier = null;
+    }
+
     const { error } = await supabase
         .from("profiles")
-        .update({ role: newRole })
+        .update(updateData)
         .eq("id", targetUserId);
 
     if (error) throw new Error(error.message);
@@ -219,7 +230,10 @@ export async function approveInvestorApplicationAction(applicationId: string) {
     // 2. Update Role in Profiles
     const { error: roleError } = await supabase
         .from("profiles")
-        .update({ role: 'investor' })
+        .update({ 
+            role: 'investor',
+            investor_tier: app.tier_id
+        })
         .eq("id", app.user_id);
 
     if (roleError) throw roleError;
