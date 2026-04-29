@@ -100,19 +100,29 @@ export default function DashboardPage() {
                 setFavoriteCars(dbCars || []);
             }
 
-            const { data: insps } = await supabase
-                .from("inspections")
-                .select("*, cars!inner(*)")
-                .eq("status", "SCHEDULED")
-                .or(`cars.seller_id.eq.${user.id}`);
-            if (insps) {
-                setActiveInspections(insps.map((i: any) => ({
+            // 4. Load Inspections (Safe Fetch)
+            try {
+                const { data: insps, error: inspError } = await supabase
+                    .from("inspections")
+                    .select("*, cars(*)")
+                    .eq("status", "SCHEDULED");
+                
+                if (inspError) throw inspError;
+
+                // Filter in JS to avoid complex PostgREST OR syntax issues
+                const myInsps = insps?.filter(i => i.cars?.seller_id === user.id) || [];
+                
+                setActiveInspections(myInsps.map((i: any) => ({
                     id: i.id,
                     car: i.cars?.make + " " + i.cars?.model,
                     status: i.status,
-                    date: new Date(i.scheduled_at).toLocaleDateString()
+                    date: i.scheduled_at ? new Date(i.scheduled_at).toLocaleDateString() : 'Pendiente'
                 })));
+            } catch (inspErr) {
+                console.error("[Dashboard] Non-fatal error loading inspections:", inspErr);
+                setActiveInspections([]);
             }
+
         } catch (err) {
             console.error(err);
         } finally {
@@ -324,7 +334,7 @@ export default function DashboardPage() {
             <footer className="h-8 border-t border-border/40 bg-zinc-50 flex items-center justify-between px-6 shrink-0">
                 <div className="text-[9px] font-black text-zinc-400 uppercase tracking-widest flex items-center gap-2">
                     <span className="h-1.5 w-1.5 bg-emerald-500 rounded-full" />
-                    StarterKar Garage • v4.8.3 Deployment
+                    StarterKar Garage • v4.8.4 Deployment
                 </div>
                 <div className="text-[9px] font-bold text-zinc-300 italic">
                     P2P Mediation Engine • Real-time Sync Active
