@@ -102,8 +102,22 @@ export async function deleteCarAction(id: string) {
     const { data: profile } = await supabase.from("profiles").select("role").eq("id", user.id).single();
     if (profile?.role !== 'admin' && user.email !== 'StarterKar@hotmail.com') throw new Error("Forbidden");
 
+    console.log(`[Action] Deleting car ${id} and its dependencies...`);
+
+    // 1. Delete Dependencies first to avoid FK constraints
+    await supabase.from("user_favorites").delete().eq("car_id", id);
+    await supabase.from("car_locks").delete().eq("car_id", id);
+    await supabase.from("car_waitlists").delete().eq("car_id", id);
+    await supabase.from("service_tickets").delete().eq("car_id", id);
+    await supabase.from("warranty_policies").delete().eq("car_id", id);
+    
+    // 2. Finally delete the car
     const { error } = await supabase.from("cars").delete().eq("id", id);
-    if (error) throw new Error(error.message);
+    
+    if (error) {
+        console.error("[Action] Delete Car Error:", error);
+        throw new Error(`No se pudo eliminar: ${error.message}`);
+    }
 
     revalidatePath("/admin");
     revalidatePath("/buy");

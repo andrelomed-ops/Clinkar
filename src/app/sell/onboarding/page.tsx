@@ -106,7 +106,7 @@ export default function SellOnboardingPage() {
                 make,
                 model,
                 year: parseInt(year) || new Date().getFullYear(),
-                price: 0,
+                price: parseInt(searchParams.get('price') || '0'),
                 status: 'pending_inspection',
                 mileage: parseInt(km),
                 has_clinkar_seal: mktCat === 'CERTIFIED',

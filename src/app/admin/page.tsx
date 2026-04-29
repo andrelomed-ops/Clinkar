@@ -6,7 +6,8 @@ import {
     Ban, ShieldAlert, ExternalLink, Users, DollarSign, Loader2, 
     CarFront, LayoutDashboard, Zap, FileText, CreditCard, 
     ArrowUpRight, AlertTriangle, ShieldCheck, Download, 
-    ChevronRight, Calendar, UserCheck, LogOut, Gift, Activity, MessageSquare
+    ChevronRight, Calendar, UserCheck, LogOut, Gift, Activity, MessageSquare,
+    Trash2
 } from "lucide-react";
 import { getLegalTransactionsAction, overrideTransactionStatusAction, validateCEPAction, registerCommissionPaymentAction } from "@/app/actions/transaction";
 import { createCarAction, getAdminInventoryAction, deleteCarAction, updateCarAction } from "@/app/actions/cars";
@@ -194,14 +195,19 @@ export default function AdminDashboard() {
 
 
     const handleDeleteCar = async (id: string) => {
-        if (!confirm("¿Seguro que deseas eliminar este vehículo?")) return;
+        if (!confirm("¿Seguro que deseas eliminar este vehículo? Todas sus dependencias (favoritos, etc.) serán eliminadas también.")) return;
         setActionLoading(id);
         try {
-            await deleteCarAction(id);
-            toast.success("Vehículo eliminado");
-            await loadData();
+            const result = await deleteCarAction(id);
+            if (result.success) {
+                toast.success("Vehículo eliminado correctamente");
+                await loadData();
+            }
         } catch (err: any) {
-            toast.error("Error al eliminar");
+            console.error("Delete error:", err);
+            toast.error("No se pudo eliminar", { 
+                description: err.message || "Error de servidor"
+            });
         } finally {
             setActionLoading(null);
         }
@@ -632,7 +638,12 @@ export default function AdminDashboard() {
                                         <div className="flex justify-between items-start mb-6">
                                             <div>
                                                 <h4 className="text-2xl font-black text-white italic tracking-tighter uppercase">{car.make} {car.model}</h4>
-                                                <p className="text-zinc-500 font-black uppercase text-[10px] tracking-widest mt-1 italic">{car.year} • {car.location}</p>
+                                                <div className="flex items-center gap-3 mt-1">
+                                                    <p className="text-zinc-500 font-black uppercase text-[10px] tracking-widest italic">{car.year} • {car.location}</p>
+                                                    <span className="text-zinc-800 text-[10px]">•</span>
+                                                    <p className="text-indigo-400 font-black uppercase text-[10px] tracking-widest">ID: {car.id.slice(0, 8)}</p>
+                                                </div>
+                                                <p className="text-zinc-600 font-bold text-[9px] uppercase tracking-widest mt-2">Publicado: {new Date(car.created_at).toLocaleDateString()}</p>
                                             </div>
                                             <div className="text-right">
                                                 <p className="text-[9px] font-black text-zinc-600 uppercase tracking-widest">Valor de Mercado</p>
@@ -649,9 +660,10 @@ export default function AdminDashboard() {
                                             </button>
                                             <button 
                                                 onClick={() => handleDeleteCar(car.id)}
-                                                className="h-12 w-12 bg-red-900/10 border border-red-900/30 text-red-500 rounded-xl flex items-center justify-center hover:bg-red-500 hover:text-white transition-all"
+                                                disabled={actionLoading === car.id}
+                                                className="h-12 w-12 bg-red-900/10 border border-red-900/30 text-red-500 rounded-xl flex items-center justify-center hover:bg-red-500 hover:text-white transition-all disabled:opacity-50"
                                             >
-                                                <Ban className="h-5 w-5" />
+                                                {actionLoading === car.id ? <Loader2 className="h-4 w-4 animate-spin" /> : <Trash2 className="h-5 w-5" />}
                                             </button>
                                         </div>
                                     </div>
