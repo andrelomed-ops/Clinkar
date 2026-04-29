@@ -34,7 +34,7 @@ export default function BuyPage() {
     if (typeof window !== 'undefined') {
         (window as any).AlertCircle = (window as any).AlertCircle || (() => null);
         (window as any).Zap = (window as any).Zap || (() => null);
-        console.log("StarterKar Ops: BuyPage v4.2.3 Loaded (Hydration Safe)");
+        console.log("StarterKar Ops: BuyPage v4.3.3 Loaded (Definitive Fix)");
     }
 
     const supabase = useMemo(() => createBrowserClient(), []);
