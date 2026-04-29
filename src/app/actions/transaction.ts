@@ -201,27 +201,32 @@ export async function confirmP2PHandoverAction(transactionId: string) {
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
     
+    console.log(`[V4.8.3] Processing Handover for TX: ${transactionId} | User: ${user?.id || 'ANON'}`);
+
     // 1. Handle Mocks/Demos First
     if (transactionId.startsWith('mock-') || transactionId.startsWith('demo-')) {
-        console.log(`[Handover] Simulation completed for ${transactionId}`);
         const carId = transactionId.split('-').pop();
+        console.log(`[V4.8.3] SIMULATION MODE. CarID: ${carId}`);
         if (carId && carId.length > 20) {
             await CarService.updateCarStatus(supabase, carId, 'SOLD');
         }
         revalidatePath('/dashboard');
-        return { success: true };
+        return { success: true, message: "Simulación completada. El auto ha sido marcado como VENDIDO." };
     }
 
     // 2. Real Transaction Flow
     if (!user) throw new Error("Unauthorized");
     
     const result = await TransactionService.confirmP2PHandover(supabase, transactionId);
+    console.log(`[V4.8.3] DB Handover Result:`, result);
+
     if (result.success) {
         revalidatePath('/dashboard');
         revalidatePath(`/dashboard/handover/${transactionId}`);
     }
     return result;
 }
+
 
 
 export async function reportDiscrepancyAction(transactionId: string, details: {
