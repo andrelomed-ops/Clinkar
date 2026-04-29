@@ -177,33 +177,40 @@ export async function deleteCarAction(id: string) {
         ];
         await Promise.allSettled(carDirectDeps);
 
-        // 3. FINAL STEP: Delete the car itself
-        console.log(`[Action] EXECUTING FINAL DELETE for Car ${id}`);
-        const { error: carDeleteError } = await supabase.from("cars").delete().eq("id", targetId);
+        // 3. FINAL STEP: Delete the car itself with row count verification
+        console.log(`[Action] EXECUTING FINAL DELETE for Car ${targetId}`);
+        const { error: carDeleteError, count } = await supabase
+            .from("cars")
+            .delete({ count: 'exact' })
+            .eq("id", targetId);
         
         if (carDeleteError) {
             console.error("[Action] FINAL DELETION ERROR:", carDeleteError);
-            
-            // Helpful hint for the user
-            let customHint = carDeleteError.hint || "";
-            if (carDeleteError.code === "23503") {
-                customHint = "RESTRICCIÓN DE BASE DE DATOS: Hay registros en otras tablas que dependen de este auto y no se pudieron borrar automáticamente. Verifica las políticas de RLS en Supabase.";
-            }
-
             return { 
                 success: false, 
                 message: carDeleteError.message, 
-                details: carDeleteError.details,
-                hint: customHint,
+                hint: carDeleteError.hint || "Error en la base de datos.",
                 code: carDeleteError.code
             };
         }
 
-        console.log(`[Action] DELETION SUCCESS: Car ${id}`);
+        // CRITICAL CHECK: If count is 0, nothing was deleted (usually due to RLS)
+        if (count === 0) {
+            console.warn(`[Action] SUCCESS but 0 rows deleted for ${targetId}`);
+            return { 
+                success: false, 
+                message: "El auto no fue eliminado de la base de datos.",
+                hint: "RLS POLICY BLOCK: Tu usuario no tiene permiso de DELETE en la tabla 'cars' para este registro específico.",
+                code: "RLS_BLOCK"
+            };
+        }
+
+        console.log(`[Action] DELETION SUCCESS: Car ${targetId} (Rows affected: ${count})`);
         revalidatePath("/admin");
         revalidatePath("/buy");
         
         return { success: true };
+
 
 
 
