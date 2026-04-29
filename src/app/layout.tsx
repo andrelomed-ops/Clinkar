@@ -106,12 +106,12 @@ export default function RootLayout({
     <html lang="es" suppressHydrationWarning>
       <head>
         {/* Cache Buster: v1.1.2 - Force refresh and provide AlertCircle fallback */}
-        <meta name="version" content="1.1.5" />
+        <meta name="version" content="1.1.6" />
         <script dangerouslySetInnerHTML={{ __html: `
-          // 🚨 NUCLEAR CACHE CLEARING - EMERGENCY FIX v4.4
+          // 🚨 NUCLEAR CACHE CLEARING - EMERGENCY FIX v4.5
           (function() {
             if (typeof window !== 'undefined') {
-              const VERSION = '4.4';
+              const VERSION = '4.5';
               const dummy = function() { return null; };
               
               // Immediate Fallbacks for phantom references

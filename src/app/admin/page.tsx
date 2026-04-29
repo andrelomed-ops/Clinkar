@@ -23,10 +23,10 @@ import { CarFormModal } from "@/components/admin/CarFormModal";
 
 
 
-// Admin Dashboard v4.4 - Emergency Stabilization
+// Admin Dashboard v4.5 - Deep Deletion & Admin Investor Visibility
 if (typeof window !== 'undefined') {
     (window as any).AlertCircle = (window as any).AlertCircle || (() => null);
-    console.log("StarterKar Ops: Dashboard v4.4 Loaded");
+    console.log("StarterKar Ops: Dashboard v4.5 Loaded");
 }
 
 type AdminView = 'CONTROL' | 'INVENTORY' | 'INVESTORS' | 'USERS' | 'BILLING' | 'UPSELLS' | 'REFERRALS' | 'DEMANDS';
