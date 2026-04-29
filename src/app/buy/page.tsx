@@ -17,8 +17,9 @@ import { SafeHydration } from "@/components/ui/SafeHydration";
 import { Navbar } from "@/components/ui/navbar";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
+import { Footer } from "@/components/layout/Footer";
 
-// Cache Buster: v1.0.4 - Design Restoration & Navigation Fix
+// Cache Buster: v1.0.5 - Fix Hook Nesting & Footer Import
 const StarterKarAIBot = dynamic(
     () => import("@/components/market/StarterKarAIBot").then((mod) => mod.StarterKarAIBot),
     { 
@@ -30,13 +31,6 @@ const StarterKarAIBot = dynamic(
 const ITEMS_PER_PAGE = 24;
 
 export default function BuyPage() {
-    // EMERGENCY FALLBACK: Prevent ReferenceError from crashing the page
-    if (typeof window !== 'undefined') {
-        (window as any).AlertCircle = (window as any).AlertCircle || (() => null);
-        (window as any).Zap = (window as any).Zap || (() => null);
-        console.log("StarterKar Ops: BuyPage v4.3.3 Loaded (Definitive Fix)");
-    }
-
     const supabase = useMemo(() => createBrowserClient(), []);
     const [filters, setFilters] = useState<any>({
         location: [],
@@ -60,48 +54,58 @@ export default function BuyPage() {
     const [isLoading, setIsLoading] = useState(true);
     const [userRole, setUserRole] = useState<string | null>(null);
 
+    // EMERGENCY FALLBACK: Prevent ReferenceError from crashing the page
     useEffect(() => {
+        if (typeof window !== 'undefined') {
+            (window as any).AlertCircle = (window as any).AlertCircle || (() => null);
+            (window as any).Zap = (window as any).Zap || (() => null);
+            console.log("StarterKar Ops: BuyPage v1.0.5 Loaded (Hook Reset)");
+        }
         setIsMounted(true);
-        const loadFavorites = async () => {
+    }, []);
+
+    // Load Favorites & User Role
+    useEffect(() => {
+        if (!isMounted) return;
+
+        const loadInitialState = async () => {
             const favs = await FavoriteService.getFavorites(supabase);
             setFavorites(favs);
-        };
-        const loadUserRole = async () => {
+
             const { data: { user } } = await supabase.auth.getUser();
             if (user) {
                 const { data: profile } = await supabase.from('profiles').select('role').eq('id', user.id).single();
                 setUserRole(profile?.role || 'buyer');
             }
         };
-        loadFavorites();
-        loadUserRole();
+
+        loadInitialState();
 
         const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event) => {
-    // 2. Main Initialization Effect
+            if (event === 'SIGNED_IN' || event === 'SIGNED_OUT') {
+                const favs = await FavoriteService.getFavorites(supabase);
+                setFavorites(favs);
+            }
+        });
+
+        return () => {
+            subscription.unsubscribe();
+        };
+    }, [isMounted, supabase]);
+
+    // Main Inventory Fetch Effect
     useEffect(() => {
+        if (!isMounted) return;
+        
         let active = true;
         
-        async function initialize() {
-            setIsMounted(true);
+        async function fetchInventory() {
             setIsLoading(true);
-            console.log("StarterKar Ops: Starting Initialization...");
+            console.log("StarterKar Ops: Fetching live inventory...");
             
             try {
-                // Fetch User Role first
-                const { data: { user } } = await supabase.auth.getUser();
-                if (user && active) {
-                    const { data: profile } = await supabase.from('profiles').select('role').eq('id', user.id).single();
-                    if (profile && active) {
-                        console.log("StarterKar Ops: User Role loaded:", profile.role);
-                        setUserRole(profile.role);
-                    }
-                }
-
-                // Fetch Cars
                 const data = await CarService.getAllCars(supabase);
                 if (!active) return;
-
-                console.log(`StarterKar Ops: CarService returned ${data?.length || 0} raw items`);
 
                 if (data && Array.isArray(data)) {
                     const mappedCars = data.map(dbCar => {
@@ -136,44 +140,26 @@ export default function BuyPage() {
                         }
                     }).filter(Boolean);
                     
-                    if (mappedCars.length > 0 && active) {
-                        console.log("StarterKar Ops: Sample Car Data:", {
-                            id: mappedCars[0].id,
-                            is_investor_only: mappedCars[0].is_investor_only,
-                            price: mappedCars[0].price
-                        });
-                    }
-                    
                     if (active) {
-                        console.log(`StarterKar Ops: Successfully mapped ${mappedCars.length} cars`);
-                        setCars(mappedCars);
+                        console.log(`StarterKar Ops: Loaded ${mappedCars.length} live units`);
+                        setCars(mappedCars as any[]);
                     }
                 } else {
                     console.warn("StarterKar Ops: DB fetch returned null, using mock fallback.");
                     if (active) setCars(ALL_CARS);
                 }
             } catch (e) {
-                console.error("StarterKar Ops: Critical Error in initialization:", e);
+                console.error("StarterKar Ops: Error in inventory fetch:", e);
                 if (active) setCars(ALL_CARS);
             } finally {
                 if (active) setIsLoading(false);
             }
         }
 
-        initialize();
+        fetchInventory();
 
-        const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event) => {
-            if (event === 'SIGNED_IN' || event === 'SIGNED_OUT') {
-                const favs = await FavoriteService.getFavorites(supabase);
-                if (active) setFavorites(favs);
-            }
-        });
-
-        return () => { 
-            active = false; 
-            subscription.unsubscribe();
-        };
-    }, [supabase]);
+        return () => { active = false; };
+    }, [isMounted, supabase]);
 
     const safeSetFilters = (newFilters: any) => {
         try {
@@ -208,7 +194,6 @@ export default function BuyPage() {
     const filteredCars = useMemo(() => {
         try {
             return cars.filter(car => {
-                // Skip cars with no essential data
                 if (!car || !car.id) return false;
                 
                 if (showFavoritesOnly && !favorites.includes(car.id)) return false;
@@ -249,7 +234,6 @@ export default function BuyPage() {
                 if (filters.investorOnly && !car.is_investor_only) return false;
                 if (filters.newCars && !car.is_new) return false;
 
-                // RESTRICTION: Investor-only cars are ONLY visible to users with the 'investor' role
                 if (car.is_investor_only && !isUserInvestor) return false;
 
                 return true;
