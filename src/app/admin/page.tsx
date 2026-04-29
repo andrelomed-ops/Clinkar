@@ -10,7 +10,7 @@ import {
     Trash2, Lock
 } from "lucide-react";
 import { getLegalTransactionsAction, overrideTransactionStatusAction, validateCEPAction, registerCommissionPaymentAction, updateTransactionServicesAction } from "@/app/actions/transaction";
-import { createCarAction, getAdminInventoryAction, deleteCarAction, updateCarAction } from "@/app/actions/cars";
+import { createCarAction, getAdminInventoryAction, deleteCarAction, updateCarAction, updateCarStatusAction } from "@/app/actions/cars";
 import { 
     approveInvestorApplicationAction, rejectInvestorApplicationAction, 
     getInvestorApplicationsAction, getPendingReferralPayouts, 
@@ -255,6 +255,21 @@ export default function AdminDashboard() {
         }
     };
 
+    const handleUpdateCarStatus = async (id: string, status: string) => {
+        setActionLoading(id);
+        try {
+            const result = await updateCarStatusAction(id, status);
+            if (result.success) {
+                toast.success(`Estatus de vehículo actualizado a ${status.toUpperCase()}`);
+                await loadData();
+            }
+        } catch (err: any) {
+            toast.error("Error al actualizar estatus", { description: err.message });
+        } finally {
+            setActionLoading(null);
+        }
+    };
+
     const handleValidateCEP = async (transactionId: string) => {
         setCepLoading(transactionId);
         try {
@@ -306,18 +321,7 @@ export default function AdminDashboard() {
         }
     };
 
-    const handleUpdateCarStatus = async (carId: string, newStatus: string) => {
-        setActionLoading(carId);
-        try {
-            await updateCarAction(carId, { status: newStatus });
-            toast.success(`Vehículo actualizado a ${STATUS_MAP[newStatus]?.label || newStatus}`);
-            await loadData();
-        } catch (err: any) {
-            toast.error("Error al actualizar estatus del vehículo");
-        } finally {
-            setActionLoading(null);
-        }
-    };
+    // handleUpdateCarStatus (v4.9.5 - Consolidated above)
 
 
     const handleProcessReferralPayout = async (payoutId: string, amount: number, name: string) => {
@@ -394,7 +398,7 @@ export default function AdminDashboard() {
                         <div className="mb-12 px-2">
                     <h1 className="text-2xl font-black italic uppercase tracking-tighter flex items-center gap-2">
                         <div className="h-8 w-8 bg-indigo-600 rounded-lg flex items-center justify-center italic text-white text-xl">S</div>
-                        StarterKar <span className="text-[10px] bg-indigo-600/20 text-indigo-400 px-2 py-0.5 rounded-full not-italic tracking-widest font-black border border-indigo-500/30 ml-1">ADMIN v4.9.2</span>
+                        StarterKar <span className="text-[10px] bg-indigo-600/20 text-indigo-400 px-2 py-0.5 rounded-full not-italic tracking-widest font-black border border-indigo-500/30 ml-1">ADMIN v4.9.5</span>
                     </h1>
                 </div>
 

@@ -220,6 +220,24 @@ export async function deleteCarAction(id: string) {
     }
 }
 
+export async function updateCarStatusAction(id: string, status: string) {
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) throw new Error("Unauthorized");
+
+    const { data: profile } = await supabase.from("profiles").select("role").eq("id", user.id).single();
+    if (profile?.role !== 'admin' && user.email !== 'starterkar@hotmail.com') throw new Error("Forbidden");
+
+    const success = await CarService.updateCar(supabase, id, { status });
+    if (!success) throw new Error("Failed to update status.");
+
+    revalidatePath("/admin");
+    revalidatePath("/buy");
+    revalidatePath(`/buy/${id}`);
+
+    return { success: true };
+}
+
 export async function getAutomatedSpecsAction(make: string, model: string) {
     const { getSpecsForModel } = await import("@/lib/car-data");
     const specs = getSpecsForModel(make, model);
