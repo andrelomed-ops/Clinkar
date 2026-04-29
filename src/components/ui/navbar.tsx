@@ -9,6 +9,7 @@ import { useState, useEffect, useMemo } from 'react';
 import { NotificationCenter } from './NotificationCenter';
 import { AgentModeBar } from '@/components/admin/AgentModeBar';
 import { createBrowserClient } from '@/lib/supabase/client';
+import { EvolvedShield } from './EvolvedShield';
 
 interface NavbarProps {
     variant?: 'default' | 'home' | 'market' | 'sell';
@@ -167,6 +168,14 @@ export function Navbar({
                                 <NotificationCenter />
                                 <ThemeToggle />
                             </div>
+                            {user && (
+                                <EvolvedShield 
+                                    role={userProfile?.role} 
+                                    name={userProfile?.full_name} 
+                                    size="md" 
+                                    className="ml-2"
+                                />
+                            )}
                         </div>
 
                         <button

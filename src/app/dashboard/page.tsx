@@ -20,6 +20,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { RecommendedSection } from "@/components/dashboard/RecommendedSection";
 import { EcosystemHub } from "@/components/dashboard/EcosystemHub";
 import Image from "next/image";
+import { EvolvedShield } from "@/components/ui/EvolvedShield";
 import { FavoriteService } from "@/services/FavoriteService";
 import { CarCard } from "@/components/market/CarCard";
 import { ALL_CARS, Vehicle } from "@/data/cars";
@@ -165,9 +166,11 @@ export default function DashboardPage() {
                         </Link>
                     )}
                     <button onClick={() => { supabase.auth.signOut(); window.location.href="/"; }} className="text-[10px] font-black uppercase tracking-widest text-zinc-500 border border-zinc-200 dark:border-zinc-800 px-3 py-1.5 rounded-full hover:bg-red-50 hover:text-red-600 transition-all">Cerrar Sesion</button>
-                    <Link href="/dashboard/profile" className="h-10 w-10 rounded-full bg-indigo-100 flex items-center justify-center text-xs font-bold text-indigo-700">
-                        {userProfile?.full_name?.[0] || "U"}
-                    </Link>
+                    <EvolvedShield 
+                        role={userProfile?.role} 
+                        name={userProfile?.full_name} 
+                        size="md" 
+                    />
                 </div>
             </nav>
 
@@ -176,7 +179,21 @@ export default function DashboardPage() {
                 
                 <div className="max-w-5xl mx-auto w-full p-6 md:p-12">
                     <div className="flex justify-between items-center mb-8">
-                        <h1 className="text-4xl font-black italic uppercase">Hola, {userProfile?.full_name?.split(" ")[0]}</h1>
+                        <div className="flex items-center gap-6">
+                            <EvolvedShield 
+                                role={userProfile?.role} 
+                                name={userProfile?.full_name} 
+                                size="xl" 
+                            />
+                            <div>
+                                <h1 className="text-4xl font-black italic uppercase leading-none">Hola, {userProfile?.full_name?.split(" ")[0]}</h1>
+                                {userProfile?.role?.toLowerCase() === 'investor' && (
+                                    <div className="inline-flex items-center gap-2 mt-2 px-3 py-1 bg-amber-500/10 text-amber-600 rounded-lg text-[10px] font-black uppercase tracking-widest border border-amber-500/20">
+                                        🎖️ Estatus Inversionista Pro
+                                    </div>
+                                )}
+                            </div>
+                        </div>
                         <div className="flex gap-2">
                             {isAdmin && <Link href="/admin" className="px-4 py-2 bg-zinc-900 text-white rounded-xl text-xs font-bold uppercase">Admin</Link>}
                         </div>
