@@ -231,10 +231,14 @@ export default function BuyPage() {
                 if (filters.certifiedOnly && !car.has_clinkar_seal) return false;
                 if (filters.flashSale && !car.flashSale) return false;
                 if (filters.isBorder && !car.is_imported) return false;
+                
+                // If filter is ON, show ONLY investor cars
                 if (filters.investorOnly && !car.is_investor_only) return false;
+                
                 if (filters.newCars && !car.is_new) return false;
 
-                // RESTRICTION: Investor-only cars are ONLY visible to users with 'investor' or 'admin' role
+                // RESTRICTION: Investor-only cars are HIDDEN for normal buyers
+                // But if they are NOT investor-only, everyone (including investors) can see them
                 if (car.is_investor_only && !isUserInvestor) return false;
 
                 return true;

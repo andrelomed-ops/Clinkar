@@ -333,15 +333,19 @@ export async function registerCommissionPaymentAction(transactionId: string, pay
     const { data: profile } = await supabase.from("profiles").select("role").eq("id", user.id).single();
     if (profile?.role !== 'admin' && user.email?.toLowerCase() !== 'starterkar@hotmail.com') throw new Error("Forbidden: No tienes permisos de administrador.");
 
-    const { error } = await supabase.from("transactions").update({
-        commission_paid: true,
-        commission_amount: paymentData.amount,
-        commission_payment_method: paymentData.method,
-        commission_payment_date: new Date().toISOString()
-    }).eq("id", transactionId);
+    try {
+        const { error } = await supabase.from("transactions").update({
+            commission_paid: true,
+            commission_amount: paymentData.amount,
+            commission_payment_method: paymentData.method,
+            commission_payment_date: new Date().toISOString()
+        }).eq("id", transactionId);
 
-    if (error) throw new Error(error.message);
+        if (error) return { success: false, message: error.message };
 
-    revalidatePath("/admin");
-    return { success: true };
+        revalidatePath("/admin");
+        return { success: true };
+    } catch (err: any) {
+        return { success: false, message: err.message || "Error inesperado en el servidor" };
+    }
 }

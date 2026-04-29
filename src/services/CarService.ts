@@ -61,8 +61,8 @@ export class CarService {
             .select('*')
             .in('status', [
                 'available', 'PUBLISHED', 'CERTIFIED', 'AVAILABLE', 'certified', 'published', 
-                'RESERVED', 'ACTIVE', 'active', 'pending_inspection',
-                'PUBLICADO', 'RESERVADO', 'EN REVISIÓN', 'BORRADOR', 'ARCHIVADO'
+                'RESERVED', 'reserved', 'ACTIVE', 'active', 'pending_inspection',
+                'PUBLICADO', 'RESERVADO', 'reservado', 'EN REVISIÓN', 'BORRADOR', 'ARCHIVADO'
             ]); 
 
         if (error) {

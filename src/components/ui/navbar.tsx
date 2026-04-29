@@ -141,7 +141,13 @@ export function Navbar({
                                 href={user ? "/dashboard" : "/login"} 
                                 className="hover:translate-y-[-2px] transition-all"
                             />
-                            {user && userProfile?.role?.toLowerCase() !== 'investor' && (
+                            {user && userProfile?.role?.toLowerCase() === 'investor' && (
+                                <div className="hidden xl:flex items-center gap-2 px-4 py-1.5 rounded-full bg-gradient-to-r from-amber-500 to-amber-600 text-white border border-amber-400 shadow-lg shadow-amber-500/20 text-[10px] font-black uppercase tracking-[0.15em] animate-in fade-in zoom-in duration-500">
+                                    <span className="flex h-1.5 w-1.5 rounded-full bg-white animate-pulse" />
+                                    🎖️ Inversionista Pro
+                                </div>
+                            )}
+                            {user && userProfile?.role?.toLowerCase() !== 'investor' && userProfile?.role?.toLowerCase() !== 'admin' && (
                                 <Link 
                                     href="/investor/apply"
                                     className="hidden xl:flex items-center gap-2 px-3 py-1.5 rounded-full bg-amber-500/10 text-amber-600 border border-amber-500/20 text-[10px] font-black uppercase tracking-widest hover:bg-amber-500/20 transition-all whitespace-nowrap"

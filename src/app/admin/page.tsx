@@ -292,9 +292,13 @@ export default function AdminDashboard() {
     const handleRegisterPayment = async (txId: string, amount: number) => {
         setActionLoading(txId);
         try {
-            await registerCommissionPaymentAction(txId, { method: 'MANUAL_ADMIN', amount });
-            toast.success("Pago de comisión registrado correctamente");
-            await loadData();
+            const result = await registerCommissionPaymentAction(txId, { method: 'MANUAL_ADMIN', amount });
+            if (result.success) {
+                toast.success("Pago de comisión registrado correctamente");
+                await loadData();
+            } else {
+                toast.error("Error al registrar pago", { description: result.message });
+            }
         } catch (err: any) {
             toast.error("Error al registrar pago", { description: err.message || "Error desconocido" });
         } finally {
