@@ -77,19 +77,21 @@ export default function BuyPage() {
         loadUserRole();
 
         const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event) => {
-            if (event === 'SIGNED_IN' || event === 'SIGNED_OUT') {
-                const favs = await FavoriteService.getFavorites(supabase);
-                setFavorites(favs);
-            }
-        });
-            if (isMounted) setFavorites(favs);
-
+    // 2. Main Initialization Effect
+    useEffect(() => {
+        let active = true;
+        
+        async function initialize() {
+            setIsMounted(true);
+            setIsLoading(true);
+            console.log("StarterKar Ops: Starting Initialization...");
+            
             try {
                 // Fetch User Role first
                 const { data: { user } } = await supabase.auth.getUser();
-                if (user && isMounted) {
+                if (user && active) {
                     const { data: profile } = await supabase.from('profiles').select('role').eq('id', user.id).single();
-                    if (profile) {
+                    if (profile && active) {
                         console.log("StarterKar Ops: User Role loaded:", profile.role);
                         setUserRole(profile.role);
                     }
@@ -97,7 +99,7 @@ export default function BuyPage() {
 
                 // Fetch Cars
                 const data = await CarService.getAllCars(supabase);
-                if (!isMounted) return;
+                if (!active) return;
 
                 console.log(`StarterKar Ops: CarService returned ${data?.length || 0} raw items`);
 
@@ -134,7 +136,7 @@ export default function BuyPage() {
                         }
                     }).filter(Boolean);
                     
-                    if (mappedCars.length > 0) {
+                    if (mappedCars.length > 0 && active) {
                         console.log("StarterKar Ops: Sample Car Data:", {
                             id: mappedCars[0].id,
                             is_investor_only: mappedCars[0].is_investor_only,
@@ -142,17 +144,19 @@ export default function BuyPage() {
                         });
                     }
                     
-                    console.log(`StarterKar Ops: Successfully mapped ${mappedCars.length} cars`);
-                    setCars(mappedCars);
+                    if (active) {
+                        console.log(`StarterKar Ops: Successfully mapped ${mappedCars.length} cars`);
+                        setCars(mappedCars);
+                    }
                 } else {
                     console.warn("StarterKar Ops: DB fetch returned null, using mock fallback.");
-                    setCars(ALL_CARS);
+                    if (active) setCars(ALL_CARS);
                 }
             } catch (e) {
                 console.error("StarterKar Ops: Critical Error in initialization:", e);
-                if (isMounted) setCars(ALL_CARS);
+                if (active) setCars(ALL_CARS);
             } finally {
-                if (isMounted) setIsLoading(false);
+                if (active) setIsLoading(false);
             }
         }
 
@@ -161,12 +165,12 @@ export default function BuyPage() {
         const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event) => {
             if (event === 'SIGNED_IN' || event === 'SIGNED_OUT') {
                 const favs = await FavoriteService.getFavorites(supabase);
-                if (isMounted) setFavorites(favs);
+                if (active) setFavorites(favs);
             }
         });
 
         return () => { 
-            isMounted = false; 
+            active = false; 
             subscription.unsubscribe();
         };
     }, [supabase]);
@@ -274,6 +278,8 @@ export default function BuyPage() {
             setCurrentPage(newPage);
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
+    };
+
     if (!isMounted) return null;
 
     return (
