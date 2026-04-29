@@ -394,7 +394,7 @@ export default function AdminDashboard() {
                         <div className="mb-12 px-2">
                     <h1 className="text-2xl font-black italic uppercase tracking-tighter flex items-center gap-2">
                         <div className="h-8 w-8 bg-indigo-600 rounded-lg flex items-center justify-center italic text-white text-xl">S</div>
-                        StarterKar <span className="text-[10px] bg-indigo-600/20 text-indigo-400 px-2 py-0.5 rounded-full not-italic tracking-widest font-black border border-indigo-500/30 ml-1">ADMIN v4.9.1</span>
+                        StarterKar <span className="text-[10px] bg-indigo-600/20 text-indigo-400 px-2 py-0.5 rounded-full not-italic tracking-widest font-black border border-indigo-500/30 ml-1">ADMIN v4.9.2</span>
                     </h1>
                 </div>
 
@@ -585,11 +585,13 @@ export default function AdminDashboard() {
 
 
                                     <div className="space-y-4 relative z-10">
-                                        {transactions.filter(tx => 
-                                            tx.status === 'P2P_WAITING_PROOF' || 
-                                            tx.status === 'HANDOVER_SCHEDULED' ||
-                                            (tx.status === 'RELEASED' && tx.cars?.status === 'RESERVED')
-                                        ).map(tx => (
+                                        {transactions.filter(tx => {
+                                            const txStatus = tx.status?.toLowerCase();
+                                            const carStatus = tx.cars?.status?.toLowerCase();
+                                            return txStatus === 'p2p_waiting_proof' || 
+                                                   txStatus === 'handover_scheduled' ||
+                                                   (txStatus === 'released' && carStatus === 'reserved');
+                                        }).map(tx => (
                                             <div key={tx.id} className="group bg-zinc-950/50 border border-zinc-800/50 p-8 rounded-[2rem] hover:border-indigo-500/50 transition-all hover:bg-zinc-900/50">
                                                 <div className="flex items-center justify-between">
                                                     <div className="flex gap-8 items-center">
@@ -603,16 +605,16 @@ export default function AdminDashboard() {
                                                             <div className="flex items-center gap-3 mb-1">
                                                                 <p className={cn(
                                                                     "text-[10px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full border",
-                                                                    tx.status === 'P2P_WAITING_PROOF' ? "text-amber-500 border-amber-500/20 bg-amber-500/5" : "text-emerald-500 border-emerald-500/20 bg-emerald-500/5"
+                                                                    txStatus === 'p2p_waiting_proof' ? "text-amber-500 border-amber-500/20 bg-amber-500/5" : "text-emerald-500 border-emerald-500/20 bg-emerald-500/5"
                                                                 )}>
-                                                                    {STATUS_MAP[tx.status]?.label || tx.status}
+                                                                    {STATUS_MAP[txStatus]?.label || STATUS_MAP[tx.status]?.label || tx.status}
                                                                 </p>
                                                                 <span className="text-zinc-700 text-xs">•</span>
                                                                 <span className="text-zinc-500 text-[10px] font-bold">Folio: {tx.id.slice(0, 8)}</span>
                                                                 <span className="text-zinc-700 text-xs">•</span>
                                                                 <div className="flex items-center gap-1.5 bg-zinc-900 px-2 py-0.5 rounded-full border border-zinc-800">
-                                                                    <div className={cn("h-1.5 w-1.5 rounded-full", tx.cars?.status === 'SOLD' ? "bg-zinc-500" : "bg-amber-500 animate-pulse")} />
-                                                                    <span className="text-[9px] font-black uppercase text-zinc-400">Auto: {STATUS_MAP[tx.cars?.status]?.label || tx.cars?.status}</span>
+                                                                    <div className={cn("h-1.5 w-1.5 rounded-full", carStatus === 'sold' ? "bg-zinc-500" : "bg-amber-500 animate-pulse")} />
+                                                                    <span className="text-[9px] font-black uppercase text-zinc-400">Auto: {STATUS_MAP[carStatus]?.label || STATUS_MAP[tx.cars?.status]?.label || tx.cars?.status}</span>
                                                                 </div>
                                                             </div>
                                                             <h4 className="text-xl font-black text-white italic tracking-tighter">
@@ -622,7 +624,7 @@ export default function AdminDashboard() {
                                                         </div>
                                                     </div>
                                                     <div className="flex gap-3">
-                                                        {tx.cars?.status === 'RESERVED' && tx.status === 'RELEASED' && (
+                                                        {tx.cars?.status?.toLowerCase() === 'reserved' && tx.status?.toLowerCase() === 'released' && (
                                                             <button 
                                                                 onClick={() => handleUpdateCarStatus(tx.cars.id, 'SOLD')}
                                                                 className="h-14 px-6 bg-zinc-800 text-zinc-400 text-[10px] font-black rounded-2xl uppercase tracking-widest hover:bg-zinc-700 transition-all border border-zinc-700"
@@ -653,11 +655,13 @@ export default function AdminDashboard() {
                                             </div>
                                         ))}
 
-                                        {transactions.filter(tx => 
-                                            tx.status === 'P2P_WAITING_PROOF' || 
-                                            tx.status === 'HANDOVER_SCHEDULED' ||
-                                            (tx.status === 'RELEASED' && tx.cars?.status === 'RESERVED')
-                                        ).length === 0 && (
+                                        {transactions.filter(tx => {
+                                            const txStatus = tx.status?.toLowerCase();
+                                            const carStatus = tx.cars?.status?.toLowerCase();
+                                            return txStatus === 'p2p_waiting_proof' || 
+                                                   txStatus === 'handover_scheduled' ||
+                                                   (txStatus === 'released' && carStatus === 'reserved');
+                                        }).length === 0 && (
                                             <div className="py-20 text-center border border-dashed border-zinc-800/50 rounded-[2.5rem] bg-zinc-950/30">
                                                 <Zap className="h-12 w-12 text-zinc-800 mx-auto mb-4 opacity-50" />
                                                 <p className="text-zinc-600 font-black uppercase tracking-[0.3em] text-xs italic">Cero bloqueos en el flujo actual</p>
