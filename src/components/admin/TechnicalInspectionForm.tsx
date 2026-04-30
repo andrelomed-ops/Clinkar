@@ -277,56 +277,7 @@ export function TechnicalInspectionForm({ carId, userRole = 'admin', onSave }: {
                                     </div>
                                 )}
                             </div>
-                        {/* Admin Exclusive: Commercial Strategy */}
-                        {userRole === 'admin' && (
-                            <div className="p-8 bg-indigo-600/10 border border-indigo-600/30 rounded-[2.5rem] space-y-6 mt-12 animate-in slide-in-from-bottom duration-700">
-                                <div className="flex items-center gap-4">
-                                    <div className="h-12 w-12 bg-indigo-600 rounded-2xl flex items-center justify-center text-white shadow-lg">
-                                        <Zap className="h-6 w-6 fill-current" />
-                                    </div>
-                                    <div>
-                                        <h4 className="text-lg font-black uppercase italic tracking-tighter text-white">Estrategia Comercial: Llévalo al 100</h4>
-                                        <p className="text-[10px] font-bold text-indigo-400 uppercase tracking-widest">Configuración de Post-Venta y Restauración</p>
-                                    </div>
-                                </div>
-                                
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                    <div className="space-y-2">
-                                        <label className="text-[10px] font-black text-zinc-500 uppercase tracking-widest ml-1">Presupuesto de Reacondicionamiento (Taller Aliado)</label>
-                                        <div className="relative">
-                                            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-indigo-400 font-black">$</span>
-                                            <input 
-                                                type="number" 
-                                                value={reconditioningBudget}
-                                                onChange={(e) => setReconditioningBudget(Number(e.target.value))}
-                                                placeholder="Ej: 15000"
-                                                className="w-full h-14 bg-zinc-950 border border-zinc-800 rounded-2xl px-8 text-white font-black focus:border-indigo-600 transition-all outline-none"
-                                            />
-                                        </div>
-                                        <p className="text-[9px] text-zinc-600 font-medium italic">Este valor se mostrará al comprador como el costo para dejar la unidad "Al 100".</p>
-                                    </div>
-                                    <div className="space-y-2">
-                                        <label className="text-[10px] font-black text-zinc-500 uppercase tracking-widest ml-1">Notas de Integridad / Diagnóstico</label>
-                                        <textarea 
-                                            value={integrityNotes}
-                                            onChange={(e) => setIntegrityNotes(e.target.value)}
-                                            placeholder="Describa el estado general o detalles detectados por el taller..."
-                                            className="w-full h-14 bg-zinc-950 border border-zinc-800 rounded-2xl px-6 py-4 text-white font-bold text-xs focus:border-indigo-600 transition-all outline-none min-h-[56px] resize-none"
-                                        />
-                                    </div>
-                                </div>
-
-                                <div className="p-4 bg-zinc-950/50 rounded-2xl border border-zinc-800/50 flex items-center justify-between">
-                                    <div className="flex items-center gap-3">
-                                        <CheckCircle2 className="h-5 w-5 text-emerald-500" />
-                                        <span className="text-[10px] font-black text-zinc-400 uppercase">Impacto en Marketplace: Módulo de Upsell Activado</span>
-                                    </div>
-                                    <div className="text-[10px] font-black text-indigo-400 uppercase tracking-widest italic">
-                                        Score Potencial: 100
-                                    </div>
-                                </div>
-                            </div>
-                        )}
+                        ))}
                     </div>
                 )}
             </div>
