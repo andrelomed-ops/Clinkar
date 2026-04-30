@@ -29,14 +29,20 @@ export function TechnicalInspectionForm({ carId, userRole = 'admin', onSave }: {
     const [photoUrl, setPhotoUrl] = useState<string | null>(null);
     const [reconditioningBudget, setReconditioningBudget] = useState<number>(0);
     const [integrityNotes, setIntegrityNotes] = useState<string>("");
+    const [suggestedPrice, setSuggestedPrice] = useState<number>(0);
+    const [floorPrice, setFloorPrice] = useState<number>(0);
+    const [negotiationStatus, setNegotiationStatus] = useState<string>("pending");
 
     // Load initial data
     useEffect(() => {
         async function loadInitialData() {
-            const { data } = await supabase.from('cars').select('digital_passport_data, reconditioning_budget, reconditioning_notes').eq('id', carId).single();
+            const { data } = await supabase.from('cars').select('digital_passport_data, reconditioning_budget, reconditioning_notes, price, floor_price, status').eq('id', carId).single();
             if (data) {
                 if (data.digital_passport_data) setResults(data.digital_passport_data);
                 if (data.reconditioning_budget) setReconditioningBudget(data.reconditioning_budget);
+                if (data.price) setSuggestedPrice(data.price);
+                if (data.floor_price) setFloorPrice(data.floor_price);
+                if (data.status) setNegotiationStatus(data.status);
                 if (data.reconditioning_notes && data.reconditioning_notes.length > 0) {
                     setIntegrityNotes(data.reconditioning_notes[data.reconditioning_notes.length - 1].note || "");
                 }
@@ -96,7 +102,10 @@ export function TechnicalInspectionForm({ carId, userRole = 'admin', onSave }: {
                 reconditioning_budget: reconditioningBudget,
                 reconditioning_notes: [{ note: integrityNotes, date: new Date().toISOString() }],
                 digital_passport_data: results,
-                performance_score: finalScore // This is the 0-100 score
+                performance_score: finalScore,
+                price: suggestedPrice,
+                floor_price: floorPrice,
+                status: negotiationStatus as any
             });
 
             onSave({ results, photoUrl, isPhotoMode, reconditioningBudget, integrityNotes, finalScore });
@@ -171,43 +180,62 @@ export function TechnicalInspectionForm({ carId, userRole = 'admin', onSave }: {
                     </div>
                     ) : (
                     <div className="space-y-8">
-                        {/* SECCIÓN DE REALIDAD: Solo para el mecánico o admin llenando lo técnico */}
-                        <div className="bg-zinc-900/50 border border-zinc-800 rounded-[2rem] p-8 space-y-6">
-                            <div className="flex items-center gap-4">
-                                <div className="h-12 w-12 bg-indigo-500/10 rounded-2xl flex items-center justify-center border border-indigo-500/20">
-                                    <Wrench className="h-6 w-6 text-indigo-500" />
-                                </div>
-                                <div>
-                                    <h3 className="text-lg font-black uppercase italic tracking-tight text-white">Reporte de Realidad y Mejora</h3>
-                                    <p className="text-xs text-zinc-500 font-medium">Estado físico y presupuesto estimado de puesta a punto.</p>
-                                </div>
-                            </div>
-
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                <div className="space-y-3">
-                                    <label className="text-[10px] font-black uppercase tracking-widest text-zinc-500 px-1">Presupuesto Estimado (MXN)</label>
-                                    <div className="relative">
-                                        <span className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-500 font-bold">$</span>
-                                        <input 
-                                            type="number"
-                                            value={reconditioningBudget}
-                                            onChange={(e) => setReconditioningBudget(Number(e.target.value))}
-                                            className="w-full h-14 bg-zinc-950 border border-zinc-800 rounded-2xl pl-8 pr-4 text-xs font-bold text-white focus:border-indigo-500/50 outline-none transition-all"
-                                            placeholder="0.00"
-                                        />
+                        {/* SECCIÓN DE NEGOCIACIÓN: Solo Admin */}
+                        {userRole === 'admin' && (
+                            <div className="bg-indigo-500/5 border border-indigo-500/20 rounded-[2rem] p-8 space-y-6">
+                                <div className="flex items-center gap-4">
+                                    <div className="h-12 w-12 bg-indigo-500/10 rounded-2xl flex items-center justify-center border border-indigo-500/20">
+                                        <ClipboardList className="h-6 w-6 text-indigo-500" />
+                                    </div>
+                                    <div>
+                                        <h3 className="text-lg font-black uppercase italic tracking-tight text-white">Estrategia Comercial y Precios</h3>
+                                        <p className="text-xs text-zinc-500 font-medium">Acuerdo de precio de salida y piso negociado.</p>
                                     </div>
                                 </div>
-                                <div className="space-y-3">
-                                    <label className="text-[10px] font-black uppercase tracking-widest text-zinc-500 px-1">Diagnóstico General</label>
-                                    <textarea 
-                                        value={integrityNotes}
-                                        onChange={(e) => setIntegrityNotes(e.target.value)}
-                                        className="w-full h-32 bg-zinc-950 border border-zinc-800 rounded-2xl p-4 text-xs font-bold text-white focus:border-indigo-500/50 outline-none transition-all resize-none"
-                                        placeholder="Detalles sobre el estado actual de la unidad..."
-                                    />
+
+                                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                    <div className="space-y-3">
+                                        <label className="text-[10px] font-black uppercase tracking-widest text-zinc-500 px-1">Precio Sugerido Venta</label>
+                                        <div className="relative">
+                                            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-500 font-bold">$</span>
+                                            <input 
+                                                type="number"
+                                                value={suggestedPrice}
+                                                onChange={(e) => setSuggestedPrice(Number(e.target.value))}
+                                                className="w-full h-14 bg-zinc-950 border border-zinc-800 rounded-2xl pl-8 pr-4 text-xs font-bold text-white focus:border-indigo-500/50 outline-none transition-all"
+                                                placeholder="0.00"
+                                            />
+                                        </div>
+                                    </div>
+                                    <div className="space-y-3">
+                                        <label className="text-[10px] font-black uppercase tracking-widest text-red-500/70 px-1">Precio Piso (Confidencial)</label>
+                                        <div className="relative">
+                                            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-red-500/50 font-bold">$</span>
+                                            <input 
+                                                type="number"
+                                                value={floorPrice}
+                                                onChange={(e) => setFloorPrice(Number(e.target.value))}
+                                                className="w-full h-14 bg-zinc-950 border border-red-500/20 rounded-2xl pl-8 pr-4 text-xs font-bold text-red-500 focus:border-red-500/50 outline-none transition-all"
+                                                placeholder="0.00"
+                                            />
+                                        </div>
+                                    </div>
+                                    <div className="space-y-3">
+                                        <label className="text-[10px] font-black uppercase tracking-widest text-zinc-500 px-1">Estado del Acuerdo</label>
+                                        <select 
+                                            value={negotiationStatus}
+                                            onChange={(e) => setNegotiationStatus(e.target.value)}
+                                            className="w-full h-14 bg-zinc-950 border border-zinc-800 rounded-2xl px-4 text-xs font-bold text-white focus:border-indigo-500/50 outline-none transition-all"
+                                        >
+                                            <option value="pending">Pendiente de Acuerdo</option>
+                                            <option value="available">Acordado y Publicado</option>
+                                            <option value="rejected">Precio Rechazado</option>
+                                            <option value="negotiating">En Negociación</option>
+                                        </select>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
+                        )}
 
                         <div className="flex items-center gap-4 py-4">
                             <div className="h-px flex-1 bg-zinc-800" />
