@@ -23,18 +23,21 @@ export async function startTransaction(carId: string, addOns?: {
     const supabase = await createClient();
 
     // 1. Check Auth (Real or Demo)
+    // We try getUser() first as it's more secure, but fallback to getSession() for speed/resilience
     const { data: { user } } = await supabase.auth.getUser();
+    const { data: { session } } = !user ? await supabase.auth.getSession() : { data: { session: null } };
     
-    // Check for Demo Cookie
+    // Check for Demo Cookie (Next.js 15+ async cookies)
     const { cookies } = await import('next/headers');
     const cookieStore = await cookies();
     const demoRole = cookieStore.get('starterkar_role')?.value;
 
-    const buyerId = user?.id || (demoRole ? 'demo-user-123' : null);
+    const buyerId = user?.id || session?.user?.id || (demoRole ? 'demo-user-123' : null);
 
-    console.log(`[startTransaction] Car:${carId} Buyer:${buyerId} Role:${demoRole}`);
+    console.log(`[startTransaction] Auth Check: UserID:${buyerId} (Auth:${!!user}, Session:${!!session}, Demo:${!!demoRole})`);
 
-    if (!buyerId && !demoRole) {
+    if (!buyerId) {
+        console.warn(`[startTransaction] No Auth Found. Redirecting to login for Car:${carId}`);
         redirect(`/login?next=/buy/${carId}`);
     }
 
@@ -143,27 +146,12 @@ export async function getLegalTransactionsAction() {
 
     const { data: txs, error } = await supabase
         .from("transactions")
-        .select("*")
+        .select("*, cars(*)")
         .order("created_at", { ascending: false });
 
     if (error) throw new Error(error.message);
 
-    // Manual join to bypass FK issues
-    const txsWithCars = await Promise.all((txs || []).map(async (tx) => {
-        try {
-            const { data: car } = await supabase
-                .from("cars")
-                .select("*")
-                .eq("id", tx.car_id)
-                .maybeSingle();
-            return { ...tx, cars: car || null };
-        } catch (e) {
-            console.error(`[Admin] Failed to fetch car for tx ${tx.id}`, e);
-            return { ...tx, cars: null };
-        }
-    }));
-
-    return txsWithCars;
+    return txs;
 }
 
 export async function overrideTransactionStatusAction(transactionId: string, status: string) {

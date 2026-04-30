@@ -267,6 +267,38 @@ export function MarketFilters({ filters, setFilters }: MarketFiltersProps) {
                 </label>
             </div>
 
+            {/* OPPORTUNITIES / RECOVERY TOGGLE */}
+            <div className="bg-gradient-to-r from-rose-50 to-red-50 dark:from-rose-900/10 dark:to-red-900/10 p-4 rounded-2xl border border-rose-100 dark:border-rose-500/20 mb-6 relative overflow-hidden group/card shadow-sm hover:shadow-md transition-all duration-300">
+                <div className="absolute top-0 right-0 p-4 opacity-5 pointer-events-none">
+                    <Search className="h-20 w-20 text-rose-900 dark:text-rose-400" />
+                </div>
+
+                <label className="flex items-center justify-between cursor-pointer relative z-10">
+                    <div className="flex items-center gap-3">
+                        <div className="h-10 w-10 rounded-full bg-gradient-to-br from-rose-100 to-red-200 dark:from-rose-500 dark:to-red-500 flex items-center justify-center text-xl shadow-inner group-hover/card:scale-110 transition-transform duration-300 ring-2 ring-white dark:ring-zinc-900">⚠️</div>
+                        <div>
+                            <span className="font-black text-rose-950 dark:text-rose-50 block text-sm tracking-tight">Bóveda de Oportunidades</span>
+                            <span className="text-[10px] text-rose-700 dark:text-rose-400 font-bold uppercase tracking-wide">Recuperación / Aseguradora</span>
+                        </div>
+                    </div>
+                    <div className={cn(
+                        "w-11 h-6 rounded-full p-1 transition-colors duration-300 shadow-inner",
+                        filters.opportunitiesOnly ? "bg-rose-600" : "bg-slate-200 dark:bg-zinc-800"
+                    )}>
+                        <div className={cn(
+                            "w-4 h-4 bg-white rounded-full shadow-md transition-transform duration-300",
+                            filters.opportunitiesOnly && "translate-x-5"
+                        )} />
+                    </div>
+                    <input
+                        type="checkbox"
+                        className="hidden"
+                        checked={filters.opportunitiesOnly || false}
+                        onChange={(e) => setFilters({ ...filters, opportunitiesOnly: e.target.checked })}
+                    />
+                </label>
+            </div>
+
             {/* NEW CARS TOGGLE */}
             <div className="bg-gradient-to-r from-indigo-50 to-blue-50 dark:from-indigo-900/10 dark:to-blue-900/10 p-4 rounded-2xl border border-indigo-100 dark:border-indigo-500/20 mb-6 relative overflow-hidden group/card shadow-sm hover:shadow-md transition-all duration-300">
                 <div className="absolute top-0 right-0 p-4 opacity-5 pointer-events-none">

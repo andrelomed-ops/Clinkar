@@ -78,8 +78,8 @@ export class TransactionService extends BaseService {
             (data.insuranceQuote?.cost || 0);
 
         // Fetch emails for identification (Goal #2: Email-based tracking)
-        const { data: buyerProfile } = await supabase.from('profiles').select('email').eq('id', data.buyerId).single();
-        const { data: sellerProfile } = await supabase.from('profiles').select('email').eq('id', data.sellerId).single();
+        const { data: buyerProfile } = await (supabase.from('profiles').select('email').eq('id', data.buyerId).single() as any);
+        const { data: sellerProfile } = await (supabase.from('profiles').select('email').eq('id', data.sellerId).single() as any);
 
         // 4. Create Transaction
         const { data: transaction, error } = await (supabase
@@ -88,8 +88,8 @@ export class TransactionService extends BaseService {
                 car_id: data.carId,
                 buyer_id: data.buyerId,
                 seller_id: data.sellerId,
-                buyer_email: buyerProfile?.email || null,
-                seller_email: sellerProfile?.email || null,
+                buyer_email: (buyerProfile as any)?.email || null,
+                seller_email: (sellerProfile as any)?.email || null,
                 buyer_phone: data.buyerPhone || null,
                 car_price: data.amount,
                 total_amount: totalAmount,
@@ -221,13 +221,11 @@ export class TransactionService extends BaseService {
     }
 
     static async getTransactionById(supabase: SupabaseClient<Database>, id: string): Promise<Transaction | null> {
-        const query = (supabase
+        const { data, error } = await (supabase
             .from('transactions') as any)
-            .select("*")
+            .select("*, cars(*)")
             .eq('id', id)
             .maybeSingle();
-
-        const { data, error } = await query;
 
         if (error || !data) {
             Logger.error(`Error fetching transaction by id: ${id}`, error);
@@ -313,7 +311,7 @@ export class TransactionService extends BaseService {
     static async getAllTransactions(supabase: SupabaseClient<Database>) {
         const { data, error } = await (supabase
             .from('transactions') as any)
-            .select("*")
+            .select("*, cars(*)")
             .order('created_at', { ascending: false });
 
         if (error) {
@@ -533,14 +531,14 @@ export class TransactionService extends BaseService {
             await ReferralService.markOperationAsClosed(supabase, transactionId);
             
             // [NEW] Notify Admin for Commission Tracking
-            const { data: carData } = await supabase.from('cars').select('make, model, price').eq('id', transaction.car_id).single();
+            const { data: carData } = await (supabase.from('cars').select('make, model, price').eq('id', transaction.car_id).single() as any);
             await NotificationService.notifyAdmin(supabase, {
                 action: 'VENTA_P2P_FINALIZADA',
                 entityType: 'TRANSACTION',
                 entityId: transactionId,
                 metadata: {
-                    car: carData ? `${carData.make} ${carData.model}` : 'Vehículo',
-                    amount: carData?.price || transaction.car_price,
+                    car: carData ? `${(carData as any).make} ${(carData as any).model}` : 'Vehículo',
+                    amount: (carData as any)?.price || transaction.car_price,
                     seller_id: transaction.seller_id,
                     buyer_id: transaction.buyer_id
                 }

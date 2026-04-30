@@ -488,8 +488,11 @@ export function CarFormModal({ isOpen, onClose, onSubmit, initialData, isLoading
                                         >
                                             <option value="original">Factura Original / Único Dueño</option>
                                             <option value="insurance_salvage">Salvamento Aseguradora</option>
-                                            <option value="theft_recovered">Recuperado de Robo</option>
-                                            <option value="auction">Subasta</option>
+                                            <option value="theft_recovered">Recuperado de Robo (Con Reporte)</option>
+                                            <option value="recuperado_seguimiento">Recuperado (Sin Reporte / Seguimiento)</option>
+                                            <option value="auction">Subasta / Lote</option>
+                                            <option value="siniestrado">Siniestrado (Para Reparar)</option>
+                                            <option value="chatarra">Chatarra / Partes / Desmantelar</option>
                                             <option value="imported">Importado / Legalizado</option>
                                             <option value="enterprise">Factura de Empresa</option>
                                         </select>

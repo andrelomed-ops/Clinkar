@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { Vehicle } from "@/data/cars";
-import { MapPin, Gauge, Fuel, Heart, TrendingDown, BadgeCheck, ShieldCheck, Zap } from "lucide-react";
+import { MapPin, Gauge, Fuel, Heart, TrendingDown, BadgeCheck, ShieldCheck, Zap, Search } from "lucide-react";
 import { StarterKarSeal } from "./StarterKarSeal";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
@@ -100,6 +100,17 @@ export function CarCard({ car, isFavorite = false, onToggleFavorite }: CarCardPr
                             <div className="px-2.5 py-1 bg-white dark:bg-zinc-900 text-emerald-600 dark:text-emerald-400 text-[10px] font-black rounded-lg uppercase tracking-widest flex items-center gap-1.5 shadow-xl border border-emerald-500/30 whitespace-nowrap">
                                 <ShieldCheck className="h-3.5 w-3.5" />
                                 Justicia & Certeza
+                            </div>
+                        )}
+                        {['insurance_salvage', 'theft_recovered', 'recuperado_seguimiento', 'auction', 'siniestrado', 'chatarra'].includes(car.provenance) && (
+                            <div className="px-2.5 py-1 bg-zinc-900/90 backdrop-blur-md text-rose-400 text-[10px] font-black rounded-lg uppercase tracking-widest flex items-center gap-1.5 shadow-xl border border-rose-500/30 whitespace-nowrap">
+                                <Search className="h-3.5 w-3.5" />
+                                {car.provenance === 'insurance_salvage' && 'Aseguradora'}
+                                {car.provenance === 'theft_recovered' && 'Recuperado (Reporte)'}
+                                {car.provenance === 'recuperado_seguimiento' && 'Recuperado (Seguimiento)'}
+                                {car.provenance === 'auction' && 'Subasta'}
+                                {car.provenance === 'siniestrado' && 'Siniestrado'}
+                                {car.provenance === 'chatarra' && 'Chatarra'}
                             </div>
                         )}
                     </div>

@@ -46,6 +46,7 @@ export default function BuyPage() {
         certifiedOnly: false,
         newCars: false,
         isBorder: false,
+        opportunitiesOnly: false,
         minYear: '',
         maxYear: '',
         minMileage: '',
@@ -248,6 +249,12 @@ export default function BuyPage() {
                 
 
                 if (filters.newCars && !car.is_new) return false;
+                
+                // NEW: Opportunities Filter (Recovery, Insurance, Salvage)
+                if (filters.opportunitiesOnly) {
+                    const opportunityProvenances = ['insurance_salvage', 'theft_recovered', 'recuperado_seguimiento', 'auction', 'siniestrado', 'chatarra'];
+                    if (!opportunityProvenances.includes(car.provenance)) return false;
+                }
                 
                 // NEW: Body Type Filter (SUV, Sedan, etc.)
                 if (filters.bodyTypes && filters.bodyTypes.length > 0) {

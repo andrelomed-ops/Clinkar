@@ -17,6 +17,7 @@ import { cn } from "@/lib/utils";
 import { createBrowserClient } from "@/lib/supabase/client";
 import { useParams, useRouter } from "next/navigation";
 import { PostSaleEcosystem } from "@/components/dashboard/PostSaleEcosystem";
+import { LegalVault } from "@/components/dashboard/LegalVault";
 import { HandoverSafeCheck } from "@/components/dashboard/HandoverSafeCheck";
 import { VaultStatus } from "@/components/dashboard/VaultStatus";
 import { toast } from "sonner";
@@ -69,19 +70,11 @@ export default function HandoverPage() {
             // Fetch transaction first
             const { data: tx, error: txError } = await supabase
                 .from('transactions')
-                .select('*')
+                .select('*, cars(*)')
                 .eq('id', id)
                 .single();
 
             if (tx) {
-                // Manually fetch the related car to bypass missing Foreign Key constraints in Supabase
-                const { data: carData } = await supabase
-                    .from('cars')
-                    .select('*')
-                    .eq('id', tx.car_id)
-                    .single();
-                
-                tx.cars = carData || null;
                 setTransaction(tx);
             }
 

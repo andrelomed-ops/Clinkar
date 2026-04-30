@@ -1,5 +1,31 @@
+"use client";
 
+import React, { useState, useEffect } from "react";
+import { 
+    Lock, 
+    CheckCircle2, 
+    Shield, 
+    AlertTriangle, 
+    ArrowRight, 
+    Info, 
+    Activity, 
+    CornerDownRight, 
+    Search, 
+    FileText 
+} from "lucide-react";
+import { cn } from "@/lib/utils";
 import SmartPaymentSelector from "@/components/checkout/SmartPaymentSelector";
+
+interface VaultStatusProps {
+    carPrice: number;
+    carYear: number;
+    status: 'PENDING' | 'FUNDS_HELD' | 'RELEASED' | 'CANCELLED';
+    legalStatus?: 'PENDING' | 'VERIFIED';
+    mechanicalStatus?: 'PENDING' | 'VERIFIED';
+    contractStatus?: 'PENDING' | 'SIGNED';
+    currency?: string;
+    role?: 'buyer' | 'seller';
+}
 
 export function VaultStatus({
     carId,
@@ -102,13 +128,24 @@ export function VaultStatus({
                                                 ? "Para formalizar el trato y que el vendedor reciba su notificación de fondos, debes elegir tu método de pago preferido."
                                                 : "El pago ha sido registrado en el monitor. El dinero se entregará al vendedor una vez firmes el contrato final."}
                                         </p>
-                                        {status === 'PENDING' && !showPaymentSelector && (
-                                            <button 
-                                                onClick={() => setShowPaymentSelector(true)}
-                                                className="mt-4 flex items-center gap-2 bg-indigo-600 text-white px-6 py-3 rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-indigo-500 transition-all shadow-lg shadow-indigo-500/20"
-                                            >
-                                                Pagar Ahora <ArrowRight className="h-4 w-4" />
-                                            </button>
+                                        {status === 'PENDING' && (
+                                            <div className="flex flex-wrap gap-3 mt-4">
+                                                {!showPaymentSelector && (
+                                                    <button 
+                                                        onClick={() => setShowPaymentSelector(true)}
+                                                        className="flex items-center gap-2 bg-indigo-600 text-white px-6 py-3 rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-indigo-500 transition-all shadow-lg shadow-indigo-500/20"
+                                                    >
+                                                        Pagar Ahora <ArrowRight className="h-4 w-4" />
+                                                    </button>
+                                                )}
+                                                <a 
+                                                    href={`https://wa.me/525522120249?text=Hola, envío mi comprobante de pago para la unidad ${carTitle} (Folio: ${carId}).`}
+                                                    target="_blank"
+                                                    className="flex items-center gap-2 bg-emerald-500 text-white px-6 py-3 rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-emerald-400 transition-all shadow-lg shadow-emerald-500/20"
+                                                >
+                                                    Enviar Comprobante WhatsApp
+                                                </a>
+                                            </div>
                                         )}
                                     </div>
                                 ) : (
