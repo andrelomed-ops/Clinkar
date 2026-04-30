@@ -257,32 +257,9 @@ export default function AdminDashboardV6() {
 
     return (
         <div className="min-h-screen bg-black text-white font-sans selection:bg-indigo-500/30">
-            {/* Minimalist Top Nav */}
-            <header className="h-20 border-b border-zinc-900 bg-black/50 backdrop-blur-xl flex items-center justify-between px-8 sticky top-0 z-[100]">
-                <div className="flex items-center gap-6">
-                    <div className="h-10 w-10 bg-indigo-600 rounded-xl flex items-center justify-center shadow-lg shadow-indigo-600/20">
-                        <Zap className="h-6 w-6 text-white" />
-                    </div>
-                    <div>
-                        <h1 className="text-xl font-black italic tracking-tighter uppercase leading-none">Control <span className="text-indigo-500">Tower</span></h1>
-                        <p className="text-[8px] font-bold text-zinc-500 uppercase tracking-widest mt-1">Version {ADMIN_VERSION} • Admin Session</p>
-                    </div>
-                </div>
-                
-                <div className="flex items-center gap-6">
-                    <div className="hidden md:flex flex-col items-end">
-                        <p className="text-[10px] font-black uppercase tracking-tight">{currentUser?.full_name || 'Admin StarterKar'}</p>
-                        <p className="text-[8px] font-bold text-indigo-400 uppercase tracking-widest">Súper Usuario Elite</p>
-                    </div>
-                    <button className="h-10 w-10 bg-zinc-900 rounded-full flex items-center justify-center border border-zinc-800 hover:bg-zinc-800 transition-all">
-                        <LogOut className="h-4 w-4 text-zinc-500" />
-                    </button>
-                </div>
-            </header>
-
-            <main className="flex min-h-[calc(100-5rem)]">
+            <main className="flex">
                 {/* Left Sidebar */}
-                <aside className="w-80 border-r border-zinc-900 p-8 hidden lg:block space-y-2 sticky top-20 h-[calc(100vh-5rem)] overflow-y-auto custom-scrollbar">
+                <aside className="w-80 border-r border-zinc-900 p-8 hidden lg:block space-y-2 sticky top-16 h-[calc(100vh-4rem)] overflow-y-auto custom-scrollbar">
                     <p className="text-[9px] font-black text-zinc-600 uppercase tracking-[0.2em] mb-6 px-4">Operaciones Core</p>
                     <SidebarItem icon={LayoutDashboard} label="Monitor Live" active={view === 'CONTROL'} onClick={() => setView('CONTROL')} />
                     <SidebarItem icon={CarFront} label="Inventario" active={view === 'INVENTORY'} onClick={() => setView('INVENTORY')} />
