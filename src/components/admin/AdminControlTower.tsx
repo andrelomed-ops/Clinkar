@@ -12,6 +12,7 @@ interface AdminControlTowerProps {
     onOverrideStatus: (id: string, status: string) => void;
     onValidateCEP: (id: string) => void;
     onRegisterCommission: (id: string) => void;
+    onDeleteTransaction: (id: string) => void;
     cepLoading: string | null;
 }
 
@@ -21,6 +22,7 @@ export function AdminControlTower({
     onOverrideStatus,
     onValidateCEP,
     onRegisterCommission,
+    onDeleteTransaction,
     cepLoading
 }: AdminControlTowerProps) {
     return (
@@ -144,8 +146,15 @@ export function AdminControlTower({
                                                     <button onClick={() => onOverrideStatus(tx.id, 'P2P_VALIDATED')} className="w-full text-left p-3 text-[9px] font-black uppercase text-emerald-500 hover:bg-zinc-900 rounded-lg">Forzar Validación</button>
                                                     <button onClick={() => onOverrideStatus(tx.id, 'RELEASED')} className="w-full text-left p-3 text-[9px] font-black uppercase text-indigo-500 hover:bg-zinc-900 rounded-lg">Finalizar Trato</button>
                                                     <div className="h-px bg-zinc-800 my-1" />
-                                                    <button onClick={() => onOverrideStatus(tx.id, 'CANCELLED')} className="w-full text-left p-3 text-[9px] font-black uppercase text-red-500 hover:bg-zinc-900 rounded-lg flex items-center gap-2">
-                                                        <ShieldAlert className="h-3 w-3" /> Cancelar / Reembolso
+                                                    <button 
+                                                        onClick={() => {
+                                                            if (window.confirm("¿Estás seguro de eliminar este registro transaccional? Esta acción no se puede deshacer.")) {
+                                                                onDeleteTransaction(tx.id);
+                                                            }
+                                                        }} 
+                                                        className="w-full text-left p-3 text-[9px] font-black uppercase text-zinc-500 hover:bg-red-500 hover:text-white rounded-lg flex items-center gap-2 transition-colors"
+                                                    >
+                                                        <Trash2 className="h-3 w-3" /> Eliminar Registro
                                                     </button>
                                                 </div>
                                             </div>

@@ -340,3 +340,22 @@ export async function registerCommissionPaymentAction(transactionId: string, pay
         return { success: false, message: err.message || "Error inesperado en el servidor" };
     }
 }
+
+export async function deleteTransactionAction(transactionId: string) {
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) throw new Error("Unauthorized");
+
+    const { data: profile } = await supabase.from("profiles").select("role").eq("id", user.id).single();
+    if (profile?.role !== 'admin' && user.email?.toLowerCase() !== 'starterkar@hotmail.com') throw new Error("Forbidden");
+
+    try {
+        const { error } = await supabase.from("transactions").delete().eq("id", transactionId);
+        if (error) return { success: false, message: error.message };
+        
+        revalidatePath("/admin");
+        return { success: true };
+    } catch (err: any) {
+        return { success: false, message: err.message || "Error al eliminar transacción" };
+    }
+}

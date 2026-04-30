@@ -12,7 +12,7 @@ import {
 } from "lucide-react";
 import { TechnicalInspectionForm } from "@/components/admin/TechnicalInspectionForm";
 import { LegalReviewDashboard } from "@/components/admin/LegalReviewDashboard";
-import { getLegalTransactionsAction, overrideTransactionStatusAction, validateCEPAction, registerCommissionPaymentAction, updateTransactionServicesAction } from "@/app/actions/transaction";
+import { getLegalTransactionsAction, overrideTransactionStatusAction, validateCEPAction, registerCommissionPaymentAction, updateTransactionServicesAction, deleteTransactionAction } from "@/app/actions/transaction";
 import { createCarAction, getAdminInventoryAction, deleteCarAction, updateCarAction, updateCarStatusAction } from "@/app/actions/cars";
 import { 
     approveInvestorApplicationAction, rejectInvestorApplicationAction, 
@@ -222,6 +222,19 @@ export default function AdminDashboardV6() {
             if (res.success) { toast.success(`Estatus forzado a ${status}`); await loadData(); }
         } catch (e: any) { toast.error(e.message); }
     };
+    const handleDeleteTransaction = async (txId: string) => {
+        try {
+            const res = await deleteTransactionAction(txId);
+            if (res.success) {
+                toast.success("Transacción eliminada correctamente");
+                await loadData();
+            } else {
+                toast.error(res.message || "Error al eliminar");
+            }
+        } catch (e: any) {
+            toast.error(e.message);
+        }
+    };
 
     const handleMatchDemand = async (demandId: string) => {
         const carId = window.prompt("Ingresa el ID del vehículo para el Match:");
@@ -309,6 +322,7 @@ export default function AdminDashboardV6() {
                             onOverrideStatus={handleOverrideStatus}
                             onValidateCEP={handleValidateCEP}
                             onRegisterCommission={handleRegisterPayment}
+                            onDeleteTransaction={handleDeleteTransaction}
                             cepLoading={cepLoading}
                         />
                     )}
