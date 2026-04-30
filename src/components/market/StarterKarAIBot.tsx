@@ -1,6 +1,8 @@
 "use client";
 
+
 import { useState, useEffect, useRef } from "react";
+import Link from "next/link";
 import { X, Send, Car, CarFront } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { generateAIBrainResponse } from "@/lib/ai-brain"; // Import from library
@@ -184,7 +186,25 @@ function Content({ onClose, messages, input, setInput, handleSend, isTyping, sea
                                 ? "bg-indigo-600/90 text-white rounded-tr-none border border-white/20"
                                 : "bg-white/30 dark:bg-zinc-800/30 text-zinc-950 dark:text-zinc-100 border border-white/40 rounded-bl-none"
                         )}>
-                            {msg.content}
+                            <div className="text-xs leading-relaxed whitespace-pre-wrap">
+                                {msg.role === 'assistant' ? (
+                                    msg.content.split(/(\[.*?\]\(.*?\))/g).map((part, i) => {
+                                        const linkMatch = part.match(/\[(.*?)\]\((.*?)\)/);
+                                        if (linkMatch) {
+                                            return (
+                                                <Link 
+                                                    key={i} 
+                                                    href={linkMatch[2]} 
+                                                    className="inline-flex items-center gap-1 font-black text-indigo-600 dark:text-indigo-400 hover:underline bg-indigo-50 dark:bg-indigo-900/30 px-2 py-1 rounded-lg mt-1"
+                                                >
+                                                    {linkMatch[1]}
+                                                </Link>
+                                            );
+                                        }
+                                        return part;
+                                    })
+                                ) : msg.content}
+                            </div>
                         </div>
 
 
