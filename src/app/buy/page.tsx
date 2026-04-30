@@ -32,15 +32,24 @@ const ITEMS_PER_PAGE = 24;
 
 export default function BuyPage() {
     const supabase = useMemo(() => createBrowserClient(), []);
+
     const [filters, setFilters] = useState<any>({
         location: [],
         minPrice: '',
         maxPrice: '',
         makes: [],
+        models: [],
         category: [],
+        bodyTypes: [],
         investorOnly: false,
         flashSale: false,
         certifiedOnly: false,
+        newCars: false,
+        isBorder: false,
+        minYear: '',
+        maxYear: '',
+        minMileage: '',
+        maxMileage: '',
     });
 
     const [showMobileFilters, setShowMobileFilters] = useState(false);
@@ -237,10 +246,13 @@ export default function BuyPage() {
                 // If filter is ON, show ONLY investor cars
                 if (filters.investorOnly && !car.is_investor_only) return false;
                 
-                if (filters.newCars && !car.is_new) return false;
 
-                // RESTRICTION REMOVED: Show investor-only cars to everyone to encourage subscription
-                // if (car.is_investor_only && !isUserInvestor) return false;
+                if (filters.newCars && !car.is_new) return false;
+                
+                // NEW: Body Type Filter (SUV, Sedan, etc.)
+                if (filters.bodyTypes && filters.bodyTypes.length > 0) {
+                    if (!filters.bodyTypes.includes(car.type)) return false;
+                }
 
                 return true;
             }).sort((a, b) => {

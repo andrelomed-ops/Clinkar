@@ -57,12 +57,10 @@ export function StarterKarAIBot({ isOpen, onClose, onSelectCar, inventory = [], 
         setMessages(prev => [...prev, userMsg]);
         setInput("");
         setIsTyping(true);
-        setSearchStep("🔍 Iniciando búsqueda en la web...");
-
-        // Simulated "Live Search" Sequence
-        setTimeout(() => setSearchStep("🌐 Consultando bases de datos globales..."), 1000);
-        setTimeout(() => setSearchStep("🧠 Cruzando tendencias de mercado..."), 2000);
-        setTimeout(() => setSearchStep("🎯 Filtrando inventario disponible..."), 3000);
+        
+        // Simulated "Live Search" Sequence (Shorter for faster feel)
+        setSearchStep("🔍 Analizando inventario...");
+        setTimeout(() => setSearchStep("🎯 Filtrando opciones..."), 400);
 
         // Final Response
         setTimeout(async () => {
@@ -81,9 +79,15 @@ export function StarterKarAIBot({ isOpen, onClose, onSelectCar, inventory = [], 
                     body: JSON.stringify({ messages: chatMessages, context: inventory })
                 });
 
+
                 if (response.ok) {
                     const data = await response.json();
-                    setMessages(prev => [...prev, { id: Date.now().toString(), role: 'assistant', content: data.response }]);
+                    setMessages(prev => [...prev, { 
+                        id: Date.now().toString(), 
+                        role: 'assistant', 
+                        content: data.response,
+                        recommendations: data.recommendations
+                    }]);
                 } else {
                     const response = await generateAIBrainResponse(messageText, inventory, supabase);
                     setMessages(prev => [...prev, response]);
@@ -96,7 +100,7 @@ export function StarterKarAIBot({ isOpen, onClose, onSelectCar, inventory = [], 
             }
             setIsTyping(false);
             setSearchStep(null);
-        }, 4000); // 4 seconds total "search" time
+        }, 900); // Reduced to 0.9s total
     };
 
     if (!isOpen && mode === 'modal') return null;
@@ -183,21 +187,30 @@ function Content({ onClose, messages, input, setInput, handleSend, isTyping, sea
                             {msg.content}
                         </div>
 
-                        {/* Recommendations Card */}
+
+                        {/* Recommendations Card - Compact Icons Version */}
                         {msg.recommendations && (
-                            <div className="mt-3 space-y-2 w-full">
+                            <div className="mt-4 grid grid-cols-2 gap-2 w-full">
                                 {msg.recommendations.map((car: any, idx: number) => (
                                     <div
                                         key={idx}
                                         onClick={() => onSelectCar?.(car.id)}
-                                        className="bg-background p-3 rounded-xl border border-border shadow-sm hover:border-primary transition-colors cursor-pointer flex justify-between items-center group"
+                                        className="bg-white/40 dark:bg-zinc-800/40 backdrop-blur-md p-2 rounded-2xl border border-white/20 shadow-lg hover:border-indigo-500/50 transition-all cursor-pointer group active:scale-95"
                                     >
-                                        <div>
-                                            <div className="font-bold text-sm text-primary group-hover:underline">{car.make} {car.model}</div>
-                                            <div className="text-xs text-muted-foreground">{car.reason}</div>
+                                        <div className="relative aspect-video rounded-xl overflow-hidden mb-2 bg-zinc-200 dark:bg-zinc-800">
+                                            {car.image ? (
+                                                <img src={car.image} alt={car.model} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+                                            ) : (
+                                                <div className="w-full h-full flex items-center justify-center">
+                                                    <Car className="h-5 w-5 text-zinc-400" />
+                                                </div>
+                                            )}
                                         </div>
-                                        <div className="bg-secondary p-2 rounded-lg">
-                                            <Car className="h-4 w-4 text-muted-foreground" />
+                                        <div className="px-1">
+                                            <div className="font-black text-[10px] text-zinc-900 dark:text-white uppercase truncate tracking-tight">{car.make} {car.model}</div>
+                                            <div className="text-[9px] font-bold text-indigo-600 dark:text-indigo-400">
+                                                ${car.price?.toLocaleString()}
+                                            </div>
                                         </div>
                                     </div>
                                 ))}

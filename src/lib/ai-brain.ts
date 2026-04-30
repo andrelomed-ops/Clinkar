@@ -434,14 +434,26 @@ export const generateAIBrainResponse = async (text: string, inventory: Vehicle[]
         }
     }
 
+
     // Formatting
-    const recommendations = recs.filter(Boolean).map(c => ({
-        id: c.id,
-        make: c.make,
-        model: c.model,
-        price: c.price,
-        reason: matchedIntent?.id === 'MARKET_TOP_RATED' ? '🏆 5/5 Estrellas en Reseñas' : (matchedIntent?.id === 'JUNGLE_EXPEDITION' ? '🌿 Aprobado para Selva' : (matchedIntent?.id === 'SNOW_WINTER_ROADTRIP' ? '❄️ Aprobado para Nieve/Hielo' : (matchedIntent?.id === 'SMALL_FAMILY_TRIP' ? '👨‍👩‍👧‍👦 Ideal Familia Pequeña' : (matchedIntent?.id === 'STUDENT_FIRST_CAR' ? '🎓 Económico y Confiable' : (c.fuel === 'Eléctrico' ? '⚡ Recomendado por Eficiencia' : (c.category === 'Air' ? '✈️ Ruta Aérea Óptima' : (c.category === 'Marine' ? '⚓ Ruta Marítima' : '✅ Match Verificado')))))))
-    }));
+    const recommendations = recs.filter(Boolean).map(c => {
+        const isGreatDeal = c.marketValue && c.price < c.marketValue;
+        const discount = isGreatDeal ? Math.round(((c.marketValue! - c.price) / c.marketValue!) * 100) : 0;
+        
+        let reason = "✅ Unidad Certificada StarterKar";
+        if (discount > 5) reason = `🔥 ¡Oportunidad! ${discount}% debajo de mercado`;
+        else if (c.flashSale) reason = "⚡ Venta Flash: Precio de Liquidación";
+        else if (matchedIntent?.id === 'MARKET_TOP_RATED') reason = "🏆 5/5 Estrellas en Reseñas";
+        else if (c.fuel === 'Eléctrico') reason = "⚡ Recomendado por Eficiencia";
+        
+        return {
+            id: c.id,
+            make: c.make,
+            model: c.model,
+            price: c.price,
+            reason
+        };
+    });
 
     return {
         id: Date.now().toString() + 'ai',

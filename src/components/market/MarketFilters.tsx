@@ -52,8 +52,10 @@ const CATEGORIZED_DATA: Record<string, Record<string, string[]>> = {
 };
 
 export function MarketFilters({ filters, setFilters }: MarketFiltersProps) {
+
     const [openSections, setOpenSections] = useState<Record<string, boolean>>({
-        category: true, // Open by default specifically for this strategy
+        category: false, // Closed to give room to bodyType
+        bodyType: true, // NEW: Open by default for better UX
         location: true,
         price: true,
         make: true,
@@ -120,8 +122,10 @@ export function MarketFilters({ filters, setFilters }: MarketFiltersProps) {
             <div className="flex items-center justify-between">
                 <h3 className="font-black text-lg">Filtros</h3>
                 <button
+
                     onClick={() => setFilters({
                         location: [], minPrice: '', maxPrice: '', makes: [], models: [], category: [],
+                        bodyTypes: [], // NEW
                         minYear: '', maxYear: '', minMileage: '', maxMileage: '', flashSale: false, isBorder: false // Reset
                     })}
                     className="text-xs font-bold text-primary hover:underline"
@@ -295,10 +299,64 @@ export function MarketFilters({ filters, setFilters }: MarketFiltersProps) {
                 </label>
             </div>
 
+
+            {/* BODY TYPE FILTER (Specific for Cars) */}
+            {(filters.category?.includes('Car') || !filters.category?.length) && (
+                <div className="border-b border-border/50 pb-6">
+                    <button onClick={() => toggleSection('bodyType')} className="flex items-center justify-between w-full mb-4 group/btn">
+                        <span className="font-bold text-sm group-hover/btn:text-primary transition-colors">Categoría / Tipo</span>
+                        {openSections.bodyType ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+                    </button>
+                    {openSections.bodyType && (
+                        <div className="grid grid-cols-2 gap-2 animate-in slide-in-from-top-2">
+                            {[
+                                { id: 'SUV', label: 'SUV', icon: '🚙' },
+                                { id: 'Sedan', label: 'Sedán', icon: '🚗' },
+                                { id: 'Hatchback', label: 'Hatchback', icon: '🚗' },
+                                { id: 'Coupe', label: 'Coupé', icon: '🏎️' },
+                                { id: 'Pickup', label: 'Pickup', icon: '🛻' },
+                                { id: 'Minivan', label: 'Minivan', icon: '🚐' },
+                                { id: 'Sport', label: 'Deportivo', icon: '🏁' },
+                                { id: 'Wagon', label: 'Wagon', icon: '🚗' },
+                            ].map(type => (
+                                <label
+                                    key={type.id}
+                                    className={cn(
+                                        "flex flex-col items-center justify-center p-3 rounded-2xl border transition-all cursor-pointer group active:scale-95",
+                                        filters.bodyTypes?.includes(type.id)
+                                            ? "bg-primary/5 border-primary shadow-sm"
+                                            : "bg-secondary/30 border-transparent hover:border-primary/30"
+                                    )}
+                                >
+                                    <span className="text-2xl mb-1 group-hover:scale-110 transition-transform">{type.icon}</span>
+                                    <span className={cn(
+                                        "text-[10px] font-black uppercase tracking-tighter",
+                                        filters.bodyTypes?.includes(type.id) ? "text-primary" : "text-muted-foreground"
+                                    )}>
+                                        {type.label}
+                                    </span>
+                                    <input
+                                        type="checkbox"
+                                        className="hidden"
+                                        checked={filters.bodyTypes?.includes(type.id) || false}
+                                        onChange={(e) => {
+                                            const newTypes = e.target.checked
+                                                ? [...(filters.bodyTypes || []), type.id]
+                                                : filters.bodyTypes?.filter((t: string) => t !== type.id);
+                                            setFilters({ ...filters, bodyTypes: newTypes });
+                                        }}
+                                    />
+                                </label>
+                            ))}
+                        </div>
+                    )}
+                </div>
+            )}
+
             {/* CATEGORY FILTER (The 4 Pillars of StarterKar) */}
             <div className="border-b border-border/50 pb-6">
                 <button onClick={() => toggleSection('category')} className="flex items-center justify-between w-full mb-4">
-                    <span className="font-bold text-sm">Tipo de Vehículo</span>
+                    <span className="font-bold text-sm">Ecosistema</span>
                     {openSections.category ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
                 </button>
                 {openSections.category && (
@@ -320,7 +378,7 @@ export function MarketFilters({ filters, setFilters }: MarketFiltersProps) {
                                     <input
                                         type="checkbox"
                                         className="hidden"
-                                        checked={filters.category?.includes(type.id)}
+                                        checked={filters.category?.includes(type.id) || false}
                                         onChange={(e) => {
                                             // Auto-clear makes/models when switching categories to prevent confusion
                                             const newCats = e.target.checked
@@ -374,7 +432,7 @@ export function MarketFilters({ filters, setFilters }: MarketFiltersProps) {
                                         <input
                                             type="checkbox"
                                             className="hidden"
-                                            checked={filters.location?.includes(state)}
+                                            checked={filters.location?.includes(state) || false}
                                             onChange={(e) => {
                                                 const newLocs = e.target.checked
                                                     ? [...(filters.location || []), state]
@@ -487,7 +545,7 @@ export function MarketFilters({ filters, setFilters }: MarketFiltersProps) {
                                                 <input
                                                     type="checkbox"
                                                     className="hidden"
-                                                    checked={filters.makes?.includes(make)}
+                                                    checked={filters.makes?.includes(make) || false}
                                                     onChange={(e) => {
                                                         const newMakes = e.target.checked
                                                             ? [...(filters.makes || []), make]
@@ -532,7 +590,7 @@ export function MarketFilters({ filters, setFilters }: MarketFiltersProps) {
                                                         <input
                                                             type="checkbox"
                                                             className="hidden"
-                                                            checked={filters.models?.includes(model)}
+                                                            checked={filters.models?.includes(model) || false}
                                                             onChange={() => handleModelSelect(make, model)}
                                                         />
                                                         <span className={cn(
