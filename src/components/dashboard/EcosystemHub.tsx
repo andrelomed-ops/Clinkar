@@ -50,13 +50,13 @@ export function EcosystemHub({ userProfile, activeInspections, investorApp }: Ec
 
                 {/* 2. SERVICES FLOW */}
                 <div className="flex items-center gap-12 flex-1 justify-center">
-                    {/* Mi Inventario / Gestión de Ventas */}
-                    <Link href="/dashboard?tab=selling" className="flex items-center gap-3 group relative py-1">
+                    {/* Inventario / Marketplace */}
+                    <Link href="/buy" className="flex items-center gap-3 group relative py-1">
                         <div className="h-10 w-10 rounded-2xl bg-white dark:bg-zinc-900 flex items-center justify-center text-zinc-400 group-hover:text-indigo-600 group-hover:bg-indigo-50 dark:group-hover:bg-indigo-500/10 shadow-sm transition-all border border-zinc-100 dark:border-zinc-800 group-hover:border-indigo-200 dark:group-hover:border-indigo-500/30">
                             <Car className="h-4.5 w-4.5" />
                         </div>
                         <div className="flex flex-col">
-                            <span className="text-[10px] font-black uppercase tracking-widest text-zinc-400 group-hover:text-zinc-500 transition-colors">Mi Inventario</span>
+                            <span className="text-[10px] font-black uppercase tracking-widest text-zinc-400 group-hover:text-zinc-500 transition-colors">Inventario</span>
                             <span className="text-xs font-black uppercase tracking-tighter text-zinc-700 dark:text-zinc-300 group-hover:text-zinc-900 dark:group-hover:text-white transition-colors flex items-center gap-1">
                                 Gestión Total <ChevronRight className="h-3 w-3 opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all" />
                             </span>

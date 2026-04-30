@@ -1,6 +1,8 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
+import { createBrowserClient } from "@/lib/supabase/client";
+import { CarService } from "@/services/CarService";
 import { CarFront, ArrowRight, Zap, ShieldCheck, ChevronRight, Star } from "lucide-react";
 import Link from "next/link";
 import { Navbar } from "@/components/ui/navbar";
