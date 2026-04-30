@@ -76,13 +76,13 @@ export default function SellPage() {
                                     <ShieldCheck className="h-5 w-5 text-indigo-500" />
                                 </div>
                                 <div>
-                                    <p className="font-bold text-sm">Tu Asesor Personal</p>
+                                    <p className="font-bold text-sm">Tu Asesor StarterKar</p>
                                     <p className="text-[10px] text-zinc-500 font-medium italic">Un experto te acompaña en todo el proceso legal y técnico.</p>
                                 </div>
                             </div>
                             <div className="p-4 bg-zinc-950/50 rounded-2xl border border-zinc-800/50">
                                 <p className="text-[9px] text-zinc-400 font-bold uppercase tracking-widest leading-relaxed">
-                                    💡 Tras agendar tu visita, recibirás el contacto directo de tu asesor por WhatsApp para resolver dudas y confirmar tu cita.
+                                    💡 Tras agendar tu visita, recibirás el contacto directo de tu Asesor StarterKar por WhatsApp para resolver dudas y confirmar tu cita.
                                 </p>
                             </div>
                         </div>
