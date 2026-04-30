@@ -318,7 +318,7 @@ export default function CarDetailPage({ params }: { params: Promise<{ id: string
                                         </div>
                                         <h3 className="text-2xl font-black uppercase italic tracking-tighter text-white mb-3 leading-tight">Oportunidad de Inversión</h3>
                                         <p className="text-sm font-bold text-emerald-400 mb-6 uppercase tracking-widest">
-                                            Ahorro > 15% vs Mercado
+                                            Ahorro &gt; 15% vs Mercado
                                         </p>
                                         <p className="text-xs font-medium text-zinc-300 leading-relaxed mb-8">
                                             Este activo es exclusivo para miembros con suscripción <strong className="text-white">Inversionista Elite/Pro</strong>.
