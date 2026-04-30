@@ -41,32 +41,48 @@ export default function SellPage() {
 
                     {/* Left: Manifesto & Value Prop */}
                     <div className="space-y-8">
-                        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-blue-200 dark:border-blue-900 bg-blue-50 dark:bg-blue-900/20">
-                            <Banknote className="h-4 w-4 text-blue-600 dark:text-blue-400" />
-                            <span className="text-xs font-bold text-blue-700 dark:text-blue-300 uppercase tracking-wider">Pago Garantizado</span>
+                        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-indigo-200 dark:border-indigo-900 bg-indigo-50 dark:bg-indigo-900/20">
+                            <Zap className="h-4 w-4 text-indigo-600 dark:text-indigo-400 fill-current" />
+                            <span className="text-xs font-bold text-indigo-700 dark:text-indigo-300 uppercase tracking-wider">Acompañamiento 360°</span>
                         </div>
 
                         <h1 className="text-5xl md:text-7xl font-black tracking-tighter leading-[0.95] text-zinc-900 dark:text-white">
-                            Vende <br />
-                            <span className="text-zinc-400 dark:text-zinc-600">Sin Miedo.</span>
+                            Tu Auto <br />
+                            <span className="text-zinc-400 dark:text-zinc-600 italic">Tiene Valor.</span>
                         </h1>
 
                         <p className="text-xl text-zinc-600 dark:text-zinc-400 max-w-lg leading-relaxed font-medium">
-                            Olvídate de citas en lugares raros y transferencias fantasma. Con StarterKar, el dinero está en la Bóveda antes de que entregues las llaves.
+                            En StarterKar creemos que cada vehículo tiene su dueño ideal. **Aceptamos cualquier tipo de factura y condición.** Desde unidades de agencia hasta proyectos por recuperar; nosotros nos encargamos de la magia.
                         </p>
+
+                        <div className="p-6 bg-zinc-100 dark:bg-zinc-900/50 rounded-3xl border border-zinc-200 dark:border-zinc-800 space-y-4">
+                            <p className="text-sm text-zinc-500 dark:text-zinc-400 leading-relaxed italic">
+                                "Nuestra misión es proteger tu patrimonio. La validación mecánica y legal no es un gasto, es el seguro para vender al **precio justo** sin regalar tu auto a una agencia ni arriesgarte en la calle."
+                            </p>
+                            <div className="flex items-center gap-4 pt-2">
+                                <div className="flex -space-x-2">
+                                    {[1,2,3].map(i => (
+                                        <div key={i} className="h-8 w-8 rounded-full border-2 border-white dark:border-zinc-900 bg-zinc-200 dark:bg-zinc-800 overflow-hidden">
+                                            <img src={`https://i.pravatar.cc/100?img=${i+10}`} alt="user" />
+                                        </div>
+                                    ))}
+                                </div>
+                                <span className="text-[10px] font-black uppercase tracking-widest text-zinc-400">+1,200 Vendedores Protegidos</span>
+                            </div>
+                        </div>
 
                         <div className="space-y-4 pt-4">
                             <div className="flex items-center gap-3">
                                 <CheckCircle2 className="h-5 w-5 text-emerald-500" />
-                                <span className="font-bold text-lg">Inspección Mecánica en Taller Aliado</span>
+                                <span className="font-bold text-lg">Cualquier Factura es Bienvenida</span>
                             </div>
                             <div className="flex items-center gap-3">
                                 <CheckCircle2 className="h-5 w-5 text-emerald-500" />
-                                <span className="font-bold text-lg">Validación Legal Concierge</span>
+                                <span className="font-bold text-lg">Justicia Mecánica y Legal</span>
                             </div>
                             <div className="flex items-center gap-3">
                                 <CheckCircle2 className="h-5 w-5 text-emerald-500" />
-                                <span className="font-bold text-lg">Depósito Seguro a tu Cuenta</span>
+                                <span className="font-bold text-lg">Venta Directa sin Malbaratar</span>
                             </div>
                         </div>
                     </div>
