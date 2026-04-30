@@ -24,6 +24,7 @@ import {
     Share2,
     Maximize2,
     Camera as CameraIcon,
+    CheckCircle2,
     X
 } from "lucide-react";
 import { FavoriteService } from "@/services/FavoriteService";
@@ -34,6 +35,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
+import { translateFinding, getSeverityColor } from "@/lib/inspection-utils";
 
 export default function CarDetailPage({ params }: { params: Promise<{ id: string }> }) {
     const { id } = use(params);
@@ -269,11 +271,123 @@ export default function CarDetailPage({ params }: { params: Promise<{ id: string
                             </div>
                         </div>
 
-                        <div className="space-y-4" id="checklist">
-                            <h3 className="text-xl font-bold">Resumen de Inspección</h3>
-                            <p className="text-muted-foreground leading-relaxed">
-                                Este activo ha sido auditado por la Mesa de Control de StarterKar. Se verificó la autenticidad de la documentación, historial de propiedad y se realizó un escaneo técnico adaptado a su categoría.
-                            </p>
+                        <div className="space-y-10" id="checklist">
+                            {/* Cédula de Certeza StarterKar */}
+                            <div className="bg-gradient-to-br from-zinc-900 to-black border border-zinc-800 rounded-[2.5rem] p-10 relative overflow-hidden group shadow-2xl">
+                                <div className="absolute -right-20 -top-20 h-64 w-64 bg-indigo-600/10 blur-[100px] rounded-full group-hover:bg-indigo-600/20 transition-all duration-700" />
+                                
+                                <div className="relative z-10 flex flex-col md:flex-row items-center gap-12">
+                                    {/* Score Widget */}
+                                    <div className="relative h-40 w-40 shrink-0">
+                                        <svg className="h-full w-full -rotate-90 transform" viewBox="0 0 100 100">
+                                            <circle className="text-zinc-800" strokeWidth="6" stroke="currentColor" fill="transparent" r="42" cx="50" cy="50" />
+                                            <circle 
+                                                className={cn(
+                                                    "transition-all duration-1000 ease-out",
+                                                    (car.performance_score || 0) >= 90 ? "text-emerald-500" : (car.performance_score || 0) >= 70 ? "text-amber-500" : "text-red-500"
+                                                )}
+                                                strokeWidth="6" 
+                                                strokeDasharray={2 * Math.PI * 42}
+                                                strokeDashoffset={2 * Math.PI * 42 * (1 - (car.performance_score || 85) / 100)}
+                                                strokeLinecap="round" 
+                                                stroke="currentColor" 
+                                                fill="transparent" 
+                                                r="42" cx="50" cy="50" 
+                                            />
+                                        </svg>
+                                        <div className="absolute inset-0 flex flex-col items-center justify-center">
+                                            <span className="text-4xl font-black italic tracking-tighter text-white">{(car.performance_score || 85)}</span>
+                                            <span className="text-[10px] font-black text-zinc-500 uppercase tracking-widest">Score</span>
+                                        </div>
+                                    </div>
+
+                                    <div className="flex-1 space-y-4">
+                                        <div className="flex items-center gap-3">
+                                            <ShieldCheck className="h-6 w-6 text-indigo-500" />
+                                            <h3 className="text-2xl font-black uppercase italic tracking-tighter text-white">Cédula de Certeza StarterKar</h3>
+                                        </div>
+                                        <p className="text-sm font-medium text-zinc-400 leading-relaxed">
+                                            Este vehículo ha superado nuestra auditoría de **150 puntos críticos**. El Score refleja el estado integral (Mecánico, Estético y Legal) validado por la mesa de control.
+                                        </p>
+                                        
+                                        {/* Findings Summary (Intelligent Filter) */}
+                                        <div className="pt-6 border-t border-zinc-800 space-y-4">
+                                            <p className="text-[10px] font-black uppercase tracking-widest text-zinc-500">Observaciones Técnicas Digeribles</p>
+                                            
+                                            {car.performance_score === 100 ? (
+                                                <div className="flex items-center gap-3 p-4 bg-emerald-500/5 border border-emerald-500/20 rounded-2xl">
+                                                    <CheckCircle2 className="h-5 w-5 text-emerald-500" />
+                                                    <span className="text-xs font-bold text-emerald-500 uppercase italic">Unidad en Estado Impecable Certificado</span>
+                                                </div>
+                                            ) : (
+                                                <div className="grid grid-cols-1 gap-3">
+                                                    {/* Filter items with FAIL status to show as 'Areas to Note' */}
+                                                    {Object.entries(car.digital_passport_data || {}).filter(([_, status]) => status === 'FAIL').length > 0 ? (
+                                                        <div className="space-y-4">
+                                                            <p className="text-xs text-zinc-300 font-bold italic">La calificación se ajustó debido a los siguientes hallazgos:</p>
+                                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                                                {Object.entries(car.digital_passport_data || {})
+                                                                    .filter(([_, status]) => status === 'FAIL')
+                                                                    .map(([itemId, _]) => {
+                                                                        const { label, severity } = translateFinding(itemId);
+                                                                        const evidenceImg = car.inspection_evidence?.[itemId];
+                                                                        
+                                                                        return (
+                                                                            <div key={itemId} className={cn(
+                                                                                "px-4 py-3 rounded-2xl border flex flex-col gap-1 transition-all hover:scale-[1.02] relative group",
+                                                                                getSeverityColor(severity)
+                                                                            )}>
+                                                                                <div className="flex justify-between items-start">
+                                                                                    <span className="text-[10px] font-black uppercase opacity-60 tracking-tighter">{severity}</span>
+                                                                                    {evidenceImg && (
+                                                                                        <button 
+                                                                                            onClick={() => {
+                                                                                                setGalleryIndex(0);
+                                                                                                // Temporary logic to show evidence in gallery
+                                                                                                // In a real app, this would open a specific modal or inject into gallery
+                                                                                                toast.info("Abriendo evidencia fotográfica...");
+                                                                                            }}
+                                                                                            className="h-6 px-2 bg-black/10 hover:bg-black/20 rounded-lg text-[8px] font-black uppercase tracking-widest flex items-center gap-1 transition-colors"
+                                                                                        >
+                                                                                            <CameraIcon className="h-3 w-3" />
+                                                                                            Ver Evidencia
+                                                                                        </button>
+                                                                                    )}
+                                                                                </div>
+                                                                                <span className="text-[11px] font-bold leading-tight">• {label}</span>
+                                                                            </div>
+                                                                        );
+                                                                    })
+                                                                }
+                                                            </div>
+                                                        </div>
+                                                    ) : (
+                                                        <div className="flex items-center gap-3 p-4 bg-indigo-500/5 border border-indigo-500/20 rounded-2xl">
+                                                            <Info className="h-5 w-5 text-indigo-500" />
+                                                            <span className="text-xs font-bold text-zinc-400">Desgaste natural acorde al año y kilometraje verificado.</span>
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            )}
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="mt-10 flex flex-wrap gap-6 justify-center md:justify-start border-t border-zinc-800 pt-8">
+                                    <div className="flex items-center gap-2">
+                                        <div className="h-2 w-2 rounded-full bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.5)]" />
+                                        <span className="text-[10px] font-black uppercase tracking-widest text-zinc-400 italic">Legalidad Validada</span>
+                                    </div>
+                                    <div className="flex items-center gap-2">
+                                        <div className="h-2 w-2 rounded-full bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.5)]" />
+                                        <span className="text-[10px] font-black uppercase tracking-widest text-zinc-400 italic">Historial de Propiedad Limpio</span>
+                                    </div>
+                                    <div className="flex items-center gap-2">
+                                        <div className="h-2 w-2 rounded-full bg-indigo-500 shadow-[0_0_10px_rgba(99,102,241,0.5)]" />
+                                        <span className="text-[10px] font-black uppercase tracking-widest text-zinc-400 italic">Escaneo Electrónico OK</span>
+                                    </div>
+                                </div>
+                            </div>
 
                             <div className="pt-8 border-t border-border/50">
                                 <div className="flex items-center justify-between mb-8">

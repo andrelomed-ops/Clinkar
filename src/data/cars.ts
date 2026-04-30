@@ -37,6 +37,9 @@ export interface Vehicle {
     provenance?: string;
     reconditioning_notes?: string[];
     reconditioning_budget?: number;
+    performance_score?: number;
+    digital_passport_data?: Record<string, 'PASS' | 'FAIL' | 'NA'>;
+    inspection_evidence?: Record<string, string>; // itemId -> imageURL
     fair_price_suggested?: number;
     legal_notes?: string;
 
