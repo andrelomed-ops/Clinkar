@@ -70,7 +70,7 @@ export async function middleware(request: NextRequest) {
   // Protected routes logic
   const isProtectedPath = (request.nextUrl.pathname.startsWith('/dashboard') && !request.nextUrl.pathname.startsWith('/dashboard/stats')) || 
                           request.nextUrl.pathname.startsWith('/admin') ||
-                          request.nextUrl.pathname.startsWith('/sell');
+                          request.nextUrl.pathname.startsWith('/sell/onboarding');
 
   const demoRole = request.cookies.get('starterkar_role')?.value
 
