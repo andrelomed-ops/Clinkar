@@ -98,7 +98,20 @@ export const ALL_CARS: Vehicle[] = [
         tags: ['Verification', 'Mock', 'Test'],
         capabilities: ['Pista', 'Ciudad'],
         passengers: 5,
-        digitalPassport: { // Pre-populate to pass initial checks if any
+        performance_score: 72,
+        reconditioning_budget: 24500,
+        digital_passport_data: {
+            'tire_tread': 'FAIL',
+            'paint_scratches': 'FAIL',
+            'engine_leaks': 'FAIL',
+            'brake_pads': 'PASS',
+            'suspension_status': 'PASS'
+        },
+        inspection_evidence: {
+            'tire_tread': 'https://images.unsplash.com/photo-1578844540643-e391519a864d?q=80&w=400&auto=format&fit=crop',
+            'paint_scratches': 'https://images.unsplash.com/photo-1605515298946-d062f2e9da53?q=80&w=400&auto=format&fit=crop'
+        },
+        digitalPassport: {
             blockchainHash: "0xMockHashForVerification",
             events: []
         }
