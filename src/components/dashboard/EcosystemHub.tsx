@@ -64,24 +64,32 @@ export function EcosystemHub({ userProfile, activeInspections, investorApp }: Ec
                         <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-0 h-0.5 bg-indigo-500 transition-all duration-300 group-hover:w-full" />
                     </Link>
 
+
                     {/* Inversionista */}
                     <Link href="/investor/apply" className="flex items-center gap-3 group relative py-1">
                         <div className={cn(
                             "h-10 w-10 rounded-2xl flex items-center justify-center shadow-sm transition-all border",
                             userProfile?.role === 'investor' 
-                                ? (userProfile?.investor_tier === 'elite' ? "bg-indigo-600 text-white border-indigo-400 shadow-indigo-500/20 shadow-lg" : "bg-amber-500 text-white border-amber-400 shadow-amber-500/20 shadow-lg")
+                                ? (userProfile?.investor_tier === 'elite' ? "bg-indigo-600 text-white border-indigo-400 shadow-indigo-500/20 shadow-lg" : 
+                                   userProfile?.investor_tier === 'pro' ? "bg-amber-600 text-white border-amber-400 shadow-amber-500/20 shadow-lg" :
+                                   "bg-zinc-600 text-white border-zinc-400 shadow-zinc-500/20 shadow-lg")
                                 : (investorApp?.status === 'pending' 
                                     ? "bg-amber-100 border-amber-200 text-amber-600 animate-pulse" 
                                     : "bg-white dark:bg-zinc-900 text-zinc-400 group-hover:text-indigo-600 group-hover:bg-indigo-50 dark:group-hover:bg-indigo-500/10 border-zinc-100 dark:border-zinc-800 group-hover:border-indigo-200")
                         )}>
-                            {userProfile?.investor_tier === 'elite' ? <Diamond className="h-4.5 w-4.5" /> : <ShieldCheck className="h-4.5 w-4.5" />}
+                            {userProfile?.investor_tier === 'elite' ? <Diamond className="h-4.5 w-4.5" /> : 
+                             userProfile?.investor_tier === 'pro' ? <Crown className="h-4.5 w-4.5" /> :
+                             <ShieldCheck className="h-4.5 w-4.5" />}
                         </div>
                         <div className="flex flex-col">
                             <span className={cn(
                                 "text-[10px] font-black uppercase tracking-widest transition-colors",
-                                userProfile?.investor_tier === 'elite' ? "text-indigo-600" : "text-zinc-400 group-hover:text-zinc-500"
+                                userProfile?.investor_tier === 'elite' ? "text-indigo-600" : 
+                                userProfile?.investor_tier === 'pro' ? "text-amber-600" :
+                                "text-zinc-400 group-hover:text-zinc-500"
                             )}>
-                                {userProfile?.investor_tier === 'elite' ? 'Status Elite' : 'Capital'}
+                                {userProfile?.investor_tier === 'elite' ? 'Status Elite' : 
+                                 userProfile?.investor_tier === 'pro' ? 'Status Pro' : 'Capital'}
                             </span>
                             <span className="text-xs font-black uppercase tracking-tighter text-zinc-700 dark:text-zinc-300 group-hover:text-zinc-900 dark:group-hover:text-white transition-colors flex items-center gap-1">
                                 {userProfile?.role === 'investor' 
@@ -92,7 +100,9 @@ export function EcosystemHub({ userProfile, activeInspections, investorApp }: Ec
                         </div>
                         <div className={cn(
                             "absolute -bottom-1 left-1/2 -translate-x-1/2 h-0.5 transition-all duration-300 group-hover:w-full",
-                            userProfile?.investor_tier === 'elite' ? "bg-indigo-600 w-1/2" : "bg-indigo-500 w-0"
+                            userProfile?.investor_tier === 'elite' ? "bg-indigo-600 w-1/2" : 
+                            userProfile?.investor_tier === 'pro' ? "bg-amber-600 w-1/2" :
+                            "bg-indigo-500 w-0"
                         )} />
                     </Link>
 

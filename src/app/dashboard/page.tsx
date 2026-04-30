@@ -196,16 +196,18 @@ export default function DashboardPage() {
                                             🛡️ Administrador Maestro
                                         </div>
                                     ) : userProfile?.role?.toLowerCase() === 'investor' && (
-                                        <div className={cn(
-                                            "inline-flex items-center gap-2 mt-2 px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-widest border shadow-lg transition-all",
-                                            userProfile?.investor_tier === 'elite' ? "bg-indigo-600 text-white border-indigo-400 shadow-indigo-500/30" :
-                                            userProfile?.investor_tier === 'pro' ? "bg-amber-500 text-white border-amber-400 shadow-amber-500/30" :
-                                            "bg-zinc-500/10 text-zinc-600 border-zinc-500/20"
-                                        )}>
-                                            {userProfile?.investor_tier === 'elite' ? <Diamond className="h-3 w-3" /> : "🎖️"}
-                                            Inversionista {userProfile?.investor_tier?.toUpperCase() || 'STARTER'}
-                                        </div>
-                                    )}
+                                         <div className={cn(
+                                             "inline-flex items-center gap-2 mt-2 px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-widest border shadow-lg transition-all",
+                                             userProfile?.investor_tier === 'elite' ? "bg-indigo-600 text-white border-indigo-400 shadow-indigo-500/30" :
+                                             userProfile?.investor_tier === 'pro' ? "bg-amber-500 text-white border-amber-400 shadow-amber-500/30" :
+                                             "bg-zinc-100 text-zinc-600 border-zinc-200"
+                                         )}>
+                                             {userProfile?.investor_tier === 'elite' ? <Diamond className="h-3 w-3" /> : 
+                                              userProfile?.investor_tier === 'pro' ? <Crown className="h-3 w-3" /> : 
+                                              <ShieldCheck className="h-3 w-3" />}
+                                             Inversionista {userProfile?.investor_tier?.toUpperCase() || 'STARTER'}
+                                         </div>
+                                     )}
                                 </div>
                             </Link>
                         <div className="flex gap-2">

@@ -324,8 +324,9 @@ export default function InvestorApplyPage() {
                       </span>
                     </div>
                   </div>
+
                   <p className="text-[10px] text-center text-zinc-400 font-medium leading-relaxed italic">
-                    Una vez realizado el SPEI, nuestro equipo validará tu Constancia Fiscal y el depósito en un plazo máximo de 24 horas hábiles.
+                    Una vez realizado el SPEI y enviada la solicitud, **deberás enviarnos tu comprobante por WhatsApp** para una activación prioritaria en menos de 1 hora.
                   </p>
                 </div>
               ) : (
@@ -349,6 +350,7 @@ export default function InvestorApplyPage() {
           </div>
         )}
 
+
         {step === 4 && (
           <div className="max-w-xl mx-auto text-center space-y-10 animate-in zoom-in-95 duration-500">
             <div className="h-24 w-24 bg-emerald-500 text-white rounded-[2rem] flex items-center justify-center mx-auto shadow-2xl shadow-emerald-500/30">
@@ -357,12 +359,29 @@ export default function InvestorApplyPage() {
             <div className="space-y-4">
               <h1 className="text-5xl font-black tracking-tighter italic">¡SOLICITUD RECIBIDA!</h1>
               <p className="text-muted-foreground font-medium leading-relaxed">
-                Estamos procesando tu información fiscal y el pago de acceso inversionista. Te notificaremos vía correo electrónico en cuanto tu acceso a subastas esté activo.
+                Estamos procesando tu información fiscal y el pago de acceso inversionista.
               </p>
+              
+              <div className="bg-emerald-50 dark:bg-emerald-500/10 p-8 rounded-[2.5rem] border border-emerald-100 dark:border-emerald-500/20 mt-8">
+                 <p className="text-xs font-black text-emerald-700 dark:text-emerald-400 uppercase tracking-widest mb-4">Paso Final Obligatorio</p>
+                 <h3 className="text-lg font-black italic uppercase leading-tight mb-4">Envía tu comprobante de pago para activación inmediata</h3>
+                 <a 
+                   href={`https://wa.me/525522120249?text=${encodeURIComponent(`Hola StarterKar, acabo de realizar mi suscripción como Inversionista ${selectedTier?.toUpperCase()}. Adjunto mi comprobante de pago para validación.`)}`}
+                   target="_blank"
+                   className="inline-flex items-center gap-3 bg-emerald-600 text-white px-8 py-4 rounded-2xl font-black text-sm uppercase tracking-widest hover:bg-emerald-700 transition-all shadow-xl shadow-emerald-600/20 active:scale-95"
+                 >
+                   <Smartphone className="h-5 w-5" />
+                   Enviar por WhatsApp
+                 </a>
+                 <p className="text-[10px] text-emerald-600/60 font-bold uppercase mt-4 italic">Nuestro equipo te activará en menos de 1 hora.</p>
+              </div>
             </div>
-            <Button asChild size="lg" className="h-14 px-10 rounded-2xl bg-zinc-950 text-white font-black shadow-xl active:scale-95 transition-all">
-              <Link href="/dashboard">Regresar al Dashboard</Link>
-            </Button>
+            
+            <div className="flex flex-col gap-4">
+              <Button asChild size="lg" className="h-14 px-10 rounded-2xl bg-zinc-950 text-white font-black shadow-xl active:scale-95 transition-all">
+                <Link href="/dashboard">Ir al Garage Digital</Link>
+              </Button>
+            </div>
           </div>
         )}
       </div>
