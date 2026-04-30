@@ -1,7 +1,8 @@
 "use client";
 
-import { Search, Users, Zap } from "lucide-react";
+import { Search, Users, Zap, Trash2 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { toast } from "sonner";
 
 interface AdminUserManagementProps {
     users: any[];
@@ -89,6 +90,31 @@ export function AdminUserManagement({
                             >
                                 <Zap className="h-4 w-4" />
                                 INVERSIONISTA
+                            </button>
+
+                            <button 
+                                onClick={() => {
+                                    if (window.confirm("¿ELIMINAR USUARIO PERMANENTEMENTE? Esta acción borrará su perfil y acceso.")) {
+                                        // Since we don't have a direct deleteUserAction yet, we'll implement it
+                                        toast.promise(
+                                            fetch('/api/admin/users/delete', {
+                                                method: 'POST',
+                                                body: JSON.stringify({ userId: u.id })
+                                            }).then(res => {
+                                                if (!res.ok) throw new Error("Error al eliminar");
+                                                return res.json();
+                                            }),
+                                            {
+                                                loading: 'Eliminando usuario...',
+                                                success: 'Usuario eliminado del sistema',
+                                                error: 'Error al eliminar usuario'
+                                            }
+                                        );
+                                    }
+                                }}
+                                className="h-12 w-12 bg-red-950/20 border border-red-500/20 text-red-500 rounded-2xl flex items-center justify-center hover:bg-red-500 hover:text-white transition-all active:scale-95"
+                            >
+                                <Trash2 className="h-5 w-5" />
                             </button>
                         </div>
                     </div>
