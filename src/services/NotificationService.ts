@@ -140,18 +140,22 @@ export class NotificationService {
         const { data: { user } } = await supabase.auth.getUser();
 
         // 3. Insert into audit logs for persistent platform trace
-        const { error } = await (supabase.from('audit_logs') as any).insert({
-            actor_id: user?.id || '00000000-0000-0000-0000-000000000000',
-            action: `ALERT: ${data.action}`,
-            entity_type: data.entityType,
-            entity_id: data.entityId || null,
-            metadata: data.metadata || null
-        });
+        try {
+            const { error } = await (supabase.from('audit_logs') as any).insert({
+                actor_id: user?.id || '00000000-0000-0000-0000-000000000000',
+                action: `ALERT: ${data.action}`,
+                entity_type: data.entityType,
+                entity_id: data.entityId || null,
+                metadata: data.metadata || null
+            });
 
-        if (error) {
-            Logger.error('Failed to save Admin Alert to audit logs:', error);
-            return false;
+            if (error) {
+                Logger.error('Failed to save Admin Alert to audit logs:', error);
+            }
+        } catch (e) {
+            Logger.error('Critical failure in notifyAdmin:', e);
         }
+        
         return true;
     }
 }

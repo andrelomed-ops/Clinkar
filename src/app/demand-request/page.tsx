@@ -53,10 +53,15 @@ export default function DemandRequestPage() {
                 status: 'pending'
             };
 
-            await demandService.createDemandRequest(demandData);
-            setStep('success');
+            const result = await demandService.createDemandRequest(demandData);
+            if (result.success) {
+                setStep('success');
+            } else {
+                alert("Error: " + (result.error || "No se pudo procesar la solicitud"));
+            }
         } catch (error) {
             console.error('Error creating demand:', error);
+            alert("Error crítico al procesar la solicitud");
         } finally {
             setLoading(false);
         }

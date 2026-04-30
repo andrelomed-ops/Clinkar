@@ -39,6 +39,7 @@ export default function BuyPage() {
         makes: [],
         category: [],
         investorOnly: false,
+        flashSale: false,
         certifiedOnly: false,
     });
 
@@ -131,6 +132,7 @@ export default function BuyPage() {
                                 is_new: !!(marketData.is_new || dbCar.is_new || dbCar.isNew),
                                 is_investor_only: !!(marketData.is_investor_only || dbCar.is_investor_only || dbCar.investorOnly),
                                 is_imported: !!(marketData.is_imported || dbCar.is_imported || dbCar.isBorder),
+                                flashSale: !!(dbCar.flash_sale || marketData.flash_sale || dbCar.flashSale),
                                 has_clinkar_seal: !!(dbCar.has_clinkar_seal || marketData.has_clinkar_seal),
                                 has_starterkar_seal: !!(dbCar.has_clinkar_seal || marketData.has_clinkar_seal || marketData.certified)
                             };
@@ -237,9 +239,8 @@ export default function BuyPage() {
                 
                 if (filters.newCars && !car.is_new) return false;
 
-                // RESTRICTION: Investor-only cars are HIDDEN for normal buyers
-                // But if they are NOT investor-only, everyone (including investors) can see them
-                if (car.is_investor_only && !isUserInvestor) return false;
+                // RESTRICTION REMOVED: Show investor-only cars to everyone to encourage subscription
+                // if (car.is_investor_only && !isUserInvestor) return false;
 
                 return true;
             }).sort((a, b) => {
@@ -405,6 +406,7 @@ export default function BuyPage() {
                                                         makes: [],
                                                         category: [],
                                                         investorOnly: false,
+                                                        flashSale: false,
                                                         certifiedOnly: false,
                                                     });
                                                 }}

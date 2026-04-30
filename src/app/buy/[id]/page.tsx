@@ -89,6 +89,8 @@ export default function CarDetailPage({ params }: { params: Promise<{ id: string
                         distance: (carData.mileage || 0) / 1000,
                         fuel: carData.fuel || 'Gasolina',
                         transmission: carData.transmission || 'Automática',
+                        is_investor_only: !!(carData.is_investor_only || carData.market_data?.is_investor_only),
+                        flashSale: !!(carData.flash_sale || carData.market_data?.flash_sale),
                         isLocked: isLockedStatus
                     } as any);
                 } else {
@@ -292,7 +294,7 @@ export default function CarDetailPage({ params }: { params: Promise<{ id: string
                                 {(car.isLocked || car.status === 'RESERVED') && (
                                     <div className="absolute inset-0 z-50 bg-white/80 dark:bg-zinc-950/80 backdrop-blur-md flex flex-col items-center justify-center p-8 text-center animate-in fade-in duration-500">
                                         <div className="h-20 w-20 bg-amber-500/10 border-2 border-amber-500/20 rounded-full flex items-center justify-center mb-6 shadow-[0_0_50px_rgba(245,158,11,0.2)]">
-                                            <Lock className="h-10 w-10 text-amber-500" />
+                                            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
                                         </div>
                                         <h3 className="text-2xl font-black uppercase italic tracking-tighter text-zinc-900 dark:text-white mb-3">Activo Apartado</h3>
                                         <p className="text-sm font-medium text-muted-foreground leading-relaxed mb-8">
@@ -304,8 +306,31 @@ export default function CarDetailPage({ params }: { params: Promise<{ id: string
                                         >
                                             Únete a la Fila de Espera
                                         </button>
-                                        <p className="text-[9px] font-bold text-muted-foreground mt-4 uppercase tracking-[0.2em]">
-                                            Te notificaremos si el pago falla
+                                    </div>
+                                )}
+
+                                {/* Investor Only CTA for non-investors */}
+                                {car.is_investor_only && userProfile?.role !== 'admin' && userProfile?.role !== 'investor' && (
+                                    <div className="absolute inset-0 z-[40] bg-zinc-900/90 backdrop-blur-md flex flex-col items-center justify-center p-8 text-center animate-in fade-in duration-500 border-[3px] border-emerald-500/30 rounded-[2.5rem]">
+                                        <div className="h-20 w-20 bg-emerald-500 rounded-full flex items-center justify-center text-white mb-6 shadow-[0_0_50px_rgba(16,185,129,0.4)] relative">
+                                            <Zap className="h-10 w-10 fill-current animate-pulse" />
+                                            <div className="absolute -top-2 -right-2 bg-white text-emerald-600 text-[10px] font-black px-2 py-1 rounded-md shadow-lg">PRO</div>
+                                        </div>
+                                        <h3 className="text-2xl font-black uppercase italic tracking-tighter text-white mb-3 leading-tight">Oportunidad de Inversión</h3>
+                                        <p className="text-sm font-bold text-emerald-400 mb-6 uppercase tracking-widest">
+                                            Ahorro > 15% vs Mercado
+                                        </p>
+                                        <p className="text-xs font-medium text-zinc-300 leading-relaxed mb-8">
+                                            Este activo es exclusivo para miembros con suscripción <strong className="text-white">Inversionista Elite/Pro</strong>.
+                                        </p>
+                                        <Link 
+                                            href="/investor/apply"
+                                            className="w-full h-14 bg-emerald-500 hover:bg-emerald-400 text-white rounded-xl font-black uppercase text-[10px] tracking-[0.2em] hover:scale-[1.02] active:scale-95 transition-all shadow-xl shadow-emerald-500/20 flex items-center justify-center"
+                                        >
+                                            CONTRATAR MEMBRESÍA
+                                        </Link>
+                                        <p className="text-[9px] font-bold text-zinc-500 mt-6 uppercase tracking-[0.2em]">
+                                            Desbloquea este y otros 12 activos hoy
                                         </p>
                                     </div>
                                 )}
