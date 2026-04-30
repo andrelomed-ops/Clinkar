@@ -8,11 +8,14 @@ import {
     Clock,
     FileText,
     UserCheck,
-    AlertTriangle,
     Check,
     X,
-    ExternalLink
+    ExternalLink,
+    Upload,
+    Gavel,
+    ShieldAlert as ProvenanceIcon
 } from "lucide-react";
+import { updateCarAction } from "@/app/actions/cars";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
@@ -29,8 +32,12 @@ interface Expediente {
     carMake: string;
     carModel: string;
     carYear: number;
+    carId: string; // The UUID of the car in DB
     sellerName: string;
     pldStatus: "PENDING" | "APPROVED" | "BLOCKED_RISK";
+    provenance?: string;
+    fairPrice?: number;
+    legalNotes?: string;
     documents: Document[];
     status: "PENDING_DOCS" | "PARTIAL" | "FINAL_REVIEW" | "CERTIFIED";
 }
@@ -136,17 +143,27 @@ export function LegalReviewDashboard({ initialExpedientes }: { initialExpediente
                             </div>
 
                             <div className="flex items-center gap-4">
-                                {/* PLD Logic Status */}
-                                <div className={cn(
-                                    "px-4 py-2 rounded-xl border flex items-center gap-2",
-                                    activeExpediente.pldStatus === 'APPROVED' ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-500" :
-                                        activeExpediente.pldStatus === 'BLOCKED_RISK' ? "bg-red-500/10 border-red-500/20 text-red-500 animate-pulse" :
-                                            "bg-amber-500/10 border-amber-500/20 text-amber-500"
-                                )}>
-                                    <ShieldCheck className="h-4 w-4" />
-                                    <div className="flex flex-col">
-                                        <span className="text-[10px] font-black uppercase">Status PLD</span>
-                                        <span className="text-xs font-bold">{activeExpediente.pldStatus}</span>
+                                <div className="flex items-center gap-4">
+                                    {/* Procedencia Tag */}
+                                    <div className="px-3 py-1 bg-zinc-100 dark:bg-zinc-800 rounded-lg border border-zinc-200 dark:border-zinc-700 flex items-center gap-2">
+                                        <ProvenanceIcon className="h-3 w-3 text-zinc-500" />
+                                        <span className="text-[10px] font-black uppercase tracking-widest text-zinc-400">
+                                            Origen: {activeExpediente.provenance || 'original'}
+                                        </span>
+                                    </div>
+                                    
+                                    {/* PLD Logic Status */}
+                                    <div className={cn(
+                                        "px-4 py-2 rounded-xl border flex items-center gap-2",
+                                        activeExpediente.pldStatus === 'APPROVED' ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-500" :
+                                            activeExpediente.pldStatus === 'BLOCKED_RISK' ? "bg-red-500/10 border-red-500/20 text-red-500 animate-pulse" :
+                                                "bg-amber-500/10 border-amber-500/20 text-amber-500"
+                                    )}>
+                                        <ShieldCheck className="h-4 w-4" />
+                                        <div className="flex flex-col">
+                                            <span className="text-[10px] font-black uppercase">Status PLD</span>
+                                            <span className="text-xs font-bold">{activeExpediente.pldStatus}</span>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -191,29 +208,94 @@ export function LegalReviewDashboard({ initialExpedientes }: { initialExpediente
                                             <Check className="h-4 w-4" /> Aprobar
                                         </button>
                                     </div>
+                                    
+                                    {/* MODO RESCATE: Subida por Admin */}
+                                    <div className="mt-3 pt-3 border-t border-dashed border-zinc-200 dark:border-zinc-800">
+                                        <button 
+                                            className="w-full h-10 rounded-xl bg-indigo-500/10 text-indigo-500 text-[10px] font-black uppercase tracking-widest border border-indigo-500/20 hover:bg-indigo-500 hover:text-white transition-all flex items-center justify-center gap-2"
+                                            onClick={() => toast.info(`Abriendo portal de rescate para ${doc.type}...`)}
+                                        >
+                                            <Upload className="h-3 w-3" /> Rescatar / Subir por Cliente
+                                        </button>
+                                    </div>
                                 </div>
                             ))}
                         </div>
 
-                        {/* Final Actions Footer */}
-                        <div className="bg-white dark:bg-zinc-900 p-8 rounded-[2.5rem] border border-zinc-200 dark:border-zinc-800 shadow-sm text-center">
-                            <h3 className="text-lg font-black uppercase italic italic mb-2 tracking-tight">Acción Final de Certificación</h3>
-                            <p className="text-xs text-zinc-500 max-w-md mx-auto mb-6">
-                                Una vez que todos los documentos sean aprobados y el estado PLD sea verde, se podrá emitir el Pasaporte Digital StarterKar.
-                            </p>
+                        {/* JUSTICIA & CERTEZA: Herramientas de Auditoría */}
+                        <div className="bg-zinc-950 border border-zinc-800 rounded-[2.5rem] p-10 space-y-8">
+                            <div className="flex items-center gap-4">
+                                <div className="h-12 w-12 bg-amber-500/10 rounded-2xl flex items-center justify-center border border-amber-500/20">
+                                    <Gavel className="h-6 w-6 text-amber-500" />
+                                </div>
+                                <div>
+                                    <h3 className="text-lg font-black uppercase italic tracking-tight text-white">Auditoría de Trato Justo</h3>
+                                    <p className="text-xs text-zinc-500 font-medium">Define la procedencia legal y el valor justo sugerido por StarterKar.</p>
+                                </div>
+                            </div>
 
-                            <button
-                                disabled={activeExpediente.status !== 'FINAL_REVIEW'}
-                                onClick={handleFinalCertify}
-                                className={cn(
-                                    "h-16 px-12 rounded-2xl font-black uppercase tracking-widest text-sm transition-all shadow-xl",
-                                    activeExpediente.status === 'FINAL_REVIEW'
-                                        ? "bg-indigo-600 text-white hover:scale-105 active:scale-95"
-                                        : "bg-zinc-200 dark:bg-zinc-800 text-zinc-400 cursor-not-allowed"
-                                )}
-                            >
-                                Emitir Reporte y Certificar
-                            </button>
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                {/* Provenance Selector */}
+                                <div className="space-y-3">
+                                    <label className="text-[10px] font-black uppercase tracking-widest text-zinc-500 px-1">Procedencia Legal</label>
+                                    <select 
+                                        className="w-full h-14 bg-zinc-900 border border-zinc-800 rounded-2xl px-4 text-xs font-bold text-white focus:border-amber-500/50 outline-none transition-all"
+                                        value={activeExpediente.provenance || 'original'}
+                                        onChange={async (e) => {
+                                            const val = e.target.value;
+                                            toast.promise(updateCarAction(activeExpediente.carId, { provenance: val }), {
+                                                loading: 'Actualizando procedencia...',
+                                                success: 'Procedencia actualizada',
+                                                error: 'Error al actualizar'
+                                            });
+                                            setExpedientes(prev => prev.map(ex => ex.id === activeExpediente.id ? {...ex, provenance: val} : ex));
+                                        }}
+                                    >
+                                        <option value="original">Factura Original / Agencia</option>
+                                        <option value="insurance_salvage">Aseguradora (Salvamento)</option>
+                                        <option value="theft_recovered">Recuperado de Robo</option>
+                                        <option value="auction">Subasta Profesional</option>
+                                        <option value="imported">Importado / Legalizado</option>
+                                        <option value="refactored">Re-facturado (Empresa)</option>
+                                    </select>
+                                </div>
+
+                                {/* Fair Price Adjuster */}
+                                <div className="space-y-3">
+                                    <label className="text-[10px] font-black uppercase tracking-widest text-zinc-500 px-1">Precio Justo Sugerido (MXN)</label>
+                                    <input 
+                                        type="number"
+                                        placeholder="Ej. 250000"
+                                        className="w-full h-14 bg-zinc-900 border border-zinc-800 rounded-2xl px-4 text-xs font-bold text-white focus:border-emerald-500/50 outline-none transition-all"
+                                        onBlur={async (e) => {
+                                            const val = Number(e.target.value);
+                                            if (!val) return;
+                                            toast.promise(updateCarAction(activeExpediente.carId, { fair_price_suggested: val }), {
+                                                loading: 'Ajustando precio justo...',
+                                                success: 'Precio justo registrado',
+                                                error: 'Error al actualizar'
+                                            });
+                                            setExpedientes(prev => prev.map(ex => ex.id === activeExpediente.id ? {...ex, fairPrice: val} : ex));
+                                        }}
+                                    />
+                                </div>
+
+                                {/* Certification Action */}
+                                <div className="flex flex-col justify-end">
+                                    <button
+                                        disabled={activeExpediente.status !== 'FINAL_REVIEW'}
+                                        onClick={handleFinalCertify}
+                                        className={cn(
+                                            "h-14 rounded-2xl font-black uppercase tracking-widest text-xs transition-all shadow-xl",
+                                            activeExpediente.status === 'FINAL_REVIEW'
+                                                ? "bg-indigo-600 text-white hover:scale-105 active:scale-95"
+                                                : "bg-zinc-800 text-zinc-600 cursor-not-allowed border border-zinc-700"
+                                        )}
+                                    >
+                                        Emitir Reporte y Certificar
+                                    </button>
+                                </div>
+                            </div>
                         </div>
                     </>
                 ) : (

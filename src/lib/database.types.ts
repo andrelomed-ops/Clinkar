@@ -32,6 +32,11 @@ export type Database = {
                     sensory_data: Json | null
                     market_data: Json | null
                     digital_passport_data: Json | null
+                    provenance: string | null
+                    reconditioning_notes: Json | null
+                    reconditioning_budget: number | null
+                    fair_price_suggested: number | null
+                    legal_notes: string | null
                 }
                 Insert: {
                     created_at?: string | null
@@ -55,6 +60,11 @@ export type Database = {
                     sensory_data?: Json | null
                     market_data?: Json | null
                     digital_passport_data?: Json | null
+                    provenance?: string | null
+                    reconditioning_notes?: Json | null
+                    reconditioning_budget?: number | null
+                    fair_price_suggested?: number | null
+                    legal_notes?: string | null
                 }
                 Update: {
                     created_at?: string | null
@@ -78,6 +88,11 @@ export type Database = {
                     sensory_data?: Json | null
                     market_data?: Json | null
                     digital_passport_data?: Json | null
+                    provenance?: string | null
+                    reconditioning_notes?: Json | null
+                    reconditioning_budget?: number | null
+                    fair_price_suggested?: number | null
+                    legal_notes?: string | null
                 }
             }
             notifications: {
@@ -130,6 +145,10 @@ export type Database = {
                     warranty_id: string | null
                     warranty_cost: number | null
                     gestoria_cost: number | null
+                    commission_paid: boolean | null
+                    commission_amount: number | null
+                    commission_payment_method: string | null
+                    commission_payment_date: string | null
                 }
                 Insert: {
                     car_id: string
@@ -148,6 +167,10 @@ export type Database = {
                     warranty_id?: string | null
                     warranty_cost?: number | null
                     gestoria_cost?: number | null
+                    commission_paid?: boolean | null
+                    commission_amount?: number | null
+                    commission_payment_method?: string | null
+                    commission_payment_date?: string | null
                 }
                 Update: {
                     car_id?: string
@@ -166,6 +189,10 @@ export type Database = {
                     warranty_id?: string | null
                     warranty_cost?: number | null
                     gestoria_cost?: number | null
+                    commission_paid?: boolean | null
+                    commission_amount?: number | null
+                    commission_payment_method?: string | null
+                    commission_payment_date?: string | null
                 }
             }
             logistics_orders: {
@@ -586,6 +613,8 @@ export type Database = {
                     location: string | null
                     rfc: string | null
                     cif_url: string | null
+                    investor_tier: string | null
+                    coordinates: Json | null
                     created_at: string
                     updated_at: string
                 }
@@ -598,6 +627,8 @@ export type Database = {
                     location?: string | null
                     rfc?: string | null
                     cif_url?: string | null
+                    investor_tier?: string | null
+                    coordinates?: Json | null
                     created_at?: string
                     updated_at?: string
                 }
@@ -610,6 +641,8 @@ export type Database = {
                     location?: string | null
                     rfc?: string | null
                     cif_url?: string | null
+                    investor_tier?: string | null
+                    coordinates?: Json | null
                     created_at?: string
                     updated_at?: string
                 }
@@ -631,6 +664,41 @@ export type Database = {
                     id?: string
                     user_id?: string
                     car_id?: string
+                    created_at?: string
+                }
+            }
+            investor_applications: {
+                Row: {
+                    id: string
+                    user_id: string
+                    full_name: string
+                    email: string
+                    phone: string
+                    tier_id: string
+                    status: string
+                    metadata: Json | null
+                    created_at: string
+                }
+                Insert: {
+                    id?: string
+                    user_id: string
+                    full_name: string
+                    email: string
+                    phone: string
+                    tier_id: string
+                    status?: string
+                    metadata?: Json | null
+                    created_at?: string
+                }
+                Update: {
+                    id?: string
+                    user_id?: string
+                    full_name?: string
+                    email?: string
+                    phone?: string
+                    tier_id?: string
+                    status?: string
+                    metadata?: Json | null
                     created_at?: string
                 }
             }

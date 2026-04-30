@@ -18,7 +18,7 @@ export function StarterKarSeal({ variant = "compact", className, score }: Starte
                 "group flex items-center gap-1.5 px-3 py-1.5 bg-white/95 dark:bg-zinc-900/90 backdrop-blur-md rounded-full border border-zinc-200 dark:border-zinc-800 shadow-[0_4px_12px_-4px_rgba(0,0,0,0.1)] hover:border-indigo-500/30 transition-all duration-300",
                 className
             )}>
-                <StarterKarLogo size="xs" showWordmark={false} hideSubmark={true} />
+                <StarterKarLogo size="xs" showWordmark={false} hideSubmark={true} href="" />
             </div>
         );
     }
@@ -33,7 +33,7 @@ export function StarterKarSeal({ variant = "compact", className, score }: Starte
                 <div className="absolute -top-1/2 -left-1/2 w-[200%] h-[200%] bg-[radial-gradient(circle_at_center,rgba(99,102,241,0.15)_0,transparent_50%)] animate-slow-spin" />
 
                 <div className="relative flex items-center gap-6">
-                    <StarterKarLogo size="md" hideSubmark={true} />
+                    <StarterKarLogo size="md" hideSubmark={true} href="" />
                     <div className="flex-1">
                         <div className="flex items-center gap-2 mb-1">
                             <h4 className="text-lg font-black uppercase tracking-[0.2em] text-white">Sello Maestro</h4>
@@ -57,7 +57,7 @@ export function StarterKarSeal({ variant = "compact", className, score }: Starte
             "group flex items-center gap-4 px-6 py-4 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-[2rem] shadow-xl hover:border-indigo-500/20 transition-all",
             className
         )}>
-            <StarterKarLogo size="sm" hideSubmark={true} />
+            <StarterKarLogo size="sm" hideSubmark={true} href="" />
             <div>
                 <h4 className="text-base font-black uppercase tracking-widest text-zinc-900 dark:text-white">Sello StarterKar</h4>
                 <p className="text-[10px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-[0.2em]">Sello Único de Confianza Digital</p>

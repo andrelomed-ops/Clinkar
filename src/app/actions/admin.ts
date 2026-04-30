@@ -9,7 +9,9 @@ import { ServiceTicketService } from "@/services/ServiceTicketService";
 export async function updateUserRole(
     targetUserId: string, 
     newRole: 'admin' | 'inspector' | 'seller' | 'buyer' | 'investor',
-    tier: 'starter' | 'pro' | 'elite' | null = null
+    tier: 'starter' | 'pro' | 'elite' | null = null,
+    location: string | null = null,
+    coordinates: any = null
 ) {
     const supabase = await createClient();
 
@@ -30,10 +32,17 @@ export async function updateUserRole(
 
     // 2. Perform Update
     const updateData: any = { role: newRole };
+    
     if (newRole === 'investor') {
         updateData.investor_tier = tier || 'starter';
     } else {
         updateData.investor_tier = null;
+    }
+
+    // Save location/coordinates for mechanics (inspectors)
+    if (newRole === 'inspector') {
+        if (location) updateData.location = location;
+        if (coordinates) updateData.coordinates = coordinates;
     }
 
     const { error } = await supabase
@@ -341,7 +350,7 @@ export async function getRecentUsersAction() {
     const { data, error } = await supabase
         .from("profiles")
         .select("*")
-        .order("created_at", { ascending: false })
+        .order("updated_at", { ascending: false })
         .limit(20);
 
     if (error) return [];

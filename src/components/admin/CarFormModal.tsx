@@ -20,7 +20,7 @@ interface CarFormModalProps {
 }
 
 export function CarFormModal({ isOpen, onClose, onSubmit, initialData, isLoading, mode }: CarFormModalProps) {
-    const [activeTab, setActiveTab] = useState<"general" | "specs" | "features" | "gallery">("general");
+    const [activeTab, setActiveTab] = useState<"general" | "specs" | "features" | "gallery" | "certeza">("general");
     const [previewMode, setPreviewMode] = useState(false);
     
     const defaultData = {
@@ -39,6 +39,11 @@ export function CarFormModal({ isOpen, onClose, onSubmit, initialData, isLoading
         is_investor_only: false,
         is_imported: false,
         has_clinkar_seal: true,
+        provenance: "original",
+        reconditioning_budget: 0,
+        reconditioning_notes: [],
+        fair_price_suggested: 0,
+        legal_notes: "",
         technical_specs: {
             performance: { engine: "", horsepower: "", fuelType: "Gasoline", transmission: "Automatic", driveTrain: "FWD", cylinders: 4, consumption: "" },
             architecture: { bodyType: "SUV", doors: 5, passengers: 5, dimensions: "", tankCapacity: "", rims: "" },
@@ -53,7 +58,12 @@ export function CarFormModal({ isOpen, onClose, onSubmit, initialData, isLoading
         is_new: initialData.is_new || initialData.market_data?.is_new || false,
         is_investor_only: initialData.is_investor_only || initialData.market_data?.is_investor_only || false,
         is_imported: initialData.is_imported || initialData.market_data?.is_imported || false,
-        has_clinkar_seal: initialData.has_clinkar_seal !== undefined ? initialData.has_clinkar_seal : (initialData.market_data?.has_clinkar_seal ?? true)
+        has_clinkar_seal: initialData.has_clinkar_seal !== undefined ? initialData.has_clinkar_seal : (initialData.market_data?.has_clinkar_seal ?? true),
+        provenance: initialData.provenance || initialData.market_data?.provenance || "original",
+        reconditioning_budget: initialData.reconditioning_budget || initialData.market_data?.reconditioning_budget || 0,
+        reconditioning_notes: initialData.reconditioning_notes || initialData.market_data?.reconditioning_notes || [],
+        fair_price_suggested: initialData.fair_price_suggested || initialData.market_data?.fair_price_suggested || initialData.price,
+        legal_notes: initialData.legal_notes || initialData.market_data?.legal_notes || ""
     } : null;
 
     const [formData, setFormData] = useState(parsedInitialData || defaultData);
@@ -114,7 +124,12 @@ export function CarFormModal({ isOpen, onClose, onSubmit, initialData, isLoading
             technical_specs: formData.technical_specs,
             market_data: {
                 ...(initialData?.market_data || {}),
-                technical_specs: formData.technical_specs
+                technical_specs: formData.technical_specs,
+                provenance: formData.provenance,
+                reconditioning_budget: formData.reconditioning_budget,
+                reconditioning_notes: formData.reconditioning_notes,
+                fair_price_suggested: formData.fair_price_suggested,
+                legal_notes: formData.legal_notes
             }
         };
 
@@ -175,6 +190,7 @@ export function CarFormModal({ isOpen, onClose, onSubmit, initialData, isLoading
                         <TabButton active={activeTab === "general"} onClick={() => setActiveTab("general")} icon={<Zap className="h-4 w-4" />} label="General" />
                         <TabButton active={activeTab === "specs"} onClick={() => setActiveTab("specs")} icon={<Settings className="h-4 w-4" />} label="Ficha Técnica" />
                         <TabButton active={activeTab === "features"} onClick={() => setActiveTab("features")} icon={<ShieldCheck className="h-4 w-4" />} label="Equipamiento" />
+                        <TabButton active={activeTab === "certeza"} onClick={() => setActiveTab("certeza")} icon={<ShieldCheck className="h-4 w-4 text-emerald-500" />} label="Justicia & Certeza" />
                         <TabButton active={activeTab === "gallery"} onClick={() => setActiveTab("gallery")} icon={<CameraIcon className="h-4 w-4" />} label="Galería" />
                     </div>
                 )}
@@ -445,6 +461,73 @@ export function CarFormModal({ isOpen, onClose, onSubmit, initialData, isLoading
                                     <FormGroup label="Pasajeros">
                                         <input type="number" value={formData.technical_specs.architecture.passengers} className="form-input" onChange={e => setFormData({...formData, technical_specs: {...formData.technical_specs, architecture: {...formData.technical_specs.architecture, passengers: parseInt(e.target.value)}}})} />
                                     </FormGroup>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    {activeTab === "certeza" && (
+                        <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-300">
+                            <div className="bg-emerald-500/5 border border-emerald-500/20 rounded-[2rem] p-8 space-y-6">
+                                <div className="flex items-center gap-4">
+                                    <div className="h-12 w-12 bg-emerald-500/10 rounded-2xl flex items-center justify-center border border-emerald-500/20">
+                                        <ShieldCheck className="h-6 w-6 text-emerald-500" />
+                                    </div>
+                                    <div>
+                                        <h3 className="text-lg font-black uppercase italic tracking-tight text-white">Dictamen de Justicia y Certeza</h3>
+                                        <p className="text-xs text-zinc-500 font-medium">Campos críticos para la Cédula de Certeza y transparencia hacia el comprador.</p>
+                                    </div>
+                                </div>
+
+                                <div className="grid grid-cols-2 gap-6">
+                                    <FormGroup label="Procedencia Legal">
+                                        <select 
+                                            value={formData.provenance} 
+                                            className="form-input" 
+                                            onChange={e => setFormData({...formData, provenance: e.target.value})}
+                                        >
+                                            <option value="original">Factura Original / Único Dueño</option>
+                                            <option value="insurance_salvage">Salvamento Aseguradora</option>
+                                            <option value="theft_recovered">Recuperado de Robo</option>
+                                            <option value="auction">Subasta</option>
+                                            <option value="imported">Importado / Legalizado</option>
+                                            <option value="enterprise">Factura de Empresa</option>
+                                        </select>
+                                    </FormGroup>
+                                    <FormGroup label="Precio Justo Sugerido (MXN)">
+                                        <input 
+                                            type="number" 
+                                            value={formData.fair_price_suggested} 
+                                            className="form-input text-emerald-400 font-bold" 
+                                            onChange={e => setFormData({...formData, fair_price_suggested: parseFloat(e.target.value)})} 
+                                        />
+                                    </FormGroup>
+                                    <FormGroup label="Presupuesto Reacondicionamiento (MXN)">
+                                        <input 
+                                            type="number" 
+                                            value={formData.reconditioning_budget} 
+                                            className="form-input text-amber-500" 
+                                            onChange={e => setFormData({...formData, reconditioning_budget: parseFloat(e.target.value)})} 
+                                        />
+                                    </FormGroup>
+                                    <FormGroup label="Notas Legales (Cédula)">
+                                        <textarea 
+                                            value={formData.legal_notes} 
+                                            className="form-input h-24 resize-none p-4" 
+                                            onChange={e => setFormData({...formData, legal_notes: e.target.value})}
+                                            placeholder="Ej. Factura original, todo pagado al 2024, sin gravamen..."
+                                        />
+                                    </FormGroup>
+                                    <div className="col-span-2">
+                                        <FormGroup label="Notas de Reacondicionamiento (Realidad del Auto)">
+                                            <textarea 
+                                                value={Array.isArray(formData.reconditioning_notes) ? formData.reconditioning_notes.map((n: any) => typeof n === 'string' ? n : n.note).join('\n') : formData.reconditioning_notes} 
+                                                className="form-input h-32 resize-none p-4" 
+                                                onChange={e => setFormData({...formData, reconditioning_notes: e.target.value.split('\n').filter(n => n.trim() !== '')})}
+                                                placeholder="Ingresa una nota por línea sobre el estado real del auto..."
+                                            />
+                                        </FormGroup>
+                                    </div>
                                 </div>
                             </div>
                         </div>

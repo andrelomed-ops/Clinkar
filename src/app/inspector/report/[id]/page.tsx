@@ -10,7 +10,10 @@ import { ProcessingOverlay } from "@/components/ui/ProcessingOverlay";
 import { CameraUpload } from "@/components/ui/CameraUpload";
 import { getInspectionSectionsByCategory } from "@/lib/inspection-data";
 import { CarService } from "@/services/CarService";
+import { updateCarAction } from "@/app/actions/cars";
 import { cn } from "@/lib/utils";
+import { toast } from "sonner";
+import { Gavel, Wrench } from "lucide-react";
 
 // We now use the list from INSPECTION_SECTIONS
 
@@ -27,6 +30,10 @@ export default function ChecklistPage({ params }: { params: Promise<{ id: string
     // AI State
     const [analyzing, setAnalyzing] = useState(false);
     const [showScanner, setShowScanner] = useState(false);
+
+    // Justicia & Certeza State
+    const [reconditioningBudget, setReconditioningBudget] = useState<number>(0);
+    const [integrityNotes, setIntegrityNotes] = useState<string>("");
 
     const supabase = createBrowserClient();
     const router = useRouter();
@@ -96,6 +103,14 @@ export default function ChecklistPage({ params }: { params: Promise<{ id: string
                 overallResult
             );
 
+            // Justicia & Certeza: Save reconditioning data to Car
+            await updateCarAction(carId, {
+                reconditioning_budget: reconditioningBudget,
+                reconditioning_notes: [{ note: integrityNotes, date: new Date().toISOString() }],
+                status: overallResult === 'APROBADO' ? 'CERTIFIED' : 'RECHAZADO'
+            });
+
+            toast.success("Inspección y Reporte de Integridad Guardados");
             router.refresh();
             router.push("/dashboard/inspector");
 
@@ -232,6 +247,46 @@ export default function ChecklistPage({ params }: { params: Promise<{ id: string
                         </div>
                     </section>
                 ))}
+
+                {/* SECCIÓN DE REALIDAD (JUSTICIA & CERTEZA) */}
+                {role === 'MECHANIC' && (
+                    <section className="bg-zinc-900 border border-zinc-800 rounded-[2.5rem] p-8 space-y-6 shadow-2xl animate-in fade-in slide-in-from-bottom-4">
+                        <div className="flex items-center gap-4">
+                            <div className="h-12 w-12 bg-amber-500/10 rounded-2xl flex items-center justify-center border border-amber-500/20">
+                                <Wrench className="h-6 w-6 text-amber-500" />
+                            </div>
+                            <div>
+                                <h3 className="text-lg font-black uppercase italic tracking-tight text-white">Reporte de Realidad StarterKar</h3>
+                                <p className="text-[10px] text-zinc-500 font-bold uppercase">¿Qué le falta a la unidad para estar perfecta?</p>
+                            </div>
+                        </div>
+
+                        <div className="space-y-6">
+                            <div className="space-y-3">
+                                <label className="text-[10px] font-black uppercase tracking-widest text-zinc-500 px-1">Presupuesto de Puesta a Punto (MXN)</label>
+                                <div className="relative">
+                                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-500 font-bold">$</span>
+                                    <input 
+                                        type="number"
+                                        value={reconditioningBudget}
+                                        onChange={(e) => setReconditioningBudget(Number(e.target.value))}
+                                        className="w-full h-14 bg-zinc-950 border border-zinc-800 rounded-2xl pl-8 pr-4 text-xs font-bold text-white focus:border-amber-500/50 outline-none transition-all"
+                                        placeholder="0.00"
+                                    />
+                                </div>
+                            </div>
+                            <div className="space-y-3">
+                                <label className="text-[10px] font-black uppercase tracking-widest text-zinc-500 px-1">Notas de Integridad y Diagnóstico</label>
+                                <textarea 
+                                    value={integrityNotes}
+                                    onChange={(e) => setIntegrityNotes(e.target.value)}
+                                    className="w-full h-32 bg-zinc-950 border border-zinc-800 rounded-2xl p-4 text-xs font-bold text-white focus:border-amber-500/50 outline-none transition-all resize-none"
+                                    placeholder="Detalla fallos, desgastes o recomendaciones de seguridad..."
+                                />
+                            </div>
+                        </div>
+                    </section>
+                )}
 
                 <section className="bg-white dark:bg-zinc-900 rounded-3xl border p-6 shadow-xl space-y-6 sticky bottom-6">
                     <div className="flex gap-4">

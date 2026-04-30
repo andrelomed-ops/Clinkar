@@ -46,8 +46,14 @@ export class CarService {
             // Parse JSONB fields or fallback
             sensory: d.sensory_data || {},
             priceEquation: (d.market_data as any)?.priceEquation || {},
-            marketValue: (d.market_data as any)?.marketValue || d.price,
+            marketValue: d.fair_price_suggested || (d.market_data as any)?.fair_price_suggested || (d.market_data as any)?.marketValue || d.price,
             digitalPassport: d.digital_passport_data || null,
+            // Justicia & Certeza Fields (Direct Columns with JSONB fallback)
+            provenance: d.provenance || (d.market_data as any)?.provenance || 'original',
+            reconditioning_budget: d.reconditioning_budget || (d.market_data as any)?.reconditioning_budget || 0,
+            reconditioning_notes: d.reconditioning_notes || (d.market_data as any)?.reconditioning_notes || [],
+            fair_price_suggested: d.fair_price_suggested || (d.market_data as any)?.fair_price_suggested || d.price,
+            legal_notes: (d as any).legal_notes || '',
             // Enhanced Concurrency Info
             isCurrentlyLocked: lockStatus.isLocked,
             lockedUntil: lockStatus.expiresAt,
@@ -91,6 +97,10 @@ export class CarService {
             is_imported: (d.market_data as any)?.is_imported || (d.market_data as any)?.isBorder || false,
             agency: (d.market_data as any)?.agency || '',
             bonus: (d.market_data as any)?.bonus || '',
+            provenance: (d as any).provenance || (d.market_data as any)?.provenance || 'original',
+            reconditioning_budget: (d as any).reconditioning_budget || (d.market_data as any)?.reconditioning_budget || 0,
+            reconditioning_notes: (d as any).reconditioning_notes || (d.market_data as any)?.reconditioning_notes || [],
+            fair_price_suggested: (d as any).fair_price_suggested || (d.market_data as any)?.fair_price_suggested || (d as any).price,
         }));
     }
 
@@ -123,7 +133,11 @@ export class CarService {
             minimum_price: carData.minimum_price || carData.price,
             is_new: carData.is_new || false,
             is_investor_only: carData.is_investor_only || false,
-            is_imported: carData.is_imported || false
+            is_imported: carData.is_imported || false,
+            provenance: carData.provenance || 'original',
+            reconditioning_budget: carData.reconditioning_budget || 0,
+            reconditioning_notes: carData.reconditioning_notes || [],
+            fair_price_suggested: carData.fair_price_suggested || carData.price
         };
 
         // Strict extraction of only valid DB columns based on REAL DB DISCOVERY
@@ -144,7 +158,13 @@ export class CarService {
             location: carData.location || 'CDMX',
             category: carData.category || 'Car',
             technical_specs: carData.technical_specs || {},
-            has_clinkar_seal: carData.has_clinkar_seal || carData.has_starterkar_seal || false
+            has_clinkar_seal: carData.has_clinkar_seal || carData.has_starterkar_seal || false,
+            // New Justicia & Certeza Columns
+            provenance: carData.provenance || 'original',
+            reconditioning_budget: carData.reconditioning_budget || 0,
+            reconditioning_notes: carData.reconditioning_notes || [],
+            fair_price_suggested: carData.fair_price_suggested || carData.price,
+            legal_notes: carData.legal_notes || ''
         };
 
         const { data, error } = await supabase
@@ -182,7 +202,11 @@ export class CarService {
             minimum_price: Number(carData.minimum_price) || price,
             is_new: !!carData.is_new,
             is_investor_only: !!carData.is_investor_only,
-            is_imported: !!carData.is_imported
+            is_imported: !!carData.is_imported,
+            provenance: carData.provenance || (carData.market_data as any)?.provenance || 'original',
+            reconditioning_budget: carData.reconditioning_budget !== undefined ? Number(carData.reconditioning_budget) : (carData.market_data as any)?.reconditioning_budget || 0,
+            reconditioning_notes: carData.reconditioning_notes || (carData.market_data as any)?.reconditioning_notes || [],
+            fair_price_suggested: carData.fair_price_suggested !== undefined ? Number(carData.fair_price_suggested) : (carData.market_data as any)?.fair_price_suggested || price
         };
 
         const dbReadyData: any = {
@@ -205,6 +229,13 @@ export class CarService {
         
         const clinkarSeal = carData.has_clinkar_seal !== undefined ? carData.has_clinkar_seal : carData.has_starterkar_seal;
         if (clinkarSeal !== undefined) dbReadyData.has_clinkar_seal = !!clinkarSeal;
+
+        // New Justicia & Certeza Columns (Direct Update)
+        if (carData.provenance) dbReadyData.provenance = carData.provenance;
+        if (carData.reconditioning_budget !== undefined) dbReadyData.reconditioning_budget = Number(carData.reconditioning_budget);
+        if (carData.reconditioning_notes) dbReadyData.reconditioning_notes = carData.reconditioning_notes;
+        if (carData.fair_price_suggested !== undefined) dbReadyData.fair_price_suggested = Number(carData.fair_price_suggested);
+        if (carData.legal_notes) dbReadyData.legal_notes = carData.legal_notes;
 
         const { error } = await (supabase.from('cars') as any)
             .update(dbReadyData)
