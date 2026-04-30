@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { createBrowserClient } from "@/lib/supabase/client";
-import { User, Mail, Phone, MapPin, Shield, Loader2, Camera, Save, FileCheck, ChevronLeft, Pencil, X } from "lucide-react";
+import { User, Mail, Phone, MapPin, Shield, Loader2, Camera, Save, FileCheck, ChevronLeft, Pencil, X, Diamond } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -167,12 +167,12 @@ export default function ProfilePage() {
                             </div>
                             {profile?.role?.toLowerCase() === 'investor' && (
                                 <div className={cn(
-                                    "flex items-center gap-3 p-3 rounded-xl border mt-4",
-                                    profile?.investor_tier === 'elite' ? "bg-indigo-500/10 border-indigo-500/20 text-indigo-600" :
-                                    profile?.investor_tier === 'pro' ? "bg-amber-500/10 border-amber-500/20 text-amber-600" :
+                                    "flex items-center gap-3 p-3 rounded-xl border mt-4 shadow-sm transition-all",
+                                    profile?.investor_tier === 'elite' ? "bg-indigo-600 text-white border-indigo-400 shadow-indigo-500/20" :
+                                    profile?.investor_tier === 'pro' ? "bg-amber-500 text-white border-amber-400 shadow-amber-500/20" :
                                     "bg-zinc-500/10 border-zinc-500/20 text-zinc-600"
                                 )}>
-                                    <Shield className="h-4 w-4" />
+                                    {profile?.investor_tier === 'elite' ? <Diamond className="h-4 w-4" /> : <Shield className="h-4 w-4" />}
                                     <span className="text-[10px] font-black uppercase tracking-widest">
                                         Rango: {profile?.investor_tier?.toUpperCase() || 'STARTER'}
                                     </span>
