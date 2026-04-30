@@ -130,8 +130,8 @@ export default function SellPage() {
                 {/* Steps */}
                 <div className="mt-32 max-w-5xl mx-auto">
                     <div className="text-center mb-16">
-                        <h2 className="text-3xl font-black mb-4">El Proceso de Venta</h2>
-                        <p className="text-zinc-500 dark:text-zinc-400">Más simple que pedir comida a domicilio.</p>
+                        <h2 className="text-3xl font-black mb-4">El Proceso de Certificación</h2>
+                        <p className="text-zinc-500 dark:text-zinc-400">Diseñado para leads serios que valoran su tiempo y seguridad.</p>
                     </div>
 
                     <div className="grid md:grid-cols-3 gap-8">
@@ -139,26 +139,39 @@ export default function SellPage() {
                             <div className="h-12 w-12 bg-white dark:bg-zinc-800 rounded-2xl flex items-center justify-center mb-6 shadow-sm group-hover:scale-110 transition-transform">
                                 <Search className="h-6 w-6 text-indigo-600 dark:text-indigo-400" />
                             </div>
-                            <h3 className="font-bold text-xl mb-3 text-foreground">1. Cotización Instantánea</h3>
-                            <p className="text-muted-foreground text-sm leading-relaxed">Paso 1: Clasifica tu auto y recibe una cotización base del Libro Negro. Si te gusta, seguimos adelante.</p>
+                            <h3 className="font-bold text-xl mb-3 text-foreground">1. Validación de Intención</h3>
+                            <p className="text-muted-foreground text-sm leading-relaxed">Cualquier auto es comercializable. Clasifica tu unidad y recibe un rango de valor real.</p>
                         </div>
 
                         <div className="p-8 glass-card rounded-premium border-border/40 hover:border-indigo-500/30 transition-all duration-500 group animate-reveal stagger-2">
                             <div className="h-12 w-12 bg-white dark:bg-zinc-800 rounded-2xl flex items-center justify-center mb-6 shadow-sm group-hover:scale-110 transition-transform">
                                 <FileText className="h-6 w-6 text-indigo-600 dark:text-indigo-400" />
                             </div>
-                            <h3 className="font-bold text-xl mb-3 text-foreground">2. Validación Legal</h3>
-                            <p className="text-muted-foreground text-sm leading-relaxed">Sube tus papeles. Nosotros validamos REPUVE, tenencias e infracciones directamente por ti.</p>
+                            <h3 className="font-bold text-xl mb-3 text-foreground">2. Agendamiento Directo</h3>
+                            <p className="text-muted-foreground text-sm leading-relaxed">Sube tus papeles básicos. Nuestro equipo legal valida el VIN antes de la visita física.</p>
                         </div>
 
                         <div className="p-8 glass-card rounded-premium border-border/40 hover:border-indigo-500/30 transition-all duration-500 group animate-reveal stagger-3">
                             <div className="h-12 w-12 bg-white dark:bg-zinc-800 rounded-2xl flex items-center justify-center mb-6 shadow-sm group-hover:scale-110 transition-transform">
                                 <Car className="h-6 w-6 text-indigo-600 dark:text-indigo-400" />
                             </div>
-                            <h3 className="font-bold text-xl mb-3 text-foreground">3. Certificación en Taller</h3>
-                            <p className="text-muted-foreground text-sm leading-relaxed">Nuestro experto revisa 150 puntos mecánicos en una zona segura (Taller Aliado). ¡Listo para vender!</p>
+                            <h3 className="font-bold text-xl mb-3 text-foreground">3. Inspección Física</h3>
+                            <p className="text-muted-foreground text-sm leading-relaxed">Revisión de 150 puntos en zona segura. Sin riesgos, sin pérdida de tiempo.</p>
                         </div>
                     </div>
+                </div>
+
+                {/* WhatsApp Bot Float */}
+                <div className="fixed bottom-8 right-8 z-[100]">
+                    <a 
+                        href="https://wa.me/yournumber?text=Hola,%20tengo%20dudas%20sobre%20la%20operación%20de%20StarterKar"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-3 bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 px-6 py-4 rounded-full font-black text-[10px] uppercase tracking-widest shadow-2xl hover:scale-105 active:scale-95 transition-all group border border-zinc-800 dark:border-zinc-200"
+                    >
+                        <div className="h-2 w-2 bg-emerald-500 rounded-full animate-pulse" />
+                        ¿Dudas de Operación? Habla con el Bot
+                    </a>
                 </div>
 
             </main>
