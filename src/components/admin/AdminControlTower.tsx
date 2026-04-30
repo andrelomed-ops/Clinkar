@@ -1,7 +1,7 @@
 "use client";
 
 import { 
-    Activity, DollarSign, Clock, CheckCircle2, MoreHorizontal, ExternalLink, ShieldAlert
+    Activity, DollarSign, Clock, CheckCircle2, MoreHorizontal, ExternalLink, ShieldAlert, Trash2
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { STATUS_MAP } from "@/lib/status-map";

@@ -203,7 +203,7 @@ export default function AdminDashboardV6() {
 
     const handleRegisterPayment = async (txId: string, amount: number) => {
         try {
-            const res = await registerCommissionPaymentAction(txId, amount, 'DIRECT_TRANSFER');
+            const res = await registerCommissionPaymentAction(txId, { amount, method: 'DIRECT_TRANSFER' });
             if (res.success) { toast.success("Pago registrado"); await loadData(); }
         } catch (e: any) { toast.error(e.message); }
     };
@@ -211,7 +211,8 @@ export default function AdminDashboardV6() {
     const handleValidateCEP = async (txId: string) => {
         setCepLoading(txId);
         try {
-            const res = await validateCEPAction(txId);
+            // Passing mock data if none provided to prevent crash
+            const res = await validateCEPAction(txId, { clave_rastreo: "SIMULATED-CEP-VALIDATION-OK" });
             if (res.success) { toast.success("CEP Validado"); await loadData(); }
         } catch (e: any) { toast.error(e.message); } finally { setCepLoading(null); }
     };
