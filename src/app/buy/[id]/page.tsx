@@ -302,17 +302,48 @@ export default function CarDetailPage({ params }: { params: Promise<{ id: string
                                     </div>
 
                                     <div className="flex-1 space-y-4">
-                                        <div className="flex items-center gap-3">
-                                            <ShieldCheck className="h-6 w-6 text-indigo-500" />
-                                            <h3 className="text-2xl font-black uppercase italic tracking-tighter text-white">Cédula de Certeza StarterKar</h3>
+                                        <div className="flex items-center justify-between">
+                                            <div className="flex items-center gap-3">
+                                                <ShieldCheck className="h-6 w-6 text-indigo-500" />
+                                                <h3 className="text-2xl font-black uppercase italic tracking-tighter text-white">Cédula de Certeza StarterKar</h3>
+                                            </div>
+                                            {(car.performance_score || 0) < 100 && (
+                                                <div className="px-4 py-1 bg-indigo-600 rounded-full flex items-center gap-2 animate-pulse">
+                                                    <Zap className="h-3 w-3 text-white fill-current" />
+                                                    <span className="text-[9px] font-black text-white uppercase tracking-widest italic">Llévalo al 100%</span>
+                                                </div>
+                                            )}
                                         </div>
                                         <p className="text-sm font-medium text-zinc-400 leading-relaxed">
-                                            Este vehículo ha superado nuestra auditoría de **150 puntos críticos**. El Score refleja el estado integral (Mecánico, Estético y Legal) validado por la mesa de control.
+                                            Este vehículo ha sido auditado bajo nuestro estándar de **150 puntos críticos**. La calificación actual refleja su estado físico real al momento de la inspección.
                                         </p>
+
+                                        {/* Upsell: Llévalo al 100 */}
+                                        {(car.performance_score || 0) < 100 && (
+                                            <div className="bg-indigo-600/10 border border-indigo-600/30 rounded-2xl p-6 space-y-4">
+                                                <div className="flex items-center justify-between">
+                                                    <div>
+                                                        <h4 className="text-xs font-black text-indigo-400 uppercase tracking-widest mb-1">Oportunidad de Restauración</h4>
+                                                        <p className="text-[10px] text-zinc-300 font-bold italic">Puedes adquirirlo así o solicitar que lo entreguemos "Al 100".</p>
+                                                    </div>
+                                                    <div className="text-right">
+                                                        <p className="text-[8px] font-black text-zinc-500 uppercase tracking-widest">Presupuesto Estimado</p>
+                                                        <p className="text-lg font-black text-white">${(car.reconditioning_budget || (100 - (car.performance_score || 0)) * 500).toLocaleString()} MXN</p>
+                                                    </div>
+                                                </div>
+                                                <button 
+                                                    onClick={() => toast.success("Un asesor te contactará para detallar el plan de restauración.")}
+                                                    className="w-full py-3 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-[10px] font-black uppercase tracking-[0.2em] transition-all flex items-center justify-center gap-2 shadow-xl shadow-indigo-600/20"
+                                                >
+                                                    <Zap className="h-4 w-4 fill-current" />
+                                                    Cotizar Entrega "Al 100" con StarterKar
+                                                </button>
+                                            </div>
+                                        )}
                                         
                                         {/* Findings Summary (Intelligent Filter) */}
                                         <div className="pt-6 border-t border-zinc-800 space-y-4">
-                                            <p className="text-[10px] font-black uppercase tracking-widest text-zinc-500">Observaciones Técnicas Digeribles</p>
+                                            <p className="text-[10px] font-black uppercase tracking-widest text-zinc-500">Hoja de Ruta para el 100%</p>
                                             
                                             {car.performance_score === 100 ? (
                                                 <div className="flex items-center gap-3 p-4 bg-emerald-500/5 border border-emerald-500/20 rounded-2xl">
