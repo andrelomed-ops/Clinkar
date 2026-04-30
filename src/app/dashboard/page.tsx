@@ -3,7 +3,7 @@
 import { useState, useEffect, useMemo } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { ShieldCheck, CreditCard, Clock, CheckCircle2, QrCode, ArrowRight, MapPin, Wrench, Car, CarFront, Smartphone, Heart, LogOut, LayoutDashboard, Search, User, BarChart3, TrendingUp, Zap } from "lucide-react";
+import { ShieldCheck, CreditCard, Clock, CheckCircle2, QrCode, ArrowRight, MapPin, Wrench, Car, CarFront, Smartphone, Heart, LogOut, LayoutDashboard, Search, User, BarChart3, TrendingUp, Zap, Diamond, Crown } from "lucide-react";
 import { StarterKarLogo } from "@/components/ui/StarterKarLogo";
 import confetti from "canvas-confetti";
 import { toast } from "sonner";

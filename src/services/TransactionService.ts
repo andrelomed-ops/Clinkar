@@ -76,6 +76,10 @@ export class TransactionService extends BaseService {
             (data.gestoriaQuote?.cost || 0) + 
             (data.insuranceQuote?.cost || 0);
 
+        // Fetch emails for identification (Goal #2: Email-based tracking)
+        const { data: buyerProfile } = await supabase.from('profiles').select('email').eq('id', data.buyerId).single();
+        const { data: sellerProfile } = await supabase.from('profiles').select('email').eq('id', data.sellerId).single();
+
         // 4. Create Transaction
         const { data: transaction, error } = await (supabase
             .from('transactions') as any)
@@ -83,6 +87,8 @@ export class TransactionService extends BaseService {
                 car_id: data.carId,
                 buyer_id: data.buyerId,
                 seller_id: data.sellerId,
+                buyer_email: buyerProfile?.email || null,
+                seller_email: sellerProfile?.email || null,
                 car_price: data.amount,
                 total_amount: totalAmount,
                 status: 'PENDING'

@@ -705,6 +705,99 @@ export type Database = {
                     created_at?: string
                 }
             }
+            referral_links: {
+                Row: {
+                    id: string
+                    user_id: string
+                    code: string
+                    reward_amount: number | null
+                    created_at: string
+                }
+                Insert: {
+                    id?: string
+                    user_id: string
+                    code: string
+                    reward_amount?: number | null
+                    created_at?: string
+                }
+                Update: {
+                    id?: string
+                    user_id?: string
+                    code?: string
+                    reward_amount?: number | null
+                    created_at?: string
+                }
+            }
+            referrals: {
+                Row: {
+                    id: string
+                    referrer_id: string
+                    referred_user_id: string
+                    status: string | null
+                    reward_type: string | null
+                    transaction_id: string | null
+                    actual_reward: number | null
+                    created_at: string
+                    updated_at: string
+                }
+                Insert: {
+                    id?: string
+                    referrer_id: string
+                    referred_user_id: string
+                    status?: string | null
+                    reward_type?: string | null
+                    transaction_id?: string | null
+                    actual_reward?: number | null
+                    created_at?: string
+                    updated_at?: string
+                }
+                Update: {
+                    id?: string
+                    referrer_id?: string
+                    referred_user_id?: string
+                    status?: string | null
+                    reward_type?: string | null
+                    transaction_id?: string | null
+                    actual_reward?: number | null
+                    created_at?: string
+                    updated_at?: string
+                }
+            }
+            investor_profiles: {
+                Row: {
+                    user_id: string
+                    tier: string | null
+                    total_invested: number | null
+                    commission_rate: number | null
+                    active_operations: number | null
+                    preferred_categories: string[] | null
+                    legal_verified: boolean | null
+                    created_at: string
+                    updated_at: string
+                }
+                Insert: {
+                    user_id: string
+                    tier?: string | null
+                    total_invested?: number | null
+                    commission_rate?: number | null
+                    active_operations?: number | null
+                    preferred_categories?: string[] | null
+                    legal_verified?: boolean | null
+                    created_at?: string
+                    updated_at?: string
+                }
+                Update: {
+                    user_id?: string
+                    tier?: string | null
+                    total_invested?: number | null
+                    commission_rate?: number | null
+                    active_operations?: number | null
+                    preferred_categories?: string[] | null
+                    legal_verified?: boolean | null
+                    created_at?: string
+                    updated_at?: string
+                }
+            }
         }
         Views: {
             [_ in never]: never

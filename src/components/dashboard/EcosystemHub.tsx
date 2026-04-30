@@ -10,7 +10,9 @@ import {
     Zap,
     TrendingUp,
     ChevronRight,
-    Car
+    Car,
+    Diamond,
+    Crown
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 

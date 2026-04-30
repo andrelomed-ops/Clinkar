@@ -81,9 +81,14 @@ export class FavoriteService {
                 .eq('car_id', carId);
         } else {
             // Agregar
+            const { data: profile } = await supabase.from('profiles').select('email').eq('id', user.id).single();
             await supabase
                 .from('user_favorites')
-                .insert({ user_id: user.id, car_id: carId });
+                .insert({ 
+                    user_id: user.id, 
+                    user_email: profile?.email || null,
+                    car_id: carId 
+                });
         }
 
         // Devolver lista actualizada
@@ -111,8 +116,12 @@ export class FavoriteService {
     private static async syncFavoritesToDb(supabase: SupabaseClient, userId: string, carIds: string[]) {
         if (carIds.length === 0) return;
 
+        const { data: profile } = await supabase.from('profiles').select('email').eq('id', userId).single();
+        const userEmail = profile?.email || null;
+
         const payload = carIds.map(carId => ({
             user_id: userId,
+            user_email: userEmail,
             car_id: carId
         }));
 

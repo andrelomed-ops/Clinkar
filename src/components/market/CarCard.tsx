@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { Vehicle } from "@/data/cars";
-import { MapPin, Gauge, Fuel, Heart, TrendingDown, BadgeCheck } from "lucide-react";
+import { MapPin, Gauge, Fuel, Heart, TrendingDown, BadgeCheck, ShieldCheck, Zap } from "lucide-react";
 import { StarterKarSeal } from "./StarterKarSeal";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
@@ -94,6 +94,12 @@ export function CarCard({ car, isFavorite = false, onToggleFavorite }: CarCardPr
                         {car.interestedPeople && car.interestedPeople > 0 && (
                             <div className="px-2.5 py-1 bg-rose-500 text-white text-[10px] font-bold rounded-lg uppercase tracking-wide flex items-center gap-1 shadow-sm shadow-rose-500/30 whitespace-nowrap animate-pulse">
                                 🔥 {car.interestedPeople} {car.interestedPeople === 1 ? 'interesado' : 'interesados'}
+                            </div>
+                        )}
+                        {car.reconditioning_notes && car.reconditioning_notes.length > 0 && (
+                            <div className="px-2.5 py-1 bg-white dark:bg-zinc-900 text-emerald-600 dark:text-emerald-400 text-[10px] font-black rounded-lg uppercase tracking-widest flex items-center gap-1.5 shadow-xl border border-emerald-500/30 whitespace-nowrap">
+                                <ShieldCheck className="h-3.5 w-3.5" />
+                                Justicia & Certeza
                             </div>
                         )}
                     </div>

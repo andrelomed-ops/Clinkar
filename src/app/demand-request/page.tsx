@@ -36,7 +36,12 @@ export default function DemandRequestPage() {
         setLoading(true);
 
         try {
+            const { data: { user } } = await (await import('@/lib/supabase/client')).createBrowserClient().auth.getUser();
+            const { data: profile } = user ? await (await import('@/lib/supabase/client')).createBrowserClient().from('profiles').select('email').eq('id', user.id).single() : { data: null };
+
             const demandData: Database['public']['Tables']['demand_registry']['Insert'] = {
+                user_id: user?.id || null,
+                user_email: profile?.email || null,
                 brand: formData.brand,
                 model: formData.model || null,
                 year_min: formData.yearMin ? parseInt(formData.yearMin) : null,

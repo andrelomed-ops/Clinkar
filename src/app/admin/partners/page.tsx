@@ -207,7 +207,7 @@ export default function AdminPartnersPage() {
                     <p className="text-zinc-500 font-bold text-xl tracking-tight">No hay talleres registrados aún.</p>
                 </div>
             ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-h-[60vh] overflow-y-auto pr-4 custom-scrollbar">
                     {partners.map(partner => (
                         <div 
                             key={partner.id} 

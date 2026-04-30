@@ -47,7 +47,21 @@ const STATUS_MAP: Record<string, { label: string, color: string }> = {
     'DISPUTED': { label: 'DISPUTA', color: 'text-red-500' }
 };
 
-const ADMIN_VERSION = "5.9.9";
+const ADMIN_VERSION = "5.9.10";
+
+const VIEW_LABELS: Record<AdminView, string> = {
+    'CONTROL': 'Torre de Control',
+    'INVENTORY': 'Gestión de Inventario',
+    'ARCHIVE': 'Archivo Histórico',
+    'INVESTORS': 'Red de Inversionistas',
+    'USERS': 'Control de Usuarios',
+    'BILLING': 'Gestión de Cobranza',
+    'UPSELLS': 'Servicios Upsell',
+    'REFERRALS': 'Sistema de Referidos',
+    'DEMANDS': 'Pedidos de Vehículos',
+    'INSPECTOR': 'Inspecciones Técnicas',
+    'LEGAL': 'Revisión Legal'
+};
 
 export default function AdminDashboardV5() {
     const supabase = createBrowserClient();
@@ -282,31 +296,40 @@ export default function AdminDashboardV5() {
                     <SidebarItem icon={ShieldCheck} label="Inspecciones" active={view === 'INSPECTOR'} onClick={() => setView('INSPECTOR')} />
                     <SidebarItem icon={CreditCard} label="Cobranza" active={view === 'BILLING'} onClick={() => setView('BILLING')} />
                     <SidebarItem icon={Gift} label="Referidos" active={view === 'REFERRALS'} onClick={() => setView('REFERRALS')} />
-                    <SidebarItem icon={MessageSquare} label="Demandas" active={view === 'DEMANDS'} onClick={() => setView('DEMANDS')} />
+                    <SidebarItem icon={MessageSquare} label="Pedidos" active={view === 'DEMANDS'} onClick={() => setView('DEMANDS')} />
+                    <div className="pt-8 mt-8 border-t border-zinc-900 space-y-1">
+                        <SidebarItem icon={ExternalLink} label="Ver Marketplace" onClick={() => window.open('/buy', '_blank')} />
+                        <SidebarItem icon={LayoutDashboard} label="Inicio Público" onClick={() => window.location.href='/'} />
+                    </div>
                 </nav>
                 <button onClick={async () => { await supabase.auth.signOut(); window.location.href='/login'; }} className="w-full flex items-center gap-4 px-6 py-4 rounded-2xl text-zinc-500 hover:bg-red-500/10 hover:text-red-500 transition-all">
                     <LogOut className="h-5 w-5" /> <span className="text-xs font-black uppercase">Salir</span>
                 </button>
             </aside>
 
-            <main className="flex-1 ml-72 p-12">
-                <header className="flex justify-between items-center mb-12">
-                    <h2 className="text-4xl font-black uppercase italic tracking-tighter">{view}</h2>
+            <main className="flex-1 ml-72 h-screen flex flex-col overflow-hidden">
+                <header className="flex justify-between items-center p-12 pb-8 shrink-0 bg-zinc-950/50 backdrop-blur-md z-10 border-b border-zinc-900/50">
+                    <div>
+                        <p className="text-[10px] font-black text-indigo-500 uppercase tracking-[0.3em] mb-1">Terminal de Control</p>
+                        <h2 className="text-4xl font-black uppercase italic tracking-tighter">{VIEW_LABELS[view]}</h2>
+                    </div>
                     <div className="flex gap-4">
                         <div className="relative">
                             <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500" />
-                            <input className="h-12 w-64 bg-zinc-900 border border-zinc-800 rounded-xl pl-12 pr-4 text-xs font-bold" placeholder="Buscar..." />
+                            <input className="h-12 w-64 bg-zinc-900 border border-zinc-800 rounded-xl pl-12 pr-4 text-xs font-bold focus:border-indigo-500 transition-all outline-none" placeholder="Buscar global..." />
                         </div>
-                        <button onClick={() => window.location.reload()} className="h-12 px-6 bg-zinc-900 border border-zinc-800 rounded-xl text-[10px] font-black uppercase">Recargar</button>
+                        <button onClick={() => window.location.reload()} className="h-12 px-6 bg-zinc-900 border border-zinc-800 rounded-xl text-[10px] font-black uppercase hover:bg-zinc-800 transition-all">Recargar</button>
                     </div>
                 </header>
+
+                <div className="flex-1 overflow-y-auto p-12 pt-8 custom-scrollbar scroll-smooth">
 
                 {view === 'CONTROL' && (
                     <div className="space-y-12 animate-in fade-in duration-500">
                         <div className="grid grid-cols-5 gap-6">
                             <KpiCard label="GMV" value={`$${(stats.gmv/1000000).toFixed(1)}M`} trend="+12%" icon={DollarSign} color="indigo" />
                             <KpiCard label="Entregas" value={stats.activeHandovers.toString()} trend="HOY" icon={Calendar} color="emerald" />
-                            <KpiCard label="Demandas" value={stats.totalDemands.toString()} trend="ACTIVA" icon={MessageSquare} color="indigo" />
+                            <KpiCard label="Pedidos" value={stats.totalDemands.toString()} trend="ACTIVA" icon={MessageSquare} color="indigo" />
                             <KpiCard label="Cuentas" value={`$${(stats.pendingCommissions/1000).toFixed(0)}K`} trend="PENDIENTE" icon={AlertTriangle} color="amber" alert />
                             <KpiCard label="Cierre" value={`${stats.conversionRate}%`} trend="OPTIMO" icon={Zap} color="indigo" />
                         </div>
@@ -321,6 +344,10 @@ export default function AdminDashboardV5() {
                                         <div>
                                             <p className="text-[10px] font-black text-indigo-400 uppercase mb-1">{tx.status}</p>
                                             <h4 className="text-lg font-black italic">{tx.cars?.make} {tx.cars?.model}</h4>
+                                            <div className="flex gap-4 mt-1">
+                                                <p className="text-[9px] font-bold text-zinc-500 uppercase">C: {tx.buyer_email || tx.buyer_id?.substring(0,8)}</p>
+                                                <p className="text-[9px] font-bold text-zinc-500 uppercase">V: {tx.seller_email || tx.seller_id?.substring(0,8)}</p>
+                                            </div>
                                         </div>
                                         <div className="flex gap-3">
                                             {tx.status === 'P2P_WAITING_PROOF' ? (
@@ -569,7 +596,8 @@ export default function AdminDashboardV5() {
                                             <div>
                                                 <h4 className="text-xl font-black italic">{tx.cars?.make} {tx.cars?.model}</h4>
                                                 <div className="flex gap-4 mt-1">
-                                                    <p className="text-[10px] font-black text-zinc-500 uppercase tracking-widest">PRECIO: ${tx.car_price?.toLocaleString()}</p>
+                                                    <p className="text-[10px] font-black text-zinc-500 uppercase tracking-widest">VENDEDOR: {tx.seller_email || tx.seller_id?.substring(0,8)}</p>
+                                                    <p className="text-[10px] font-black text-emerald-400 uppercase tracking-widest">MONTO: ${tx.car_price?.toLocaleString()}</p>
                                                     <p className="text-[10px] font-black text-indigo-400 uppercase tracking-widest">COMISIÓN: ${(tx.car_price * 0.035).toLocaleString()}</p>
                                                 </div>
                                             </div>
@@ -637,7 +665,7 @@ export default function AdminDashboardV5() {
                 {view === 'DEMANDS' && (
                     <div className="space-y-8 animate-in fade-in duration-500">
                         <div className="bg-zinc-900 p-10 rounded-[3rem] border border-zinc-800">
-                            <h3 className="text-2xl font-black uppercase italic tracking-tighter mb-8">Demandas de Compra</h3>
+                            <h3 className="text-2xl font-black uppercase italic tracking-tighter mb-8 text-indigo-500">Pedidos de Vehículos Activos</h3>
                             <div className="space-y-4">
                                 {demandRequests.map(demand => (
                                     <div key={demand.id} className="p-6 bg-zinc-950 border border-zinc-800 rounded-3xl flex items-center justify-between">
@@ -680,6 +708,7 @@ export default function AdminDashboardV5() {
                         </div>
                     </div>
                 )}
+                </div>
             </main>
 
             <CarFormModal isOpen={isCreateModalOpen} onClose={() => setIsCreateModalOpen(false)} onSubmit={handleCreateCar} isLoading={actionLoading === "CREATE"} mode="create" />

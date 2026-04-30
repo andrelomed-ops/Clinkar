@@ -32,6 +32,13 @@ export interface Vehicle {
     success_fee_pending_amount?: number;
     financing_required?: boolean;
     has_starterkar_seal?: boolean; // Real backend status for 150-point inspection
+    
+    // Justicia y Certeza Fields
+    provenance?: string;
+    reconditioning_notes?: string[];
+    reconditioning_budget?: number;
+    fair_price_suggested?: number;
+    legal_notes?: string;
 
     sensory?: {
         engineSound: {

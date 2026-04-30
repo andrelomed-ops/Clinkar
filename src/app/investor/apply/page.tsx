@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { createBrowserClient } from "@/lib/supabase/client";
-import { ShieldCheck, ArrowRight, CreditCard, FileText, Smartphone, CheckCircle2, Loader2, Upload } from "lucide-react";
+import { ShieldCheck, ArrowRight, CreditCard, FileText, Smartphone, CheckCircle2, Loader2, Upload, Diamond, Crown, Zap } from "lucide-react";
 import { StarterKarLogo } from "@/components/ui/StarterKarLogo";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -26,7 +26,8 @@ const TIERS = [
     price: 8000,
     limit: "Hasta 12 autos",
     description: "Para perfiles que buscan una rotación constante de inventario certificado.",
-    color: "bg-amber-50 text-amber-700 border-amber-100"
+    color: "bg-amber-50 text-amber-700 border-amber-100",
+    icon: "Crown"
   },
   {
     id: "elite",
@@ -34,7 +35,8 @@ const TIERS = [
     price: 15000,
     limit: "Sin límite de compra",
     description: "Acceso total a la bóveda StarterKar con beneficios de volumen exclusivos.",
-    color: "bg-zinc-900 text-white border-zinc-800"
+    color: "bg-zinc-900 text-white border-zinc-800",
+    icon: "Diamond"
   }
 ];
 
@@ -136,7 +138,10 @@ export default function InvestorApplyPage() {
                       : "border-border hover:border-indigo-200"
                   )}
                 >
-                  <div className={cn("inline-flex px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest mb-4", tier.color)}>
+                  <div className={cn("inline-flex items-center gap-2 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest mb-4", tier.color)}>
+                    {tier.icon === 'Diamond' && <Diamond className="h-3 w-3" />}
+                    {tier.icon === 'Crown' && <Crown className="h-3 w-3" />}
+                    {tier.id === 'starter' && <Zap className="h-3 w-3" />}
                     {tier.name}
                   </div>
                   <div className="mb-6">
