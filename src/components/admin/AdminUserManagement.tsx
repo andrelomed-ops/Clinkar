@@ -37,88 +37,89 @@ export function AdminUserManagement({
                 </div>
             </div>
             
-            <div className="grid gap-4">
-                {users.map(u => (
-                    <div key={u.id} className="p-8 bg-zinc-900 border border-zinc-800 rounded-[2.5rem] flex flex-col lg:flex-row lg:items-center justify-between group hover:border-zinc-700 transition-all gap-6">
-                        <div className="flex items-center gap-6">
-                            <div className={cn(
-                                "h-16 w-16 rounded-2xl flex items-center justify-center border transition-all group-hover:scale-110",
-                                u.role === 'admin' ? "bg-indigo-600/10 border-indigo-500/20 text-indigo-500" :
-                                u.role === 'investor' ? "bg-amber-500/10 border-amber-500/20 text-amber-500" :
-                                u.role === 'inspector' ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-500" :
-                                "bg-zinc-950 border-zinc-800 text-zinc-500"
-                            )}>
-                                <Users className="h-8 w-8" />
-                            </div>
-                            <div>
-                                <h4 className="text-xl font-black italic tracking-tight uppercase">{u.full_name || 'Sin Nombre'}</h4>
-                                <p className="text-[11px] font-black text-indigo-400 uppercase tracking-widest mt-1">{u.email || u.id}</p>
-                                <div className="flex items-center gap-2 mt-2">
-                                    <span className="px-2 py-0.5 rounded bg-zinc-950 text-[9px] font-black text-zinc-500 border border-zinc-800 uppercase">{u.role}</span>
-                                    {u.role === 'investor' && (
-                                        <span className="px-2 py-0.5 rounded bg-amber-500/10 text-[9px] font-black text-amber-500 border border-amber-500/20 uppercase">TIER: {u.investor_tier || 'STARTER'}</span>
-                                    )}
+            <div className="max-h-[60vh] overflow-y-auto pr-4 custom-scrollbar">
+                <div className="grid gap-4">
+                    {users.map(u => (
+                        <div key={u.id} className="p-8 bg-zinc-900 border border-zinc-800 rounded-[2.5rem] flex flex-col lg:flex-row lg:items-center justify-between group hover:border-zinc-700 transition-all gap-6">
+                            <div className="flex items-center gap-6">
+                                <div className={cn(
+                                    "h-16 w-16 rounded-2xl flex items-center justify-center border transition-all group-hover:scale-110",
+                                    u.role === 'admin' ? "bg-indigo-600/10 border-indigo-500/20 text-indigo-500" :
+                                    u.role === 'investor' ? "bg-amber-500/10 border-amber-500/20 text-amber-500" :
+                                    u.role === 'inspector' ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-500" :
+                                    "bg-zinc-950 border-zinc-800 text-zinc-500"
+                                )}>
+                                    <Users className="h-8 w-8" />
+                                </div>
+                                <div>
+                                    <h4 className="text-xl font-black italic tracking-tight uppercase">{u.full_name || 'Sin Nombre'}</h4>
+                                    <p className="text-[11px] font-black text-indigo-400 uppercase tracking-widest mt-1">{u.email || u.id}</p>
+                                    <div className="flex items-center gap-2 mt-2">
+                                        <span className="px-2 py-0.5 rounded bg-zinc-950 text-[9px] font-black text-zinc-500 border border-zinc-800 uppercase">{u.role}</span>
+                                        {u.role === 'investor' && (
+                                            <span className="px-2 py-0.5 rounded bg-amber-500/10 text-[9px] font-black text-amber-500 border border-amber-500/20 uppercase">TIER: {u.investor_tier || 'STARTER'}</span>
+                                        )}
+                                    </div>
                                 </div>
                             </div>
-                        </div>
 
-                        <div className="flex items-center gap-3">
-                            <div className="flex bg-zinc-950 p-1.5 rounded-2xl border border-zinc-800 gap-1 overflow-x-auto">
+                            <div className="flex items-center gap-3">
+                                <div className="flex bg-zinc-950 p-1.5 rounded-2xl border border-zinc-800 gap-1 overflow-x-auto">
+                                    <button 
+                                        onClick={() => onUpdateRole(u.id, 'admin')} 
+                                        className={cn("h-10 px-4 text-[9px] font-black rounded-xl uppercase transition-all whitespace-nowrap", u.role === 'admin' ? "bg-indigo-600 text-white shadow-lg shadow-indigo-600/20" : "text-zinc-600 hover:text-zinc-300")}
+                                    >ADMIN</button>
+                                    <button 
+                                        onClick={() => onUpdateRole(u.id, 'inspector', null, u.location || 'CDMX')} 
+                                        className={cn("h-10 px-4 text-[9px] font-black rounded-xl uppercase transition-all whitespace-nowrap", u.role === 'inspector' ? "bg-emerald-600 text-white shadow-lg shadow-emerald-600/20" : "text-zinc-600 hover:text-zinc-300")}
+                                    >MECÁNICO</button>
+                                    <button 
+                                        onClick={() => onUpdateRole(u.id, 'buyer')} 
+                                        className={cn("h-10 px-4 text-[9px] font-black rounded-xl uppercase transition-all whitespace-nowrap", u.role === 'buyer' ? "bg-zinc-800 text-white" : "text-zinc-600 hover:text-zinc-300")}
+                                    >COMPRADOR</button>
+                                </div>
+
                                 <button 
-                                    onClick={() => onUpdateRole(u.id, 'admin')} 
-                                    className={cn("h-10 px-4 text-[9px] font-black rounded-xl uppercase transition-all whitespace-nowrap", u.role === 'admin' ? "bg-indigo-600 text-white shadow-lg shadow-indigo-600/20" : "text-zinc-600 hover:text-zinc-300")}
-                                >ADMIN</button>
+                                    onClick={() => {
+                                        const tier = window.prompt("Selecciona Tier: starter, pro, elite", u.investor_tier || "starter");
+                                        if (tier) onUpdateRole(u.id, 'investor', tier.toLowerCase());
+                                    }}
+                                    className={cn(
+                                        "h-12 px-6 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all active:scale-95 flex items-center gap-2",
+                                        u.role === 'investor' ? "bg-amber-500 text-black shadow-xl shadow-amber-500/20" : "bg-zinc-800 text-zinc-400 hover:bg-amber-500 hover:text-black"
+                                    )}
+                                >
+                                    <Zap className="h-4 w-4" />
+                                    INVERSIONISTA
+                                </button>
+
                                 <button 
-                                    onClick={() => onUpdateRole(u.id, 'inspector', null, u.location || 'CDMX')} 
-                                    className={cn("h-10 px-4 text-[9px] font-black rounded-xl uppercase transition-all whitespace-nowrap", u.role === 'inspector' ? "bg-emerald-600 text-white shadow-lg shadow-emerald-600/20" : "text-zinc-600 hover:text-zinc-300")}
-                                >MECÁNICO</button>
-                                <button 
-                                    onClick={() => onUpdateRole(u.id, 'buyer')} 
-                                    className={cn("h-10 px-4 text-[9px] font-black rounded-xl uppercase transition-all whitespace-nowrap", u.role === 'buyer' ? "bg-zinc-800 text-white" : "text-zinc-600 hover:text-zinc-300")}
-                                >COMPRADOR</button>
+                                    onClick={() => {
+                                        if (window.confirm("¿ELIMINAR USUARIO PERMANENTEMENTE? Esta acción borrará su perfil y acceso.")) {
+                                            toast.promise(
+                                                fetch('/api/admin/users/delete', {
+                                                    method: 'POST',
+                                                    body: JSON.stringify({ userId: u.id })
+                                                }).then(res => {
+                                                    if (!res.ok) throw new Error("Error al eliminar");
+                                                    return res.json();
+                                                }),
+                                                {
+                                                    loading: 'Eliminando usuario...',
+                                                    success: 'Usuario eliminado del sistema',
+                                                    error: 'Error al eliminar usuario'
+                                                }
+                                            );
+                                        }
+                                    }}
+                                    className="h-12 w-12 bg-red-950/20 border border-red-500/20 text-red-500 rounded-2xl flex items-center justify-center hover:bg-red-500 hover:text-white transition-all active:scale-95"
+                                >
+                                    <Trash2 className="h-5 w-5" />
+                                </button>
                             </div>
-
-                            <button 
-                                onClick={() => {
-                                    const tier = window.prompt("Selecciona Tier: starter, pro, elite", u.investor_tier || "starter");
-                                    if (tier) onUpdateRole(u.id, 'investor', tier.toLowerCase());
-                                }}
-                                className={cn(
-                                    "h-12 px-6 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all active:scale-95 flex items-center gap-2",
-                                    u.role === 'investor' ? "bg-amber-500 text-black shadow-xl shadow-amber-500/20" : "bg-zinc-800 text-zinc-400 hover:bg-amber-500 hover:text-black"
-                                )}
-                            >
-                                <Zap className="h-4 w-4" />
-                                INVERSIONISTA
-                            </button>
-
-                            <button 
-                                onClick={() => {
-                                    if (window.confirm("¿ELIMINAR USUARIO PERMANENTEMENTE? Esta acción borrará su perfil y acceso.")) {
-                                        // Since we don't have a direct deleteUserAction yet, we'll implement it
-                                        toast.promise(
-                                            fetch('/api/admin/users/delete', {
-                                                method: 'POST',
-                                                body: JSON.stringify({ userId: u.id })
-                                            }).then(res => {
-                                                if (!res.ok) throw new Error("Error al eliminar");
-                                                return res.json();
-                                            }),
-                                            {
-                                                loading: 'Eliminando usuario...',
-                                                success: 'Usuario eliminado del sistema',
-                                                error: 'Error al eliminar usuario'
-                                            }
-                                        );
-                                    }
-                                }}
-                                className="h-12 w-12 bg-red-950/20 border border-red-500/20 text-red-500 rounded-2xl flex items-center justify-center hover:bg-red-500 hover:text-white transition-all active:scale-95"
-                            >
-                                <Trash2 className="h-5 w-5" />
-                            </button>
                         </div>
-                    </div>
-                ))}
+                    ))}
+                </div>
             </div>
         </div>
     );
