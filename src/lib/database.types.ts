@@ -613,6 +613,7 @@ export type Database = {
                     location: string | null
                     rfc: string | null
                     cif_url: string | null
+                    email: string | null
                     investor_tier: string | null
                     coordinates: Json | null
                     created_at: string
@@ -627,6 +628,7 @@ export type Database = {
                     location?: string | null
                     rfc?: string | null
                     cif_url?: string | null
+                    email?: string | null
                     investor_tier?: string | null
                     coordinates?: Json | null
                     created_at?: string
@@ -641,6 +643,7 @@ export type Database = {
                     location?: string | null
                     rfc?: string | null
                     cif_url?: string | null
+                    email?: string | null
                     investor_tier?: string | null
                     coordinates?: Json | null
                     created_at?: string

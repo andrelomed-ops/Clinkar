@@ -12,3 +12,6 @@ COMMENT ON COLUMN public.transactions.commission_paid IS 'Indica si la comisión
 COMMENT ON COLUMN public.transactions.commission_amount IS 'Monto real cobrado por comisión';
 COMMENT ON COLUMN public.transactions.commission_payment_method IS 'Método de pago: SPEI, Efectivo, Tarjeta, etc.';
 COMMENT ON COLUMN public.transactions.commission_payment_date IS 'Fecha en que se registró el ingreso a tesorería';
+
+-- Notify PostgREST to reload schema
+NOTIFY pgrst, 'reload schema';

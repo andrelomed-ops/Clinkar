@@ -89,7 +89,7 @@ export async function searchUsersAction(query: string) {
     const { data, error } = await supabase
         .from("profiles")
         .select("*")
-        .or(`full_name.ilike.%${query}%,id.eq.${query}`)
+        .or(`full_name.ilike.%${query}%,email.ilike.%${query}%,id.eq.${query}`)
         .limit(20);
 
     if (error) {
