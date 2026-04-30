@@ -47,42 +47,42 @@ export default function SellPage() {
                         </div>
 
                         <h1 className="text-5xl md:text-8xl font-black tracking-tighter leading-[0.85] text-zinc-900 dark:text-white">
-                            Certifica. <br />
-                            <span className="text-indigo-600 dark:text-indigo-500 italic">Vende.</span> <br />
-                            Gana.
+                            Vende al <br />
+                            <span className="text-indigo-600 dark:text-indigo-500 italic">100% Real.</span>
                         </h1>
 
                         <p className="text-xl text-zinc-600 dark:text-zinc-400 max-w-lg leading-relaxed font-bold">
-                            No malbarates tu patrimonio. Recupera hasta el **95% del valor real** de tu auto mediante nuestra Certificación de 150 Puntos. 
+                            Tu auto vale el 100% de su precio de mercado. No permitas que la urgencia de otros devalúe tu patrimonio. 
                         </p>
 
+                        {/* Comparative Box: Net Return Focus */}
                         <div className="grid grid-cols-2 gap-4">
                             <div className="p-5 bg-zinc-100 dark:bg-zinc-900/40 rounded-2xl border border-zinc-200 dark:border-zinc-800">
                                 <p className="text-[10px] font-black text-zinc-400 uppercase tracking-widest mb-2">Agencias / Lotes</p>
-                                <p className="text-xl font-black text-red-500">70% Valor</p>
-                                <p className="text-[9px] text-zinc-500 mt-1 font-bold italic">Malbaratado por inmediatez.</p>
+                                <p className="text-xl font-black text-red-500">~70% Retorno</p>
+                                <p className="text-[9px] text-zinc-500 mt-1 font-bold italic">Castigo de precio por reventa inmediata.</p>
                             </div>
-                            <div className="p-5 bg-emerald-500/10 rounded-2xl border border-emerald-500/20">
-                                <p className="text-[10px] font-black text-emerald-600 dark:text-emerald-500 uppercase tracking-widest mb-2">StarterKar Elite</p>
-                                <p className="text-xl font-black text-emerald-500">95% Neto</p>
-                                <p className="text-[9px] text-emerald-600/70 mt-1 font-bold italic">Valor mercado menos comisión fija.</p>
+                            <div className="p-5 bg-indigo-600/10 rounded-2xl border border-indigo-600/20">
+                                <p className="text-[10px] font-black text-indigo-600 dark:text-indigo-500 uppercase tracking-widest mb-2">StarterKar Elite</p>
+                                <p className="text-xl font-black text-indigo-500">~96.5% Retorno</p>
+                                <p className="text-[9px] text-indigo-600/70 mt-1 font-bold italic">Vendes a precio real (solo 3.5% com).</p>
                             </div>
                         </div>
 
                         <div className="space-y-4 pt-4 border-t border-zinc-200 dark:border-zinc-800">
-                            <p className="text-xs font-black uppercase tracking-widest text-zinc-500 mb-4">Eficiencia Operativa:</p>
+                            <p className="text-xs font-black uppercase tracking-widest text-zinc-500 mb-4">Tu Experiencia Premium:</p>
                             <div className="flex items-center gap-4">
                                 <div className="h-10 w-10 bg-zinc-100 dark:bg-zinc-800 rounded-xl flex items-center justify-center">
-                                    <Banknote className="h-5 w-5 text-indigo-500" />
+                                    <ShieldCheck className="h-5 w-5 text-indigo-500" />
                                 </div>
                                 <div>
-                                    <p className="font-bold text-sm">Liquidación Directa</p>
-                                    <p className="text-[10px] text-zinc-500 font-medium italic">Sin intermediarios que inflen costos.</p>
+                                    <p className="font-bold text-sm">Acompañamiento Concierge</p>
+                                    <p className="text-[10px] text-zinc-500 font-medium italic">Asistencia personalizada en cada paso legal y técnico.</p>
                                 </div>
                             </div>
-                            <div className="p-4 bg-indigo-500/5 rounded-2xl border border-indigo-500/10">
-                                <p className="text-[9px] text-indigo-400 font-black uppercase tracking-widest leading-relaxed">
-                                    Nota: El soporte personalizado es exclusivo para folios con cita confirmada. No atendemos consultas informativas externas.
+                            <div className="p-4 bg-zinc-950/50 rounded-2xl border border-zinc-800/50">
+                                <p className="text-[9px] text-zinc-400 font-bold uppercase tracking-widest leading-relaxed">
+                                    💡 Tras agendar tu visita, recibirás acceso directo a tu Concierge vía WhatsApp para el seguimiento en tiempo real de tu proceso.
                                 </p>
                             </div>
                         </div>
