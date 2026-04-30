@@ -5,12 +5,21 @@ import { Printer, Download, ArrowLeft, ShieldCheck, CheckSquare, Car, FileText }
 import { CAR_INSPECTION_SECTIONS } from "@/lib/inspection-data";
 import Link from "next/link";
 
+import { useSearchParams } from "next/navigation";
+
 export default function PrintableChecklistPage() {
     const printRef = useRef<HTMLDivElement>(null);
+    const searchParams = useSearchParams();
+    const isCertificate = searchParams.get('mode') === 'certificate';
 
     const handlePrint = () => {
         window.print();
     };
+
+    // Filter sections based on mode
+    const displaySections = isCertificate 
+        ? CAR_INSPECTION_SECTIONS 
+        : CAR_INSPECTION_SECTIONS.filter(s => s.id !== 'legal');
 
     return (
         <div className="min-h-screen bg-zinc-50 dark:bg-zinc-950 pb-20">
@@ -21,11 +30,19 @@ export default function PrintableChecklistPage() {
                         <ArrowLeft className="h-5 w-5" />
                     </Link>
                     <div>
-                        <h1 className="text-sm font-black uppercase tracking-tight">Formato de Inspección 150 Puntos</h1>
-                        <p className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">Documento oficial para mecánicos certificados</p>
+                        <h1 className="text-sm font-black uppercase tracking-tight">
+                            {isCertificate ? 'Informe de Certificación 150 Puntos' : 'Hoja de Trabajo Técnica (Mecánico)'}
+                        </h1>
+                        <p className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">
+                            {isCertificate ? 'Documento de Certificación Final StarterKar' : 'Checklist de Verificación en Taller'}
+                        </p>
                     </div>
                 </div>
                 <div className="flex items-center gap-3">
+                    <div className="flex bg-zinc-100 dark:bg-zinc-800 p-1 rounded-xl mr-4">
+                        <Link href="/admin/print/checklist" className={cn("px-4 py-2 rounded-lg text-[9px] font-black uppercase", !isCertificate ? "bg-white dark:bg-zinc-700 shadow-sm" : "text-zinc-500")}>TÉCNICO</Link>
+                        <Link href="/admin/print/checklist?mode=certificate" className={cn("px-4 py-2 rounded-lg text-[9px] font-black uppercase", isCertificate ? "bg-white dark:bg-zinc-700 shadow-sm" : "text-zinc-500")}>CERTIFICADO</Link>
+                    </div>
                     <button 
                         onClick={handlePrint}
                         className="h-11 px-6 bg-indigo-600 text-white rounded-xl font-black text-xs uppercase tracking-widest flex items-center gap-2 shadow-xl shadow-indigo-600/20 hover:scale-105 active:scale-95 transition-all"
@@ -50,8 +67,12 @@ export default function PrintableChecklistPage() {
                         <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-zinc-500">Certeza & Confianza Automotriz</p>
                     </div>
                     <div className="text-right">
-                        <h2 className="text-xl font-black uppercase italic tracking-tight">Checklist de Certificación</h2>
-                        <p className="text-[10px] font-black bg-zinc-900 text-white px-3 py-1 rounded mt-2 inline-block">ESTÁNDAR 150 PUNTOS</p>
+                        <h2 className="text-xl font-black uppercase italic tracking-tight">
+                            {isCertificate ? 'Certificado de Certeza' : 'Hoja de Inspección'}
+                        </h2>
+                        <p className="text-[10px] font-black bg-zinc-900 text-white px-3 py-1 rounded mt-2 inline-block uppercase tracking-widest">
+                            {isCertificate ? 'Estándar 150 Puntos' : '120 Puntos Técnicos'}
+                        </p>
                     </div>
                 </div>
 
@@ -62,7 +83,7 @@ export default function PrintableChecklistPage() {
                         <p className="border-b border-zinc-100 pb-1 mt-2">____ / ____ / 202__</p>
                     </div>
                     <div className="p-4 border border-zinc-200 rounded-lg">
-                        <p className="text-zinc-400 mb-1">Inspector Asignado</p>
+                        <p className="text-zinc-400 mb-1">Responsable</p>
                         <p className="border-b border-zinc-100 pb-1 mt-2">____________________</p>
                     </div>
                     <div className="p-4 border border-zinc-200 rounded-lg">
@@ -72,7 +93,7 @@ export default function PrintableChecklistPage() {
                 </div>
 
                 {/* Vehicle Specs Area */}
-                <div className="bg-zinc-50 p-6 rounded-2xl mb-10 border border-zinc-100 grid grid-cols-2 gap-x-12 gap-y-4 text-[10px] font-bold">
+                <div className="bg-zinc-50 p-6 rounded-2xl mb-10 border border-zinc-100 grid grid-cols-2 gap-x-12 gap-y-4 text-[10px] font-bold relative">
                     <div className="flex justify-between border-b border-zinc-200 pb-1">
                         <span className="text-zinc-400">MARCA / MODELO:</span>
                         <span className="text-zinc-300">________________________</span>
@@ -89,11 +110,18 @@ export default function PrintableChecklistPage() {
                         <span className="text-zinc-400">KILOMETRAJE:</span>
                         <span className="text-zinc-300">____________</span>
                     </div>
+
+                    {isCertificate && (
+                        <div className="absolute top-1/2 -translate-y-1/2 right-12 text-center bg-white p-4 rounded-3xl border-2 border-zinc-900 shadow-xl">
+                            <p className="text-[8px] font-black uppercase text-zinc-400 tracking-widest">Score Final</p>
+                            <p className="text-4xl font-black italic tracking-tighter mt-1">___<span className="text-xs ml-1">/100</span></p>
+                        </div>
+                    )}
                 </div>
 
                 {/* The 150 Points - Split by Sections */}
                 <div className="space-y-12">
-                    {CAR_INSPECTION_SECTIONS.map((section, sIdx) => (
+                    {displaySections.map((section, sIdx) => (
                         <div key={section.id} className="break-inside-avoid">
                             <div className="flex items-center gap-3 mb-4 border-l-4 border-indigo-600 pl-4">
                                 <span className="text-lg font-black italic uppercase tracking-tighter">{sIdx + 1}. {section.label}</span>
@@ -114,31 +142,29 @@ export default function PrintableChecklistPage() {
 
                 {/* Signatures and Verdict */}
                 <div className="mt-20 border-t-2 border-zinc-900 pt-10 break-inside-avoid">
-                    <div className="flex items-center justify-between mb-12">
-                        <div className="text-center w-64">
+                    <div className="flex items-center justify-between mb-12 gap-8">
+                        <div className="text-center flex-1">
                             <div className="h-20 border-b border-zinc-300 mb-2" />
-                            <p className="text-[10px] font-black uppercase">Firma del Inspector</p>
-                            <p className="text-[8px] text-zinc-400 mt-1 font-bold">Certificación StarterKar</p>
+                            <p className="text-[10px] font-black uppercase">{isCertificate ? 'Firma Administración' : 'Firma Mecánico'}</p>
+                            <p className="text-[8px] text-zinc-400 mt-1 font-bold">Validación Oficial</p>
                         </div>
                         
-                        <div className="flex flex-col items-center gap-4">
-                            <p className="text-[10px] font-black uppercase tracking-widest">DICTAMEN FINAL</p>
-                            <div className="flex gap-4">
-                                <div className="flex items-center gap-2 border-2 border-zinc-900 px-4 py-2 rounded-xl">
-                                    <div className="h-4 w-4 border-2 border-zinc-900 rounded-sm" />
-                                    <span className="text-xs font-black italic uppercase">APROBADO</span>
-                                </div>
-                                <div className="flex items-center gap-2 border-2 border-zinc-300 px-4 py-2 rounded-xl text-zinc-300">
-                                    <div className="h-4 w-4 border-2 border-zinc-300 rounded-sm" />
-                                    <span className="text-xs font-black italic uppercase">RECHAZADO</span>
+                        {isCertificate && (
+                            <div className="flex flex-col items-center gap-4 flex-1">
+                                <p className="text-[10px] font-black uppercase tracking-widest">CERTIFICACIÓN</p>
+                                <div className="flex gap-4">
+                                    <div className="flex items-center gap-2 border-2 border-zinc-900 px-4 py-2 rounded-xl">
+                                        <div className="h-4 w-4 border-2 border-zinc-900 rounded-sm" />
+                                        <span className="text-xs font-black italic uppercase">APROBADO</span>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
+                        )}
 
-                        <div className="text-center w-64">
+                        <div className="text-center flex-1">
                             <div className="h-20 border-b border-zinc-300 mb-2" />
-                            <p className="text-[10px] font-black uppercase">Sello de Taller / Agencia</p>
-                            <p className="text-[8px] text-zinc-400 mt-1 font-bold">Validación Física</p>
+                            <p className="text-[10px] font-black uppercase">{isCertificate ? 'Sello Certeza SK' : 'Sello de Taller'}</p>
+                            <p className="text-[8px] text-zinc-400 mt-1 font-bold">Respaldo StarterKar</p>
                         </div>
                     </div>
 
@@ -147,7 +173,7 @@ export default function PrintableChecklistPage() {
                             <ShieldCheck className="h-6 w-6 text-indigo-400" />
                             <div>
                                 <p className="text-[10px] font-black uppercase italic tracking-tighter">Garantía de Certeza StarterKar</p>
-                                <p className="text-[8px] font-medium text-zinc-400">Este documento es una declaración jurada de la condición mecánica del vehículo.</p>
+                                <p className="text-[8px] font-medium text-zinc-400">Este documento es una declaración jurada de la condición del vehículo.</p>
                             </div>
                         </div>
                         <div className="text-right">

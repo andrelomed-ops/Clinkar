@@ -36,7 +36,7 @@ import { AdminBillingView } from "@/components/admin/AdminBillingView";
 
 type AdminView = 'CONTROL' | 'INVENTORY' | 'ARCHIVE' | 'INVESTORS' | 'USERS' | 'BILLING' | 'UPSELLS' | 'REFERRALS' | 'DEMANDS' | 'INSPECTOR' | 'LEGAL';
 
-const ADMIN_VERSION = "6.0.2";
+const ADMIN_VERSION = "6.0.4";
 
 const VIEW_LABELS: Record<AdminView, string> = {
     'CONTROL': 'Torre de Control',
@@ -455,7 +455,11 @@ export default function AdminDashboardV6() {
                 <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-black/80 backdrop-blur-sm">
                     <div className="w-full max-w-4xl relative">
                         <button onClick={() => setSelectedCarForReport(null)} className="absolute -top-12 right-0 text-white/50 hover:text-white uppercase text-[10px] font-black tracking-widest flex items-center gap-2"><XCircle className="h-5 w-5" /> CERRAR</button>
-                        <TechnicalInspectionForm carId={selectedCarForReport} onSave={() => { setSelectedCarForReport(null); loadData(); }} />
+                        <TechnicalInspectionForm 
+                            carId={selectedCarForReport} 
+                            userRole={currentUser?.role}
+                            onSave={() => { setSelectedCarForReport(null); loadData(); }} 
+                        />
                     </div>
                 </div>
             )}

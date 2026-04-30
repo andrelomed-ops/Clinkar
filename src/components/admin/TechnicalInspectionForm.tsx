@@ -20,13 +20,47 @@ import { CAR_INSPECTION_SECTIONS } from "@/lib/inspection-data";
 import { toast } from "sonner";
 import { updateCarAction } from "@/app/actions/cars";
 
-export function TechnicalInspectionForm({ carId, onSave }: { carId: string, onSave: (data: any) => void }) {
+export function TechnicalInspectionForm({ carId, userRole = 'admin', onSave }: { carId: string, userRole?: string, onSave: (data: any) => void }) {
     const [activeSection, setActiveSection] = useState<string | null>("motor");
     const [results, setResults] = useState<Record<string, 'PASS' | 'FAIL' | 'NA'>>({});
     const [isPhotoMode, setIsPhotoMode] = useState(false);
     const [photoUrl, setPhotoUrl] = useState<string | null>(null);
     const [reconditioningBudget, setReconditioningBudget] = useState<number>(0);
     const [integrityNotes, setIntegrityNotes] = useState<string>("");
+
+    // Filter sections based on role
+    // Mechanics (inspectors) only see categories 1-4. Admins see all 5.
+    const visibleSections = userRole === 'admin' 
+        ? CAR_INSPECTION_SECTIONS 
+        : CAR_INSPECTION_SECTIONS.filter(s => s.id !== 'legal');
+
+    const calculateScore = () => {
+        let totalWeightedPoints = 0;
+        let earnedWeightedPoints = 0;
+
+        CAR_INSPECTION_SECTIONS.forEach(section => {
+            // Weights: Motor(20), Trans(20), Susp(15), Carrocería(10), Legal(35)
+            let weight = 0.66; // default
+            if (section.id === 'motor') weight = 20 / 30;
+            if (section.id === 'transmision') weight = 20 / 30;
+            if (section.id === 'suspension') weight = 15 / 30;
+            if (section.id === 'carroceria') weight = 10 / 30;
+            if (section.id === 'legal') weight = 35 / 30;
+
+            section.items.forEach(item => {
+                totalWeightedPoints += weight;
+                if (results[item.id] === 'PASS') {
+                    earnedWeightedPoints += weight;
+                } else if (results[item.id] === 'NA') {
+                    totalWeightedPoints -= weight; // Don't penalize N/A
+                }
+            });
+        });
+
+        return totalWeightedPoints > 0 ? Math.round((earnedWeightedPoints / totalWeightedPoints) * 100) : 0;
+    };
+
+    const finalScore = calculateScore();
 
     const handleCheck = (itemId: string, status: 'PASS' | 'FAIL' | 'NA') => {
         setResults(prev => ({ ...prev, [itemId]: status }));
@@ -44,11 +78,12 @@ export function TechnicalInspectionForm({ carId, onSave }: { carId: string, onSa
             await updateCarAction(carId, {
                 reconditioning_budget: reconditioningBudget,
                 reconditioning_notes: [{ note: integrityNotes, date: new Date().toISOString() }],
-                digital_passport_data: results
+                digital_passport_data: results,
+                performance_score: finalScore // This is the 0-100 score
             });
 
-            onSave({ results, photoUrl, isPhotoMode, reconditioningBudget, integrityNotes });
-            toast.success("Reporte de Justicia y Certeza Guardado", { id: loadingId });
+            onSave({ results, photoUrl, isPhotoMode, reconditioningBudget, integrityNotes, finalScore });
+            toast.success(`Reporte Guardado - Score: ${finalScore}/100`, { id: loadingId });
         } catch (error) {
             toast.error("Error al guardar el reporte técnico", { id: loadingId });
         }
@@ -60,27 +95,42 @@ export function TechnicalInspectionForm({ carId, onSave }: { carId: string, onSa
             <div className="p-8 border-b border-zinc-800 bg-zinc-900/30 flex items-center justify-between">
                 <div>
                     <h3 className="text-xl font-black uppercase italic tracking-tighter text-white">Inspección de 150 Puntos</h3>
-                    <p className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest mt-1">Unidad ID: {carId.slice(0,8)}</p>
+                    <p className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest mt-1">
+                        Unidad ID: {carId.slice(0,8)} | MODO: {userRole === 'admin' ? 'CERTIFICACIÓN' : 'TÉCNICO'}
+                    </p>
                 </div>
-                <div className="flex bg-black p-1 rounded-xl border border-zinc-800">
-                    <button 
-                        onClick={() => setIsPhotoMode(false)}
-                        className={cn(
-                            "px-4 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all",
-                            !isPhotoMode ? "bg-indigo-600 text-white shadow-lg" : "text-zinc-500 hover:text-zinc-300"
-                        )}
-                    >
-                        Digital
-                    </button>
-                    <button 
-                        onClick={() => setIsPhotoMode(true)}
-                        className={cn(
-                            "px-4 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all",
-                            isPhotoMode ? "bg-indigo-600 text-white shadow-lg" : "text-zinc-500 hover:text-zinc-300"
-                        )}
-                    >
-                        Foto Reporte
-                    </button>
+                
+                <div className="flex items-center gap-6">
+                    {userRole === 'admin' && (
+                        <div className="text-right pr-6 border-r border-zinc-800">
+                            <p className="text-[9px] font-black text-zinc-500 uppercase tracking-widest">Score Actual</p>
+                            <p className={cn(
+                                "text-2xl font-black italic",
+                                finalScore >= 90 ? "text-emerald-500" : finalScore >= 70 ? "text-amber-500" : "text-red-500"
+                            )}>{finalScore}<span className="text-xs ml-1">/100</span></p>
+                        </div>
+                    )}
+
+                    <div className="flex bg-black p-1 rounded-xl border border-zinc-800">
+                        <button 
+                            onClick={() => setIsPhotoMode(false)}
+                            className={cn(
+                                "px-4 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all",
+                                !isPhotoMode ? "bg-indigo-600 text-white shadow-lg" : "text-zinc-500 hover:text-zinc-300"
+                            )}
+                        >
+                            Digital
+                        </button>
+                        <button 
+                            onClick={() => setIsPhotoMode(true)}
+                            className={cn(
+                                "px-4 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all",
+                                isPhotoMode ? "bg-indigo-600 text-white shadow-lg" : "text-zinc-500 hover:text-zinc-300"
+                            )}
+                        >
+                            Foto
+                        </button>
+                    </div>
                 </div>
             </div>
 
@@ -91,8 +141,12 @@ export function TechnicalInspectionForm({ carId, onSave }: { carId: string, onSa
                             <Camera className="h-12 w-12 text-indigo-500" />
                         </div>
                         <div className="text-center max-w-sm">
-                            <h4 className="text-lg font-black text-white uppercase italic">Modo Híbrido Activo</h4>
-                            <p className="text-xs text-zinc-500 mt-2">Sube una fotografía clara de tu reporte físico. La administración de StarterKar se encargará de la digitalización.</p>
+                            <h4 className="text-lg font-black text-white uppercase italic">Subir Reporte Físico</h4>
+                            <p className="text-xs text-zinc-500 mt-2">
+                                {userRole === 'admin' 
+                                    ? 'Sube la foto enviada por el mecánico para digitalizar sus resultados.'
+                                    : 'Si no puedes llenar el formato digital, sube una foto de tu reporte en papel.'}
+                            </p>
                         </div>
                         <button className="h-14 px-10 bg-zinc-900 border border-zinc-800 text-white text-xs font-black rounded-2xl hover:bg-zinc-800 transition-all flex items-center gap-3">
                             <Upload className="h-4 w-4" /> SELECCIONAR IMAGEN
@@ -100,7 +154,7 @@ export function TechnicalInspectionForm({ carId, onSave }: { carId: string, onSa
                     </div>
                     ) : (
                     <div className="space-y-8">
-                        {/* SECCIÓN DE REALIDAD: ¿Qué le falta al auto? */}
+                        {/* SECCIÓN DE REALIDAD: Solo para el mecánico o admin llenando lo técnico */}
                         <div className="bg-zinc-900/50 border border-zinc-800 rounded-[2rem] p-8 space-y-6">
                             <div className="flex items-center gap-4">
                                 <div className="h-12 w-12 bg-indigo-500/10 rounded-2xl flex items-center justify-center border border-indigo-500/20">
@@ -108,13 +162,13 @@ export function TechnicalInspectionForm({ carId, onSave }: { carId: string, onSa
                                 </div>
                                 <div>
                                     <h3 className="text-lg font-black uppercase italic tracking-tight text-white">Reporte de Realidad y Mejora</h3>
-                                    <p className="text-xs text-zinc-500 font-medium">Detalla honestamente qué le falta a la unidad para estar al 100%.</p>
+                                    <p className="text-xs text-zinc-500 font-medium">Estado físico y presupuesto estimado de puesta a punto.</p>
                                 </div>
                             </div>
 
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div className="space-y-3">
-                                    <label className="text-[10px] font-black uppercase tracking-widest text-zinc-500 px-1">Presupuesto de Puesta a Punto (MXN)</label>
+                                    <label className="text-[10px] font-black uppercase tracking-widest text-zinc-500 px-1">Presupuesto Estimado (MXN)</label>
                                     <div className="relative">
                                         <span className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-500 font-bold">$</span>
                                         <input 
@@ -127,12 +181,12 @@ export function TechnicalInspectionForm({ carId, onSave }: { carId: string, onSa
                                     </div>
                                 </div>
                                 <div className="space-y-3">
-                                    <label className="text-[10px] font-black uppercase tracking-widest text-zinc-500 px-1">Notas de Integridad / Diagnóstico</label>
+                                    <label className="text-[10px] font-black uppercase tracking-widest text-zinc-500 px-1">Diagnóstico General</label>
                                     <textarea 
                                         value={integrityNotes}
                                         onChange={(e) => setIntegrityNotes(e.target.value)}
                                         className="w-full h-32 bg-zinc-950 border border-zinc-800 rounded-2xl p-4 text-xs font-bold text-white focus:border-indigo-500/50 outline-none transition-all resize-none"
-                                        placeholder="Ej. Requiere cambio de balatas delanteras y rectificado de discos..."
+                                        placeholder="Detalles sobre el estado actual de la unidad..."
                                     />
                                 </div>
                             </div>
@@ -140,21 +194,29 @@ export function TechnicalInspectionForm({ carId, onSave }: { carId: string, onSa
 
                         <div className="flex items-center gap-4 py-4">
                             <div className="h-px flex-1 bg-zinc-800" />
-                            <span className="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-600">Checklist de 150 Puntos</span>
+                            <span className="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-600">Puntos de Verificación</span>
                             <div className="h-px flex-1 bg-zinc-800" />
                         </div>
 
-                        {CAR_INSPECTION_SECTIONS.map(section => (
-                            <div key={section.id} className="border border-zinc-800 rounded-3xl overflow-hidden bg-zinc-900/20">
+                        {visibleSections.map(section => (
+                            <div key={section.id} className={cn(
+                                "border rounded-3xl overflow-hidden transition-all",
+                                section.id === 'legal' ? "border-amber-500/30 bg-amber-500/5" : "border-zinc-800 bg-zinc-900/20"
+                            )}>
                                 <button 
                                     onClick={() => setActiveSection(activeSection === section.id ? null : section.id)}
                                     className="w-full p-6 flex items-center justify-between hover:bg-zinc-900/40 transition-colors"
                                 >
                                     <div className="flex items-center gap-4">
                                         <div className="h-10 w-10 bg-zinc-950 rounded-xl flex items-center justify-center border border-zinc-800">
-                                            <span className="text-[10px] font-black text-indigo-500">{section.items.length}</span>
+                                            <span className={cn("text-[10px] font-black", section.id === 'legal' ? "text-amber-500" : "text-indigo-500")}>
+                                                {section.items.length}
+                                            </span>
                                         </div>
-                                        <h4 className="text-sm font-black uppercase tracking-widest text-white">{section.label}</h4>
+                                        <h4 className="text-sm font-black uppercase tracking-widest text-white">
+                                            {section.label}
+                                            {section.id === 'legal' && <span className="ml-3 text-[8px] bg-amber-500 text-black px-2 py-0.5 rounded-full">ADMIN EXCLUSIVO</span>}
+                                        </h4>
                                     </div>
                                     {activeSection === section.id ? <ChevronUp className="h-5 w-5 text-zinc-600" /> : <ChevronDown className="h-5 w-5 text-zinc-600" />}
                                 </button>
@@ -206,16 +268,17 @@ export function TechnicalInspectionForm({ carId, onSave }: { carId: string, onSa
             {/* Footer Actions */}
             <div className="p-8 border-t border-zinc-800 bg-zinc-900/30 flex items-center justify-between">
                 <div className="flex items-center gap-4 text-zinc-500">
-                    <AlertCircle className="h-4 w-4" />
+                    <ClipboardList className="h-4 w-4" />
                     <span className="text-[10px] font-black uppercase tracking-widest">
-                        {Object.keys(results).length} de 150 puntos verificados
+                        {Object.keys(results).length} de 150 puntos | {userRole === 'admin' ? 'Certificación Final' : 'Reporte Técnico'}
                     </span>
                 </div>
                 <button 
                     onClick={handleSave}
                     className="h-14 px-10 bg-white text-black text-xs font-black rounded-2xl hover:bg-zinc-200 transition-all uppercase tracking-widest shadow-xl flex items-center gap-3"
                 >
-                    <Save className="h-4 w-4" /> FINALIZAR REPORTE
+                    <Save className="h-4 w-4" /> 
+                    {userRole === 'admin' ? 'CERTIFICAR UNIDAD' : 'ENVIAR REVISIÓN'}
                 </button>
             </div>
         </div>
