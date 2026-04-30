@@ -41,48 +41,54 @@ export default function SellPage() {
 
                     {/* Left: Manifesto & Value Prop */}
                     <div className="space-y-8">
-                        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-indigo-200 dark:border-indigo-900 bg-indigo-50 dark:bg-indigo-900/20">
-                            <Zap className="h-4 w-4 text-indigo-600 dark:text-indigo-400 fill-current" />
-                            <span className="text-xs font-bold text-indigo-700 dark:text-indigo-300 uppercase tracking-wider">Acompañamiento 360°</span>
+                        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-emerald-200 dark:border-emerald-900 bg-emerald-50 dark:bg-emerald-900/20">
+                            <ShieldCheck className="h-4 w-4 text-emerald-600 dark:text-emerald-400 fill-current" />
+                            <span className="text-xs font-black text-emerald-700 dark:text-emerald-300 uppercase tracking-[0.2em]">Operación Blindada 2026</span>
                         </div>
 
-                        <h1 className="text-5xl md:text-7xl font-black tracking-tighter leading-[0.95] text-zinc-900 dark:text-white">
-                            Tu Auto <br />
-                            <span className="text-zinc-400 dark:text-zinc-600 italic">Tiene Valor.</span>
+                        <h1 className="text-5xl md:text-8xl font-black tracking-tighter leading-[0.85] text-zinc-900 dark:text-white">
+                            Certifica. <br />
+                            <span className="text-indigo-600 dark:text-indigo-500 italic">Vende.</span> <br />
+                            Gana.
                         </h1>
 
-                        <p className="text-xl text-zinc-600 dark:text-zinc-400 max-w-lg leading-relaxed font-medium">
-                            En StarterKar creemos que cada vehículo tiene su dueño ideal. **Aceptamos cualquier tipo de factura y condición.** Desde unidades de agencia hasta proyectos por recuperar; nosotros nos encargamos de la magia.
+                        <p className="text-xl text-zinc-600 dark:text-zinc-400 max-w-lg leading-relaxed font-bold">
+                            No malbarates tu patrimonio. Recupera hasta el **95% del valor real** de tu auto mediante nuestra Certificación de 150 Puntos. 
                         </p>
 
-                        <div className="p-6 bg-zinc-100 dark:bg-zinc-900/50 rounded-3xl border border-zinc-200 dark:border-zinc-800 space-y-4">
-                            <p className="text-sm text-zinc-500 dark:text-zinc-400 leading-relaxed italic">
-                                "Nuestra misión es proteger tu patrimonio. La validación mecánica y legal no es un gasto, es el seguro para vender al **precio justo** sin regalar tu auto a una agencia ni arriesgarte en la calle."
-                            </p>
-                            <div className="flex items-center gap-4 pt-2">
-                                <div className="flex -space-x-2">
-                                    {[1,2,3].map(i => (
-                                        <div key={i} className="h-8 w-8 rounded-full border-2 border-white dark:border-zinc-900 bg-zinc-200 dark:bg-zinc-800 overflow-hidden">
-                                            <img src={`https://i.pravatar.cc/100?img=${i+10}`} alt="user" />
-                                        </div>
-                                    ))}
-                                </div>
-                                <span className="text-[10px] font-black uppercase tracking-widest text-zinc-400">+1,200 Vendedores Protegidos</span>
+                        {/* Comparative Box: Why us? */}
+                        <div className="grid grid-cols-2 gap-4">
+                            <div className="p-5 bg-zinc-100 dark:bg-zinc-900/40 rounded-2xl border border-zinc-200 dark:border-zinc-800">
+                                <p className="text-[10px] font-black text-zinc-400 uppercase tracking-widest mb-2">Agencias / Lotes</p>
+                                <p className="text-xl font-black text-red-500">70% Valor</p>
+                                <p className="text-[9px] text-zinc-500 mt-1 font-bold italic">Malbaratado y sin asesoría.</p>
+                            </div>
+                            <div className="p-5 bg-emerald-500/10 rounded-2xl border border-emerald-500/20">
+                                <p className="text-[10px] font-black text-emerald-600 dark:text-emerald-500 uppercase tracking-widest mb-2">StarterKar Elite</p>
+                                <p className="text-xl font-black text-emerald-500">95% Valor</p>
+                                <p className="text-[9px] text-emerald-600/70 mt-1 font-bold italic">Precio justo y Blindaje Legal.</p>
                             </div>
                         </div>
 
-                        <div className="space-y-4 pt-4">
-                            <div className="flex items-center gap-3">
-                                <CheckCircle2 className="h-5 w-5 text-emerald-500" />
-                                <span className="font-bold text-lg">Cualquier Factura es Bienvenida</span>
+                        <div className="space-y-4 pt-4 border-t border-zinc-200 dark:border-zinc-800">
+                            <p className="text-xs font-black uppercase tracking-widest text-zinc-500 mb-4">Nuestro Blindaje para ti:</p>
+                            <div className="flex items-center gap-4">
+                                <div className="h-10 w-10 bg-zinc-100 dark:bg-zinc-800 rounded-xl flex items-center justify-center">
+                                    <Banknote className="h-5 w-5 text-indigo-500" />
+                                </div>
+                                <div>
+                                    <p className="font-bold text-sm">Cero Efectivo, Cero Riesgos</p>
+                                    <p className="text-[10px] text-zinc-500 font-medium italic">Dinero en Bóveda antes de entregar llaves.</p>
+                                </div>
                             </div>
-                            <div className="flex items-center gap-3">
-                                <CheckCircle2 className="h-5 w-5 text-emerald-500" />
-                                <span className="font-bold text-lg">Justicia Mecánica y Legal</span>
-                            </div>
-                            <div className="flex items-center gap-3">
-                                <CheckCircle2 className="h-5 w-5 text-emerald-500" />
-                                <span className="font-bold text-lg">Venta Directa sin Malbaratar</span>
+                            <div className="flex items-center gap-4">
+                                <div className="h-10 w-10 bg-zinc-100 dark:bg-zinc-800 rounded-xl flex items-center justify-center">
+                                    <ShieldCheck className="h-5 w-5 text-indigo-500" />
+                                </div>
+                                <div>
+                                    <p className="font-bold text-sm">Concierge Legal Integral</p>
+                                    <p className="text-[10px] text-zinc-500 font-medium italic">Validamos REPUVE, Infracciones y Tenencias por ti.</p>
+                                </div>
                             </div>
                         </div>
                     </div>
