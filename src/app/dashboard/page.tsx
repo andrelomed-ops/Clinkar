@@ -188,19 +188,22 @@ export default function DashboardPage() {
                                     size="xl" 
                                 />
                                 <div>
-                                    <h1 className="text-4xl font-black italic uppercase leading-none text-red-600">RECARGA FORZADA V5.0.5</h1>
+                                    <h1 className="text-4xl font-black italic uppercase leading-none tracking-tighter">
+                                        {userProfile?.full_name || 'Mi Garage'}
+                                    </h1>
                                     {isAdmin ? (
                                         <div className="inline-flex items-center gap-2 mt-2 px-3 py-1 bg-zinc-900 text-white rounded-lg text-[10px] font-black uppercase tracking-widest border border-zinc-800 shadow-xl shadow-black/20">
                                             🛡️ Administrador Maestro
                                         </div>
                                     ) : userProfile?.role?.toLowerCase() === 'investor' && (
                                         <div className={cn(
-                                            "inline-flex items-center gap-2 mt-2 px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-widest border",
-                                            userProfile?.investor_tier === 'elite' ? "bg-indigo-500/10 text-indigo-600 border-indigo-500/20" :
-                                            userProfile?.investor_tier === 'pro' ? "bg-amber-500/10 text-amber-600 border-amber-500/20" :
+                                            "inline-flex items-center gap-2 mt-2 px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-widest border shadow-lg transition-all",
+                                            userProfile?.investor_tier === 'elite' ? "bg-indigo-600 text-white border-indigo-400 shadow-indigo-500/30" :
+                                            userProfile?.investor_tier === 'pro' ? "bg-amber-500 text-white border-amber-400 shadow-amber-500/30" :
                                             "bg-zinc-500/10 text-zinc-600 border-zinc-500/20"
                                         )}>
-                                            🎖️ Inversionista {userProfile?.investor_tier?.toUpperCase() || 'STARTER'}
+                                            {userProfile?.investor_tier === 'elite' ? <Diamond className="h-3 w-3" /> : "🎖️"}
+                                            Inversionista {userProfile?.investor_tier?.toUpperCase() || 'STARTER'}
                                         </div>
                                     )}
                                 </div>
@@ -358,7 +361,7 @@ export default function DashboardPage() {
                 <div className="flex items-center gap-3">
                     <div className="h-2 w-2 bg-emerald-500 rounded-full animate-pulse" />
                     <p className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500">
-                        StarterKar Garage • v5.0.5 Deployment
+                        StarterKar Garage • v5.9.9 Stable
                     </p>
                 </div>
                 <div className="text-[9px] font-bold text-zinc-300 italic">

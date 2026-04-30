@@ -66,19 +66,32 @@ export function EcosystemHub({ userProfile, activeInspections, investorApp }: Ec
                     <Link href="/investor/apply" className="flex items-center gap-3 group relative py-1">
                         <div className={cn(
                             "h-10 w-10 rounded-2xl flex items-center justify-center shadow-sm transition-all border",
-                            investorApp?.status === 'pending' 
-                                ? "bg-amber-100 border-amber-200 text-amber-600 animate-pulse" 
-                                : "bg-white dark:bg-zinc-900 text-zinc-400 group-hover:text-indigo-600 group-hover:bg-indigo-50 dark:group-hover:bg-indigo-500/10 border-zinc-100 dark:border-zinc-800 group-hover:border-indigo-200"
+                            userProfile?.role === 'investor' 
+                                ? (userProfile?.investor_tier === 'elite' ? "bg-indigo-600 text-white border-indigo-400 shadow-indigo-500/20 shadow-lg" : "bg-amber-500 text-white border-amber-400 shadow-amber-500/20 shadow-lg")
+                                : (investorApp?.status === 'pending' 
+                                    ? "bg-amber-100 border-amber-200 text-amber-600 animate-pulse" 
+                                    : "bg-white dark:bg-zinc-900 text-zinc-400 group-hover:text-indigo-600 group-hover:bg-indigo-50 dark:group-hover:bg-indigo-500/10 border-zinc-100 dark:border-zinc-800 group-hover:border-indigo-200")
                         )}>
-                            <ShieldCheck className="h-4.5 w-4.5" />
+                            {userProfile?.investor_tier === 'elite' ? <Diamond className="h-4.5 w-4.5" /> : <ShieldCheck className="h-4.5 w-4.5" />}
                         </div>
                         <div className="flex flex-col">
-                            <span className="text-[10px] font-black uppercase tracking-widest text-zinc-400 group-hover:text-zinc-500 transition-colors">Capital</span>
+                            <span className={cn(
+                                "text-[10px] font-black uppercase tracking-widest transition-colors",
+                                userProfile?.investor_tier === 'elite' ? "text-indigo-600" : "text-zinc-400 group-hover:text-zinc-500"
+                            )}>
+                                {userProfile?.investor_tier === 'elite' ? 'Status Elite' : 'Capital'}
+                            </span>
                             <span className="text-xs font-black uppercase tracking-tighter text-zinc-700 dark:text-zinc-300 group-hover:text-zinc-900 dark:group-hover:text-white transition-colors flex items-center gap-1">
-                                {investorApp?.status === 'pending' ? 'Membresía...' : 'Inversionista'} <ChevronRight className="h-3 w-3 opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all" />
+                                {userProfile?.role === 'investor' 
+                                    ? (userProfile?.investor_tier?.toUpperCase() || 'INVERSIONISTA')
+                                    : (investorApp?.status === 'pending' ? 'Membresía...' : 'Inversionista')} 
+                                <ChevronRight className="h-3 w-3 opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all" />
                             </span>
                         </div>
-                        <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-0 h-0.5 bg-indigo-500 transition-all duration-300 group-hover:w-full" />
+                        <div className={cn(
+                            "absolute -bottom-1 left-1/2 -translate-x-1/2 h-0.5 transition-all duration-300 group-hover:w-full",
+                            userProfile?.investor_tier === 'elite' ? "bg-indigo-600 w-1/2" : "bg-indigo-500 w-0"
+                        )} />
                     </Link>
 
                     {/* Referidos */}
