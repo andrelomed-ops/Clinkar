@@ -202,7 +202,7 @@ export default function HandoverPage() {
                         {activeTab === 'monitor' && (
                             <div className="animate-in fade-in zoom-in-95 duration-500">
                                 <VaultStatus 
-                                    status={transaction.status === 'RELEASED' ? 'RELEASED' : 'FUNDS_HELD'} 
+                                    status={transaction.status} 
                                     carId={transaction.car_id}
                                     carTitle={`${transaction.cars?.make} ${transaction.cars?.model}`}
                                     carPrice={transaction.car_price} 
