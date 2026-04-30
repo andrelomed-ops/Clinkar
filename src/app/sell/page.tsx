@@ -86,46 +86,58 @@ export default function SellPage() {
                                 </p>
                             </div>
                         </div>
-                    </div>
-
-                    {/* Right: Valuation UI Wrapper */}
+                    </                    {/* Right: Lead Capture UI Wrapper */}
                     <div className="relative">
                         <div className="absolute -inset-1 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-[2.5rem] blur-xl opacity-20 dark:opacity-40 pointer-events-none" />
 
-                        {/* View Toggle */}
-                        <div className="relative z-10 flex p-1 bg-zinc-100 dark:bg-zinc-800/50 rounded-2xl mb-6 mx-auto max-w-sm border border-zinc-200 dark:border-zinc-700">
-                            <button
-                                onClick={() => setView('quote')}
-                                className={cn(
-                                    "flex-1 py-3 text-sm font-bold rounded-xl transition-all flex items-center justify-center gap-2",
-                                    view === 'quote'
-                                        ? "bg-white dark:bg-zinc-800 text-zinc-900 dark:text-white shadow-sm"
-                                        : "text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300"
-                                )}
-                            >
-                                <Calculator className="h-4 w-4" />
-                                Cotizador
-                            </button>
-                            <button
-                                onClick={() => setView('documents')}
-                                className={cn(
-                                    "flex-1 py-3 text-sm font-bold rounded-xl transition-all flex items-center justify-center gap-2",
-                                    view === 'documents'
-                                        ? "bg-white dark:bg-zinc-800 text-zinc-900 dark:text-white shadow-sm"
-                                        : "text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300"
-                                )}
-                            >
-                                <FileText className="h-4 w-4" />
-                                Subir Papeles
-                            </button>
-                        </div>
+                        <div className="relative z-10 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 p-10 rounded-[2.5rem] shadow-2xl space-y-8">
+                            <div className="space-y-2">
+                                <div className="inline-flex items-center gap-2 px-3 py-1 bg-indigo-500/10 text-indigo-500 rounded-full text-[10px] font-black uppercase tracking-widest">
+                                    <Search className="h-3 w-3" />
+                                    Valuación Profesional
+                                </div>
+                                <h3 className="text-3xl font-black tracking-tighter text-zinc-900 dark:text-white leading-none">
+                                    Agenda tu <br />
+                                    <span className="text-zinc-400">Certificación.</span>
+                                </h3>
+                                <p className="text-xs text-zinc-500 font-medium leading-relaxed">
+                                    No usamos algoritmos genéricos. Determinamos el valor real de tu auto tras una revisión física de 150 puntos realizada por expertos.
+                                </p>
+                            </div>
 
-                        {view === 'quote' ? (
-                            <InstantQuote />
-                        ) : (
-                            <IntakeWizard isAdminMode={isAdmin} />
-                        )}
+                            <div className="space-y-4">
+                                <div className="p-4 bg-zinc-50 dark:bg-zinc-800/50 rounded-2xl border border-zinc-100 dark:border-zinc-800">
+                                    <p className="text-[10px] font-black text-zinc-400 uppercase mb-3">¿Cómo funciona?</p>
+                                    <ul className="space-y-3">
+                                        <li className="flex items-start gap-3 text-[11px] font-bold text-zinc-600 dark:text-zinc-300">
+                                            <div className="h-4 w-4 rounded-full bg-indigo-500 text-white flex items-center justify-center text-[8px]">1</div>
+                                            Agendas tu revisión en zona segura.
+                                        </li>
+                                        <li className="flex items-start gap-3 text-[11px] font-bold text-zinc-600 dark:text-zinc-300">
+                                            <div className="h-4 w-4 rounded-full bg-indigo-500 text-white flex items-center justify-center text-[8px]">2</div>
+                                            Obtenemos el Score de Certificación.
+                                        </li>
+                                        <li className="flex items-start gap-3 text-[11px] font-bold text-zinc-600 dark:text-zinc-300">
+                                            <div className="h-4 w-4 rounded-full bg-indigo-500 text-white flex items-center justify-center text-[8px]">3</div>
+                                            Negociamos el precio de salida y piso.
+                                        </li>
+                                    </ul>
+                                </div>
+
+                                <button 
+                                    onClick={() => window.location.href = '/sell/onboarding'}
+                                    className="w-full h-16 bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 rounded-[1.5rem] font-black text-xs uppercase tracking-widest hover:scale-[1.02] active:scale-[0.98] transition-all shadow-xl flex items-center justify-center gap-3"
+                                >
+                                    Iniciar Proceso de Valuación <ArrowRight className="h-4 w-4" />
+                                </button>
+                                
+                                <p className="text-center text-[9px] text-zinc-400 font-medium italic">
+                                    *Atención personalizada de tu Asesor StarterKar tras confirmar cita.
+                                </p>
+                            </div>
+                        </div>
                     </div>
+</div>
                 </div>
 
                 {/* Steps */}
