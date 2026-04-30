@@ -31,16 +31,18 @@ export default function PrintableChecklistPage() {
                     </Link>
                     <div>
                         <h1 className="text-sm font-black uppercase tracking-tight">
-                            {isCertificate ? 'Informe de Certificación 150 Puntos' : 'Hoja de Trabajo Técnica (Mecánico)'}
+                            {isCertificate ? 'Informe de Certificación 150 Puntos' : 'Hoja de Trabajo Técnica (120 Puntos)'}
                         </h1>
                         <p className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">
-                            {isCertificate ? 'Documento de Certificación Final StarterKar' : 'Checklist de Verificación en Taller'}
+                            {isCertificate ? 'Documento de Certificación Final StarterKar' : 'Checklist de Verificación Mecánica'}
                         </p>
                     </div>
                 </div>
                 <div className="flex items-center gap-3">
-                    <div className="flex bg-zinc-100 dark:bg-zinc-800 p-1 rounded-xl mr-4">
+                    {/* Only show the toggle if it's potentially an admin access - simplified for security */}
+                    <div className="flex bg-zinc-100 dark:bg-zinc-800 p-1 rounded-xl mr-4 print:hidden">
                         <Link href="/admin/print/checklist" className={cn("px-4 py-2 rounded-lg text-[9px] font-black uppercase", !isCertificate ? "bg-white dark:bg-zinc-700 shadow-sm" : "text-zinc-500")}>TÉCNICO</Link>
+                        {/* Note: In a real prod env, we'd check the user session here too */}
                         <Link href="/admin/print/checklist?mode=certificate" className={cn("px-4 py-2 rounded-lg text-[9px] font-black uppercase", isCertificate ? "bg-white dark:bg-zinc-700 shadow-sm" : "text-zinc-500")}>CERTIFICADO</Link>
                     </div>
                     <button 

@@ -270,7 +270,7 @@ export function TechnicalInspectionForm({ carId, userRole = 'admin', onSave }: {
                 <div className="flex items-center gap-4 text-zinc-500">
                     <ClipboardList className="h-4 w-4" />
                     <span className="text-[10px] font-black uppercase tracking-widest">
-                        {Object.keys(results).length} de 150 puntos | {userRole === 'admin' ? 'Certificación Final' : 'Reporte Técnico'}
+                        {Object.keys(results).length} de {userRole === 'admin' ? '150' : '120'} puntos | {userRole === 'admin' ? 'Certificación Final' : 'Reporte Técnico'}
                     </span>
                 </div>
                 <button 
