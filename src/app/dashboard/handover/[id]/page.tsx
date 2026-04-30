@@ -9,7 +9,8 @@ import {
     PartyPopper, 
     CheckCircle,
     MapPin,
-    FileText
+    FileText,
+    MessageSquare
 } from "lucide-react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
@@ -137,6 +138,16 @@ export default function HandoverPage() {
                                         {new Date(transaction.metadata.scheduled_delivery_date).toLocaleDateString('es-MX', { weekday: 'short', day: 'numeric', month: 'short' })} • {transaction.metadata.scheduled_delivery_time}
                                     </p>
                                 </div>
+                                {user?.id === transaction?.buyer_id && (
+                                    <a 
+                                        href={`https://wa.me/525522120249?text=Hola, confirmo mi asistencia para la cita del ${transaction.cars?.make} ${transaction.cars?.model} el día ${new Date(transaction.metadata.scheduled_delivery_date).toLocaleDateString()} a las ${transaction.metadata.scheduled_delivery_time}.`}
+                                        target="_blank"
+                                        className="ml-4 h-10 px-4 bg-emerald-500 text-white text-[9px] font-black rounded-xl flex items-center gap-2 hover:bg-emerald-400 transition-all uppercase tracking-widest shadow-lg shadow-emerald-500/20"
+                                    >
+                                        <MessageSquare className="h-4 w-4" />
+                                        Confirmar WhatsApp
+                                    </a>
+                                )}
                             </div>
                         )}
 

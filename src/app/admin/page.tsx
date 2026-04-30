@@ -349,9 +349,24 @@ export default function AdminDashboardV5() {
                                             <div className="flex gap-4 mt-1">
                                                 <p className="text-[9px] font-bold text-zinc-500 uppercase">C: {tx.buyer_email || tx.buyer_id?.substring(0,8)}</p>
                                                 <p className="text-[9px] font-bold text-zinc-500 uppercase">V: {tx.seller_email || tx.seller_id?.substring(0,8)}</p>
+                                                {tx.buyer_phone && (
+                                                    <p className="text-[9px] font-black text-emerald-500 uppercase flex items-center gap-1">
+                                                        <MessageSquare className="h-2.5 w-2.5" /> {tx.buyer_phone}
+                                                    </p>
+                                                )}
                                             </div>
                                         </div>
                                         <div className="flex gap-3">
+                                            {tx.buyer_phone && (
+                                                <a 
+                                                    href={`https://wa.me/52${tx.buyer_phone.replace(/\s+/g, '')}?text=Hola, te contacto de StarterKar sobre tu cita para el ${tx.cars?.make} ${tx.cars?.model}.`}
+                                                    target="_blank"
+                                                    className="h-12 w-12 bg-emerald-500/10 border border-emerald-500/20 text-emerald-500 rounded-xl flex items-center justify-center hover:bg-emerald-500 hover:text-white transition-all"
+                                                    title="Contactar por WhatsApp"
+                                                >
+                                                    <MessageSquare className="h-5 w-5" />
+                                                </a>
+                                            )}
                                             {tx.status === 'P2P_WAITING_PROOF' ? (
                                                 <button onClick={() => handleValidateCEP(tx.id)} className="h-12 px-6 bg-indigo-600 text-white text-[10px] font-black rounded-xl">VALIDAR CEP</button>
                                             ) : (

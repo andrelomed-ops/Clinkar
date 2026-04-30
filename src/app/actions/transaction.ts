@@ -18,6 +18,7 @@ export async function startTransaction(carId: string, addOns?: {
     scheduledDate?: string;
     scheduledTime?: string;
     workshopId?: string;
+    buyerPhone?: string;
 }) {
     const supabase = await createClient();
 
@@ -79,6 +80,7 @@ export async function startTransaction(carId: string, addOns?: {
                 warrantyQuote: addOns?.warranty,
                 gestoriaQuote: addOns?.gestoria,
                 insuranceQuote: addOns?.insurance,
+                buyerPhone: addOns?.buyerPhone,
                 // Pass scheduling in metadata
                 metadata: {
                     scheduled_delivery_date: addOns?.scheduledDate,
@@ -103,6 +105,7 @@ export async function startTransaction(carId: string, addOns?: {
                     car: `${car.make} ${car.model}`,
                     date: addOns?.scheduledDate,
                     time: addOns?.scheduledTime,
+                    phone: addOns?.buyerPhone,
                     location: car.location,
                     category: car.category,
                     workshop_id: addOns?.workshopId

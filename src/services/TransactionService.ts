@@ -25,6 +25,7 @@ export class TransactionService extends BaseService {
         gestoriaQuote?: { active: boolean, cost: number };
         insuranceQuote?: { provider: string, cost: number };
         appliedPerkId?: string;
+        buyerPhone?: string;
         metadata?: any;
     }): Promise<Transaction | null> {
         Logger.info(`[GATEKEEPER] Iniciando creación de transacción para ${data.sellerId} (Monto: $${data.amount})`);
@@ -89,6 +90,7 @@ export class TransactionService extends BaseService {
                 seller_id: data.sellerId,
                 buyer_email: buyerProfile?.email || null,
                 seller_email: sellerProfile?.email || null,
+                buyer_phone: data.buyerPhone || null,
                 car_price: data.amount,
                 total_amount: totalAmount,
                 status: 'PENDING'

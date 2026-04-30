@@ -16,6 +16,7 @@ export function CheckoutAction({ carId, carPrice, carLocation, category }: { car
     const [selectedWorkshop, setSelectedWorkshop] = useState("");
     const [scheduledDate, setScheduledDate] = useState("");
     const [scheduledTime, setScheduledTime] = useState("");
+    const [buyerPhone, setBuyerPhone] = useState("");
 
     useEffect(() => {
         async function fetchWorkshops() {
@@ -42,6 +43,10 @@ export function CheckoutAction({ carId, carPrice, carLocation, category }: { car
             toast.error("Por favor, selecciona fecha y hora de entrega");
             return;
         }
+        if (!buyerPhone) {
+            toast.error("Por favor, ingresa tu WhatsApp para seguimiento");
+            return;
+        }
         if (partners.length > 0 && !selectedWorkshop) {
             toast.error("Por favor, selecciona un taller");
             return;
@@ -55,7 +60,8 @@ export function CheckoutAction({ carId, carPrice, carLocation, category }: { car
                 deliveryType: selectedWorkshop ? 'workshop' : 'home',
                 scheduledDate,
                 scheduledTime,
-                workshopId: selectedWorkshop || undefined
+                workshopId: selectedWorkshop || undefined,
+                buyerPhone
             });
 
             console.log("[StarterKar] Resultado del servidor:", result);
@@ -120,6 +126,22 @@ export function CheckoutAction({ carId, carPrice, carLocation, category }: { car
                                 ))}
                             </select>
                         )}
+                    </div>
+                </div>
+
+                <div className="grid grid-cols-1 gap-5">
+                    <div className="space-y-2">
+                        <label className="text-[9px] font-black text-zinc-400 uppercase ml-1">WhatsApp de Seguimiento</label>
+                        <div className="relative">
+                            <span className="absolute left-5 top-1/2 -translate-y-1/2 text-sm font-black text-zinc-400">+52</span>
+                            <input 
+                                type="tel" 
+                                placeholder="55 1234 5678"
+                                className="w-full h-14 pl-14 pr-5 rounded-2xl border-2 border-zinc-100 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950 text-sm font-black focus:border-indigo-600 outline-none transition-all"
+                                value={buyerPhone}
+                                onChange={(e) => setBuyerPhone(e.target.value)}
+                            />
+                        </div>
                     </div>
                 </div>
 
