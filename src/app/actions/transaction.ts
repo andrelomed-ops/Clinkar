@@ -99,7 +99,46 @@ export async function startTransaction(carId: string, addOns?: {
 
             await CarService.updateCarStatus(supabase, car.id, 'RESERVED');
 
-            // Trigger Admin Alert for Coordination
+            // 5. Create Inspection Appointment (if workshop)
+            if (addOns?.deliveryType === 'workshop' && addOns?.workshopId) {
+                await supabase.from('inspection_appointments').insert({
+                    car_id: car.id,
+                    inspector_id: addOns.workshopId,
+                    seller_id: car.seller_id,
+                    scheduled_date: `${addOns.scheduledDate}T${addOns.scheduledTime}:00`,
+                    location: car.location,
+                    status: 'PENDING'
+                });
+
+                // Notify Inspector/Workshop
+                await NotificationService.notify(supabase, {
+                    userId: addOns.workshopId,
+                    title: "Nueva Inspección Programada",
+                    message: `Tienes una nueva inspección para un ${car.make} ${car.model} el día ${addOns.scheduledDate} a las ${addOns.scheduledTime}.`,
+                    type: "INFO",
+                    link: "/dashboard"
+                });
+            }
+
+            // 6. Notify Buyer & Seller
+            await NotificationService.notifyMultiple(supabase, [
+                {
+                    userId: buyerId,
+                    title: "¡Apartado Exitoso!",
+                    message: `Has apartado el ${car.make} ${car.model}. Tu cita está programada.`,
+                    type: "SUCCESS",
+                    link: `/dashboard/handover/${transactionId}`
+                },
+                {
+                    userId: car.seller_id,
+                    title: "Tu auto ha sido apartado",
+                    message: `Un comprador ha apartado tu ${car.make} ${car.model}. Revisa los detalles de la entrega.`,
+                    type: "INFO",
+                    link: `/dashboard/handover/${transactionId}`
+                }
+            ]);
+
+            // 7. Trigger Admin Alert for Coordination
             await NotificationService.notifyAdmin(supabase, {
                 action: 'NUEVA_ENTREGA_PROGRAMADA',
                 entityType: 'TRANSACTION',
@@ -111,7 +150,9 @@ export async function startTransaction(carId: string, addOns?: {
                     phone: addOns?.buyerPhone,
                     location: car.location,
                     category: car.category,
-                    workshop_id: addOns?.workshopId
+                    workshop_id: addOns?.workshopId,
+                    buyer_id: buyerId,
+                    seller_id: car.seller_id
                 }
             });
             console.log(`[startTransaction] Success: Transaction ${transactionId} created.`);

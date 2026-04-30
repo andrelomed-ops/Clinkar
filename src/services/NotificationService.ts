@@ -141,21 +141,54 @@ export class NotificationService {
 
         // 3. Insert into audit logs for persistent platform trace
         try {
-            const { error } = await (supabase.from('audit_logs') as any).insert({
+            await (supabase.from('audit_logs') as any).insert({
                 actor_id: user?.id || '00000000-0000-0000-0000-000000000000',
                 action: `ALERT: ${data.action}`,
                 entity_type: data.entityType,
                 entity_id: data.entityId || null,
                 metadata: data.metadata || null
             });
-
-            if (error) {
-                Logger.error('Failed to save Admin Alert to audit logs:', error);
-            }
         } catch (e) {
-            Logger.error('Critical failure in notifyAdmin:', e);
+            Logger.error('Failed to save Admin Alert to audit logs:', e);
+        }
+
+        // 4. Send real UI notifications to all Admins
+        try {
+            await this.notifyAllAdmins(supabase, {
+                title: `Nueva Alerta: ${data.action}`,
+                message: `Se ha registrado una actividad en ${data.entityType}. ${data.metadata?.car ? `Unidad: ${data.metadata.car}` : ''}`,
+                type: 'WARNING',
+                link: data.entityType === 'TRANSACTION' ? `/admin` : undefined
+            });
+        } catch (e) {
+            Logger.error('Failed to notify admins:', e);
         }
         
         return true;
+    }
+
+    static async notifyAllAdmins(supabase: SupabaseClient<Database>, data: {
+        title: string;
+        message: string;
+        type: string;
+        link?: string;
+    }) {
+        // Find all users with admin role
+        const { data: admins } = await supabase
+            .from('profiles')
+            .select('id')
+            .eq('role', 'admin');
+
+        if (!admins || admins.length === 0) return false;
+
+        const notifications = admins.map(admin => ({
+            userId: admin.id,
+            title: data.title,
+            message: data.message,
+            type: data.type,
+            link: data.link
+        }));
+
+        return await this.notifyMultiple(supabase, notifications);
     }
 }
