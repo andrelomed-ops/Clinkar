@@ -287,7 +287,7 @@ export default function AdminDashboardV5() {
                         StarterKar <span className="text-[10px] bg-indigo-600/20 text-indigo-400 px-2 py-0.5 rounded-full not-italic tracking-widest font-black border border-indigo-500/30 ml-1">v{ADMIN_VERSION}</span>
                     </h1>
                 </div>
-                <nav className="space-y-1 flex-1">
+                <nav className="space-y-1 flex-1 overflow-y-auto custom-scrollbar pr-2">
                     <SidebarItem icon={Zap} label="Control" active={view === 'CONTROL'} onClick={() => setView('CONTROL')} />
                     <SidebarItem icon={CarFront} label="Inventario" active={view === 'INVENTORY'} onClick={() => setView('INVENTORY')} />
                     <SidebarItem icon={UserCheck} label="Inversionistas" active={view === 'INVESTORS'} onClick={() => setView('INVESTORS')} badge={investorApps.filter(a => a.status === 'pending').length.toString()} />
@@ -297,12 +297,14 @@ export default function AdminDashboardV5() {
                     <SidebarItem icon={CreditCard} label="Cobranza" active={view === 'BILLING'} onClick={() => setView('BILLING')} />
                     <SidebarItem icon={Gift} label="Referidos" active={view === 'REFERRALS'} onClick={() => setView('REFERRALS')} />
                     <SidebarItem icon={MessageSquare} label="Pedidos" active={view === 'DEMANDS'} onClick={() => setView('DEMANDS')} />
-                    <div className="pt-8 mt-8 border-t border-zinc-900 space-y-1">
-                        <SidebarItem icon={ExternalLink} label="Ver Marketplace" onClick={() => window.open('/buy', '_blank')} />
-                        <SidebarItem icon={LayoutDashboard} label="Inicio Público" onClick={() => window.location.href='/'} />
-                    </div>
                 </nav>
-                <button onClick={async () => { await supabase.auth.signOut(); window.location.href='/login'; }} className="w-full flex items-center gap-4 px-6 py-4 rounded-2xl text-zinc-500 hover:bg-red-500/10 hover:text-red-500 transition-all">
+
+                <div className="pt-6 mt-6 border-t border-zinc-900 space-y-1 mb-6 shrink-0">
+                    <SidebarItem icon={ExternalLink} label="Ver Marketplace" onClick={() => window.open('/buy', '_blank')} />
+                    <SidebarItem icon={LayoutDashboard} label="Inicio Público" onClick={() => window.location.href='/'} />
+                </div>
+
+                <button onClick={async () => { await supabase.auth.signOut(); window.location.href='/login'; }} className="w-full flex items-center gap-4 px-6 py-4 rounded-2xl text-zinc-500 hover:bg-red-500/10 hover:text-red-500 transition-all shrink-0">
                     <LogOut className="h-5 w-5" /> <span className="text-xs font-black uppercase">Salir</span>
                 </button>
             </aside>

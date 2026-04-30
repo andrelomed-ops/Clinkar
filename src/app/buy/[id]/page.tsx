@@ -188,7 +188,7 @@ export default function CarDetailPage({ params }: { params: Promise<{ id: string
                                             onClick={() => { setGalleryIndex(idx); setShowGallery(true); }}
                                             className={cn(
                                                 "relative shrink-0 snap-center cursor-pointer transition-all duration-700 ease-out hover:z-10",
-                                                idx === 0 ? "w-[85vw] md:w-[45rem] h-[50vh] md:h-[35rem] rounded-[2.5rem] shadow-2xl" : "w-[65vw] md:w-[25rem] h-[50vh] md:h-[35rem] rounded-[2rem] opacity-70 hover:opacity-100 shadow-xl"
+                                                idx === 0 ? "w-[85vw] md:w-[45rem] h-[35vh] sm:h-[45vh] md:h-[35rem] rounded-[2.5rem] shadow-2xl" : "w-[65vw] md:w-[25rem] h-[35vh] sm:h-[45vh] md:h-[35rem] rounded-[2rem] opacity-70 hover:opacity-100 shadow-xl"
                                             )}
                                         >
                                             <Image
@@ -229,7 +229,7 @@ export default function CarDetailPage({ params }: { params: Promise<{ id: string
                             <div className="flex items-center gap-2 mb-2">
                                 <span className="text-sm font-bold text-primary uppercase tracking-widest">{car.year} • {car.condition}</span>
                             </div>
-                            <h1 className="text-4xl md:text-5xl font-black tracking-tight text-zinc-900 dark:text-white mb-6">
+                            <h1 className="text-3xl sm:text-4xl md:text-5xl font-black tracking-tight text-zinc-900 dark:text-white mb-6">
                                 {car.make} {car.model}
                             </h1>
 
