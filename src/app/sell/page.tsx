@@ -70,19 +70,19 @@ export default function SellPage() {
                         </div>
 
                         <div className="space-y-4 pt-4 border-t border-zinc-200 dark:border-zinc-800">
-                            <p className="text-xs font-black uppercase tracking-widest text-zinc-500 mb-4">Tu Experiencia Premium:</p>
+                            <p className="text-xs font-black uppercase tracking-widest text-zinc-500 mb-4">Lo que hacemos por ti:</p>
                             <div className="flex items-center gap-4">
                                 <div className="h-10 w-10 bg-zinc-100 dark:bg-zinc-800 rounded-xl flex items-center justify-center">
                                     <ShieldCheck className="h-5 w-5 text-indigo-500" />
                                 </div>
                                 <div>
-                                    <p className="font-bold text-sm">Acompañamiento Concierge</p>
-                                    <p className="text-[10px] text-zinc-500 font-medium italic">Asistencia personalizada en cada paso legal y técnico.</p>
+                                    <p className="font-bold text-sm">Tu Asesor Personal</p>
+                                    <p className="text-[10px] text-zinc-500 font-medium italic">Un experto te acompaña en todo el proceso legal y técnico.</p>
                                 </div>
                             </div>
                             <div className="p-4 bg-zinc-950/50 rounded-2xl border border-zinc-800/50">
                                 <p className="text-[9px] text-zinc-400 font-bold uppercase tracking-widest leading-relaxed">
-                                    💡 Tras agendar tu visita, recibirás acceso directo a tu Concierge vía WhatsApp para el seguimiento en tiempo real de tu proceso.
+                                    💡 Tras agendar tu visita, recibirás el contacto directo de tu asesor por WhatsApp para resolver dudas y confirmar tu cita.
                                 </p>
                             </div>
                         </div>
