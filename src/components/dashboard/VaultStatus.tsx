@@ -1,23 +1,9 @@
-"use client";
 
-import { Shield, Clock, Lock, CheckCircle2, Info, ArrowRight, FileText, AlertTriangle, Search, Activity, CornerDownRight } from "lucide-react";
-import { cn } from "@/lib/utils";
-import { useState, useEffect } from "react";
-import Link from "next/link";
-import LEGAL_TEXTS from "@/data/legal_texts.json";
-
-interface VaultStatusProps {
-    carPrice: number;
-    carYear: number;
-    status: "PENDING" | "FUNDS_HELD" | "RELEASED" | "CANCELLED";
-    legalStatus?: "PENDING" | "VERIFIED" | "ISSUE";
-    mechanicalStatus?: "PENDING" | "VERIFIED" | "ISSUE";
-    contractStatus?: "PENDING" | "SIGNED";
-    currency?: string;
-    role?: 'buyer' | 'seller';
-}
+import SmartPaymentSelector from "@/components/checkout/SmartPaymentSelector";
 
 export function VaultStatus({
+    carId,
+    carTitle,
     carPrice,
     carYear,
     status,
@@ -26,8 +12,9 @@ export function VaultStatus({
     contractStatus = "SIGNED", // Default verified for now or passed from parent
     currency = "MXN",
     role = "buyer"
-}: VaultStatusProps) {
+}: VaultStatusProps & { carId?: string; carTitle?: string }) {
     const [isMounted, setIsMounted] = useState(false);
+    const [showPaymentSelector, setShowPaymentSelector] = useState(false);
 
     useEffect(() => {
         // eslint-disable-next-line react-hooks/set-state-in-effect
@@ -108,11 +95,21 @@ export function VaultStatus({
                                 {role === 'buyer' ? (
                                     <div className="space-y-2 mt-2">
                                         <p className="text-sm font-medium text-slate-700">
-                                            <strong>IMPORTANTE:</strong> No realices ningún pago en este momento.
+                                            <strong>{status === 'PENDING' ? 'MÉTODO DE PAGO REQUERIDO' : 'PAGO REGISTRADO'}</strong>
                                         </p>
                                         <p className="text-xs text-muted-foreground leading-relaxed">
-                                            El pago debe realizarse <strong>únicamente</strong> después de revisar físicamente el vehículo el día de tu cita, en presencia del Asistente y Mecánico de StarterKar. Nosotros no retenemos el dinero de la compraventa; el pago lo harás directo al vendedor cuando todo esté en orden.
+                                            {status === 'PENDING' 
+                                                ? "Para formalizar el trato y que el vendedor reciba su notificación de fondos, debes elegir tu método de pago preferido."
+                                                : "El pago ha sido registrado en el monitor. El dinero se entregará al vendedor una vez firmes el contrato final."}
                                         </p>
+                                        {status === 'PENDING' && !showPaymentSelector && (
+                                            <button 
+                                                onClick={() => setShowPaymentSelector(true)}
+                                                className="mt-4 flex items-center gap-2 bg-indigo-600 text-white px-6 py-3 rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-indigo-500 transition-all shadow-lg shadow-indigo-500/20"
+                                            >
+                                                Pagar Ahora <ArrowRight className="h-4 w-4" />
+                                            </button>
+                                        )}
                                     </div>
                                 ) : (
                                     <div className="space-y-2 mt-2">
@@ -126,6 +123,20 @@ export function VaultStatus({
                                 )}
                             </div>
                         </div>
+
+                        {showPaymentSelector && role === 'buyer' && status === 'PENDING' && (
+                            <div className="mt-8 pt-8 border-t border-blue-200 animate-in fade-in slide-in-from-top-4">
+                                <SmartPaymentSelector 
+                                    amount={carPrice}
+                                    carId={carId}
+                                    carTitle={carTitle}
+                                    onPaymentSuccess={() => {
+                                        setShowPaymentSelector(false);
+                                        // In real app, we'd trigger a reload or status update
+                                    }}
+                                />
+                            </div>
+                        )}
                     </div>
 
                     {/* CONNECTOR ARROW */}
