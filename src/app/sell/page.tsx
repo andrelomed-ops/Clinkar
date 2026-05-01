@@ -86,7 +86,9 @@ export default function SellPage() {
                                 </p>
                             </div>
                         </div>
-                    </                    {/* Right: Lead Capture UI Wrapper */}
+                    </div>
+
+                    {/* Right: Lead Capture UI Wrapper */}
                     <div className="relative">
                         <div className="absolute -inset-1 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-[2.5rem] blur-xl opacity-20 dark:opacity-40 pointer-events-none" />
 
@@ -137,7 +139,6 @@ export default function SellPage() {
                             </div>
                         </div>
                     </div>
-</div>
                 </div>
 
                 {/* Steps */}
