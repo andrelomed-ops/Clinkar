@@ -418,7 +418,7 @@ export default function SellOnboardingPage() {
                                         disabled={loading}
                                         className="w-full h-24 rounded-[2.5rem] bg-indigo-600 hover:bg-indigo-500 text-white font-black text-sm uppercase tracking-[0.6em] transition-all active:scale-[0.98] shadow-2xl shadow-indigo-600/20 group"
                                     >
-                                        {loading ? <span className="animate-pulse">PROCESANDO...</span> : (
+                                        {loading ? <Loader2 className="h-8 w-8 animate-spin" /> : (
                                             <span className="flex items-center gap-4">
                                                 Confirmar Agenda <ArrowRight className="h-6 w-6 group-hover:translate-x-3 transition-transform duration-500" />
                                             </span>
