@@ -31,23 +31,35 @@ export function SellAuthModal({ isOpen, onClose, onSuccess }: SellAuthModalProps
     const handleGoogleLogin = async () => {
         setLoading(true);
         try {
-            // Persist current onboarding state to localStorage so it survives the redirect
+            // Save the current full URL and car state
+            const currentUrl = window.location.href;
             const params = new URLSearchParams(window.location.search);
+            
             const onboardingState = {
                 make: params.get('make'),
                 model: params.get('model'),
                 year: params.get('year'),
-                // We could also save the local state (date, partner) but it's easier 
-                // to just let them click one more time if they were midway.
-                // However, the best UX is to save everything.
+                km: params.get('km'),
+                category: params.get('category'),
+                price: params.get('price'),
+                date: (window as any).starterkar_temp_date,
+                partnerId: (window as any).starterkar_temp_partnerId,
+                returnUrl: currentUrl,
                 timestamp: Date.now()
             };
+            
             localStorage.setItem('starterkar_onboarding_temp', JSON.stringify(onboardingState));
 
+            // Now that localhost is whitelisted, we can redirect directly back to the client.
+            // The browser client will handle the session from the URL fragment/hash more reliably on localhost.
             const { error } = await supabase.auth.signInWithOAuth({
                 provider: 'google',
                 options: {
-                    redirectTo: window.location.href
+                    redirectTo: currentUrl,
+                    queryParams: {
+                        access_type: 'offline',
+                        prompt: 'select_account',
+                    }
                 }
             });
             if (error) throw error;
