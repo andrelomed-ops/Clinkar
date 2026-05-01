@@ -47,6 +47,8 @@ export default function SellOnboardingPage() {
     
     // Form Details
     const [date, setDate] = useState("");
+    const [phone, setPhone] = useState("");
+    const [needsPhone, setNeedsPhone] = useState(false);
 
     const inspectionType = 'workshop';
     const INSPECTION_BASE_COST = 1500;
@@ -71,18 +73,45 @@ export default function SellOnboardingPage() {
         const checkAuth = async () => {
             const { data: { user } } = await supabase.auth.getUser();
             if (user) {
+                const { data: profile } = await supabase.from('profiles').select('phone').eq('id', user.id).single();
+                
                 setCurrentUser(user);
+                
+                if (!profile?.phone) {
+                    setNeedsPhone(true);
+                    return;
+                }
+
                 const tempState = localStorage.getItem('starterkar_onboarding_temp');
                 if (tempState) {
                     localStorage.removeItem('starterkar_onboarding_temp');
-                    toast.success("Sesión iniciada con Google. Finalizando tu agenda...");
-                    // Give it a tiny moment for partners to load before submitting
+                    toast.success("Sesión iniciada. Finalizando tu agenda...");
                     setTimeout(() => handleSubmit(), 1000);
                 }
             }
         };
         checkAuth();
     }, [supabase]);
+
+    const handlePhoneSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!phone) return;
+        
+        setLoading(true);
+        try {
+            const { data: { user } } = await supabase.auth.getUser();
+            if (user) {
+                await supabase.from('profiles').update({ phone }).eq('id', user.id);
+                setNeedsPhone(false);
+                toast.success("WhatsApp guardado. Finalizando...");
+                handleSubmit();
+            }
+        } catch (err: any) {
+            toast.error("Error al guardar teléfono");
+        } finally {
+            setLoading(false);
+        }
+    };
 
     const handleSubmit = async (e?: React.FormEvent) => {
         if (e) e.preventDefault();
@@ -405,6 +434,51 @@ export default function SellOnboardingPage() {
                     setTimeout(() => handleSubmit(), 500);
                 }}
             />
+
+            {/* Post-Google Phone Capture */}
+            {needsPhone && (
+                <div className="fixed inset-0 z-[110] flex items-center justify-center p-4 bg-zinc-950/90 backdrop-blur-md animate-in fade-in duration-300">
+                    <div className="relative w-full max-w-md bg-white dark:bg-zinc-900 rounded-[2.5rem] shadow-2xl p-10 border border-zinc-200 dark:border-zinc-800 animate-in zoom-in-95 duration-300">
+                        <div className="flex flex-col items-center text-center space-y-4 mb-8">
+                            <div className="h-14 w-14 rounded-2xl bg-emerald-600 flex items-center justify-center text-white shadow-xl shadow-emerald-600/20">
+                                <MessageSquare className="h-8 w-8" />
+                            </div>
+                            <div className="space-y-1">
+                                <h2 className="text-2xl font-black tracking-tighter uppercase italic">¡Casi listo!</h2>
+                                <p className="text-[10px] text-zinc-500 font-bold uppercase tracking-widest">
+                                    Necesitamos tu WhatsApp para enviarte los detalles de la cita
+                                </p>
+                            </div>
+                        </div>
+
+                        <form onSubmit={handlePhoneSubmit} className="space-y-6">
+                            <div className="space-y-2">
+                                <div className="flex gap-2">
+                                    <div className="flex items-center justify-center px-4 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-800 rounded-xl text-xs font-bold text-zinc-500">
+                                        🇲🇽 +52
+                                    </div>
+                                    <input 
+                                        required
+                                        type="tel"
+                                        value={phone}
+                                        onChange={(e) => setPhone(e.target.value)}
+                                        placeholder="55 1234 5678"
+                                        className="h-14 rounded-xl border border-zinc-200 dark:border-zinc-800 focus:ring-2 focus:ring-indigo-500/20 flex-1 px-4 bg-zinc-50 dark:bg-zinc-800 font-bold outline-none"
+                                    />
+                                </div>
+                            </div>
+
+                            <button
+                                type="submit"
+                                disabled={loading}
+                                className="w-full h-14 bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 rounded-2xl font-black text-xs uppercase tracking-widest hover:scale-[1.02] active:scale-[0.98] transition-all shadow-xl"
+                            >
+                                {loading ? "Guardando..." : "Confirmar y Finalizar Agenda"}
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }
