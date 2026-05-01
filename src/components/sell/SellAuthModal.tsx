@@ -31,9 +31,8 @@ export function SellAuthModal({ isOpen, onClose, onSuccess }: SellAuthModalProps
     const handleGoogleLogin = async () => {
         setLoading(true);
         try {
-            // Save the current full URL and car state
-            const currentUrl = window.location.href;
-            const params = new URLSearchParams(window.location.search);
+            const currentUrlObj = new URL(window.location.href);
+            const params = currentUrlObj.searchParams;
             
             const onboardingState = {
                 make: params.get('make'),
@@ -44,18 +43,26 @@ export function SellAuthModal({ isOpen, onClose, onSuccess }: SellAuthModalProps
                 price: params.get('price'),
                 date: (window as any).starterkar_temp_date,
                 partnerId: (window as any).starterkar_temp_partnerId,
-                returnUrl: currentUrl,
+                returnUrl: currentUrlObj.toString(),
                 timestamp: Date.now()
             };
             
             localStorage.setItem('starterkar_onboarding_temp', JSON.stringify(onboardingState));
 
-            // Now that localhost is whitelisted, we can redirect directly back to the client.
-            // The browser client will handle the session from the URL fragment/hash more reliably on localhost.
+            const callbackUrl = new URL(`${currentUrlObj.origin}/auth/callback`);
+            
+            // Pasar todos los parámetros actuales para que el callback los retorne
+            params.forEach((value, key) => {
+                callbackUrl.searchParams.set(key, value);
+            });
+            
+            // Asegurar que 'next' apunte a onboarding
+            callbackUrl.searchParams.set('next', '/sell/onboarding');
+
             const { error } = await supabase.auth.signInWithOAuth({
                 provider: 'google',
                 options: {
-                    redirectTo: currentUrl,
+                    redirectTo: callbackUrl.toString(),
                     queryParams: {
                         access_type: 'offline',
                         prompt: 'select_account',
