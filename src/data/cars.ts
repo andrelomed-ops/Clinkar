@@ -16,9 +16,15 @@ export interface Vehicle {
     condition: 'Nuevo' | 'Seminuevo';
     tags: string[];
     capabilities: string[];
-    // Commercial Logic
+    // Commercial Logic & Status Flags
     marketValue?: number; // Estimated market value for "Savings" calculation
     flashSale?: boolean; // If true, triggers the Fire Badge logic
+    is_investor_only?: boolean;
+    investorOnly?: boolean;
+    is_new?: boolean;
+    isNew?: boolean;
+    is_imported?: boolean;
+    isBorder?: boolean;
     passengers: number;
     vin?: string;
 
@@ -32,6 +38,7 @@ export interface Vehicle {
     success_fee_pending_amount?: number;
     financing_required?: boolean;
     has_starterkar_seal?: boolean; // Real backend status for 150-point inspection
+    has_clinkar_seal?: boolean;
     
     // Justicia y Certeza Fields
     provenance?: string;

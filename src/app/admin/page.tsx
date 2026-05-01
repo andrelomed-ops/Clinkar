@@ -10,7 +10,7 @@ import {
     ArrowUpRight, AlertTriangle, ShieldCheck, Download, 
     ChevronRight, Calendar, UserCheck, LogOut, Gift, Activity, MessageSquare,
     Trash2, Lock, Camera, Save, Upload as UploadIcon, XCircle, ShoppingCart,
-    Printer, CheckSquare
+    Printer, CheckSquare, TrendingUp
 } from "lucide-react";
 import { TechnicalInspectionForm } from "@/components/admin/TechnicalInspectionForm";
 import { LegalReviewDashboard } from "@/components/admin/LegalReviewDashboard";
@@ -33,8 +33,9 @@ import { AdminControlTower } from "@/components/admin/AdminControlTower";
 import { AdminInventoryView } from "@/components/admin/AdminInventoryView";
 import { AdminUserManagement } from "@/components/admin/AdminUserManagement";
 import { AdminBillingView } from "@/components/admin/AdminBillingView";
+import { AdminCommercialView } from "@/components/admin/AdminCommercialView";
 
-type AdminView = 'CONTROL' | 'INVENTORY' | 'ARCHIVE' | 'INVESTORS' | 'USERS' | 'BILLING' | 'UPSELLS' | 'REFERRALS' | 'DEMANDS' | 'INSPECTOR' | 'LEGAL';
+type AdminView = 'CONTROL' | 'INVENTORY' | 'ARCHIVE' | 'INVESTORS' | 'USERS' | 'BILLING' | 'UPSELLS' | 'REFERRALS' | 'DEMANDS' | 'INSPECTOR' | 'LEGAL' | 'STRATEGY';
 
 const ADMIN_VERSION = "6.0.4";
 
@@ -49,7 +50,8 @@ const VIEW_LABELS: Record<AdminView, string> = {
     'REFERRALS': 'Sistema de Referidos',
     'DEMANDS': 'Pedidos de Vehículos',
     'INSPECTOR': 'Inspecciones Técnicas',
-    'LEGAL': 'Revisión Legal'
+    'LEGAL': 'Revisión Legal',
+    'STRATEGY': 'Estrategia Comercial'
 };
 
 export default function AdminDashboardV6() {
@@ -109,9 +111,10 @@ export default function AdminDashboardV6() {
                     .then(res => res.data || [])
                     .catch(() => []),
                 getRecentUsersAction().catch(() => []),
-                supabase.from('inspection_appointments')
-                    .select('*, car:cars(make, model, year), seller:profiles!seller_id(full_name), inspector:profiles!inspector_id(full_name)')
-                    .order('scheduled_date', { ascending: true })
+                supabase.from('service_tickets')
+                    .select('*, car:cars(make, model, year, seller:profiles(full_name, phone))')
+                    .eq('type', '150_point_inspection')
+                    .order('scheduled_at', { ascending: true })
                     .then(res => res.data || [])
                     .catch(() => [])
             ]);
@@ -267,6 +270,7 @@ export default function AdminDashboardV6() {
                     <SidebarItem icon={CarFront} label="Inventario" active={view === 'INVENTORY'} onClick={() => setView('INVENTORY')} />
                     <SidebarItem icon={Users} label="Usuarios" active={view === 'USERS'} onClick={() => setView('USERS')} />
                     <SidebarItem icon={DollarSign} label="Cobranza" active={view === 'BILLING'} onClick={() => setView('BILLING')} badge={transactions.filter(t => t.status === 'RELEASED' && !t.commission_paid).length} />
+                    <SidebarItem icon={TrendingUp} label="Estrategia" active={view === 'STRATEGY'} onClick={() => setView('STRATEGY')} />
                     
                     <div className="h-px bg-zinc-900 my-8" />
                     <p className="text-[9px] font-black text-zinc-600 uppercase tracking-[0.2em] mb-6 px-4">Logística & Legal</p>
@@ -339,6 +343,12 @@ export default function AdminDashboardV6() {
                         />
                     )}
 
+                    {view === 'STRATEGY' && (
+                        <AdminCommercialView 
+                            inventory={inventory} 
+                        />
+                    )}
+
                     {view === 'LEGAL' && (
                         <div className="animate-in fade-in duration-500">
                             <LegalReviewDashboard initialExpedientes={appointments.map(a => ({
@@ -347,7 +357,7 @@ export default function AdminDashboardV6() {
                                 carModel: a.car?.model || "N/A", 
                                 carYear: a.car?.year || 0,
                                 carId: a.car_id,
-                                sellerName: a.seller?.full_name || "Desconocido", 
+                                sellerName: a.car?.seller?.full_name || "Desconocido", 
                                 pldStatus: "PENDING", 
                                 status: "PENDING_DOCS",
                                 documents: []
@@ -364,7 +374,14 @@ export default function AdminDashboardV6() {
                                             <div className="h-16 w-16 bg-zinc-950 rounded-2xl flex items-center justify-center border border-zinc-800"><CarFront className="h-8 w-8 text-zinc-800" /></div>
                                             <div>
                                                 <h4 className="text-xl font-black italic">{appt.car?.make} {appt.car?.model}</h4>
-                                                <p className="text-[10px] font-bold text-zinc-500 uppercase">{new Date(appt.scheduled_date).toLocaleString()}</p>
+                                                <div className="flex items-center gap-4 mt-1">
+                                                    <p className="text-[10px] font-bold text-zinc-500 uppercase">{new Date(appt.scheduled_at).toLocaleString()}</p>
+                                                    <span className="h-1 w-1 rounded-full bg-zinc-800" />
+                                                    <p className="text-[10px] font-black text-indigo-400 uppercase tracking-widest flex items-center gap-1">
+                                                        <MessageSquare className="h-3 w-3" /> {appt.car?.seller?.phone || 'Sin teléfono'}
+                                                    </p>
+                                                </div>
+                                                <p className="text-[9px] font-bold text-zinc-600 uppercase mt-2">Vendedor: {appt.car?.seller?.full_name}</p>
                                             </div>
                                         </div>
                                         <button onClick={() => setSelectedCarForReport(appt.car_id)} className="h-14 px-8 bg-emerald-600 text-white text-xs font-black rounded-xl">GESTIONAR REPORTE</button>

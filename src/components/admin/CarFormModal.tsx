@@ -82,7 +82,7 @@ export function CarFormModal({ isOpen, onClose, onSubmit, initialData, isLoading
         try {
             const result = await getAutomatedSpecsAction(formData.make, formData.model);
             if (result.success && result.specs) {
-                setFormData(prev => ({
+                setFormData((prev: any) => ({
                     ...prev,
                     technical_specs: result.specs
                 }));
@@ -567,7 +567,7 @@ export function CarFormModal({ isOpen, onClose, onSubmit, initialData, isLoading
                                 </div>
 
                                 {/* Uploaded Images */}
-                                {formData.images.map((url, i) => (
+                                {formData.images.map((url: string, i: number) => (
                                     <div key={i} className={cn(
                                         "relative aspect-video rounded-2xl overflow-hidden border-2 transition-all group",
                                         i === 0 ? "border-indigo-500 ring-2 ring-indigo-500/20" : "border-zinc-800"
@@ -576,7 +576,7 @@ export function CarFormModal({ isOpen, onClose, onSubmit, initialData, isLoading
                                         <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
                                             <button 
                                                 type="button"
-                                                onClick={() => setFormData({...formData, images: formData.images.filter((_, idx) => idx !== i)})}
+                                                onClick={() => setFormData({...formData, images: formData.images.filter((_: any, idx: number) => idx !== i)})}
                                                 className="h-8 w-8 bg-red-500 rounded-lg flex items-center justify-center text-white hover:bg-red-600 transition-colors shadow-lg"
                                             >
                                                 <X className="h-4 w-4" />

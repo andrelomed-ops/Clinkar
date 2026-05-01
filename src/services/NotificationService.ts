@@ -177,7 +177,7 @@ export class NotificationService {
         const { data: admins } = await supabase
             .from('profiles')
             .select('id')
-            .eq('role', 'admin');
+            .eq('role', 'admin') as { data: { id: string }[] | null };
 
         if (!admins || admins.length === 0) return false;
 

@@ -2,7 +2,7 @@
 
 import { ShieldCheck, Camera, Banknote, Car, CheckCircle2, FileText, Calculator, Search, ArrowRight, Zap } from "lucide-react";
 import { InstantQuote } from "@/components/sell/InstantQuote";
-import { IntakeWizard } from "@/components/sell/IntakeWizard";
+import { SimpleIntakeForm } from "@/components/sell/SimpleIntakeForm";
 import { Navbar } from "@/components/ui/navbar";
 import { useState, useEffect } from "react";
 import { createBrowserClient } from "@/lib/supabase/client";
@@ -19,6 +19,8 @@ export default function SellPage() {
     });
     const supabase = createBrowserClient();
 
+    const [started, setStarted] = useState(false);
+
     useEffect(() => {
         async function checkAdmin() {
             const { data: { user } } = await supabase.auth.getUser();
@@ -28,6 +30,25 @@ export default function SellPage() {
         }
         checkAdmin();
     }, [supabase]);
+
+    if (started) {
+        return (
+            <div className="min-h-screen bg-background text-foreground transition-colors duration-500">
+                <Navbar variant="sell" />
+                <main className="pt-32 pb-20 px-6">
+                    <div className="mx-auto max-w-4xl">
+                        <button 
+                            onClick={() => setStarted(false)}
+                            className="mb-8 text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500 hover:text-indigo-600 flex items-center gap-2 transition-colors"
+                        >
+                            <ArrowRight className="h-4 w-4 rotate-180" /> Volver al Manifiesto
+                        </button>
+                        <SimpleIntakeForm />
+                    </div>
+                </main>
+            </div>
+        );
+    }
 
     return (
         <div className="min-h-screen bg-background text-foreground transition-colors duration-500">
@@ -117,17 +138,17 @@ export default function SellPage() {
                                         </li>
                                         <li className="flex items-start gap-3 text-[11px] font-bold text-zinc-600 dark:text-zinc-300">
                                             <div className="h-4 w-4 rounded-full bg-indigo-500 text-white flex items-center justify-center text-[8px]">2</div>
-                                            Obtenemos el Score de Certificación.
+                                            Revisión física y pacto de categoría.
                                         </li>
                                         <li className="flex items-start gap-3 text-[11px] font-bold text-zinc-600 dark:text-zinc-300">
                                             <div className="h-4 w-4 rounded-full bg-indigo-500 text-white flex items-center justify-center text-[8px]">3</div>
-                                            Negociamos el precio de salida y piso.
+                                            Validación de documentos y precio final.
                                         </li>
                                     </ul>
                                 </div>
 
                                 <button 
-                                    onClick={() => window.location.href = '/sell/onboarding'}
+                                    onClick={() => setStarted(true)}
                                     className="w-full h-16 bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 rounded-[1.5rem] font-black text-xs uppercase tracking-widest hover:scale-[1.02] active:scale-[0.98] transition-all shadow-xl flex items-center justify-center gap-3"
                                 >
                                     Iniciar Proceso de Valuación <ArrowRight className="h-4 w-4" />
@@ -162,7 +183,7 @@ export default function SellPage() {
                                 <FileText className="h-6 w-6 text-indigo-600 dark:text-indigo-400" />
                             </div>
                             <h3 className="font-bold text-xl mb-3 text-foreground">2. Agendamiento Directo</h3>
-                            <p className="text-muted-foreground text-sm leading-relaxed">Sube tus papeles básicos. Nuestro equipo legal valida el VIN antes de la visita física.</p>
+                            <p className="text-muted-foreground text-sm leading-relaxed">Sin trámites complejos previos. Agenda tu cita y valida tu documentación con el asesor durante la revisión física.</p>
                         </div>
 
                         <div className="p-8 glass-card rounded-premium border-border/40 hover:border-indigo-500/30 transition-all duration-500 group animate-reveal stagger-3">

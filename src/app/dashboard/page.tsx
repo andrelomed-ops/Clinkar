@@ -101,8 +101,22 @@ export default function DashboardPage() {
                 setFavoriteCars(dbCars || []);
             }
 
-            // 4. Set Inspections to empty for now to avoid 400/404 errors
-            setActiveInspections([]);
+            // 4. Fetch Active Inspections (150-point)
+            const { data: inspections } = await supabase
+                .from("service_tickets")
+                .select("*, cars(make, model, year)")
+                .eq("status", "SCHEDULED")
+                .eq("type", "150_point_inspection")
+                .order("scheduled_at", { ascending: true });
+            
+            if (inspections) {
+                setActiveInspections(inspections.map((ins: any) => ({
+                    id: ins.id,
+                    car: `${ins.cars?.make} ${ins.cars?.model}`, // Mapping to 'car' as expected by EcosystemHub
+                    date: ins.scheduled_at,
+                    status: ins.status
+                })));
+            }
 
         } catch (err) {
             console.error("[Dashboard] Critical load error:", err);

@@ -53,7 +53,14 @@ export function AdminUserManagement({
                                 </div>
                                 <div>
                                     <h4 className="text-xl font-black italic tracking-tight uppercase">{u.full_name || 'Sin Nombre'}</h4>
-                                    <p className="text-[11px] font-black text-indigo-400 uppercase tracking-widest mt-1">{u.email || u.id}</p>
+                                    <div className="flex flex-col gap-1 mt-1">
+                                        <p className="text-[11px] font-black text-indigo-400 uppercase tracking-widest">{u.email || u.id}</p>
+                                        {u.phone && (
+                                            <p className="text-[10px] font-black text-emerald-500 uppercase tracking-widest flex items-center gap-1">
+                                                <MessageSquare className="h-3 w-3" /> {u.phone}
+                                            </p>
+                                        )}
+                                    </div>
                                     <div className="flex items-center gap-2 mt-2">
                                         <span className="px-2 py-0.5 rounded bg-zinc-950 text-[9px] font-black text-zinc-500 border border-zinc-800 uppercase">{u.role}</span>
                                         {u.role === 'investor' && (

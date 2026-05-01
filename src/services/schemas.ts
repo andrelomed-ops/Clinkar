@@ -24,6 +24,12 @@ export const CarSchema = z.object({
     technical_specs: z.any().optional().nullable(),
     category: z.string().optional().nullable(),
     digital_passport_data: z.any().optional().nullable(),
+    provenance: z.string().optional().nullable(),
+    reconditioning_budget: z.number().optional().nullable(),
+    reconditioning_notes: z.any().optional().nullable(),
+    fair_price_suggested: z.number().optional().nullable(),
+    legal_notes: z.string().optional().nullable(),
+    minimum_price: z.number().optional().nullable(),
     created_at: z.string().optional().nullable(),
 });
 

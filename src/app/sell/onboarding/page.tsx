@@ -4,9 +4,10 @@ import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { createBrowserClient } from "@/lib/supabase/client";
 import { NotificationService } from "@/services/NotificationService";
-import { ShieldCheck, Calendar, MapPin, CheckCircle2, Warehouse, Clock, ChevronDown } from "lucide-react";
+import { ShieldCheck, Calendar, MapPin, CheckCircle2, Warehouse, Clock, ChevronDown, MessageSquare } from "lucide-react";
 import { Navbar } from "@/components/ui/navbar";
 import { VEHICLE_CATEGORIES } from "@/lib/vehicle-intake-config";
+import { SellAuthModal } from "@/components/sell/SellAuthModal";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 
@@ -25,7 +26,8 @@ export default function SellOnboardingPage() {
     const [loading, setLoading] = useState(false);
     const [success, setSuccess] = useState(false);
     const [isMounted, setIsMounted] = useState(false);
-    
+    const [showAuthModal, setShowAuthModal] = useState(false);
+    const [currentUser, setCurrentUser] = useState<any>(null);
     // Partners data
     const [partners, setPartners] = useState<Partner[]>([]);
     const [selectedPartner, setSelectedPartner] = useState<Partner | null>(null);
@@ -92,17 +94,19 @@ export default function SellOnboardingPage() {
 
         try {
             const { data: { user } } = await supabase.auth.getUser();
+            
             if (!user && !isAdmin) {
-                alert("Debes iniciar sesión para publicar un auto.");
-                router.push('/login?next=/sell');
+                setShowAuthModal(true);
                 return;
             }
+
+            const activeUser = user || currentUser;
 
             const finalAddress = `${selectedPartner?.name} - ${selectedPartner?.address}, ${selectedPartner?.city}`;
 
             // 1. Create the car in Draft/Pending status
             const { data: carData, error: carError } = await supabase.from('cars').insert({
-                seller_id: user?.id || '00000000-0000-0000-0000-000000000000',
+                seller_id: activeUser?.id || '00000000-0000-0000-0000-000000000000',
                 make,
                 model,
                 year: parseInt(year) || new Date().getFullYear(),
@@ -141,6 +145,7 @@ export default function SellOnboardingPage() {
                 entityType: "SERVICE_TICKETS",
                 entityId: carData.id,
                 metadata: { 
+                    car: `${make} ${model} ${year}`,
                     address: finalAddress, 
                     type: 'workshop',
                     vehicleCategory: categoryId,
@@ -155,10 +160,8 @@ export default function SellOnboardingPage() {
             setSuccess(true);
             toast.success("¡Inspección agendada con éxito!");
             
-            // Stronger redirect
-            setTimeout(() => {
-                window.location.href = '/dashboard';
-            }, 2500);
+            // Redirect removed to prioritize WhatsApp contact
+            // User will click manual button to proceed
 
         } catch (err: any) {
             console.error("Error en onboarding completo:", err);
@@ -208,9 +211,49 @@ export default function SellOnboardingPage() {
                             Te esperamos en <span className="font-bold">{selectedPartner?.name}</span> en la fecha y hora seleccionada para tu inspección de 150 puntos. 
                             Una vez aprobada, tu {make} {model} será publicado oficialmente.
                         </p>
-                        <p className="text-xs font-bold text-zinc-400 pt-4 uppercase tracking-wider animate-pulse">
-                            Redirigiendo a tu Dashboard...
-                        </p>
+                        
+                        {(() => {
+                            const appointmentDate = new Date(date);
+                            const dateStr = appointmentDate.toLocaleDateString('es-MX', { 
+                                weekday: 'long', 
+                                year: 'numeric', 
+                                month: 'long', 
+                                day: 'numeric' 
+                            });
+                            const timeStr = appointmentDate.toLocaleTimeString('es-MX', { 
+                                hour: '2-digit', 
+                                minute: '2-digit' 
+                            });
+                            
+                            const message = `¡Hola! Acabo de agendar la certificación física para mi ${make} ${model} ${year} en ${selectedPartner?.name} para el día ${dateStr} a las ${timeStr} hrs. Quisiera confirmar mi asistencia y recibir seguimiento personalizado. Gracias.`;
+                            const encodedMessage = encodeURIComponent(message);
+                            const whatsappNumber = "5215500000000"; // Número central de StarterKar
+
+                            return (
+                                <div className="pt-6 flex flex-col gap-4">
+                                    <a 
+                                        href={`https://wa.me/${whatsappNumber}?text=${encodedMessage}`}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="inline-flex items-center justify-center gap-3 px-8 py-6 bg-emerald-600 hover:bg-emerald-500 text-white rounded-[2rem] font-black text-sm uppercase tracking-widest transition-all shadow-2xl shadow-emerald-600/40 active:scale-95 group"
+                                    >
+                                        <MessageSquare className="h-6 w-6 group-hover:scale-110 transition-transform" />
+                                        Enviar WhatsApp para Seguimiento
+                                    </a>
+                                    
+                                    <p className="text-[10px] text-zinc-400 font-bold uppercase tracking-widest text-center mt-2">
+                                        * Este paso es obligatorio para asegurar tu lugar en la agenda.
+                                    </p>
+
+                                    <button 
+                                        onClick={() => window.location.href = '/dashboard'}
+                                        className="mt-4 px-8 py-4 bg-transparent text-zinc-400 rounded-2xl font-bold text-[9px] uppercase tracking-widest hover:text-zinc-600 transition-all underline underline-offset-4"
+                                    >
+                                        Ir a Mi Garage (Ya envié el mensaje)
+                                    </button>
+                                </div>
+                            );
+                        })()}
                     </div>
                 ) : (
                     <>
@@ -335,6 +378,17 @@ export default function SellOnboardingPage() {
                     </>
                 )}
             </main>
+
+            <SellAuthModal 
+                isOpen={showAuthModal}
+                onClose={() => setShowAuthModal(false)}
+                onSuccess={(user) => {
+                    setCurrentUser(user);
+                    setShowAuthModal(false);
+                    // Optionally trigger handleSubmit automatically
+                    setTimeout(() => handleSubmit(), 500);
+                }}
+            />
         </div>
     );
 }
