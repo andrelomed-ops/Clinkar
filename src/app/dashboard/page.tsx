@@ -92,7 +92,26 @@ export default function DashboardPage() {
             }
 
             const { data: cars } = await supabase.from("cars").select("*").eq("seller_id", user.id);
-            if (cars) setOwnedCars(cars);
+            if (cars) {
+                setOwnedCars(cars);
+                
+                // Fetch appointments for these cars
+                const carIds = cars.map(c => c.id);
+                const { data: appointments } = await supabase
+                    .from("inspection_appointments")
+                    .select("*, partners(name, address)")
+                    .in("car_id", carIds)
+                    .eq("status", "PENDING");
+                
+                if (appointments) {
+                    // Enrich cars with appointment data
+                    const carsWithAppts = cars.map(car => ({
+                        ...car,
+                        appointment: appointments.find(a => a.car_id === car.id)
+                    }));
+                    setOwnedCars(carsWithAppts);
+                }
+            }
 
             const favIds = await FavoriteService.getFavorites(supabase);
             setFavoriteIds(favIds);
@@ -101,7 +120,7 @@ export default function DashboardPage() {
                 setFavoriteCars(dbCars || []);
             }
 
-            // 4. Fetch Active Inspections (150-point)
+            // 4. Fetch Active Inspections for Ecosystem Hub (service tickets)
             const { data: inspections } = await supabase
                 .from("service_tickets")
                 .select("*, cars(make, model, year)")
@@ -112,7 +131,7 @@ export default function DashboardPage() {
             if (inspections) {
                 setActiveInspections(inspections.map((ins: any) => ({
                     id: ins.id,
-                    car: `${ins.cars?.make} ${ins.cars?.model}`, // Mapping to 'car' as expected by EcosystemHub
+                    car: `${ins.cars?.make} ${ins.cars?.model}`,
                     date: ins.scheduled_at,
                     status: ins.status
                 })));
@@ -317,17 +336,34 @@ export default function DashboardPage() {
                                     <div className="grid md:grid-cols-2 gap-6">
                                         {ownedCars.map(car => (
                                             <Link key={car.id} href={"/dashboard/sell/" + car.id} className="block group">
-                                                <div className="glass-card rounded-[2.5rem] p-8 border border-zinc-100/50 hover:border-indigo-500/30 transition-all">
-                                                    <div className="flex items-center gap-6">
-                                                        <div className="h-24 w-24 rounded-3xl bg-secondary overflow-hidden shrink-0">
-                                                            {car.images?.[0] ? <Image src={car.images[0]} alt={car.make} width={96} height={96} className="object-cover" /> : <Car className="h-10 w-10 m-7 text-muted-foreground/20" />}
-                                                        </div>
-                                                        <div>
-                                                            <h3 className="font-black text-2xl italic uppercase truncate">{car.make} {car.model}</h3>
-                                                            <p className="text-[10px] font-black text-zinc-400 uppercase mt-2">{car.year} • {car.transmission}</p>
-                                                        </div>
-                                                    </div>
-                                                </div>
+                                                <div className="glass-card rounded-[2.5rem] p-8 border border-zinc-100/50 hover:border-indigo-500/30 transition-all space-y-6">
+                                                     <div className="flex items-center gap-6">
+                                                         <div className="h-24 w-24 rounded-3xl bg-secondary overflow-hidden shrink-0">
+                                                             {car.images?.[0] ? <Image src={car.images[0]} alt={car.make} width={96} height={96} className="object-cover" /> : <Car className="h-10 w-10 m-7 text-muted-foreground/20" />}
+                                                         </div>
+                                                         <div>
+                                                             <h3 className="font-black text-2xl italic uppercase truncate">{car.make} {car.model}</h3>
+                                                             <p className="text-[10px] font-black text-zinc-400 uppercase mt-2">{car.year} • {car.transmission}</p>
+                                                         </div>
+                                                     </div>
+
+                                                     {car.appointment && (
+                                                         <div className="bg-indigo-600/5 border border-indigo-600/20 rounded-2xl p-5 flex items-start gap-4 animate-in fade-in slide-in-from-bottom-2 duration-500">
+                                                             <div className="bg-indigo-600 text-white p-2.5 rounded-xl">
+                                                                 <Wrench className="h-4 w-4" />
+                                                             </div>
+                                                             <div className="space-y-1">
+                                                                 <p className="text-[10px] font-black uppercase tracking-widest text-indigo-600">Certificación Elite Programada</p>
+                                                                 <p className="text-sm font-bold text-zinc-900 dark:text-zinc-100">
+                                                                     {new Date(car.appointment.appointment_date).toLocaleDateString('es-MX', { weekday: 'long', day: 'numeric', month: 'long' })}
+                                                                 </p>
+                                                                 <p className="text-xs font-medium text-zinc-500">
+                                                                     {new Date(car.appointment.appointment_date).toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit' })} hrs en <span className="font-bold text-zinc-700 dark:text-zinc-300">{car.appointment.partners?.name}</span>
+                                                                 </p>
+                                                             </div>
+                                                         </div>
+                                                     )}
+                                                 </div>
                                             </Link>
                                         ))}
                                     </div>
