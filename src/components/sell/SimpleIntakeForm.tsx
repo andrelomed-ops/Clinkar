@@ -6,8 +6,9 @@ import { useRouter } from "next/navigation";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { Car, Calendar, ArrowRight, Loader2 } from "lucide-react";
+import { Car, Calendar, ArrowRight, Loader2, ChevronDown } from "lucide-react";
 import { toast } from "sonner";
+import { CAR_BRANDS_MODELS } from "@/lib/car-data";
 
 export function SimpleIntakeForm() {
     const router = useRouter();
@@ -57,37 +58,65 @@ export function SimpleIntakeForm() {
                         <Label className="flex items-center gap-2 font-black text-[10px] uppercase tracking-widest text-zinc-400">
                             <Car className="h-3 w-3" /> Marca
                         </Label>
-                        <Input 
-                            value={formData.make}
-                            onChange={(e) => setFormData({...formData, make: e.target.value})}
-                            placeholder="Ej. Mazda"
-                            className="h-14 rounded-2xl border-zinc-200 dark:border-zinc-800 focus:ring-2 focus:ring-indigo-500/20 font-bold"
-                        />
+                        <div className="relative">
+                            <select 
+                                value={formData.make}
+                                onChange={(e) => setFormData({...formData, make: e.target.value, model: ""})}
+                                className="w-full h-14 appearance-none rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-800/50 px-6 font-bold focus:ring-2 focus:ring-indigo-500/20 outline-none transition-all"
+                            >
+                                <option value="">Selecciona Marca...</option>
+                                {Object.keys(CAR_BRANDS_MODELS).sort().map(brand => (
+                                    <option key={brand} value={brand}>{brand}</option>
+                                ))}
+                                <option value="OTRA">Otra marca...</option>
+                            </select>
+                            <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400 pointer-events-none" />
+                        </div>
                     </div>
                     
                     <div className="space-y-2">
                         <Label className="flex items-center gap-2 font-black text-[10px] uppercase tracking-widest text-zinc-400">
                             <Car className="h-3 w-3" /> Modelo
                         </Label>
-                        <Input 
-                            value={formData.model}
-                            onChange={(e) => setFormData({...formData, model: e.target.value})}
-                            placeholder="Ej. CX-5"
-                            className="h-14 rounded-2xl border-zinc-200 dark:border-zinc-800 focus:ring-2 focus:ring-indigo-500/20 font-bold"
-                        />
+                        <div className="relative">
+                            <select 
+                                value={formData.model}
+                                disabled={!formData.make || formData.make === 'OTRA'}
+                                onChange={(e) => setFormData({...formData, model: e.target.value})}
+                                className="w-full h-14 appearance-none rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-800/50 px-6 font-bold focus:ring-2 focus:ring-indigo-500/20 outline-none transition-all disabled:opacity-50"
+                            >
+                                <option value="">Selecciona Modelo...</option>
+                                {formData.make && CAR_BRANDS_MODELS[formData.make] && CAR_BRANDS_MODELS[formData.make].map(model => (
+                                    <option key={model} value={model}>{model}</option>
+                                ))}
+                                <option value="OTRO">Otro modelo...</option>
+                            </select>
+                            <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400 pointer-events-none" />
+                        </div>
+                        {formData.make === 'OTRA' && (
+                             <Input 
+                                value={formData.model}
+                                onChange={(e) => setFormData({...formData, model: e.target.value})}
+                                placeholder="Escribe marca y modelo..."
+                                className="h-14 rounded-2xl border-zinc-200 dark:border-zinc-800 focus:ring-2 focus:ring-indigo-500/20 font-bold mt-2"
+                            />
+                        )}
                     </div>
 
                     <div className="space-y-2">
                         <Label className="flex items-center gap-2 font-black text-[10px] uppercase tracking-widest text-zinc-400">
                             <Calendar className="h-3 w-3" /> Año
                         </Label>
-                        <Input 
+                        <select 
                             value={formData.year}
-                            type="number"
                             onChange={(e) => setFormData({...formData, year: e.target.value})}
-                            placeholder="Ej. 2022"
-                            className="h-14 rounded-2xl border-zinc-200 dark:border-zinc-800 focus:ring-2 focus:ring-indigo-500/20 font-bold"
-                        />
+                            className="w-full h-14 appearance-none rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-800/50 px-6 font-bold focus:ring-2 focus:ring-indigo-500/20 outline-none transition-all"
+                        >
+                            <option value="">Selecciona Año...</option>
+                            {Array.from({length: 30}, (_, i) => new Date().getFullYear() - i).map(year => (
+                                <option key={year} value={year}>{year}</option>
+                            ))}
+                        </select>
                     </div>
                 </div>
 

@@ -1,62 +1,42 @@
 
-export const POPULAR_BRANDS = [
-    "BMW", "Mercedes-Benz", "Audi", "Porsche", "Tesla", 
-    "Toyota", "Honda", "Mazda", "Nissan", "Ford", 
-    "Chevrolet", "Volkswagen", "Kia", "Hyundai", "Land Rover"
-];
-
-export const MODEL_SUGGESTIONS: Record<string, string[]> = {
-    "BMW": ["M2", "M3", "M4", "X3", "X5", "Series 3", "Series 4"],
-    "Mazda": ["3", "MX-5", "CX-5", "CX-30", "CX-90", "2"],
-    "Toyota": ["Tacoma", "Hilux", "Corolla", "Camry", "RAV4", "Supra"],
-    "Mercedes-Benz": ["A-Class", "C-Class", "E-Class", "GLC", "GLE", "AMG GT"],
-    "Audi": ["A3", "A4", "Q3", "Q5", "RS3", "RS6", "R8"],
-    "Tesla": ["Model 3", "Model Y", "Model S", "Model X", "Cybertruck"],
-    "Porsche": ["911", "718 Cayman", "Taycan", "Macan", "Cayenne"],
-    "Honda": ["Civic", "CR-V", "HR-V", "Accord", "Fit"],
-    "Chevrolet": ["Cheyenne", "Aveo", "Onix", "Trax", "Captiva"]
+export const CAR_BRANDS_MODELS: Record<string, string[]> = {
+    "Acura": ["ILX", "MDX", "NSX", "RDX", "RLX", "TLX"],
+    "Alfa Romeo": ["Giulia", "Giulietta", "Stelvio"],
+    "Audi": ["A1", "A3", "A4", "A5", "A6", "A7", "A8", "Q2", "Q3", "Q5", "Q7", "Q8", "RS3", "RS5", "S3", "S4", "S5", "TT"],
+    "BMW": ["Serie 1", "Serie 2", "Serie 3", "Serie 4", "Serie 5", "Serie 7", "X1", "X2", "X3", "X4", "X5", "X6", "X7", "Z4", "M2", "M3", "M4", "M5"],
+    "Buick": ["Enclave", "Encore", "Envision", "LaCrosse"],
+    "Cadillac": ["ATS", "CTS", "Escalade", "XT4", "XT5", "XT6"],
+    "Chevrolet": ["Aveo", "Beat", "Blazer", "Camaro", "Captiva", "Cavalier", "Cheyenne", "Colorado", "Corvette", "Cruze", "Equinox", "Onix", "S10", "Silverado", "Spark", "Suburban", "Tahoe", "Tracker", "Traverse", "Trax"],
+    "Chrysler": ["300", "Pacifica"],
+    "Dodge": ["Attitude", "Challenger", "Charger", "Durango", "Journey", "Neon"],
+    "Fiat": ["500", "Argo", "Mobi", "Palio", "Pulse", "Uno"],
+    "Ford": ["Bronco", "EcoSport", "Edge", "Escape", "Expedition", "Explorer", "F-150", "Fiesta", "Figo", "Focus", "Fusion", "Lobo", "Maverick", "Mustang", "Ranger", "Territory", "Transit"],
+    "GMC": ["Acadia", "Sierra", "Terrain", "Yukon"],
+    "Honda": ["Accord", "City", "Civic", "CR-V", "Fit", "HR-V", "Insight", "Odyssey", "Pilot", "Ridgeline"],
+    "Hyundai": ["Accent", "Creta", "Elantra", "Grand i10", "Ioniq", "Santa Fe", "Tucson", "Venue"],
+    "Infiniti": ["Q50", "Q60", "QX50", "QX60", "QX80"],
+    "JAC": ["Frison", "J7", "S2", "S3", "S4", "Sei 2", "Sei 3", "Sei 4", "Sei 7"],
+    "Jaguar": ["E-Pace", "F-Pace", "F-Type", "XE", "XF"],
+    "Jeep": ["Cherokee", "Compass", "Gladiator", "Grand Cherokee", "Renegade", "Wrangler"],
+    "KIA": ["Forte", "Niro", "Optima", "Rio", "Sedona", "Seltos", "Sorento", "Soul", "Sportage", "Stinger"],
+    "Land Rover": ["Defender", "Discovery", "Range Rover", "Range Rover Evoque", "Range Rover Sport", "Range Rover Velar"],
+    "Lexus": ["ES", "IS", "LS", "NX", "RX", "UX"],
+    "Lincoln": ["Aviator", "Corsair", "Nautilus", "Navigator"],
+    "Mazda": ["Mazda 2", "Mazda 3", "Mazda 6", "CX-3", "CX-30", "CX-5", "CX-50", "CX-9", "MX-5"],
+    "Mercedes-Benz": ["Clase A", "Clase B", "Clase C", "Clase E", "Clase S", "CLA", "CLS", "GLA", "GLB", "GLC", "GLE", "GLS", "AMG GT"],
+    "MG": ["GT", "HS", "RX5", "ZS", "MG5"],
+    "MINI": ["Cooper", "Clubman", "Countryman"],
+    "Mitsubishi": ["L200", "Mirage", "Montero Sport", "Outlander", "Xpander"],
+    "Nissan": ["Altima", "Frontier", "Kicks", "March", "Maxima", "Murano", "NP300", "Pathfinder", "Sentra", "Tiida", "Urvan", "Versa", "X-Trail", "Z"],
+    "Peugeot": ["208", "301", "2008", "3008", "5008", "Partner", "Rifter"],
+    "Porsche": ["718", "911", "Cayenne", "Macan", "Panamera", "Taycan"],
+    "RAM": ["700", "1500", "2500", "Promaster"],
+    "Renault": ["Captur", "Duster", "Kwid", "Koleos", "Logan", "Oroch", "Stepway", "Twizy"],
+    "SEAT": ["Arona", "Ateca", "Ibiza", "Leon", "Tarraco"],
+    "Subaru": ["BRZ", "Forester", "WRX", "XV"],
+    "Suzuki": ["Ertiga", "Ignis", "Jimny", "Swift", "Vitara", "S-Cross"],
+    "Tesla": ["Model 3", "Model S", "Model X", "Model Y"],
+    "Toyota": ["Avanza", "Camry", "Corolla", "Hiace", "Highlander", "Hilux", "Prius", "RAV4", "Sienna", "Tacoma", "Tundra", "Yaris"],
+    "Volkswagen": ["Caddy", "Golf", "Jetta", "Nivus", "Polo", "Saveiro", "T-Cross", "Taos", "Teramont", "Tiguan", "Vento", "Virtus"],
+    "Volvo": ["S60", "S90", "V60", "XC40", "XC60", "XC90"]
 };
-
-export const PRESET_SPECS: Record<string, any> = {
-    "Mazda-3": {
-        performance: { engine: "2.5L Turbo", horsepower: "227 hp", fuelType: "Gasoline", transmission: "Automatic", driveTrain: "AWD", cylinders: 4, consumption: "12.4 km/l" },
-        architecture: { bodyType: "Sedan", doors: 4, passengers: 5, dimensions: "4662 x 1795 x 1440 mm", tankCapacity: "51L", rims: "18\"" },
-        features: { ac: true, sunroof: true, leatherSeats: true, touchScreen: true, carPlay: true, androidAuto: true, bluetooth: true, startStopButton: true },
-        security: { airbags: 7, abs: true, discBrakes: 4, reverseCamera: true, parkingSensors: true }
-    },
-    "Mazda-3 Sport": {
-        performance: { engine: "2.5L Turbo High Output", horsepower: "250 hp", fuelType: "Gasoline", transmission: "Automatic", driveTrain: "AWD", cylinders: 4, consumption: "11.8 km/l" },
-        architecture: { bodyType: "Hatchback", doors: 5, passengers: 5, dimensions: "4459 x 1795 x 1440 mm", tankCapacity: "51L", rims: "18\"" },
-        features: { ac: true, sunroof: true, leatherSeats: true, touchScreen: true, carPlay: true, androidAuto: true, bluetooth: true, startStopButton: true },
-        security: { airbags: 7, abs: true, discBrakes: 4, reverseCamera: true, parkingSensors: true }
-    },
-    "BMW-M3": {
-        performance: { engine: "3.0L Twin-Turbo I6", horsepower: "473 hp", fuelType: "Gasoline", transmission: "Manual", driveTrain: "RWD", cylinders: 6, consumption: "8.5 km/l" },
-        architecture: { bodyType: "Sedan", doors: 4, passengers: 5, dimensions: "4794 x 1903 x 1433 mm", tankCapacity: "59L", rims: "19\"/20\"" },
-        features: { ac: true, sunroof: false, leatherSeats: true, touchScreen: true, carPlay: true, androidAuto: true, bluetooth: true, startStopButton: true },
-        security: { airbags: 6, abs: true, discBrakes: 4, reverseCamera: true, parkingSensors: true }
-    },
-    "Tesla-Model 3": {
-        performance: { engine: "Dual Motor Electric", horsepower: "450 hp", fuelType: "Electric", transmission: "Direct", driveTrain: "AWD", cylinders: 0, consumption: "0.0 km/l" },
-        architecture: { bodyType: "Sedan", doors: 4, passengers: 5, dimensions: "4694 x 1849 x 1443 mm", tankCapacity: "N/A", rims: "18\"/19\"" },
-        features: { ac: true, sunroof: true, leatherSeats: true, touchScreen: true, carPlay: false, androidAuto: false, bluetooth: true, startStopButton: true },
-        security: { airbags: 8, abs: true, discBrakes: 4, reverseCamera: true, parkingSensors: true }
-    }
-};
-
-export function getSpecsForModel(brand: string, model: string) {
-    const key = `${brand}-${model}`;
-    if (PRESET_SPECS[key]) return PRESET_SPECS[key];
-
-    // Generic Fallback based on brand if no exact match
-    if (brand && model) {
-        return {
-            performance: { engine: "2.0L 4-Cil", horsepower: "150 hp", fuelType: "Gasoline", transmission: "Automatic", driveTrain: "FWD", cylinders: 4, consumption: "14 km/l" },
-            architecture: { bodyType: "Sedan", doors: 4, passengers: 5, dimensions: "TBD", tankCapacity: "50L", rims: "17\"" },
-            features: { ac: true, sunroof: false, leatherSeats: false, touchScreen: true, carPlay: true, androidAuto: true, bluetooth: true, startStopButton: true },
-            security: { airbags: 6, abs: true, discBrakes: 4, reverseCamera: true, parkingSensors: true }
-        };
-    }
-    
-    return null;
-}
