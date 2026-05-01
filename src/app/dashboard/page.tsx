@@ -3,7 +3,7 @@
 import { useState, useEffect, useMemo } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { ShieldCheck, CreditCard, Clock, CheckCircle2, QrCode, ArrowRight, MapPin, Wrench, Car, CarFront, Smartphone, Heart, LogOut, LayoutDashboard, Search, User, BarChart3, TrendingUp, Zap, Diamond, Crown } from "lucide-react";
+import { ShieldCheck, CreditCard, Clock, CheckCircle2, QrCode, ArrowRight, MapPin, Wrench, Car, CarFront, Smartphone, Heart, LogOut, LayoutDashboard, Search, User, BarChart3, TrendingUp, Zap, Diamond, Crown, Trash2 } from "lucide-react";
 import { StarterKarLogo } from "@/components/ui/StarterKarLogo";
 import confetti from "canvas-confetti";
 import { toast } from "sonner";
@@ -179,6 +179,25 @@ export default function DashboardPage() {
         loadDashboard();
     };
 
+    const handleCancelAppointment = async (apptId: string) => {
+        const confirm = window.confirm("¿Estás seguro de que deseas cancelar esta cita de inspección?");
+        if (!confirm) return;
+
+        try {
+            const { error } = await supabase
+                .from("inspection_appointments")
+                .delete()
+                .eq("id", apptId);
+            
+            if (error) throw error;
+            toast.success("Cita cancelada correctamente");
+            loadDashboard();
+        } catch (err) {
+            console.error("Error cancelling appointment:", err);
+            toast.error("No se pudo cancelar la cita");
+        }
+    };
+
     if (!mounted) return <div className="p-12"><Skeleton className="h-20 w-full" /></div>;
 
     return (
@@ -348,19 +367,32 @@ export default function DashboardPage() {
                                                      </div>
 
                                                      {car.appointment && (
-                                                         <div className="bg-indigo-600/5 border border-indigo-600/20 rounded-2xl p-5 flex items-start gap-4 animate-in fade-in slide-in-from-bottom-2 duration-500">
-                                                             <div className="bg-indigo-600 text-white p-2.5 rounded-xl">
-                                                                 <Wrench className="h-4 w-4" />
+                                                         <div className="bg-indigo-600/5 border border-indigo-600/20 rounded-2xl p-5 flex items-start justify-between gap-4 animate-in fade-in slide-in-from-bottom-2 duration-500">
+                                                             <div className="flex items-start gap-4">
+                                                                 <div className="bg-indigo-600 text-white p-2.5 rounded-xl">
+                                                                     <Wrench className="h-4 w-4" />
+                                                                 </div>
+                                                                 <div className="space-y-1">
+                                                                     <p className="text-[10px] font-black uppercase tracking-widest text-indigo-600">Certificación Elite Programada</p>
+                                                                     <p className="text-sm font-bold text-zinc-900 dark:text-zinc-100">
+                                                                         {new Date(car.appointment.appointment_date).toLocaleDateString('es-MX', { weekday: 'long', day: 'numeric', month: 'long' })}
+                                                                     </p>
+                                                                     <p className="text-xs font-medium text-zinc-500">
+                                                                         {new Date(car.appointment.appointment_date).toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit' })} hrs en <span className="font-bold text-zinc-700 dark:text-zinc-300">{car.appointment.partners?.name}</span>
+                                                                     </p>
+                                                                 </div>
                                                              </div>
-                                                             <div className="space-y-1">
-                                                                 <p className="text-[10px] font-black uppercase tracking-widest text-indigo-600">Certificación Elite Programada</p>
-                                                                 <p className="text-sm font-bold text-zinc-900 dark:text-zinc-100">
-                                                                     {new Date(car.appointment.appointment_date).toLocaleDateString('es-MX', { weekday: 'long', day: 'numeric', month: 'long' })}
-                                                                 </p>
-                                                                 <p className="text-xs font-medium text-zinc-500">
-                                                                     {new Date(car.appointment.appointment_date).toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit' })} hrs en <span className="font-bold text-zinc-700 dark:text-zinc-300">{car.appointment.partners?.name}</span>
-                                                                 </p>
-                                                             </div>
+                                                             <button 
+                                                                 onClick={(e) => {
+                                                                     e.preventDefault();
+                                                                     e.stopPropagation();
+                                                                     handleCancelAppointment(car.appointment.id);
+                                                                 }}
+                                                                 className="p-2 text-zinc-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all"
+                                                                 title="Cancelar Cita"
+                                                             >
+                                                                 <Trash2 className="h-4 w-4" />
+                                                             </button>
                                                          </div>
                                                      )}
                                                  </div>
