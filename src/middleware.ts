@@ -65,7 +65,12 @@ export async function middleware(request: NextRequest) {
     }
   )
 
-  const { data: { user } } = await supabase.auth.getUser()
+  const { data: { user }, error: userError } = await supabase.auth.getUser()
+  
+  if (userError) {
+      // Si hay un error de sesión, limpiar cookies si es necesario
+      console.log("[Middleware] User check error:", userError.message)
+  }
 
   // Protected routes logic
   const isProtectedPath = (request.nextUrl.pathname.startsWith('/dashboard') && !request.nextUrl.pathname.startsWith('/dashboard/stats')) || 

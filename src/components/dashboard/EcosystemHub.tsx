@@ -139,8 +139,11 @@ export function EcosystemHub({ userProfile, activeInspections, investorApp }: Ec
                 <div className="pl-10 border-l border-zinc-200/80 dark:border-zinc-800/80 shrink-0">
                     {activeInspections.length > 0 ? (
                         <div className="flex items-center gap-4 group cursor-pointer">
-                            <div className="h-11 w-11 rounded-2xl bg-amber-500/10 flex items-center justify-center text-amber-600 shadow-inner group-hover:bg-amber-500 group-hover:text-white transition-all duration-500">
+                            <div className="h-11 w-11 rounded-2xl bg-amber-500/10 flex items-center justify-center text-amber-600 shadow-inner group-hover:bg-amber-500 group-hover:text-white transition-all duration-500 relative">
                                 <Wrench className="h-5 w-5" />
+                                <span className="absolute -top-1.5 -right-1.5 bg-amber-600 text-white text-[9px] font-black w-5 h-5 flex items-center justify-center rounded-full border-2 border-white shadow-lg group-hover:bg-white group-hover:text-amber-600 group-hover:border-amber-600 transition-colors">
+                                    {activeInspections.length}
+                                </span>
                             </div>
                             <div>
                                 <p className="text-[9px] font-black uppercase tracking-[0.2em] text-amber-600/70">Inspección Activa</p>

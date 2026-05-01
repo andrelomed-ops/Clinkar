@@ -8,19 +8,25 @@ export const dynamic = 'force-dynamic'
 export async function GET(request: Request) {
   const { searchParams, origin } = new URL(request.url)
   const code = searchParams.get('code')
+  const next = searchParams.get('next')
   
-  // Lógica de Redirección Estricta:
-  // 1. Si hay parámetros de vehículo (make/model), el usuario viene de un flujo de venta -> Onboarding.
-  // 2. Si es un login normal -> Siempre al Dashboard.
+  // Parámetros capturados de la URL
+  const make = searchParams.get('make')
+  const model = searchParams.get('model')
+  const category = searchParams.get('category')
+  const year = searchParams.get('year')
+  const km = searchParams.get('km')
   
-  let redirectPath = '/dashboard';
+  let redirectPath = next || '/dashboard';
   
-  if (make || model || category) {
+  if (!next && (make || model || category)) {
     redirectPath = '/sell/onboarding';
   }
 
   if (code) {
-    const cookieStore = cookies()
+    // En Next.js 16, cookies() DEBE ser esperado
+    const cookieStore = await cookies()
+    
     const supabase = createServerClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
       process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
@@ -52,7 +58,6 @@ export async function GET(request: Request) {
       if (!error) {
         const targetUrl = new URL(redirectPath, origin)
         
-        // Solo pasar parámetros si vamos al onboarding
         if (redirectPath === '/sell/onboarding') {
             if (category) targetUrl.searchParams.set('category', category)
             if (make) targetUrl.searchParams.set('make', make)
@@ -68,6 +73,5 @@ export async function GET(request: Request) {
     }
   }
 
-  // Fallback absoluto
   return NextResponse.redirect(`${origin}/dashboard`)
 }

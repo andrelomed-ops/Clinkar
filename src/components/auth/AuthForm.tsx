@@ -107,18 +107,25 @@ export function AuthForm({ initialMode = "login" }: AuthFormProps) {
 
     const handleGoogleLogin = async () => {
         setLoading(true);
-        const next = searchParams.get("next");
-        const redirectTo = new URL(`${window.location.origin}/auth/callback`);
-        if (next) redirectTo.searchParams.set("next", next);
+        setError(null);
+        try {
+            const next = searchParams.get("next");
+            const redirectTo = `${window.location.origin}/auth/callback${next ? `?next=${encodeURIComponent(next)}` : ''}`;
 
-        const { error } = await supabase.auth.signInWithOAuth({
-            provider: 'google',
-            options: {
-                redirectTo: redirectTo.toString(),
-            },
-        });
-        if (error) {
-            setError(error.message);
+            const { error } = await supabase.auth.signInWithOAuth({
+                provider: 'google',
+                options: {
+                    redirectTo,
+                },
+            });
+            
+            if (error) {
+                setError(error.message);
+                setLoading(false);
+            }
+        } catch (err: any) {
+            console.error("Google Login Error:", err);
+            setError(err.message || "Error al conectar con Google");
             setLoading(false);
         }
     };

@@ -5,6 +5,8 @@ import { startTransaction } from "@/app/actions/transaction";
 import SmartPaymentSelector from "@/components/checkout/SmartPaymentSelector";
 import TrustSeal from "@/components/checkout/TrustSeal";
 import SellerDashboardView from "@/components/dashboard/SellerDashboardView";
+import { WarrantyService } from "@/services/WarrantyService";
+import { PldService } from "@/services/PldService";
 import { ArrowLeft, X, Loader2, ShieldCheck, MapPin, Truck } from "lucide-react";
 import Link from "next/link";
 import LEGAL_TEXTS from "@/data/legal_texts.json";
@@ -25,6 +27,9 @@ export default function CheckoutSimulationPage() {
     const [isMounted, setIsMounted] = useState(false);
     const [agreedToTerms, setAgreedToTerms] = useState(false);
     const [agreedToPrivacy, setAgreedToPrivacy] = useState(false);
+    const [warrantyType, setWarrantyType] = useState<'STANDARD' | 'EXTENDED'>('STANDARD');
+    const [isPldChecking, setIsPldChecking] = useState(false);
+    const [pldStatus, setPldStatus] = useState<'PENDING' | 'CLEAN' | 'WARNING' | 'BLOCKED'>('PENDING');
 
     // Concurrency Lock Timer
     const [timeLeft, setTimeLeft] = useState(15 * 60); // 15 minutes in seconds
@@ -58,22 +63,44 @@ export default function CheckoutSimulationPage() {
 
     const formatCurrency = (val: number) => isMounted ? val.toLocaleString() : "...";
 
+    // Get Quotes from WarrantyService
+    const warrantyQuotes = WarrantyService.getQuotes(SIMULATION_CONFIG.CAR_PRICE, "00000000-0000-0000-0000-000000000003");
+    const selectedQuote = warrantyQuotes.find(q => q.type === warrantyType);
+
     // Dynamic Total Calculation
-    const totalAmount = deliveryMethod === 'HOME' ? SIMULATION_CONFIG.CAR_PRICE + SIMULATION_CONFIG.DELIVERY_COST : SIMULATION_CONFIG.CAR_PRICE;
+    const deliveryCost = deliveryMethod === 'HOME' ? SIMULATION_CONFIG.DELIVERY_COST : 0;
+    const warrantyCost = selectedQuote?.cost || 0;
+    
+    const totalAmount = SIMULATION_CONFIG.CAR_PRICE + deliveryCost + warrantyCost;
 
     const handleProcessPayment = async () => {
+        setIsPldChecking(true);
         setStep('PROCESSING');
 
         try {
+            // 1. Simulación de PLD (Security First)
+            // Usamos un nombre "seguro" para la demo, o uno "bloqueado" para probar errores
+            const screeningName = "Comprador de Prueba"; 
+            
+            // Simulación de delay de API de Cumplimiento
+            await new Promise(resolve => setTimeout(resolve, 1500));
+            
+            // En una implementación real, aquí llamaríamos a PldService.screenPerson
+            setPldStatus('CLEAN');
+            setIsPldChecking(false);
+
+            // 2. Iniciar Transacción
             await startTransaction("00000000-0000-0000-0000-000000000003", {
-                logistics: deliveryMethod === 'HOME' ? { type: 'HOME', cost: SIMULATION_CONFIG.DELIVERY_COST } : undefined
+                logistics: deliveryMethod === 'HOME' ? { type: 'HOME', cost: SIMULATION_CONFIG.DELIVERY_COST } : undefined,
+                warranty: { type: warrantyType, cost: warrantyCost }
             });
-            // If we're here, it succeeded but since startTransaction redirects, it shouldn't execute.
+            
             setStep('SUCCESS');
         } catch (error: any) {
             console.error("Payment failed", error);
-            alert("Payment Error: " + error.message);
-            setStep('DETAILS'); // Reset
+            alert("Error en la operación: " + error.message);
+            setStep('DETAILS');
+            setIsPldChecking(false);
         }
     };
 
@@ -238,6 +265,48 @@ export default function CheckoutSimulationPage() {
                                         </div>
                                     </div>
 
+                                    {/* WARRANTY SELECTION SECTION */}
+                                    <div className="space-y-4">
+                                        <h3 className="text-sm font-bold text-zinc-400 uppercase tracking-widest">Protección StarterKar</h3>
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                            <button
+                                                onClick={() => setWarrantyType('STANDARD')}
+                                                className={`group relative p-4 rounded-xl border-2 text-left transition-all ${warrantyType === 'STANDARD'
+                                                    ? 'border-blue-500 bg-blue-500/5'
+                                                    : 'border-zinc-800 bg-zinc-950 hover:border-zinc-700'
+                                                    }`}
+                                            >
+                                                <div className="flex items-start gap-3">
+                                                    <div className={`p-2 rounded-lg ${warrantyType === 'STANDARD' ? 'bg-blue-500 text-black' : 'bg-zinc-800 text-zinc-400'}`}>
+                                                        <ShieldCheck className="h-5 w-5" />
+                                                    </div>
+                                                    <div>
+                                                        <p className={`font-bold ${warrantyType === 'STANDARD' ? 'text-white' : 'text-zinc-300'}`}>Garantía Básica</p>
+                                                        <p className="text-xs text-blue-400 font-bold mt-0.5">Incluida (90 días)</p>
+                                                    </div>
+                                                </div>
+                                            </button>
+
+                                            <button
+                                                onClick={() => setWarrantyType('EXTENDED')}
+                                                className={`group relative p-4 rounded-xl border-2 text-left transition-all ${warrantyType === 'EXTENDED'
+                                                    ? 'border-indigo-500 bg-indigo-500/5'
+                                                    : 'border-zinc-800 bg-zinc-950 hover:border-zinc-700'
+                                                    }`}
+                                            >
+                                                <div className="flex items-start gap-3">
+                                                    <div className={`p-2 rounded-lg ${warrantyType === 'EXTENDED' ? 'bg-indigo-500 text-white' : 'bg-zinc-800 text-zinc-400'}`}>
+                                                        <ShieldCheck className={`h-5 w-5 ${pldStatus === 'CLEAN' ? 'text-emerald-500' : 'text-amber-500'}`} />
+                                                    </div>
+                                                    <div>
+                                                        <p className={`font-bold ${warrantyType === 'EXTENDED' ? 'text-white' : 'text-zinc-300'}`}>Garantía Extendida</p>
+                                                        <p className="text-xs text-indigo-400 font-bold mt-0.5">+${formatCurrency(warrantyCost)} (12 meses)</p>
+                                                    </div>
+                                                </div>
+                                            </button>
+                                        </div>
+                                    </div>
+
                                     <div className="border-t border-zinc-800 my-6"></div>
 
                                     <SmartPaymentSelector
@@ -257,7 +326,7 @@ export default function CheckoutSimulationPage() {
                                         {step === 'PROCESSING' ? (
                                             <>
                                                 <Loader2 className="h-6 w-6 animate-spin" />
-                                                Procesando Pago Total...
+                                                {isPldChecking ? "Ejecutando Screening PLD..." : "Procesando Pago Total..."}
                                             </>
                                         ) : (
                                             `Pagar $${formatCurrency(totalAmount)}`

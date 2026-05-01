@@ -151,17 +151,18 @@ export default function SellerDashboardView() {
                 {/* PLD / Compliance Status Widget */}
                 <div className="p-4 rounded-2xl border bg-blue-500/10 border-blue-500/20 flex items-center justify-between">
                     <div className="flex items-center gap-3">
-                        <ShieldCheck className="h-5 w-5 text-blue-600" />
+                        <div className="h-10 w-10 bg-blue-600 rounded-lg flex items-center justify-center text-white">
+                            <ShieldCheck className="h-6 w-6" />
+                        </div>
                         <div>
-                            <p className="text-sm font-bold text-foreground">Nivel de Verificación</p>
-                            <p className="text-xs text-muted-foreground">Sube tu INE para blindar tu cuenta</p>
+                            <p className="text-sm font-bold text-foreground">Cumplimiento PLD</p>
+                            <p className="text-xs text-muted-foreground">Estado de verificación: <span className="text-blue-500 font-bold uppercase tracking-tighter">Verificado (Clean)</span></p>
                         </div>
                     </div>
-                    <Link href="/dashboard/verification">
-                        <Button size="sm" className="bg-blue-600 hover:bg-blue-500 text-white border-none font-bold text-xs h-8">
-                            Verificar Ahora
-                        </Button>
-                    </Link>
+                    <div className="flex items-center gap-2">
+                         <div className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
+                         <span className="text-[10px] font-black text-emerald-600 uppercase tracking-widest">Safe</span>
+                    </div>
                 </div>
             </div>
 

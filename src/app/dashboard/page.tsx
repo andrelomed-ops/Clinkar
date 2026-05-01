@@ -95,22 +95,39 @@ export default function DashboardPage() {
             if (cars) {
                 setOwnedCars(cars);
                 
-                // Fetch appointments for these cars
+                // Fetch appointments for these cars (From both legacy and new service tickets)
                 const carIds = cars.map(c => c.id);
+                
+                // 1. Citas Legacy
                 const { data: appointments } = await supabase
                     .from("inspection_appointments")
                     .select("*, partners(name, address)")
                     .in("car_id", carIds)
                     .eq("status", "PENDING");
                 
-                if (appointments) {
-                    // Enrich cars with appointment data
-                    const carsWithAppts = cars.map(car => ({
+                // 2. Citas Modernas (Service Tickets)
+                const { data: tickets } = await supabase
+                    .from("service_tickets")
+                    .select("*, partners(name, address)")
+                    .in("car_id", carIds)
+                    .eq("type", "150_point_inspection")
+                    .eq("status", "SCHEDULED");
+                
+                const carsWithAppts = cars.map(car => {
+                    // Priorizar service tickets si existen
+                    const ticket = tickets?.find(t => t.car_id === car.id);
+                    const appt = appointments?.find(a => a.car_id === car.id);
+                    
+                    return {
                         ...car,
-                        appointment: appointments.find(a => a.car_id === car.id)
-                    }));
-                    setOwnedCars(carsWithAppts);
-                }
+                        appointment: ticket ? {
+                            id: ticket.id,
+                            appointment_date: ticket.scheduled_at,
+                            partners: ticket.partners
+                        } : appt
+                    };
+                });
+                setOwnedCars(carsWithAppts);
             }
 
             const favIds = await FavoriteService.getFavorites(supabase);
@@ -367,18 +384,18 @@ export default function DashboardPage() {
                                                      </div>
 
                                                      {car.appointment && (
-                                                         <div className="bg-indigo-600/5 border border-indigo-600/20 rounded-2xl p-5 flex items-start justify-between gap-4 animate-in fade-in slide-in-from-bottom-2 duration-500">
-                                                             <div className="flex items-start gap-4">
-                                                                 <div className="bg-indigo-600 text-white p-2.5 rounded-xl">
-                                                                     <Wrench className="h-4 w-4" />
+                                                         <div className="bg-zinc-50/80 dark:bg-zinc-900/50 border border-zinc-100 dark:border-zinc-800 rounded-3xl p-5 flex items-center justify-between gap-4 transition-all">
+                                                             <div className="flex items-center gap-4">
+                                                                 <div className="h-10 w-10 bg-indigo-600/10 text-indigo-600 flex items-center justify-center rounded-2xl shrink-0">
+                                                                     <ShieldCheck className="h-5 w-5" />
                                                                  </div>
-                                                                 <div className="space-y-1">
-                                                                     <p className="text-[10px] font-black uppercase tracking-widest text-indigo-600">Certificación Elite Programada</p>
-                                                                     <p className="text-sm font-bold text-zinc-900 dark:text-zinc-100">
+                                                                 <div className="space-y-0.5">
+                                                                     <p className="text-[10px] font-black uppercase tracking-widest text-indigo-600/80">Certificación Elite</p>
+                                                                     <p className="text-sm font-black text-zinc-900 dark:text-zinc-100 uppercase italic">
                                                                          {new Date(car.appointment.appointment_date).toLocaleDateString('es-MX', { weekday: 'long', day: 'numeric', month: 'long' })}
                                                                      </p>
-                                                                     <p className="text-xs font-medium text-zinc-500">
-                                                                         {new Date(car.appointment.appointment_date).toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit' })} hrs en <span className="font-bold text-zinc-700 dark:text-zinc-300">{car.appointment.partners?.name}</span>
+                                                                     <p className="text-[10px] font-bold text-zinc-400">
+                                                                         {new Date(car.appointment.appointment_date).toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit' })} hrs • {car.appointment.partners?.name}
                                                                      </p>
                                                                  </div>
                                                              </div>
