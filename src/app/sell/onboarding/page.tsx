@@ -66,6 +66,22 @@ export default function SellOnboardingPage() {
             if (data) setTimeout(() => setPartners(data), 0);
         };
         fetchPartners();
+
+        // Check for auto-continuation after Google login
+        const checkAuth = async () => {
+            const { data: { user } } = await supabase.auth.getUser();
+            if (user) {
+                setCurrentUser(user);
+                const tempState = localStorage.getItem('starterkar_onboarding_temp');
+                if (tempState) {
+                    localStorage.removeItem('starterkar_onboarding_temp');
+                    toast.success("Sesión iniciada con Google. Finalizando tu agenda...");
+                    // Give it a tiny moment for partners to load before submitting
+                    setTimeout(() => handleSubmit(), 1000);
+                }
+            }
+        };
+        checkAuth();
     }, [supabase]);
 
     const handleSubmit = async (e?: React.FormEvent) => {
