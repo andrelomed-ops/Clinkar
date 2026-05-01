@@ -107,10 +107,14 @@ export function AuthForm({ initialMode = "login" }: AuthFormProps) {
 
     const handleGoogleLogin = async () => {
         setLoading(true);
+        const next = searchParams.get("next");
+        const redirectTo = new URL(`${window.location.origin}/auth/callback`);
+        if (next) redirectTo.searchParams.set("next", next);
+
         const { error } = await supabase.auth.signInWithOAuth({
             provider: 'google',
             options: {
-                redirectTo: `${window.location.origin}/auth/callback`,
+                redirectTo: redirectTo.toString(),
             },
         });
         if (error) {

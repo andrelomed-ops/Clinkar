@@ -9,8 +9,8 @@ export async function GET(request: Request) {
   const { searchParams, origin } = new URL(request.url)
   const code = searchParams.get('code')
   
-  // Capturar estado para redirección
-  const next = searchParams.get('next') ?? '/sell/onboarding'
+  // Capturar estado para redirección - Por defecto al dashboard si no hay un flujo de venta activo
+  const next = searchParams.get('next') ?? '/dashboard'
   const category = searchParams.get('category')
   const make = searchParams.get('make')
   const model = searchParams.get('model')
