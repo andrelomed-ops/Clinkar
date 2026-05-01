@@ -9,13 +9,15 @@ export async function GET(request: Request) {
   const { searchParams, origin } = new URL(request.url)
   const code = searchParams.get('code')
   
-  // Capturar estado para redirección - Por defecto al dashboard si no hay un flujo de venta activo
-  const next = searchParams.get('next') ?? '/dashboard'
-  const category = searchParams.get('category')
-  const make = searchParams.get('make')
-  const model = searchParams.get('model')
-  const year = searchParams.get('year')
-  const km = searchParams.get('km')
+  // Lógica de Redirección Estricta:
+  // 1. Si hay parámetros de vehículo (make/model), el usuario viene de un flujo de venta -> Onboarding.
+  // 2. Si es un login normal -> Siempre al Dashboard.
+  
+  let redirectPath = '/dashboard';
+  
+  if (make || model || category) {
+    redirectPath = '/sell/onboarding';
+  }
 
   if (code) {
     const cookieStore = cookies()
@@ -31,15 +33,14 @@ export async function GET(request: Request) {
             try {
               cookieStore.set({ name, value, ...options })
             } catch (error) {
-              // En algunos entornos de servidor no se pueden setear cookies
-              // pero exchangeCodeForSession lo requiere.
+              // Fail silently in non-writeable environments
             }
           },
           remove(name: string, options: CookieOptions) {
             try {
               cookieStore.delete({ name, ...options })
             } catch (error) {
-              // Silenciar errores de borrado en el servidor
+              // Fail silently
             }
           },
         },
@@ -49,20 +50,24 @@ export async function GET(request: Request) {
     try {
       const { error } = await supabase.auth.exchangeCodeForSession(code)
       if (!error) {
-        const targetUrl = new URL(next, origin)
-        if (category) targetUrl.searchParams.set('category', category)
-        if (make) targetUrl.searchParams.set('make', make)
-        if (model) targetUrl.searchParams.set('model', model)
-        if (year) targetUrl.searchParams.set('year', year)
-        if (km) targetUrl.searchParams.set('km', km)
+        const targetUrl = new URL(redirectPath, origin)
+        
+        // Solo pasar parámetros si vamos al onboarding
+        if (redirectPath === '/sell/onboarding') {
+            if (category) targetUrl.searchParams.set('category', category)
+            if (make) targetUrl.searchParams.set('make', make)
+            if (model) targetUrl.searchParams.set('model', model)
+            if (year) targetUrl.searchParams.set('year', year)
+            if (km) targetUrl.searchParams.set('km', km)
+        }
         
         return NextResponse.redirect(targetUrl)
       }
     } catch (e) {
-      console.error("Auth error:", e)
+      console.error("Auth callback error:", e)
     }
   }
 
-  // Fallback seguro ante cualquier error
-  return NextResponse.redirect(`${origin}/sell/onboarding`)
+  // Fallback absoluto
+  return NextResponse.redirect(`${origin}/dashboard`)
 }

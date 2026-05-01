@@ -92,6 +92,18 @@ export default function SellOnboardingPage() {
                 if (session?.user) {
                     const user = session.user;
                     setCurrentUser(user);
+
+                    // --- SEGURIDAD DE NAVEGACIÓN ---
+                    // Si no hay datos de auto en la URL ni en el estado local, volver al dashboard
+                    const hasCarData = make && model;
+                    const hasSavedState = typeof window !== 'undefined' && localStorage.getItem('starterkar_onboarding_temp');
+                    
+                    if (!hasCarData && !hasSavedState && !isAdmin) {
+                        router.push('/dashboard');
+                        return;
+                    }
+                    // -------------------------------
+
                     const { data: profile } = await supabase.from('profiles').select('phone').eq('id', user.id).single();
                     if (!profile?.phone || profile.phone.trim() === "") setNeedsPhone(true);
                 }
