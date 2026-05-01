@@ -14,6 +14,7 @@ export function SimpleIntakeForm() {
     const router = useRouter();
     const [loading, setLoading] = useState(false);
     const [formData, setFormData] = useState({
+        type: "car", // car, moto, heavy, other
         make: "",
         model: "",
         year: ""
@@ -53,70 +54,107 @@ export function SimpleIntakeForm() {
             </div>
 
             <div className="bg-white dark:bg-zinc-900 p-8 rounded-[2.5rem] border border-zinc-200 dark:border-zinc-800 shadow-2xl space-y-6">
-                <div className="space-y-4">
-                    <div className="space-y-2">
-                        <Label className="flex items-center gap-2 font-black text-[10px] uppercase tracking-widest text-zinc-400">
-                            <Car className="h-3 w-3" /> Marca
-                        </Label>
-                        <div className="relative">
-                            <select 
-                                value={formData.make}
-                                onChange={(e) => setFormData({...formData, make: e.target.value, model: ""})}
-                                className="w-full h-14 appearance-none rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-800/50 px-6 font-bold focus:ring-2 focus:ring-indigo-500/20 outline-none transition-all"
+                <div className="space-y-6">
+                    {/* Vehicle Type Selector */}
+                    <div className="flex gap-2 p-1 bg-zinc-100 dark:bg-zinc-800/50 rounded-2xl">
+                        {[
+                            { id: 'car', label: 'Autos', icon: Car },
+                            { id: 'moto', label: 'Motos', icon: Zap },
+                            { id: 'heavy', label: 'Pesados', icon: Warehouse },
+                            { id: 'other', label: 'Otros', icon: ShieldCheck }
+                        ].map((t) => (
+                            <button
+                                key={t.id}
+                                onClick={() => setFormData({...formData, type: t.id, make: "", model: ""})}
+                                className={cn(
+                                    "flex-1 flex flex-col items-center gap-1 py-3 rounded-xl transition-all",
+                                    formData.type === t.id 
+                                        ? "bg-white dark:bg-zinc-700 shadow-sm text-indigo-600 scale-[1.02]" 
+                                        : "text-zinc-400 hover:text-zinc-600"
+                                )}
                             >
-                                <option value="">Selecciona Marca...</option>
-                                {Object.keys(CAR_BRANDS_MODELS).sort().map(brand => (
-                                    <option key={brand} value={brand}>{brand}</option>
-                                ))}
-                                <option value="OTRA">Otra marca...</option>
-                            </select>
-                            <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400 pointer-events-none" />
-                        </div>
-                    </div>
-                    
-                    <div className="space-y-2">
-                        <Label className="flex items-center gap-2 font-black text-[10px] uppercase tracking-widest text-zinc-400">
-                            <Car className="h-3 w-3" /> Modelo
-                        </Label>
-                        <div className="relative">
-                            <select 
-                                value={formData.model}
-                                disabled={!formData.make || formData.make === 'OTRA'}
-                                onChange={(e) => setFormData({...formData, model: e.target.value})}
-                                className="w-full h-14 appearance-none rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-800/50 px-6 font-bold focus:ring-2 focus:ring-indigo-500/20 outline-none transition-all disabled:opacity-50"
-                            >
-                                <option value="">Selecciona Modelo...</option>
-                                {formData.make && CAR_BRANDS_MODELS[formData.make] && CAR_BRANDS_MODELS[formData.make].map(model => (
-                                    <option key={model} value={model}>{model}</option>
-                                ))}
-                                <option value="OTRO">Otro modelo...</option>
-                            </select>
-                            <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400 pointer-events-none" />
-                        </div>
-                        {formData.make === 'OTRA' && (
-                             <Input 
-                                value={formData.model}
-                                onChange={(e) => setFormData({...formData, model: e.target.value})}
-                                placeholder="Escribe marca y modelo..."
-                                className="h-14 rounded-2xl border-zinc-200 dark:border-zinc-800 focus:ring-2 focus:ring-indigo-500/20 font-bold mt-2"
-                            />
-                        )}
+                                <t.icon className="h-4 w-4" />
+                                <span className="text-[8px] font-black uppercase tracking-widest">{t.label}</span>
+                            </button>
+                        ))}
                     </div>
 
-                    <div className="space-y-2">
-                        <Label className="flex items-center gap-2 font-black text-[10px] uppercase tracking-widest text-zinc-400">
-                            <Calendar className="h-3 w-3" /> Año
-                        </Label>
-                        <select 
-                            value={formData.year}
-                            onChange={(e) => setFormData({...formData, year: e.target.value})}
-                            className="w-full h-14 appearance-none rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-800/50 px-6 font-bold focus:ring-2 focus:ring-indigo-500/20 outline-none transition-all"
-                        >
-                            <option value="">Selecciona Año...</option>
-                            {Array.from({length: 30}, (_, i) => new Date().getFullYear() - i).map(year => (
-                                <option key={year} value={year}>{year}</option>
-                            ))}
-                        </select>
+                    <div className="space-y-4">
+                        <div className="space-y-2">
+                            <Label className="flex items-center gap-2 font-black text-[10px] uppercase tracking-widest text-zinc-400">
+                                <Car className="h-3 w-3" /> {formData.type === 'other' ? 'Descripción' : 'Marca'}
+                            </Label>
+                            {formData.type === 'car' ? (
+                                <div className="relative">
+                                    <select 
+                                        value={formData.make}
+                                        onChange={(e) => setFormData({...formData, make: e.target.value, model: ""})}
+                                        className="w-full h-14 appearance-none rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-800/50 px-6 font-bold focus:ring-2 focus:ring-indigo-500/20 outline-none transition-all"
+                                    >
+                                        <option value="">Selecciona Marca...</option>
+                                        {Object.keys(CAR_BRANDS_MODELS).sort().map(brand => (
+                                            <option key={brand} value={brand}>{brand}</option>
+                                        ))}
+                                        <option value="OTRA">Otra marca...</option>
+                                    </select>
+                                    <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400 pointer-events-none" />
+                                </div>
+                            ) : (
+                                <Input 
+                                    value={formData.make}
+                                    onChange={(e) => setFormData({...formData, make: e.target.value})}
+                                    placeholder={formData.type === 'other' ? "Ej. Lancha de recreo" : "Ej. Yamaha, Caterpillar..."}
+                                    className="h-14 rounded-2xl border-zinc-200 dark:border-zinc-800 focus:ring-2 focus:ring-indigo-500/20 font-bold"
+                                />
+                            )}
+                        </div>
+                        
+                        {(formData.type !== 'other') && (
+                            <div className="space-y-2">
+                                <Label className="flex items-center gap-2 font-black text-[10px] uppercase tracking-widest text-zinc-400">
+                                    <Car className="h-3 w-3" /> Modelo / Versión
+                                </Label>
+                                {formData.type === 'car' && formData.make !== 'OTRA' && formData.make !== "" ? (
+                                    <div className="relative">
+                                        <select 
+                                            value={formData.model}
+                                            onChange={(e) => setFormData({...formData, model: e.target.value})}
+                                            className="w-full h-14 appearance-none rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-800/50 px-6 font-bold focus:ring-2 focus:ring-indigo-500/20 outline-none transition-all"
+                                        >
+                                            <option value="">Selecciona Modelo...</option>
+                                            {CAR_BRANDS_MODELS[formData.make]?.map(model => (
+                                                <option key={model} value={model}>{model}</option>
+                                            ))}
+                                            <option value="OTRO">Otro modelo...</option>
+                                        </select>
+                                        <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400 pointer-events-none" />
+                                    </div>
+                                ) : (
+                                    <Input 
+                                        value={formData.model}
+                                        onChange={(e) => setFormData({...formData, model: e.target.value})}
+                                        placeholder="Ej. R1, D9R, etc."
+                                        className="h-14 rounded-2xl border-zinc-200 dark:border-zinc-800 focus:ring-2 focus:ring-indigo-500/20 font-bold"
+                                    />
+                                )}
+                            </div>
+                        )}
+
+                        <div className="space-y-2">
+                            <Label className="flex items-center gap-2 font-black text-[10px] uppercase tracking-widest text-zinc-400">
+                                <Calendar className="h-3 w-3" /> Año
+                            </Label>
+                            <select 
+                                value={formData.year}
+                                onChange={(e) => setFormData({...formData, year: e.target.value})}
+                                className="w-full h-14 appearance-none rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-800/50 px-6 font-bold focus:ring-2 focus:ring-indigo-500/20 outline-none transition-all"
+                            >
+                                <option value="">Selecciona Año...</option>
+                                {Array.from({length: 40}, (_, i) => new Date().getFullYear() - i).map(year => (
+                                    <option key={year} value={year}>{year}</option>
+                                ))}
+                            </select>
+                        </div>
                     </div>
                 </div>
 
