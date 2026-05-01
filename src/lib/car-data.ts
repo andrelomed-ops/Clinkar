@@ -40,3 +40,9 @@ export const CAR_BRANDS_MODELS: Record<string, string[]> = {
     "Volkswagen": ["Caddy", "Golf", "Jetta", "Nivus", "Polo", "Saveiro", "T-Cross", "Taos", "Teramont", "Tiguan", "Vento", "Virtus"],
     "Volvo": ["S60", "S90", "V60", "XC40", "XC60", "XC90"]
 };
+
+export const POPULAR_BRANDS = [
+    "Nissan", "Chevrolet", "Volkswagen", "Toyota", "Kia", "Honda", "Mazda", "Ford", "Hyundai", "BMW"
+];
+
+export const MODEL_SUGGESTIONS: Record<string, string[]> = CAR_BRANDS_MODELS;
