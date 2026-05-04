@@ -134,9 +134,14 @@ export function AuthForm({ initialMode = "login" }: AuthFormProps) {
                     }
 
                     if (data.session === null) {
+                        setLoading(false);
                         router.push("/login?message=Verifica tu correo electrónico para confirmar tu cuenta");
                     } else {
-                        router.push("/dashboard");
+                        const next = searchParams.get("next");
+                        const target = next || "/dashboard";
+                        setLoading(false);
+                        router.push(target);
+                        router.refresh();
                     }
                 }
             }
