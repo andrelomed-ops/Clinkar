@@ -160,7 +160,7 @@ export function MarketClient({
             if (sortBy === 'newest') return (b.year || 0) - (a.year || 0);
             return 0;
         });
-    }, [cars, filters, sortBy, favorites, showFavoritesOnly, userRole]);
+    }, [cars, filters, sortBy, favorites, showFavoritesOnly, userRole, searchTerm]);
 
     const totalItems = filteredCars.length;
     const totalPages = Math.ceil(totalItems / ITEMS_PER_PAGE);
