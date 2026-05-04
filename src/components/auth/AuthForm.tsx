@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, Suspense } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { createBrowserClient } from "@/lib/supabase/client";
 import { ShieldCheck, Loader2, ArrowRight, User, Mail, Lock, Gift } from "lucide-react";
 import { StarterKarLogo } from "@/components/ui/StarterKarLogo";

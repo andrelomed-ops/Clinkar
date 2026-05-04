@@ -1,4 +1,4 @@
-const CACHE_NAME = 'clinkar-v4.2-nuclear';
+const CACHE_NAME = 'clinkar-v4.3-nuclear';
 const ASSETS_TO_CACHE = [
     '/',
     '/manifest.json',
