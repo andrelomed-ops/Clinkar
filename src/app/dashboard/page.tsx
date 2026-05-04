@@ -254,6 +254,30 @@ export default function DashboardPage() {
         }
     };
 
+    const handleDeleteCar = async (carId: string) => {
+        const confirm = window.confirm("¿Deseas eliminar permanentemente este registro de auto?");
+        if (!confirm) return;
+
+        try {
+            // Eliminamos dependencias para evitar errores de FK (Foreign Key)
+            await supabase.from("service_tickets").delete().eq("car_id", carId);
+            await supabase.from("inspection_appointments").delete().eq("car_id", carId);
+            await supabase.from("user_favorites").delete().eq("car_id", carId);
+            
+            const { error: carDeleteError } = await supabase.from("cars").delete().eq("id", carId);
+            if (carDeleteError) {
+                console.error("Error deleting car record:", carDeleteError);
+                toast.error(`Error al limpiar el registro: ${carDeleteError.message}`);
+            } else {
+                toast.success("Registro eliminado correctamente");
+                loadDashboard();
+            }
+        } catch (err: any) {
+            console.error("Error deleting car:", err);
+            toast.error("No se pudo eliminar el auto: " + (err.message || "Error desconocido"));
+        }
+    };
+
     if (!mounted) return <div className="p-12"><Skeleton className="h-20 w-full" /></div>;
 
     return (
@@ -451,6 +475,21 @@ export default function DashboardPage() {
                                                              </button>
                                                          </div>
                                                      )}
+
+                                                      {!car.appointment && car.status === 'pending_inspection' && (
+                                                          <div className="flex justify-end pt-4">
+                                                              <button 
+                                                                  onClick={(e) => {
+                                                                      e.preventDefault();
+                                                                      e.stopPropagation();
+                                                                      handleDeleteCar(car.id);
+                                                                  }}
+                                                                  className="flex items-center gap-2 px-4 py-2 text-zinc-400 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all text-[10px] font-black uppercase tracking-widest"
+                                                              >
+                                                                  <Trash2 className="h-4 w-4" /> Eliminar Borrador
+                                                              </button>
+                                                          </div>
+                                                      )}
                                                  </div>
                                             </Link>
                                         ))}
