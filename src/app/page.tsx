@@ -105,7 +105,7 @@ export default function Home() {
               <div className="w-full max-w-5xl pt-16 md:pt-24 animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-700">
                 <div className="grid md:grid-cols-2 gap-6 md:gap-8 text-left">
                   {/* The Bad Guys */}
-                  <div className="bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-900/50 rounded-[2rem] md:rounded-[2.5rem] p-6 sm:p-8 md:p-10 relative overflow-hidden group">
+                  <div className="bg-white dark:bg-zinc-900 border-2 border-red-100 dark:border-red-900/50 rounded-[2rem] md:rounded-[2.5rem] p-6 sm:p-8 md:p-10 relative overflow-hidden group shadow-sm">
                     <div className="absolute top-0 right-0 w-32 h-32 bg-red-500/10 rounded-full blur-3xl" />
                     <h3 className="text-xl md:text-2xl font-black text-red-600 dark:text-red-500 tracking-tight mb-6 flex items-center gap-3">
                       El Modelo Tradicional
@@ -113,19 +113,19 @@ export default function Home() {
                     <ul className="space-y-6">
                       <li className="flex items-start gap-3">
                         <span className="text-red-500 font-bold mt-0.5">✖</span>
-                        <span className="text-zinc-700 dark:text-zinc-300 font-medium leading-relaxed">
+                        <span className="text-zinc-900 dark:text-zinc-300 font-medium leading-relaxed">
                           <strong className="text-red-600 dark:text-red-400">Devaluación Forzada:</strong> Se inventan "fallas" para pagarte hasta 30% menos de su valor real.
                         </span>
                       </li>
                       <li className="flex items-start gap-3">
                         <span className="text-red-500 font-bold mt-0.5">✖</span>
-                        <span className="text-zinc-700 dark:text-zinc-300 font-medium leading-relaxed">
+                        <span className="text-zinc-900 dark:text-zinc-300 font-medium leading-relaxed">
                           <strong className="text-red-600 dark:text-red-400">Te dejan a pie:</strong> Te obligan a dejar tu auto inmovilizado en sus bodegas por semanas o meses.
                         </span>
                       </li>
                       <li className="flex items-start gap-3">
                         <span className="text-red-500 font-bold mt-0.5">✖</span>
-                        <span className="text-zinc-700 dark:text-zinc-300 font-medium leading-relaxed">
+                        <span className="text-zinc-900 dark:text-zinc-300 font-medium leading-relaxed">
                           <strong className="text-red-600 dark:text-red-400">Riesgo Constante:</strong> Peligro de cheques sin fondos, estafas y autos "remarcados".
                         </span>
                       </li>
