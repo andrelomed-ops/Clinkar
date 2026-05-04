@@ -15,10 +15,12 @@ interface OfferModalProps {
     floorPrice: number;
     carName: string;
     hasSeal: boolean;
+    reconditioningBudget?: number;
+    performanceScore?: number;
     onSuccess?: (amount: number) => void;
 }
 
-export function OfferModal({ id, carPrice, floorPrice, carName, hasSeal, onSuccess }: OfferModalProps) {
+export function OfferModal({ id, carPrice, floorPrice, carName, hasSeal, reconditioningBudget, performanceScore = 92, onSuccess }: OfferModalProps) {
     const router = useRouter();
     const [mounted, setMounted] = useState(false);
     const [isOpen, setIsOpen] = useState(false);
@@ -26,7 +28,7 @@ export function OfferModal({ id, carPrice, floorPrice, carName, hasSeal, onSucce
     const [isNegotiating, setIsNegotiating] = useState(false);
     const [offerAmount, setOfferAmount] = useState<number>(carPrice);
     const offerFloor = floorPrice;
-    const repairCost = carPrice - floorPrice;
+    const repairCost = reconditioningBudget !== undefined ? reconditioningBudget : (carPrice - floorPrice);
 
     useEffect(() => {
         setMounted(true);
@@ -87,7 +89,7 @@ export function OfferModal({ id, carPrice, floorPrice, carName, hasSeal, onSucce
                         {/* Reliability Score */}
                         <div className="bg-secondary/30 rounded-2xl border border-border p-1">
                             <SellerReliabilityBadge
-                                score={92}
+                                score={performanceScore}
                                 acceptanceRate={85}
                                 responseTime="< 12h"
                                 isVerified={hasSeal}

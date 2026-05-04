@@ -161,7 +161,9 @@ export class CarService {
             reconditioning_budget: carData.reconditioning_budget || 0,
             reconditioning_notes: carData.reconditioning_notes || [],
             fair_price_suggested: carData.fair_price_suggested || carData.price,
-            legal_notes: carData.legal_notes || ''
+            legal_notes: carData.legal_notes || '',
+            performance_score: carData.performance_score || 85,
+            digital_passport_data: carData.digital_passport_data || {}
         };
 
         const { data, error } = await supabase
@@ -233,6 +235,8 @@ export class CarService {
         if (carData.reconditioning_notes) dbReadyData.reconditioning_notes = carData.reconditioning_notes;
         if (carData.fair_price_suggested !== undefined) dbReadyData.fair_price_suggested = Number(carData.fair_price_suggested);
         if (carData.legal_notes) dbReadyData.legal_notes = carData.legal_notes;
+        if (carData.performance_score !== undefined) dbReadyData.performance_score = Number(carData.performance_score);
+        if (carData.digital_passport_data) dbReadyData.digital_passport_data = carData.digital_passport_data;
 
         const { error } = await (supabase.from('cars') as any)
             .update(dbReadyData)

@@ -40,7 +40,9 @@ export function CarFormModal({ isOpen, onClose, onSubmit, initialData, isLoading
         is_imported: false,
         has_clinkar_seal: true,
         provenance: "original",
+        provenance: "original",
         reconditioning_budget: 0,
+        performance_score: 85,
         reconditioning_notes: [],
         fair_price_suggested: 0,
         legal_notes: "",
@@ -49,7 +51,8 @@ export function CarFormModal({ isOpen, onClose, onSubmit, initialData, isLoading
             architecture: { bodyType: "SUV", doors: 5, passengers: 5, dimensions: "", tankCapacity: "", rims: "" },
             features: { ac: true, sunroof: false, leatherSeats: false, touchScreen: true, carPlay: true, androidAuto: true, bluetooth: true, startStopButton: true },
             security: { airbags: 6, abs: true, discBrakes: 4, reverseCamera: true, parkingSensors: true }
-        }
+        },
+        digital_passport_data: {}
     };
 
     const parsedInitialData = initialData ? {
@@ -61,9 +64,11 @@ export function CarFormModal({ isOpen, onClose, onSubmit, initialData, isLoading
         has_clinkar_seal: initialData.has_clinkar_seal !== undefined ? initialData.has_clinkar_seal : (initialData.market_data?.has_clinkar_seal ?? true),
         provenance: initialData.provenance || initialData.market_data?.provenance || "original",
         reconditioning_budget: initialData.reconditioning_budget || initialData.market_data?.reconditioning_budget || 0,
+        performance_score: initialData.performance_score || 85,
         reconditioning_notes: initialData.reconditioning_notes || initialData.market_data?.reconditioning_notes || [],
         fair_price_suggested: initialData.fair_price_suggested || initialData.market_data?.fair_price_suggested || initialData.price,
-        legal_notes: initialData.legal_notes || initialData.market_data?.legal_notes || ""
+        legal_notes: initialData.legal_notes || initialData.market_data?.legal_notes || "",
+        digital_passport_data: initialData.digital_passport_data || {}
     } : null;
 
     const [formData, setFormData] = useState(parsedInitialData || defaultData);
@@ -129,8 +134,12 @@ export function CarFormModal({ isOpen, onClose, onSubmit, initialData, isLoading
                 reconditioning_budget: formData.reconditioning_budget,
                 reconditioning_notes: formData.reconditioning_notes,
                 fair_price_suggested: formData.fair_price_suggested,
-                legal_notes: formData.legal_notes
-            }
+                legal_notes: formData.legal_notes,
+                performance_score: formData.performance_score,
+                digital_passport_data: formData.digital_passport_data
+            },
+            performance_score: formData.performance_score,
+            digital_passport_data: formData.digital_passport_data
         };
 
         try {
@@ -480,6 +489,61 @@ export function CarFormModal({ isOpen, onClose, onSubmit, initialData, isLoading
                                 </div>
 
                                 <div className="grid grid-cols-2 gap-6">
+                                    <div className="col-span-2 space-y-6 pb-6 mb-4 border-b border-emerald-500/10">
+                                        <div className="flex justify-between items-center">
+                                            <div>
+                                                <h4 className="text-white text-sm font-black uppercase italic tracking-tighter">Puntuación de Desempeño</h4>
+                                                <p className="text-[10px] text-zinc-500 font-bold uppercase tracking-widest">Calificación final para la Cédula</p>
+                                            </div>
+                                            <div className="flex items-center gap-4 bg-zinc-900 px-6 py-3 rounded-2xl border border-zinc-800 shadow-xl">
+                                                <span className="text-xl font-black text-indigo-400 italic">{formData.performance_score}%</span>
+                                                <input 
+                                                    type="range" 
+                                                    min="0" max="100" 
+                                                    value={formData.performance_score} 
+                                                    onChange={e => setFormData({...formData, performance_score: parseInt(e.target.value)})}
+                                                    className="w-40 h-1.5 bg-zinc-800 rounded-lg appearance-none cursor-pointer accent-indigo-500"
+                                                />
+                                            </div>
+                                        </div>
+
+                                        <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                                            {[
+                                                { id: 'ENGINE', label: 'Motor' },
+                                                { id: 'TRANSMISSION', label: 'Transmisión' },
+                                                { id: 'BRAKES', label: 'Frenos' },
+                                                { id: 'SUSPENSION', label: 'Suspensión' },
+                                                { id: 'ELECTRICAL', label: 'Eléctrico' },
+                                                { id: 'TIRES', label: 'Llantas' }
+                                            ].map((item) => (
+                                                <div key={item.id} className="flex items-center justify-between p-3 bg-zinc-900/50 border border-zinc-800 rounded-xl">
+                                                    <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-tighter">{item.label}</span>
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => {
+                                                            const current = formData.digital_passport_data || {};
+                                                            setFormData({
+                                                                ...formData,
+                                                                digital_passport_data: {
+                                                                    ...current,
+                                                                    [item.id]: current[item.id] === 'FAIL' ? 'PASS' : 'FAIL'
+                                                                }
+                                                            });
+                                                        }}
+                                                        className={cn(
+                                                            "px-2 py-1 rounded-lg text-[8px] font-black uppercase tracking-widest transition-all",
+                                                            (formData.digital_passport_data || {})[item.id] === 'FAIL'
+                                                                ? "bg-red-500/10 text-red-500 border border-red-500/20"
+                                                                : "bg-emerald-500/10 text-emerald-500 border border-emerald-500/20"
+                                                        )}
+                                                    >
+                                                        {(formData.digital_passport_data || {})[item.id] === 'FAIL' ? 'FALLO' : 'OK'}
+                                                    </button>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+
                                     <FormGroup label="Procedencia Legal">
                                         <select 
                                             value={formData.provenance} 
@@ -531,6 +595,7 @@ export function CarFormModal({ isOpen, onClose, onSubmit, initialData, isLoading
                                             />
                                         </FormGroup>
                                     </div>
+
                                 </div>
                             </div>
                         </div>

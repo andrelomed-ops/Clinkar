@@ -35,33 +35,53 @@ export function AuthForm({ initialMode = "login" }: AuthFormProps) {
 
         try {
             if (mode === "login") {
-                const { data, error } = await supabase.auth.signInWithPassword({
+                // Implement a timeout to prevent infinite hang
+                const signInPromise = supabase.auth.signInWithPassword({
                     email: email.toLowerCase(),
                     password,
                 });
 
+                const timeoutPromise = new Promise((_, reject) => 
+                    setTimeout(() => reject(new Error("La conexión está tardando demasiado. Por favor, reintenta.")), 15000)
+                );
+
+                const { data, error } = await Promise.race([signInPromise, timeoutPromise]) as any;
+
                 if (error) {
                     setError(error.message);
                     setLoading(false);
-                } else if (data.user) {
-                    // Ensure profile exists (Sync logic)
-                    const { data: profile } = await supabase
-                        .from("profiles")
-                        .select("id")
-                        .eq("id", data.user.id)
-                        .single();
+                    return;
+                } 
 
-                    if (!profile) {
-                        await supabase.from("profiles").insert({
-                            id: data.user.id,
-                            email: data.user.email,
-                            full_name: data.user.user_metadata?.full_name || "Usuario",
-                            role: "user"
-                        });
+                if (data.user) {
+                    // Profile Sync (Non-blocking or with short timeout)
+                    try {
+                        const { data: profile, error: profileError } = await supabase
+                            .from("profiles")
+                            .select("id")
+                            .eq("id", data.user.id)
+                            .maybeSingle();
+
+                        if (!profile && !profileError) {
+                            await supabase.from("profiles").insert({
+                                id: data.user.id,
+                                email: data.user.email,
+                                full_name: data.user.user_metadata?.full_name || "Usuario",
+                                role: "user"
+                            });
+                        }
+                    } catch (profileErr) {
+                        console.error("[AUTH] Profile sync failed:", profileErr);
+                        // We don't block the login for a profile sync error
                     }
 
                     const next = searchParams.get("next");
-                    window.location.href = next || "/dashboard";
+                    const target = next || "/dashboard";
+                    
+                    // Use router for faster SPA navigation, then refresh to sync server-side state
+                    setLoading(false);
+                    router.push(target);
+                    router.refresh();
                 }
             } else {
                 // Register

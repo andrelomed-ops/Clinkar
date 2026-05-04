@@ -49,7 +49,15 @@ export const translateFinding = (itemId: string): { label: string; severity: 'CR
         
         // Legal (Si acaso se filtra algo, manejar con elegancia)
         'tax_arrears': { label: 'Pendiente de actualización administrativa fiscal', severity: 'CRITICAL' },
-        'registration_status': { label: 'Trámite de baja/alta sugerido', severity: 'MAINTENANCE' }
+        'registration_status': { label: 'Trámite de baja/alta sugerido', severity: 'MAINTENANCE' },
+
+        // Generic Categories for Quick Admin Passport
+        'ENGINE': { label: 'Sistemas del Motor', severity: 'MAINTENANCE' },
+        'TRANSMISSION': { label: 'Transmisión y Tren Motriz', severity: 'MAINTENANCE' },
+        'BRAKES': { label: 'Sistema de Frenado', severity: 'CRITICAL' },
+        'SUSPENSION': { label: 'Suspensión y Dirección', severity: 'MAINTENANCE' },
+        'ELECTRICAL': { label: 'Sistema Eléctrico y Batería', severity: 'MAINTENANCE' },
+        'TIRES': { label: 'Estado de Neumáticos', severity: 'CRITICAL' }
     };
 
     return dictionary[itemId] || { 

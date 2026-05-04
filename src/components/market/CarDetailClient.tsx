@@ -183,7 +183,7 @@ export function CarDetailClient({
                                                 </div>
                                             )}
                                         </div>
-                                    )).slice(0, 5)
+                                    )).slice(0, 8)
                                 ) : (
                                     <div className="w-full h-[30rem] rounded-[3rem] bg-zinc-100 dark:bg-zinc-900 border-2 border-dashed border-zinc-300 dark:border-zinc-800 flex items-center justify-center text-zinc-500">
                                         <CameraIcon className="h-12 w-12 opacity-50" />
@@ -192,7 +192,18 @@ export function CarDetailClient({
                             </div>
                             
                             {car.images && car.images.length > 1 && (
-                                <div className="absolute right-0 top-1/2 -translate-y-1/2 w-32 h-full bg-gradient-to-l from-background to-transparent pointer-events-none hidden md:block" />
+                                <>
+                                    <div className="absolute right-0 top-1/2 -translate-y-1/2 w-32 h-full bg-gradient-to-l from-background to-transparent pointer-events-none hidden md:block" />
+                                    <div className="absolute bottom-10 left-1/2 -translate-x-1/2 flex items-center gap-2 px-4 py-2 bg-black/40 backdrop-blur-md rounded-full border border-white/10">
+                                        <span className="text-[9px] font-black text-white uppercase tracking-widest animate-pulse">Desliza para explorar</span>
+                                        <div className="flex gap-1.5 ml-2">
+                                            {car.images.slice(0, Math.min(car.images.length, 5)).map((_, i) => (
+                                                <div key={i} className="h-1.5 w-1.5 rounded-full bg-white/40" />
+                                            ))}
+                                            {car.images.length > 5 && <div className="h-1.5 w-1.5 rounded-full bg-white/40 opacity-50" />}
+                                        </div>
+                                    </div>
+                                </>
                             )}
                         </div>
 
@@ -354,6 +365,8 @@ export function CarDetailClient({
                                         carPrice={car.price}
                                         carName={`${car.make} ${car.model}`}
                                         floorPrice={car.market_data?.minimum_price || car.price * 0.95}
+                                        reconditioningBudget={car.reconditioning_budget || (car.market_data as any)?.reconditioning_budget}
+                                        performanceScore={car.performance_score || 85}
                                         hasSeal={['CERTIFIED', 'published'].includes(car.status)}
                                         onSuccess={(amount) => {
                                             setNegotiatedPrice(amount);
