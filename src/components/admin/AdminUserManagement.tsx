@@ -1,6 +1,6 @@
 "use client";
 
-import { Search, Users, Zap, Trash2 } from "lucide-react";
+import { Search, Users, Zap, Trash2, MessageSquare } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 
