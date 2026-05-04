@@ -284,12 +284,12 @@ export default function AdminDashboardV6() {
                     <div className="h-px bg-zinc-900 my-8" />
                     <p className="text-[9px] font-black text-zinc-600 uppercase tracking-[0.2em] mb-6 px-4">Logística & Legal</p>
                     <SidebarItem icon={FileText} label="Revisión Legal" active={view === 'LEGAL'} onClick={() => setView('LEGAL')} />
-                    <SidebarItem icon={CheckSquare} label="Inspecciones" active={view === 'INSPECTION'} onClick={() => setView('INSPECTION')} />
+                    <SidebarItem icon={CheckSquare} label="Inspecciones" active={view === 'INSPECTOR'} onClick={() => setView('INSPECTOR')} />
                     <Link href="/admin/print/checklist" className="flex items-center gap-3 px-4 py-3 rounded-xl text-zinc-500 hover:text-white hover:bg-zinc-900 transition-all group">
                         <Printer className="h-4 w-4 group-hover:text-indigo-500 transition-colors" />
                         <span className="text-[10px] font-black uppercase tracking-widest">Imprimir Formatos</span>
                     </Link>
-                    <SidebarItem icon={ShoppingCart} label="Pedidos" active={view === 'ORDERS'} onClick={() => setView('ORDERS')} badge={demandRequests.filter(d => d.status === 'pending').length} />
+                    <SidebarItem icon={ShoppingCart} label="Pedidos" active={view === 'DEMANDS'} onClick={() => setView('DEMANDS')} badge={demandRequests.filter(d => d.status === 'pending').length} />
                     <SidebarItem icon={Gift} label="Referidos" active={view === 'REFERRALS'} onClick={() => setView('REFERRALS')} badge={referralPayouts.length} />
 
                     <div className="h-px bg-zinc-900 my-8" />
