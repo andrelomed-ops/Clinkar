@@ -27,16 +27,12 @@ export function AuthForm({ initialMode = "login" }: AuthFormProps) {
     const message = searchParams.get("message");
     const refCode = searchParams.get("ref");
     const supabase = createBrowserClient();
-    const [isCheckingSession, setIsCheckingSession] = useState(true);
-
     useEffect(() => {
         const checkSession = async () => {
             const { data: { session } } = await supabase.auth.getSession();
             if (session?.user) {
                 const next = searchParams.get("next") || "/dashboard";
                 router.push(next);
-            } else {
-                setIsCheckingSession(false);
             }
         };
         checkSession();
@@ -175,13 +171,6 @@ export function AuthForm({ initialMode = "login" }: AuthFormProps) {
         router.push("/dashboard");
     };
 
-    if (isCheckingSession) {
-        return (
-            <div className="min-h-screen flex items-center justify-center bg-background">
-                <Loader2 className="h-12 w-12 animate-spin text-indigo-600" />
-            </div>
-        );
-    }
 
     return (
         <div className="flex min-h-screen items-center justify-center bg-[#F8FAFC] dark:bg-zinc-950 px-6 py-12 relative overflow-hidden">

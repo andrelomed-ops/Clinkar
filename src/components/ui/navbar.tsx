@@ -135,13 +135,14 @@ export function Navbar({
 
                         <div className="flex items-center gap-2">
                             {!user ? (
-                                <Link 
-                                    href="/login"
-                                    className="flex items-center gap-2 px-4 py-2 rounded-full bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 text-[10px] font-black uppercase tracking-widest hover:scale-105 transition-all shadow-lg"
-                                >
-                                    <User className="h-3.5 w-3.5" />
-                                    Entrar
-                                </Link>
+                                <StarterKarLogo 
+                                    size="sm" 
+                                    showWordmark={false} 
+                                    orientation="horizontal"
+                                    label="Entrar" 
+                                    href="/login" 
+                                    className="hover:translate-y-[-2px] transition-all"
+                                />
                             ) : (
                                 <StarterKarLogo 
                                     size="sm" 
