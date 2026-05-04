@@ -132,38 +132,39 @@ export default function PrintableChecklistPage() {
                 </div>
 
                 {/* Final Remarks / Observations */}
-                <div className="mt-6 border-2 border-dashed border-zinc-100 rounded-2xl p-4 break-inside-avoid">
-                    <p className="text-[9px] font-black text-zinc-400 uppercase mb-4 tracking-widest">Observaciones Adicionales / Diagnóstico:</p>
-                    <div className="space-y-2">
-                        {[1, 2, 3].map(i => <div key={i} className="h-px bg-zinc-100 w-full" />)}
+                <div className="mt-6 border-2 border-dashed border-zinc-100 rounded-2xl p-6 break-inside-avoid">
+                    <p className="text-[10px] font-black text-zinc-400 uppercase mb-6 tracking-widest">Observaciones Adicionales / Diagnóstico Técnico:</p>
+                    <div className="space-y-4">
+                        {[1, 2, 3, 4, 5, 6].map(i => <div key={i} className="h-px bg-zinc-100 w-full" />)}
                     </div>
+                    <div className="mt-4 text-[7px] text-zinc-300 italic uppercase">Espacio para notas sobre reparaciones sugeridas, hallazgos críticos o recomendaciones del inspector.</div>
                 </div>
 
                 {/* Signatures Area - Compacted to single row */}
                 <div className="mt-8 pt-6 border-t-2 border-zinc-900 break-inside-avoid">
                     <div className="grid grid-cols-3 gap-8 items-end mb-6">
                         <div className="text-center">
-                            <div className="h-12 border-b border-zinc-200 mb-1" />
-                            <p className="text-[8px] font-black uppercase">Firma Técnico</p>
+                            <div className="h-16 border-b border-zinc-200 mb-1" />
+                            <p className="text-[8px] font-black uppercase">Firma Técnico Responsable</p>
                         </div>
                         
-                        <div className="flex flex-col items-center justify-center p-2 border-2 border-zinc-900 rounded-xl bg-zinc-50">
-                            <p className="text-[7px] font-black uppercase tracking-widest text-zinc-400 mb-1">VEREDICTO FINAL</p>
-                            <div className="flex gap-3">
+                        <div className="flex flex-col items-center justify-center p-3 border-2 border-zinc-900 rounded-2xl bg-zinc-50">
+                            <p className="text-[7px] font-black uppercase tracking-widest text-zinc-400 mb-2">VEREDICTO FINAL</p>
+                            <div className="flex gap-4">
                                 <div className="flex items-center gap-1.5">
-                                    <div className="h-3 w-3 border border-zinc-900 rounded-sm" />
+                                    <div className="h-4 w-4 border-2 border-zinc-900 rounded-sm" />
                                     <span className="text-[9px] font-black italic">APROBADO</span>
                                 </div>
                                 <div className="flex items-center gap-1.5">
-                                    <div className="h-3 w-3 border border-zinc-900 rounded-sm" />
+                                    <div className="h-4 w-4 border-2 border-zinc-900 rounded-sm" />
                                     <span className="text-[9px] font-black italic">RECHAZADO</span>
                                 </div>
                             </div>
                         </div>
 
                         <div className="text-center">
-                            <div className="h-12 border-b border-zinc-200 mb-1" />
-                            <p className="text-[8px] font-black uppercase">Sello Certeza SK</p>
+                            <div className="h-16 border-b border-zinc-200 mb-1" />
+                            <p className="text-[8px] font-black uppercase">Sello de Certificación SK</p>
                         </div>
                     </div>
 
@@ -190,6 +191,10 @@ export default function PrintableChecklistPage() {
                     body {
                         background: white !important;
                         padding: 0 !important;
+                    }
+                    /* Hide floating buttons and global UI elements */
+                    .fixed, .absolute.bottom-10, button[class*="rounded-full"], .print\\:hidden {
+                        display: none !important;
                     }
                     .min-h-screen {
                         min-height: auto !important;
