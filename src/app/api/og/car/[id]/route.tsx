@@ -25,7 +25,19 @@ export async function GET(
 
     const host = request.headers.get('host') || 'clinkar.vercel.app';
     const protocol = host.includes('localhost') ? 'http' : 'https';
-    const mainImage = car.images?.[0] || 'https://images.unsplash.com/photo-1494976388531-d1058494cdd8?w=1200&h=630&fit=crop';
+    
+    // Improved Image Selection & Fallback
+    let mainImage = car.images?.[0];
+    
+    // Fallback for broken demo images or missing images
+    if (!mainImage || mainImage.includes('demo-car') || mainImage.includes('placeholder')) {
+      mainImage = 'https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&q=80&w=1200&h=630'; // Reliable Porsche/Modern car image
+    }
+    
+    // Ensure absolute URL if it starts with /
+    if (mainImage.startsWith('/')) {
+      mainImage = `${protocol}://${host}${mainImage}`;
+    }
     const formattedPrice = new Intl.NumberFormat('es-MX', {
       style: 'currency',
       currency: 'MXN',
