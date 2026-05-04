@@ -64,11 +64,11 @@ export default function Home() {
 
               <h1 className="text-6xl md:text-8xl font-black tracking-tighter leading-[0.85] text-foreground animate-in fade-in slide-in-from-bottom-8 duration-1000">
                 Pon tu auto a la venta.<br />
-                <span className="text-indigo-600 italic uppercase">Y síguelo usando.</span>
+                <span className="text-indigo-600 italic uppercase">Y sigue usándolo.</span>
               </h1>
 
               <p className="text-lg md:text-xl text-muted-foreground max-w-4xl mx-auto leading-relaxed font-medium animate-in fade-in slide-in-from-bottom-6 duration-1000 delay-200">
-                No malbarates tu vehículo en lotes ni compres autos a ciegas. Te llevamos de la mano con <span className="text-foreground font-bold">acompañamiento personal</span> paso a paso para lograr un trato justo. Certificamos la mecánica, blindamos el pago y aseguramos la legalidad <span className="text-foreground font-bold">para ambas partes</span>.
+                No malbarates tu vehículo en agencias o lotes de autos, ni te expongas comprando a ciegas. StarterKar cuida tu patrimonio, te acompañamos de principio a fin para lograr un trato justo y seguro.
               </p>
 
               <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto animate-in fade-in slide-in-from-bottom-4 duration-1000 delay-300">
@@ -89,7 +89,6 @@ export default function Home() {
                     <div className="absolute top-0 right-0 w-32 h-32 bg-red-500/10 rounded-full blur-3xl" />
                     <h3 className="text-xl md:text-2xl font-black text-red-600 dark:text-red-500 tracking-tight mb-6 flex items-center gap-3">
                       El Modelo Tradicional
-                      <span className="text-xs font-bold bg-red-100 dark:bg-red-900/40 px-2 py-1 rounded-md text-red-600 dark:text-red-400 tracking-widest">(Agencias, Lotes y Coyotes)</span>
                     </h3>
                     <ul className="space-y-6">
                       <li className="flex items-start gap-3">
@@ -119,7 +118,6 @@ export default function Home() {
                     <h3 className="text-xl md:text-2xl font-black text-white tracking-tight mb-6 flex items-center gap-3">
                       <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse shrink-0" />
                       La Revolución StarterKar
-                      <span className="text-xs font-bold bg-indigo-500/50 px-2 py-1 rounded-md text-indigo-50 tracking-widest border border-indigo-400/30">(Seguro y sin trucos)</span>
                     </h3>
                     <ul className="space-y-6 relative z-10">
                       <li className="flex items-start gap-3">
