@@ -240,14 +240,14 @@ export function CarDetailClient({
 
                         <div className="space-y-10" id="checklist">
                             {/* Cédula de Certeza StarterKar */}
-                            <div className="bg-gradient-to-br from-zinc-900 to-black border border-zinc-800 rounded-[2.5rem] p-10 relative overflow-hidden group shadow-2xl">
-                                <div className="absolute -right-20 -top-20 h-64 w-64 bg-indigo-600/10 blur-[100px] rounded-full group-hover:bg-indigo-600/20 transition-all duration-700" />
+                            <div className="bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-[2.5rem] p-10 relative overflow-hidden group shadow-xl">
+                                <div className="absolute -right-20 -top-20 h-64 w-64 bg-indigo-600/5 blur-[100px] rounded-full group-hover:bg-indigo-600/10 transition-all duration-700" />
                                 
                                 <div className="relative z-10 flex flex-col md:flex-row items-center gap-12">
                                     {/* Score Widget */}
                                     <div className="relative h-40 w-40 shrink-0">
                                         <svg className="h-full w-full -rotate-90 transform" viewBox="0 0 100 100">
-                                            <circle className="text-zinc-800" strokeWidth="6" stroke="currentColor" fill="transparent" r="42" cx="50" cy="50" />
+                                            <circle className="text-zinc-200 dark:text-zinc-800" strokeWidth="6" stroke="currentColor" fill="transparent" r="42" cx="50" cy="50" />
                                             <circle 
                                                 className={cn(
                                                     "transition-all duration-1000 ease-out",
@@ -263,8 +263,8 @@ export function CarDetailClient({
                                             />
                                         </svg>
                                         <div className="absolute inset-0 flex flex-col items-center justify-center">
-                                            <span className="text-4xl font-black italic tracking-tighter text-white">{(car.performance_score || 85)}</span>
-                                            <span className="text-[10px] font-black text-zinc-500 uppercase tracking-widest">Score</span>
+                                            <span className="text-4xl font-black italic tracking-tighter text-zinc-900 dark:text-white">{(car.performance_score || 85)}</span>
+                                            <span className="text-[10px] font-black text-zinc-400 uppercase tracking-widest">Score</span>
                                         </div>
                                     </div>
 
@@ -272,16 +272,16 @@ export function CarDetailClient({
                                         <div className="flex items-center justify-between">
                                             <div className="flex items-center gap-3">
                                                 <ShieldCheck className="h-6 w-6 text-indigo-500" />
-                                                <h3 className="text-2xl font-black uppercase italic tracking-tighter text-white">Cédula de Certeza StarterKar</h3>
+                                                <h3 className="text-2xl font-black uppercase italic tracking-tighter text-zinc-900 dark:text-white">Cédula de Certeza StarterKar</h3>
                                             </div>
                                         </div>
-                                        <p className="text-sm font-medium text-zinc-400 leading-relaxed">
+                                        <p className="text-sm font-medium text-zinc-500 dark:text-zinc-400 leading-relaxed">
                                             Este vehículo ha sido auditado bajo nuestro estándar de **150 puntos críticos**. La calificación actual refleja su estado físico real al momento de la inspección.
                                         </p>
                                         
                                         {/* Findings Summary (Intelligent Filter) */}
-                                        <div className="pt-6 border-t border-zinc-800 space-y-4">
-                                            <p className="text-[10px] font-black uppercase tracking-widest text-zinc-500">Hoja de Ruta para el 100%</p>
+                                        <div className="pt-6 border-t border-zinc-200 dark:border-zinc-800 space-y-4">
+                                            <p className="text-[10px] font-black uppercase tracking-widest text-zinc-400">Hoja de Ruta para el 100%</p>
                                             
                                             {car.performance_score === 100 ? (
                                                 <div className="flex items-center gap-3 p-4 bg-emerald-500/5 border border-emerald-500/20 rounded-2xl">
