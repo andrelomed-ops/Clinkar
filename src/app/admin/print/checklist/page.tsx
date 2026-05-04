@@ -25,117 +25,105 @@ export default function PrintableChecklistPage() {
     return (
         <div className="min-h-screen bg-zinc-50 dark:bg-zinc-950 pb-20">
             {/* Control Bar - Hidden on Print */}
-            <div className="sticky top-0 z-[110] bg-white dark:bg-zinc-900 border-b border-zinc-200 dark:border-zinc-800 px-8 py-4 flex items-center justify-between print:hidden">
+            <div className="sticky top-0 z-[110] bg-white dark:bg-zinc-900 border-b border-zinc-200 dark:border-zinc-800 px-8 py-3 flex items-center justify-between print:hidden">
                 <div className="flex items-center gap-4">
                     <Link href="/admin" className="h-10 w-10 bg-zinc-100 dark:bg-zinc-800 rounded-full flex items-center justify-center hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-all">
                         <ArrowLeft className="h-5 w-5" />
                     </Link>
                     <div>
-                        <h1 className="text-sm font-black uppercase tracking-tight">
-                            {isCertificate ? 'Informe de Certificación 150 Puntos' : 'Hoja de Trabajo Técnica (120 Puntos)'}
+                        <h1 className="text-xs font-black uppercase tracking-tight">
+                            {isCertificate ? 'Certificación 150 Puntos' : 'Checklist Mecánico'}
                         </h1>
-                        <p className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">
-                            {isCertificate ? 'Documento de Certificación Final StarterKar' : 'Checklist de Verificación Mecánica'}
-                        </p>
                     </div>
                 </div>
                 <div className="flex items-center gap-3">
-                    {/* Only show the toggle if it's potentially an admin access - simplified for security */}
-                    <div className="flex bg-zinc-100 dark:bg-zinc-800 p-1 rounded-xl mr-4 print:hidden">
-                        <Link href="/admin/print/checklist" className={cn("px-4 py-2 rounded-lg text-[9px] font-black uppercase", !isCertificate ? "bg-white dark:bg-zinc-700 shadow-sm" : "text-zinc-500")}>TÉCNICO</Link>
-                        {/* Note: In a real prod env, we'd check the user session here too */}
-                        <Link href="/admin/print/checklist?mode=certificate" className={cn("px-4 py-2 rounded-lg text-[9px] font-black uppercase", isCertificate ? "bg-white dark:bg-zinc-700 shadow-sm" : "text-zinc-500")}>CERTIFICADO</Link>
+                    <div className="flex bg-zinc-100 dark:bg-zinc-800 p-1 rounded-xl mr-2">
+                        <Link href="/admin/print/checklist" className={cn("px-4 py-1.5 rounded-lg text-[9px] font-black uppercase transition-all", !isCertificate ? "bg-white dark:bg-zinc-700 shadow-sm" : "text-zinc-500 hover:text-zinc-700")}>TÉCNICO</Link>
+                        <Link href="/admin/print/checklist?mode=certificate" className={cn("px-4 py-1.5 rounded-lg text-[9px] font-black uppercase transition-all", isCertificate ? "bg-white dark:bg-zinc-700 shadow-sm" : "text-zinc-500 hover:text-zinc-700")}>CERTIFICADO</Link>
                     </div>
                     <button 
                         onClick={handlePrint}
-                        className="h-11 px-6 bg-indigo-600 text-white rounded-xl font-black text-xs uppercase tracking-widest flex items-center gap-2 shadow-xl shadow-indigo-600/20 hover:scale-105 active:scale-95 transition-all"
+                        className="h-10 px-6 bg-indigo-600 text-white rounded-xl font-black text-[10px] uppercase tracking-widest flex items-center gap-2 shadow-xl shadow-indigo-600/20 hover:scale-105 active:scale-95 transition-all"
                     >
                         <Printer className="h-4 w-4" />
-                        Imprimir Formato
+                        Imprimir
                     </button>
                 </div>
             </div>
 
-            {/* Printable Document */}
-            <div className="max-w-[21cm] mx-auto mt-8 bg-white shadow-2xl print:shadow-none print:mt-0 p-[2cm] min-h-[29.7cm] text-zinc-900 font-sans" ref={printRef}>
-                {/* Header Document */}
-                <div className="flex justify-between items-start border-b-2 border-zinc-900 pb-8 mb-10">
-                    <div>
-                        <div className="flex items-center gap-2 mb-2">
-                            <div className="h-8 w-8 bg-black rounded flex items-center justify-center">
-                                <Car className="h-5 w-5 text-white" />
-                            </div>
-                            <span className="text-2xl font-black italic tracking-tighter uppercase">Starter<span className="text-indigo-600">Kar</span></span>
+            {/* Printable Document - Optimized for A4 */}
+            <div className="max-w-[21cm] mx-auto mt-4 bg-white shadow-2xl print:shadow-none print:mt-0 p-8 md:p-12 print:p-6 min-h-[29.7cm] text-zinc-900 font-sans" ref={printRef}>
+                {/* Header Document - Compacted */}
+                <div className="flex justify-between items-end border-b-2 border-zinc-900 pb-4 mb-6">
+                    <div className="flex items-center gap-3">
+                        <div className="h-10 w-10 bg-black rounded flex items-center justify-center">
+                            <Car className="h-6 w-6 text-white" />
                         </div>
-                        <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-zinc-500">Certeza & Confianza Automotriz</p>
+                        <div>
+                            <span className="text-xl font-black italic tracking-tighter uppercase">Starter<span className="text-indigo-600">Kar</span></span>
+                            <p className="text-[8px] font-bold uppercase tracking-[0.2em] text-zinc-400">Inspección de Certeza</p>
+                        </div>
                     </div>
                     <div className="text-right">
-                        <h2 className="text-xl font-black uppercase italic tracking-tight">
+                        <h2 className="text-lg font-black uppercase italic tracking-tight">
                             {isCertificate ? 'Certificado de Certeza' : 'Hoja de Inspección'}
                         </h2>
-                        <p className="text-[10px] font-black bg-zinc-900 text-white px-3 py-1 rounded mt-2 inline-block uppercase tracking-widest">
+                        <span className="text-[8px] font-black bg-zinc-900 text-white px-2 py-0.5 rounded uppercase tracking-widest">
                             {isCertificate ? 'Estándar 150 Puntos' : '120 Puntos Técnicos'}
-                        </p>
+                        </span>
                     </div>
                 </div>
 
-                {/* Meta Data Grid */}
-                <div className="grid grid-cols-3 gap-4 mb-10 text-[10px] font-bold uppercase tracking-wider">
-                    <div className="p-4 border border-zinc-200 rounded-lg">
-                        <p className="text-zinc-400 mb-1">Fecha de Inspección</p>
-                        <p className="border-b border-zinc-100 pb-1 mt-2">____ / ____ / 202__</p>
-                    </div>
-                    <div className="p-4 border border-zinc-200 rounded-lg">
-                        <p className="text-zinc-400 mb-1">Responsable</p>
-                        <p className="border-b border-zinc-100 pb-1 mt-2">____________________</p>
-                    </div>
-                    <div className="p-4 border border-zinc-200 rounded-lg">
-                        <p className="text-zinc-400 mb-1">Folio de Control</p>
-                        <p className="text-zinc-900 font-black mt-2"># SK-INS-_______</p>
-                    </div>
-                </div>
-
-                {/* Vehicle Specs Area */}
-                <div className="bg-zinc-50 p-6 rounded-2xl mb-10 border border-zinc-100 grid grid-cols-2 gap-x-12 gap-y-4 text-[10px] font-bold relative">
-                    <div className="flex justify-between border-b border-zinc-200 pb-1">
-                        <span className="text-zinc-400">MARCA / MODELO:</span>
-                        <span className="text-zinc-300">________________________</span>
-                    </div>
-                    <div className="flex justify-between border-b border-zinc-200 pb-1">
-                        <span className="text-zinc-400">AÑO:</span>
-                        <span className="text-zinc-300">____________</span>
-                    </div>
-                    <div className="flex justify-between border-b border-zinc-200 pb-1">
-                        <span className="text-zinc-400">NÚMERO DE SERIE (VIN):</span>
-                        <span className="text-zinc-300">________________________</span>
-                    </div>
-                    <div className="flex justify-between border-b border-zinc-200 pb-1">
-                        <span className="text-zinc-400">KILOMETRAJE:</span>
-                        <span className="text-zinc-300">____________</span>
-                    </div>
-
-                    {isCertificate && (
-                        <div className="absolute top-1/2 -translate-y-1/2 right-12 text-center bg-white p-4 rounded-3xl border-2 border-zinc-900 shadow-xl">
-                            <p className="text-[8px] font-black uppercase text-zinc-400 tracking-widest">Score Final</p>
-                            <p className="text-4xl font-black italic tracking-tighter mt-1">___<span className="text-xs ml-1">/100</span></p>
+                {/* Metadata & Vehicle Specs - Integrated & Compact */}
+                <div className="grid grid-cols-4 gap-4 mb-6 text-[9px] font-bold uppercase">
+                    <div className="col-span-2 grid grid-cols-2 gap-x-6 gap-y-2 bg-zinc-50 p-4 rounded-xl border border-zinc-100">
+                        <div className="flex justify-between border-b border-zinc-200 pb-0.5">
+                            <span className="text-zinc-400">MARCA/MODELO:</span>
+                            <span className="text-zinc-300">________________</span>
                         </div>
-                    )}
+                        <div className="flex justify-between border-b border-zinc-200 pb-0.5">
+                            <span className="text-zinc-400">AÑO:</span>
+                            <span className="text-zinc-300">_______</span>
+                        </div>
+                        <div className="flex justify-between border-b border-zinc-200 pb-0.5">
+                            <span className="text-zinc-400">VIN:</span>
+                            <span className="text-zinc-300">________________</span>
+                        </div>
+                        <div className="flex justify-between border-b border-zinc-200 pb-0.5">
+                            <span className="text-zinc-400">KM:</span>
+                            <span className="text-zinc-300">_______</span>
+                        </div>
+                    </div>
+                    <div className="col-span-2 grid grid-cols-2 gap-4">
+                        <div className="p-3 border border-zinc-200 rounded-xl">
+                            <p className="text-zinc-400 mb-0.5">FECHA</p>
+                            <p className="text-zinc-200 mt-1">__/__/202_</p>
+                        </div>
+                        <div className="p-3 border border-zinc-200 rounded-xl">
+                            <p className="text-zinc-400 mb-0.5">RESPONSABLE</p>
+                            <p className="text-zinc-200 mt-1">___________</p>
+                        </div>
+                        <div className="col-span-2 px-3 py-2 bg-zinc-900 text-white rounded-xl flex justify-between items-center">
+                            <span className="text-[8px] tracking-widest">FOLIO DE CONTROL</span>
+                            <span className="font-black italic">#SK-INS-_______</span>
+                        </div>
+                    </div>
                 </div>
 
-                {/* The 150 Points - Split by Sections */}
-                <div className="space-y-12">
+                {/* Checklist Sections - 3 Columns for maximum efficiency */}
+                <div className="space-y-6">
                     {displaySections.map((section, sIdx) => (
                         <div key={section.id} className="break-inside-avoid">
-                            <div className="flex items-center gap-3 mb-4 border-l-4 border-indigo-600 pl-4">
-                                <span className="text-lg font-black italic uppercase tracking-tighter">{sIdx + 1}. {section.label}</span>
-                                <span className="text-[9px] font-bold text-zinc-400 uppercase tracking-widest">({section.items.length} Puntos de revisión)</span>
+                            <div className="flex items-center gap-2 mb-2 border-l-3 border-indigo-600 pl-3">
+                                <span className="text-[12px] font-black italic uppercase tracking-tighter">{sIdx + 1}. {section.label}</span>
+                                <span className="text-[7px] font-bold text-zinc-400 uppercase tracking-widest">({section.items.length} PTOS)</span>
                             </div>
                             
-                            <div className="grid grid-cols-2 gap-x-8 gap-y-2">
+                            <div className="grid grid-cols-3 gap-x-4 gap-y-1">
                                 {section.items.map((item) => (
-                                    <div key={item.id} className="flex items-start gap-2 py-1.5 border-b border-zinc-50">
-                                        <div className="h-3.5 w-3.5 border border-zinc-300 rounded mt-0.5" />
-                                        <span className="text-[9px] leading-tight text-zinc-700">{item.label}</span>
+                                    <div key={item.id} className="flex items-start gap-1.5 py-0.5 border-b border-zinc-50">
+                                        <div className="h-3 w-3 border border-zinc-300 rounded-sm mt-0.5 shrink-0" />
+                                        <span className="text-[8px] leading-[1.1] text-zinc-700 uppercase">{item.label}</span>
                                     </div>
                                 ))}
                             </div>
@@ -143,52 +131,62 @@ export default function PrintableChecklistPage() {
                     ))}
                 </div>
 
-                {/* Signatures and Verdict */}
-                <div className="mt-20 border-t-2 border-zinc-900 pt-10 break-inside-avoid">
-                    <div className="flex items-center justify-between mb-12 gap-8">
-                        <div className="text-center flex-1">
-                            <div className="h-20 border-b border-zinc-300 mb-2" />
-                            <p className="text-[10px] font-black uppercase">{isCertificate ? 'Firma Administración' : 'Firma Mecánico'}</p>
-                            <p className="text-[8px] text-zinc-400 mt-1 font-bold">Validación Oficial</p>
+                {/* Final Remarks / Observations */}
+                <div className="mt-6 border-2 border-dashed border-zinc-100 rounded-2xl p-4 break-inside-avoid">
+                    <p className="text-[9px] font-black text-zinc-400 uppercase mb-4 tracking-widest">Observaciones Adicionales / Diagnóstico:</p>
+                    <div className="space-y-2">
+                        {[1, 2, 3].map(i => <div key={i} className="h-px bg-zinc-100 w-full" />)}
+                    </div>
+                </div>
+
+                {/* Signatures Area - Compacted to single row */}
+                <div className="mt-8 pt-6 border-t-2 border-zinc-900 break-inside-avoid">
+                    <div className="grid grid-cols-3 gap-8 items-end mb-6">
+                        <div className="text-center">
+                            <div className="h-12 border-b border-zinc-200 mb-1" />
+                            <p className="text-[8px] font-black uppercase">Firma Técnico</p>
                         </div>
                         
-                        {isCertificate && (
-                            <div className="flex flex-col items-center gap-4 flex-1">
-                                <p className="text-[10px] font-black uppercase tracking-widest">CERTIFICACIÓN</p>
-                                <div className="flex gap-4">
-                                    <div className="flex items-center gap-2 border-2 border-zinc-900 px-4 py-2 rounded-xl">
-                                        <div className="h-4 w-4 border-2 border-zinc-900 rounded-sm" />
-                                        <span className="text-xs font-black italic uppercase">APROBADO</span>
-                                    </div>
+                        <div className="flex flex-col items-center justify-center p-2 border-2 border-zinc-900 rounded-xl bg-zinc-50">
+                            <p className="text-[7px] font-black uppercase tracking-widest text-zinc-400 mb-1">VEREDICTO FINAL</p>
+                            <div className="flex gap-3">
+                                <div className="flex items-center gap-1.5">
+                                    <div className="h-3 w-3 border border-zinc-900 rounded-sm" />
+                                    <span className="text-[9px] font-black italic">APROBADO</span>
+                                </div>
+                                <div className="flex items-center gap-1.5">
+                                    <div className="h-3 w-3 border border-zinc-900 rounded-sm" />
+                                    <span className="text-[9px] font-black italic">RECHAZADO</span>
                                 </div>
                             </div>
-                        )}
+                        </div>
 
-                        <div className="text-center flex-1">
-                            <div className="h-20 border-b border-zinc-300 mb-2" />
-                            <p className="text-[10px] font-black uppercase">{isCertificate ? 'Sello Certeza SK' : 'Sello de Taller'}</p>
-                            <p className="text-[8px] text-zinc-400 mt-1 font-bold">Respaldo StarterKar</p>
+                        <div className="text-center">
+                            <div className="h-12 border-b border-zinc-200 mb-1" />
+                            <p className="text-[8px] font-black uppercase">Sello Certeza SK</p>
                         </div>
                     </div>
 
-                    <div className="bg-zinc-900 text-white p-6 rounded-2xl flex items-center justify-between">
+                    <div className="bg-zinc-900 text-white p-4 rounded-xl flex items-center justify-between">
                         <div className="flex items-center gap-3">
-                            <ShieldCheck className="h-6 w-6 text-indigo-400" />
+                            <ShieldCheck className="h-5 w-5 text-indigo-400" />
                             <div>
-                                <p className="text-[10px] font-black uppercase italic tracking-tighter">Garantía de Certeza StarterKar</p>
-                                <p className="text-[8px] font-medium text-zinc-400">Este documento es una declaración jurada de la condición del vehículo.</p>
+                                <p className="text-[9px] font-black uppercase italic tracking-tighter leading-none">Garantía de Certeza StarterKar</p>
+                                <p className="text-[7px] text-zinc-500 uppercase mt-0.5 font-bold">Documento Técnico oficial para certificación vehicular.</p>
                             </div>
                         </div>
-                        <div className="text-right">
-                            <p className="text-[10px] font-black uppercase">www.starterkar.com</p>
-                        </div>
+                        <p className="text-[8px] font-black uppercase tracking-widest">www.starterkar.com</p>
                     </div>
                 </div>
             </div>
 
-            {/* Print Styles */}
+            {/* Print Styles Optimized */}
             <style jsx global>{`
                 @media print {
+                    @page {
+                        margin: 0.5cm;
+                        size: A4;
+                    }
                     body {
                         background: white !important;
                         padding: 0 !important;
@@ -196,9 +194,9 @@ export default function PrintableChecklistPage() {
                     .min-h-screen {
                         min-height: auto !important;
                     }
-                    @page {
-                        margin: 0;
-                        size: A4;
+                    * {
+                        -webkit-print-color-adjust: exact !important;
+                        print-color-adjust: exact !important;
                     }
                 }
                 .break-inside-avoid {
