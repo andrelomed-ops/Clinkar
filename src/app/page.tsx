@@ -88,25 +88,26 @@ export default function Home() {
                   <div className="bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-900/50 rounded-[2.5rem] p-8 md:p-10 relative overflow-hidden group">
                     <div className="absolute top-0 right-0 w-32 h-32 bg-red-500/10 rounded-full blur-3xl" />
                     <h3 className="text-xl md:text-2xl font-black text-red-600 dark:text-red-500 tracking-tight mb-6 flex items-center gap-3">
-                      Lotes y Plataformas Comunes
+                      El Mercado Tradicional
+                      <span className="text-xs font-bold bg-red-100 dark:bg-red-900/40 px-2 py-1 rounded-md text-red-600 dark:text-red-400 tracking-widest">(Agencias, Lotes y Coyotes)</span>
                     </h3>
                     <ul className="space-y-6">
                       <li className="flex items-start gap-3">
                         <span className="text-red-500 font-bold mt-0.5">✖</span>
                         <span className="text-zinc-700 dark:text-zinc-300 font-medium leading-relaxed">
-                          Te castigan el precio. Te ofrecen hasta <strong className="text-red-600 dark:text-red-400">30% menos</strong> del valor real para su reventa.
+                          <strong className="text-red-600 dark:text-red-400">Abuso en el precio:</strong> Se aprovechan de la necesidad. Inventan fallas con mecánicos cómplices para tirarte el precio al suelo y revender carísimo.
                         </span>
                       </li>
                       <li className="flex items-start gap-3">
                         <span className="text-red-500 font-bold mt-0.5">✖</span>
                         <span className="text-zinc-700 dark:text-zinc-300 font-medium leading-relaxed">
-                          Te quitan el auto. Lo retienen en bodegas cerradas por semanas mientras intentan venderlo.
+                          <strong className="text-red-600 dark:text-red-400">Riesgo y Fraude Constante:</strong> Te expones a asaltos, cheques sin fondo y autos "remarcados" que hasta las grandes agencias y plataformas famosas terminan vendiendo.
                         </span>
                       </li>
                       <li className="flex items-start gap-3">
                         <span className="text-red-500 font-bold mt-0.5">✖</span>
                         <span className="text-zinc-700 dark:text-zinc-300 font-medium leading-relaxed">
-                          Conflicto de interés. Su negocio es comprarte lo más barato posible para ganar más margen.
+                          <strong className="text-red-600 dark:text-red-400">Te dejan a pie:</strong> Te quitan tu auto y lo retienen en bodegas cerradas por meses mientras intentan venderlo. Pierdes el control de tu patrimonio.
                         </span>
                       </li>
                     </ul>
@@ -117,25 +118,25 @@ export default function Home() {
                     <div className="absolute top-0 right-0 w-48 h-48 bg-white/10 rounded-full blur-3xl" />
                     <h3 className="text-xl md:text-2xl font-black text-white tracking-tight mb-6 flex items-center gap-3">
                       <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse shrink-0" />
-                      El Modelo StarterKar
+                      La Revolución StarterKar
                     </h3>
                     <ul className="space-y-6 relative z-10">
                       <li className="flex items-start gap-3">
                         <CheckCircle2 className="h-6 w-6 text-emerald-400 shrink-0 mt-0.5" />
                         <span className="text-indigo-50 dark:text-indigo-100 font-medium leading-relaxed">
-                          Ganas el 100%. Vendes al valor real de mercado, de <strong className="text-white">particular a particular</strong>.
+                          <strong className="text-white">Justicia Comercial (Ganas el 100%):</strong> El precio se fija por la realidad del mercado y las condiciones del auto, no por las ganas de ganar de una agencia.
                         </span>
                       </li>
                       <li className="flex items-start gap-3">
                         <CheckCircle2 className="h-6 w-6 text-emerald-400 shrink-0 mt-0.5" />
                         <span className="text-indigo-50 dark:text-indigo-100 font-medium leading-relaxed">
-                          El auto se queda contigo. Lo sigues manejando todos los días en tu rutina habitual.
+                          <strong className="text-white">Árbitros Imparciales (Cero Riesgos):</strong> Nuestros Asesores son guardianes de la seguridad. Evitamos fraudes mecánicos, legales y financieros para proteger a ambas partes.
                         </span>
                       </li>
                       <li className="flex items-start gap-3">
                         <CheckCircle2 className="h-6 w-6 text-emerald-400 shrink-0 mt-0.5" />
                         <span className="text-indigo-50 dark:text-indigo-100 font-medium leading-relaxed">
-                          Intermediación Neutral. Solo cobramos por inspeccionar y blindar la legalidad de la transacción.
+                          <strong className="text-white">Tu auto se queda contigo:</strong> Inviertes en certificar tu auto para avalar su calidad, y lo sigues manejando de forma normal hasta el momento exacto de la entrega.
                         </span>
                       </li>
                     </ul>
