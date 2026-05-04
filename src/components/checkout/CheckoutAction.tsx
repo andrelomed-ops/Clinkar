@@ -112,8 +112,9 @@ export function CheckoutAction({ carId, carPrice, carLocation, category }: { car
                     <div className="space-y-2">
                         <label className="text-[9px] font-black text-zinc-400 uppercase ml-1">Taller Especializado ({category})</label>
                         {partners.length === 0 ? (
-                            <div className="w-full h-14 px-5 rounded-2xl border-2 border-amber-200 bg-amber-50 dark:bg-amber-900/20 dark:border-amber-800 text-[10px] font-medium text-amber-700 dark:text-amber-300 flex items-center">
-                                Entrega coordinada directamente — sin taller intermedio
+                            <div className="w-full h-14 px-5 rounded-2xl border-2 border-indigo-200 bg-indigo-50 dark:bg-indigo-900/20 dark:border-indigo-800 text-[10px] font-black text-indigo-700 dark:text-indigo-300 flex items-center gap-3">
+                                <div className="h-2 w-2 rounded-full bg-indigo-500 animate-ping" />
+                                Taller Certificado por asignar (Coordinado por StarterKar)
                             </div>
                         ) : (
                             <select 

@@ -30,8 +30,13 @@ export async function GET(
     let mainImage = car.images?.[0];
     
     // Fallback for broken demo images or missing images
-    if (!mainImage || mainImage.includes('demo-car') || mainImage.includes('placeholder')) {
-      mainImage = 'https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&q=80&w=1200&h=630'; // Reliable Porsche/Modern car image
+    // Proactively replace clinkar.vercel.app demo images to avoid circularity issues
+    if (!mainImage || 
+        mainImage.includes('demo-car') || 
+        mainImage.includes('placeholder') || 
+        mainImage.includes('clinkar.vercel.app/demo') || 
+        mainImage.includes('clinkar.vercel.app/') && mainImage.endsWith('.jpg')) {
+      mainImage = 'https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&q=80&w=1200&h=630'; 
     }
     
     // Ensure absolute URL if it starts with /
