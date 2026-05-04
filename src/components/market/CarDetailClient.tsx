@@ -8,6 +8,7 @@ import { CheckoutAction } from "@/components/checkout/CheckoutAction";
 import { OfferModal } from "@/components/market/OfferModal";
 import { CreditSimulator } from "@/components/checkout/CreditSimulator";
 import { 
+    ArrowLeft,
     ChevronLeft, 
     ChevronRight,
     Heart, 
