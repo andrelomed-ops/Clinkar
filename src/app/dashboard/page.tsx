@@ -219,26 +219,38 @@ export default function DashboardPage() {
 
             // 3. Si se proporcionó carId y el auto está en pre-registro, lo eliminamos para limpiar el Dashboard
             if (carId) {
-                const { data: carData } = await supabase.from("cars").select("status").eq("id", carId).single();
+                const { data: carData, error: fetchError } = await supabase.from("cars").select("status").eq("id", carId).single();
                 
-                if (carData?.status === 'pending_inspection') {
+                if (fetchError) {
+                    console.warn("Could not fetch car status for cleanup:", fetchError);
+                } else if (carData?.status === 'pending_inspection') {
                     // Eliminamos dependencias para evitar errores de FK (Foreign Key)
                     await supabase.from("service_tickets").delete().eq("car_id", carId);
                     await supabase.from("inspection_appointments").delete().eq("car_id", carId);
+                    await supabase.from("user_favorites").delete().eq("car_id", carId);
                     
                     // Ahora sí eliminamos el auto
                     const { error: carDeleteError } = await supabase.from("cars").delete().eq("id", carId);
                     if (carDeleteError) {
                         console.error("Error deleting car record:", carDeleteError);
+                        toast.error(`Error al limpiar el registro: ${carDeleteError.message}`);
                     }
                 }
             }
             
             toast.success("Cita cancelada y registro removido");
-            loadDashboard();
-        } catch (err) {
+            
+            // Forzar recarga del dashboard
+            await loadDashboard();
+            
+            // Fallback: Si después de 1 segundo sigue apareciendo, forzar recarga de página
+            setTimeout(() => {
+                loadDashboard();
+            }, 1000);
+
+        } catch (err: any) {
             console.error("Error cancelling appointment:", err);
-            toast.error("No se pudo cancelar la cita");
+            toast.error("No se pudo cancelar la cita: " + (err.message || "Error desconocido"));
         }
     };
 
