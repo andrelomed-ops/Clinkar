@@ -201,12 +201,23 @@ export default function DashboardPage() {
         if (!confirm) return;
 
         try {
-            const { error } = await supabase
+            // 1. Intentar borrar de citas legacy (si es de ahí)
+            const { error: legacyError } = await supabase
                 .from("inspection_appointments")
                 .delete()
                 .eq("id", apptId);
             
-            if (error) throw error;
+            if (legacyError) throw legacyError;
+
+            // 2. Intentar marcar como cancelado en service_tickets (si es de ahí)
+            // Usamos update en lugar de delete para mantener trazabilidad en el nuevo sistema
+            const { error: ticketError } = await supabase
+                .from("service_tickets")
+                .update({ status: 'CANCELLED' })
+                .eq("id", apptId);
+
+            if (ticketError) throw ticketError;
+            
             toast.success("Cita cancelada correctamente");
             loadDashboard();
         } catch (err) {

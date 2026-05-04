@@ -114,7 +114,7 @@ export default function AdminInspectorDashboardPage() {
                                     <div className="flex flex-col gap-2">
                                         <div className="flex items-center justify-center md:justify-start gap-2 text-lg font-bold text-zinc-900 dark:text-zinc-100">
                                             <Clock className="h-5 w-5 text-indigo-500" />
-                                            <span>{new Date(item.scheduled_date).toLocaleDateString()} - {new Date(item.scheduled_date).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
+                                            <span>{new Date(item.scheduled_at).toLocaleDateString()} - {new Date(item.scheduled_at).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
                                         </div>
                                         <div className="flex items-center justify-center md:justify-start gap-2 text-lg font-bold text-zinc-600 dark:text-zinc-400">
                                             <Warehouse className="h-5 w-5" />

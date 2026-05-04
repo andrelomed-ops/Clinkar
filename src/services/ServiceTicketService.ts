@@ -6,7 +6,7 @@ export interface ServiceTicket {
     car_id: string;
     workshop_id: string;
     workshop_name: string;
-    scheduled_date: string;
+    scheduled_at: string;
     status: 'PAID_PENDING_VISIT' | 'IN_PROGRESS' | 'COMPLETED' | 'CANCELLED' | 'PENDING_PAYMENT';
     payout_status: 'PENDING' | 'PAID' | 'FAILED';
     payout_amount: number;
@@ -23,7 +23,7 @@ export class ServiceTicketService {
                 car_id: carId,
                 workshop_id: workshopId,
                 workshop_name: workshopName,
-                scheduled_date: scheduledDate,
+                scheduled_at: scheduledDate,
                 status: 'PENDING_PAYMENT',
                 payout_amount: 750 // Default from simulation
             } as any)
@@ -68,7 +68,7 @@ export class ServiceTicketService {
         const { data, error } = await supabase
             .from('service_tickets' as any)
             .select('*, car:cars(make, model, year)')
-            .order('scheduled_date', { ascending: true });
+            .order('scheduled_at', { ascending: true });
 
         if (error) throw error;
         return data as any[];
