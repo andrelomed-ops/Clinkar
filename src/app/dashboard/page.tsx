@@ -220,8 +220,17 @@ export default function DashboardPage() {
             // 3. Si se proporcionó carId y el auto está en pre-registro, lo eliminamos para limpiar el Dashboard
             if (carId) {
                 const { data: carData } = await supabase.from("cars").select("status").eq("id", carId).single();
+                
                 if (carData?.status === 'pending_inspection') {
-                    await supabase.from("cars").delete().eq("id", carId);
+                    // Eliminamos dependencias para evitar errores de FK (Foreign Key)
+                    await supabase.from("service_tickets").delete().eq("car_id", carId);
+                    await supabase.from("inspection_appointments").delete().eq("car_id", carId);
+                    
+                    // Ahora sí eliminamos el auto
+                    const { error: carDeleteError } = await supabase.from("cars").delete().eq("id", carId);
+                    if (carDeleteError) {
+                        console.error("Error deleting car record:", carDeleteError);
+                    }
                 }
             }
             
