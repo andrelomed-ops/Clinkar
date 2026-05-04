@@ -35,11 +35,21 @@ import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { translateFinding, getSeverityColor } from "@/lib/inspection-utils";
 
-export function CarDetailClient({ id, initialCar }: { id: string, initialCar: any }) {
+export function CarDetailClient({ 
+    id, 
+    initialCar, 
+    initialProfile, 
+    initialIsFavorite 
+}: { 
+    id: string, 
+    initialCar: any, 
+    initialProfile?: any, 
+    initialIsFavorite?: boolean 
+}) {
     const [car, setCar] = useState<Vehicle | null>(initialCar || null);
-    const [loading, setLoading] = useState(!initialCar);
-    const [isFavorite, setIsFavorite] = useState(false);
-    const [userProfile, setUserProfile] = useState<any>(null);
+    const [loading, setLoading] = useState(false);
+    const [isFavorite, setIsFavorite] = useState(initialIsFavorite || false);
+    const [userProfile, setUserProfile] = useState<any>(initialProfile || null);
     const [showWarrantyModal, setShowWarrantyModal] = useState(false);
     const [showGallery, setShowGallery] = useState(false);
     const [galleryIndex, setGalleryIndex] = useState(0);
@@ -47,50 +57,24 @@ export function CarDetailClient({ id, initialCar }: { id: string, initialCar: an
     
     const supabaseBrowser = useMemo(() => createBrowserClient(), []);
 
+    // Handle authentication state changes to sync profile/favorites if user logs in/out
     useEffect(() => {
-        async function fetchCar() {
-            if (!initialCar) setLoading(true);
-            try {
+        const { data: { subscription } } = supabaseBrowser.auth.onAuthStateChange(async (event) => {
+            if (event === 'SIGNED_IN' || event === 'SIGNED_OUT') {
                 const { data: { user } } = await supabaseBrowser.auth.getUser();
                 if (user) {
-                    const { data: profile } = await supabaseBrowser
-                        .from('profiles')
-                        .select('*')
-                        .eq('id', user.id)
-                        .single();
-                    if (profile) setUserProfile(profile);
-
+                    const { data: profile } = await supabaseBrowser.from('profiles').select('*').eq('id', user.id).single();
+                    setUserProfile(profile);
                     const favs = await FavoriteService.getFavorites(supabaseBrowser);
                     setIsFavorite(favs.includes(id));
+                } else {
+                    setUserProfile(null);
+                    setIsFavorite(false);
                 }
-
-                if (!initialCar) {
-                    const { data, error } = await supabaseBrowser
-                        .from('cars')
-                        .select('*')
-                        .eq('id', id)
-                        .single();
-
-                    if (data && !error) {
-                        const carData: any = data;
-                        setCar({
-                            ...carData,
-                            distance: (carData.mileage || 0) / 1000,
-                            fuel: carData.fuel || 'Gasolina',
-                            transmission: carData.transmission || 'Automática',
-                            is_investor_only: !!(carData.is_investor_only || carData.market_data?.is_investor_only),
-                            flashSale: !!(carData.flash_sale || carData.market_data?.flash_sale)
-                        } as any);
-                    }
-                }
-            } catch (e) {
-                console.error("Fetch error:", e);
-            } finally {
-                setLoading(false);
             }
-        }
-        fetchCar();
-    }, [id, supabaseBrowser, initialCar]);
+        });
+        return () => subscription.unsubscribe();
+    }, [id, supabaseBrowser]);
 
     if (loading && !car) {
         return (

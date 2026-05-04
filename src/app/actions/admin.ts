@@ -305,6 +305,18 @@ export async function matchDemandAction(demandId: string, carId: string) {
     }
 
     // 1. Update Demand Registry
+    const { data: demand } = await supabase
+        .from("demand_registry")
+        .select("*")
+        .eq("id", demandId)
+        .single();
+
+    const { data: car } = await supabase
+        .from("cars")
+        .select("*")
+        .eq("id", carId)
+        .single();
+
     const { error: demandError } = await supabase
         .from("demand_registry")
         .update({ 
@@ -319,7 +331,18 @@ export async function matchDemandAction(demandId: string, carId: string) {
 
     if (demandError) throw demandError;
 
-    // 2. Audit Log
+    // 2. Fetch User Profile for Phone
+    let customerPhone = null;
+    if (demand?.user_id) {
+        const { data: customerProfile } = await supabase
+            .from("profiles")
+            .select("phone")
+            .eq("id", demand.user_id)
+            .single();
+        customerPhone = customerProfile?.phone;
+    }
+
+    // 3. Audit Log
     await supabase.from("audit_logs").insert({
         user_id: user.id,
         action: "DEMAND_MATCH",
@@ -328,7 +351,17 @@ export async function matchDemandAction(demandId: string, carId: string) {
     });
 
     revalidatePath("/admin");
-    return { success: true };
+
+    // Prepare WhatsApp Message
+    const waMessage = car && demand 
+        ? `¡Hola! 👋 Tenemos buenas noticias de StarterKar. Hemos encontrado un ${car.make} ${car.model} que coincide con tu búsqueda de un ${demand.brand} ${demand.model}. \n\nPuedes verlo aquí: https://starterkar.com/buy/${car.id}`
+        : "¡Hola! Hemos encontrado un auto para tu pedido en StarterKar.";
+
+    return { 
+        success: true, 
+        customerPhone,
+        waMessage
+    };
 }
 
 export async function getGlobalConcurrencyStatsAction() {

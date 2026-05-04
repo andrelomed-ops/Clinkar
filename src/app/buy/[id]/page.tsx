@@ -2,6 +2,7 @@
 import { Metadata, ResolvingMetadata } from 'next';
 import { createClient } from '@/lib/supabase/server';
 import { CarDetailClient } from '@/components/market/CarDetailClient';
+import { FavoriteService } from '@/services/FavoriteService';
 import { notFound } from 'next/navigation';
 
 interface Props {
@@ -62,15 +63,36 @@ export default async function Page({ params }: Props) {
   const { id } = await params;
   const supabase = await createClient();
 
-  const { data: car } = await supabase
-    .from('cars')
-    .select('*')
-    .eq('id', id)
-    .single();
+  const [
+    { data: car },
+    { data: { user } },
+    favorites
+  ] = await Promise.all([
+    supabase.from('cars').select('*').eq('id', id).single(),
+    supabase.auth.getUser(),
+    FavoriteService.getFavorites(supabase)
+  ]);
 
   if (!car) {
     notFound();
   }
 
-  return <CarDetailClient id={id} initialCar={car} />;
+  let userProfile = null;
+  if (user) {
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('*')
+      .eq('id', user.id)
+      .single();
+    userProfile = profile;
+  }
+
+  return (
+    <CarDetailClient 
+      id={id} 
+      initialCar={car} 
+      initialProfile={userProfile}
+      initialIsFavorite={favorites.includes(id)}
+    />
+  );
 }

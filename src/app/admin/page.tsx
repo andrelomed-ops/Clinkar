@@ -256,7 +256,17 @@ export default function AdminDashboardV6() {
         if (!carId) return;
         try {
             const res = await matchDemandAction(demandId, carId);
-            if (res.success) { toast.success("Match realizado correctamente"); await loadData(); }
+            if (res.success) { 
+                toast.success("Match realizado correctamente"); 
+                if (res.customerPhone && res.waMessage) {
+                    const confirmWa = window.confirm("¿Deseas enviar la notificación de Match por WhatsApp al cliente?");
+                    if (confirmWa) {
+                        const cleanPhone = res.customerPhone.replace(/\D/g, '');
+                        window.open(`https://wa.me/${cleanPhone}?text=${encodeURIComponent(res.waMessage)}`, '_blank');
+                    }
+                }
+                await loadData(); 
+            }
         } catch (e: any) { toast.error(e.message); }
     };
 
