@@ -117,11 +117,21 @@ export function MarketClient({
                 const match = carMake.includes(query) || carModel.includes(query) || carLocation.includes(query) || `${carMake} ${carModel}`.includes(query);
                 if (!match) return false;
             }
+            if (showFavoritesOnly && !favorites.includes(car.id)) return false;
+
+            if (searchTerm) {
+                const term = searchTerm.toLowerCase();
+                const make = car.make ? car.make.toLowerCase() : '';
+                const model = car.model ? car.model.toLowerCase() : '';
+                if (!make.includes(term) && !model.includes(term)) {
+                    return false;
+                }
+            }
 
             if (filters.location && filters.location.length > 0) {
                 const carLocation = (car.location || '').toLowerCase();
-                const match = filters.location.some((loc: string) => carLocation.includes(loc.toLowerCase()));
-                if (!match) return false;
+                const matchLocation = filters.location.some((loc: string) => carLocation.includes(loc.toLowerCase()));
+                if (!matchLocation) return false;
             }
 
             if (filters.makes && filters.makes.length > 0 && !filters.makes.includes(car.make)) return false;
