@@ -59,31 +59,92 @@ export default function Home() {
             <div className="flex flex-col items-center text-center space-y-10">
               <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-border bg-background/50 backdrop-blur-sm shadow-sm animate-in fade-in slide-in-from-top-4 duration-1000">
                 <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                <span className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em]">Bóveda Digital Activa</span>
+                <span className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em]">De particular a particular, sin riesgos</span>
               </div>
 
-              <h1 className="text-6xl md:text-9xl font-black tracking-tighter leading-[0.85] text-foreground animate-in fade-in slide-in-from-bottom-8 duration-1000">
-                ARRANCA TU AUTO.<br />
-                <span className="text-indigo-600 italic uppercase">FRENA EL RIESGO.</span>
+              <h1 className="text-6xl md:text-8xl font-black tracking-tighter leading-[0.85] text-foreground animate-in fade-in slide-in-from-bottom-8 duration-1000">
+                Vende a precio real.<br />
+                <span className="text-indigo-600 italic uppercase">Y síguelo manejando.</span>
               </h1>
 
-              <p className="text-lg md:text-xl text-muted-foreground max-w-2xl leading-relaxed font-medium animate-in fade-in slide-in-from-bottom-6 duration-1000 delay-200">
-                La plataforma de compra-venta diseñada para la seguridad total. <br className="hidden md:block" />
-                <span className="text-foreground font-bold">0% Comisión Comprador</span> y revisión mecánica certificada.
+              <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed font-medium animate-in fade-in slide-in-from-bottom-6 duration-1000 delay-200">
+                No malbarates tu vehículo en lotes ni agencias. Conectamos compradores y vendedores reales, blindando el pago y la legalidad. <span className="text-foreground font-bold">Tú no sueltas tu auto hasta que el dinero esté en tu cuenta.</span>
               </p>
 
               <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto animate-in fade-in slide-in-from-bottom-4 duration-1000 delay-300">
-                <Link href="/buy" className="h-16 px-12 rounded-2xl bg-zinc-950 text-white font-black text-lg flex items-center justify-center gap-3 hover:scale-[1.02] active:scale-[0.98] transition-all shadow-2xl shadow-indigo-500/20">
-                  Explorar Inventario
+                <Link href="/sell" className="h-16 px-12 rounded-2xl bg-zinc-950 dark:bg-white text-white dark:text-zinc-950 font-black text-lg flex items-center justify-center gap-3 hover:scale-[1.02] active:scale-[0.98] transition-all shadow-2xl shadow-indigo-500/20">
+                  Vender a Precio Justo
                   <ArrowRight className="h-5 w-5" />
                 </Link>
-                <Link href="/sell" className="h-16 px-12 rounded-2xl border-2 border-border bg-background text-foreground font-black text-lg flex items-center justify-center gap-3 hover:bg-secondary transition-all active:scale-[0.98]">
-                  Vender mi Auto
+                <Link href="/buy" className="h-16 px-12 rounded-2xl border-2 border-border bg-background text-foreground font-black text-lg flex items-center justify-center gap-3 hover:bg-secondary transition-all active:scale-[0.98]">
+                  Comprar con 0% Comisión
                 </Link>
               </div>
 
+              {/* THE VERSUS SECTION */}
+              <div className="w-full max-w-5xl pt-16 md:pt-24 animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-500">
+                <div className="grid md:grid-cols-2 gap-8 text-left">
+                  {/* The Bad Guys */}
+                  <div className="bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-900/50 rounded-[2.5rem] p-8 md:p-10 relative overflow-hidden group">
+                    <div className="absolute top-0 right-0 w-32 h-32 bg-red-500/10 rounded-full blur-3xl" />
+                    <h3 className="text-xl md:text-2xl font-black text-red-600 dark:text-red-500 tracking-tight mb-6 flex items-center gap-3">
+                      Lotes y Plataformas Comunes
+                    </h3>
+                    <ul className="space-y-6">
+                      <li className="flex items-start gap-3">
+                        <span className="text-red-500 font-bold mt-0.5">✖</span>
+                        <span className="text-zinc-700 dark:text-zinc-300 font-medium leading-relaxed">
+                          Te castigan el precio. Te ofrecen hasta <strong className="text-red-600 dark:text-red-400">30% menos</strong> del valor real para su reventa.
+                        </span>
+                      </li>
+                      <li className="flex items-start gap-3">
+                        <span className="text-red-500 font-bold mt-0.5">✖</span>
+                        <span className="text-zinc-700 dark:text-zinc-300 font-medium leading-relaxed">
+                          Te quitan el auto. Lo retienen en bodegas cerradas por semanas mientras intentan venderlo.
+                        </span>
+                      </li>
+                      <li className="flex items-start gap-3">
+                        <span className="text-red-500 font-bold mt-0.5">✖</span>
+                        <span className="text-zinc-700 dark:text-zinc-300 font-medium leading-relaxed">
+                          Conflicto de interés. Su negocio es comprarte lo más barato posible para ganar más margen.
+                        </span>
+                      </li>
+                    </ul>
+                  </div>
+
+                  {/* The Good Guys */}
+                  <div className="bg-indigo-600 dark:bg-indigo-900/40 border border-indigo-500/30 rounded-[2.5rem] p-8 md:p-10 relative overflow-hidden text-white shadow-2xl shadow-indigo-500/20">
+                    <div className="absolute top-0 right-0 w-48 h-48 bg-white/10 rounded-full blur-3xl" />
+                    <h3 className="text-xl md:text-2xl font-black text-white tracking-tight mb-6 flex items-center gap-3">
+                      <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse shrink-0" />
+                      El Modelo StarterKar
+                    </h3>
+                    <ul className="space-y-6 relative z-10">
+                      <li className="flex items-start gap-3">
+                        <CheckCircle2 className="h-6 w-6 text-emerald-400 shrink-0 mt-0.5" />
+                        <span className="text-indigo-50 dark:text-indigo-100 font-medium leading-relaxed">
+                          Ganas el 100%. Vendes al valor real de mercado, de <strong className="text-white">particular a particular</strong>.
+                        </span>
+                      </li>
+                      <li className="flex items-start gap-3">
+                        <CheckCircle2 className="h-6 w-6 text-emerald-400 shrink-0 mt-0.5" />
+                        <span className="text-indigo-50 dark:text-indigo-100 font-medium leading-relaxed">
+                          El auto se queda contigo. Lo sigues manejando todos los días en tu rutina habitual.
+                        </span>
+                      </li>
+                      <li className="flex items-start gap-3">
+                        <CheckCircle2 className="h-6 w-6 text-emerald-400 shrink-0 mt-0.5" />
+                        <span className="text-indigo-50 dark:text-indigo-100 font-medium leading-relaxed">
+                          Intermediación Neutral. Solo cobramos por inspeccionar y blindar la legalidad de la transacción.
+                        </span>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+
               {/* Trust Metrics */}
-              <div className="pt-12 grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-16 border-t border-border w-full max-w-4xl animate-in fade-in duration-1000 delay-500">
+              <div className="pt-16 grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-16 border-t border-border w-full max-w-4xl animate-in fade-in duration-1000 delay-700">
                 <div className="space-y-1">
                   <p className="text-2xl font-black tracking-tighter">150</p>
                   <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Pts Inspección</p>
