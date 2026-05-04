@@ -63,8 +63,8 @@ export default function Home() {
               </div>
 
               <h1 className="text-6xl md:text-8xl font-black tracking-tighter leading-[0.85] text-foreground animate-in fade-in slide-in-from-bottom-8 duration-1000">
-                Vende a precio real.<br />
-                <span className="text-indigo-600 italic uppercase">Y síguelo manejando.</span>
+                Pon tu auto a la venta.<br />
+                <span className="text-indigo-600 italic uppercase">Y síguelo usando.</span>
               </h1>
 
               <p className="text-lg md:text-xl text-muted-foreground max-w-4xl mx-auto leading-relaxed font-medium animate-in fade-in slide-in-from-bottom-6 duration-1000 delay-200">
@@ -95,19 +95,19 @@ export default function Home() {
                       <li className="flex items-start gap-3">
                         <span className="text-red-500 font-bold mt-0.5">✖</span>
                         <span className="text-zinc-700 dark:text-zinc-300 font-medium leading-relaxed">
-                          <strong className="text-red-600 dark:text-red-400">Devaluación Forzada:</strong> Su negocio es comprarte barato para revender caro. Se inventarán supuestas "fallas" para bajarte el precio y ofrecerte hasta un 30% menos de lo que realmente vale tu auto.
+                          <strong className="text-red-600 dark:text-red-400">Devaluación Forzada:</strong> Se inventan "fallas" para pagarte hasta 30% menos de su valor real.
                         </span>
                       </li>
                       <li className="flex items-start gap-3">
                         <span className="text-red-500 font-bold mt-0.5">✖</span>
                         <span className="text-zinc-700 dark:text-zinc-300 font-medium leading-relaxed">
-                          <strong className="text-red-600 dark:text-red-400">Te dejan a pie:</strong> Te piden que dejes tu auto encerrado en sus bodegas por semanas o meses para intentar venderlo. Pierdes por completo el control de tu vehículo.
+                          <strong className="text-red-600 dark:text-red-400">Te dejan a pie:</strong> Te obligan a dejar tu auto inmovilizado en sus bodegas por semanas o meses.
                         </span>
                       </li>
                       <li className="flex items-start gap-3">
                         <span className="text-red-500 font-bold mt-0.5">✖</span>
                         <span className="text-zinc-700 dark:text-zinc-300 font-medium leading-relaxed">
-                          <strong className="text-red-600 dark:text-red-400">Inseguridad y fraudes ocultos:</strong> Te arriesgas a cheques sin fondos en la calle, o a comprar un auto "maquillado" y con broncas legales que hasta las agencias más famosas dejan pasar.
+                          <strong className="text-red-600 dark:text-red-400">Riesgo Constante:</strong> Peligro de cheques sin fondos, estafas y autos "remarcados".
                         </span>
                       </li>
                     </ul>
@@ -125,19 +125,19 @@ export default function Home() {
                       <li className="flex items-start gap-3">
                         <CheckCircle2 className="h-6 w-6 text-emerald-400 shrink-0 mt-0.5" />
                         <span className="text-indigo-50 dark:text-indigo-100 font-medium leading-relaxed">
-                          <strong className="text-white">Tu auto, tu precio real:</strong> Tú decides el valor de venta basándote en el mercado real. Nosotros solo cobramos una tarifa justa y transparente por el servicio, respetando siempre el valor de tu patrimonio.
+                          <strong className="text-white">Tu auto, tu precio:</strong> Ganas el 100% del valor de mercado. Tu inversión inicial se te reembolsa al vender.
                         </span>
                       </li>
                       <li className="flex items-start gap-3">
                         <CheckCircle2 className="h-6 w-6 text-emerald-400 shrink-0 mt-0.5" />
                         <span className="text-indigo-50 dark:text-indigo-100 font-medium leading-relaxed">
-                          <strong className="text-white">El auto no se mueve de tu lado:</strong> Olvídate de abandonarlo en un lote. Lo sigues usando todos los días en tu rutina normal y solo sueltas las llaves hasta que tu dinero esté firme en el banco.
+                          <strong className="text-white">No sueltas las llaves:</strong> Síguelo usando todos los días. Solo entregas el auto cuando tu dinero esté 100% firme.
                         </span>
                       </li>
                       <li className="flex items-start gap-3">
                         <CheckCircle2 className="h-6 w-6 text-emerald-400 shrink-0 mt-0.5" />
                         <span className="text-indigo-50 dark:text-indigo-100 font-medium leading-relaxed">
-                          <strong className="text-white">Cuidamos tu espalda en todo momento:</strong> No somos revendedores, somos tu respaldo. Revisamos la mecánica a fondo, validamos los papeles y blindamos el dinero para que ambas partes hagan trato con total tranquilidad.
+                          <strong className="text-white">Escudo Protector:</strong> Somos tu respaldo. Blindamos el dinero y revisamos la legalidad para un trato seguro e imparcial.
                         </span>
                       </li>
                     </ul>
