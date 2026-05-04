@@ -29,7 +29,7 @@ export async function generateMetadata(
   }
 
   const title = `${car.make} ${car.model} ${car.year} | StarterKar`;
-  const description = `Mira este ${car.make} ${car.model} por $${car.price.toLocaleString()} MXN en StarterKar. Bóveda Digital Segura y Certificación de 150 puntos.`;
+  const description = `Mira este ${car.make} ${car.model} por $${(car.price || 0).toLocaleString()} MXN en StarterKar. Bóveda Digital Segura y Certificación de 150 puntos.`;
   
   // Point to our new dynamic OG image generator
   const ogImageUrl = `https://clinkar.vercel.app/api/og/car/${id}`;

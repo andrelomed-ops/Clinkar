@@ -28,7 +28,7 @@ export async function GET(
       style: 'currency',
       currency: 'MXN',
       maximumFractionDigits: 0,
-    }).format(car.price);
+    }).format(car.price || 0);
 
     return new ImageResponse(
       (

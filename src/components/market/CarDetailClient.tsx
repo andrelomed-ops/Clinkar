@@ -211,7 +211,7 @@ export function CarDetailClient({
                                     </span>
                                     <div className="flex items-center gap-2 font-black text-lg">
                                         <Gauge className="h-4 w-4 text-primary" />
-                                        {car.distance.toLocaleString()} {car.category === 'Marine' || car.category === 'Air' || car.category === 'Heavy' ? 'h' : 'km'}
+                                        {(car.distance || 0).toLocaleString()} {car.category === 'Marine' || car.category === 'Air' || car.category === 'Heavy' ? 'h' : 'km'}
                                     </div>
                                 </div>
                                 <div className="p-4 rounded-2xl bg-secondary/50 border border-border flex flex-col">
@@ -343,7 +343,7 @@ export function CarDetailClient({
                                     <div className="space-y-1">
                                         <span className="text-xs font-bold text-muted-foreground uppercase tracking-widest">Precio Final Garantizado</span>
                                         <div className="text-4xl font-black tracking-tighter text-zinc-900 dark:text-white">
-                                            ${car.price.toLocaleString()}
+                                            ${(car.price || 0).toLocaleString()}
                                         </div>
                                     </div>
                                 </header>
