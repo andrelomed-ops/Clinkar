@@ -13,6 +13,12 @@ import {
     Loader2
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { 
+    addPartnerAction, 
+    togglePartnerStatusAction, 
+    deletePartnerAction 
+} from "@/app/actions/partners";
+import { toast } from "sonner";
 
 interface Partner {
     id: string;
@@ -65,34 +71,53 @@ export default function AdminPartnersPage() {
 
     const handleAddPartner = async (e: React.FormEvent) => {
         e.preventDefault();
-        const { error } = await supabase.from('partners').insert({
-            name,
-            address,
-            city,
-            phone,
-            is_active: true,
-            specialties
-        });
+        setLoading(true);
+        try {
+            const result = await addPartnerAction({
+                name,
+                address,
+                city,
+                phone,
+                is_active: true,
+                specialties
+            });
 
-        if (error) {
+            if (result.success) {
+                toast.success("Taller añadido correctamente");
+                setName("");
+                setAddress("");
+                setCity("");
+                setPhone("");
+                setShowAddForm(false);
+                fetchPartners();
+            }
+        } catch (error: any) {
             alert("Error al añadir taller: " + error.message);
-        } else {
-            setName("");
-            setAddress("");
-            setCity("");
-            setPhone("");
-            setShowAddForm(false);
-            fetchPartners();
+        } finally {
+            setLoading(false);
         }
     };
 
     const toggleStatus = async (id: string, currentStatus: boolean) => {
-        const { error } = await supabase
-            .from('partners')
-            .update({ is_active: !currentStatus })
-            .eq('id', id);
+        try {
+            await togglePartnerStatusAction(id, currentStatus);
+            toast.success("Estado actualizado");
+            fetchPartners();
+        } catch (error: any) {
+            toast.error("Error al actualizar estado");
+        }
+    };
+
+    const handleDelete = async (id: string) => {
+        if (!confirm("¿Estás seguro de eliminar este taller?")) return;
         
-        if (!error) fetchPartners();
+        try {
+            await deletePartnerAction(id);
+            toast.success("Taller eliminado");
+            fetchPartners();
+        } catch (error: any) {
+            toast.error("Error al eliminar taller");
+        }
     };
 
     return (
@@ -254,7 +279,10 @@ export default function AdminPartnersPage() {
                             </div>
 
                             <div className="mt-8 pt-6 border-t border-zinc-800 flex justify-end">
-                                <button className="text-zinc-600 hover:text-red-500 transition-colors">
+                                <button 
+                                    onClick={() => handleDelete(partner.id)}
+                                    className="text-zinc-600 hover:text-red-500 transition-colors"
+                                >
                                     <Trash2 className="h-5 w-5" />
                                 </button>
                             </div>
