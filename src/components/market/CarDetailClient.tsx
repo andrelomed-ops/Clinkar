@@ -262,11 +262,11 @@ export function CarDetailClient({
                                             <circle 
                                                 className={cn(
                                                     "transition-all duration-1000 ease-out",
-                                                    (car.performance_score || 0) >= 90 ? "text-emerald-500" : (car.performance_score || 0) >= 70 ? "text-amber-500" : "text-red-500"
+                                                    (car.performance_score ?? 0) >= 90 ? "text-emerald-500" : (car.performance_score ?? 0) >= 70 ? "text-amber-500" : "text-red-500"
                                                 )}
                                                 strokeWidth="6" 
                                                 strokeDasharray={2 * Math.PI * 42}
-                                                strokeDashoffset={2 * Math.PI * 42 * (1 - (car.performance_score || 85) / 100)}
+                                                strokeDashoffset={2 * Math.PI * 42 * (1 - (car.performance_score ?? 85) / 100)}
                                                 strokeLinecap="round" 
                                                 stroke="currentColor" 
                                                 fill="transparent" 
@@ -274,7 +274,7 @@ export function CarDetailClient({
                                             />
                                         </svg>
                                         <div className="absolute inset-0 flex flex-col items-center justify-center">
-                                            <span className="text-4xl font-black italic tracking-tighter text-zinc-900 dark:text-white">{(car.performance_score || 85)}</span>
+                                            <span className="text-4xl font-black italic tracking-tighter text-zinc-900 dark:text-white">{(car.performance_score ?? 85)}</span>
                                             <span className="text-[10px] font-black text-zinc-400 uppercase tracking-widest">Score</span>
                                         </div>
                                     </div>

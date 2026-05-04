@@ -139,7 +139,7 @@ export function Navbar({
                                 showWordmark={false} 
                                 orientation="horizontal"
                                 label={user ? "" : "Entrar"} 
-                                href={user ? "/dashboard" : "/login"} 
+                                href={user ? "/dashboard" : "/"} 
                                 className="hover:translate-y-[-2px] transition-all"
                             />
                             {user && userProfile?.role?.toLowerCase() === 'investor' && (
