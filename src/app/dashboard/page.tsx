@@ -196,7 +196,7 @@ export default function DashboardPage() {
         loadDashboard();
     };
 
-    const handleCancelAppointment = async (apptId: string) => {
+    const handleCancelAppointment = async (apptId: string, carId?: string) => {
         const confirm = window.confirm("¿Estás seguro de que deseas cancelar esta cita de inspección?");
         if (!confirm) return;
 
@@ -210,15 +210,22 @@ export default function DashboardPage() {
             if (legacyError) throw legacyError;
 
             // 2. Intentar marcar como cancelado en service_tickets (si es de ahí)
-            // Usamos update en lugar de delete para mantener trazabilidad en el nuevo sistema
             const { error: ticketError } = await supabase
                 .from("service_tickets")
                 .update({ status: 'CANCELLED' })
                 .eq("id", apptId);
 
             if (ticketError) throw ticketError;
+
+            // 3. Si se proporcionó carId y el auto está en pre-registro, lo eliminamos para limpiar el Dashboard
+            if (carId) {
+                const { data: carData } = await supabase.from("cars").select("status").eq("id", carId).single();
+                if (carData?.status === 'pending_inspection') {
+                    await supabase.from("cars").delete().eq("id", carId);
+                }
+            }
             
-            toast.success("Cita cancelada correctamente");
+            toast.success("Cita cancelada y registro removido");
             loadDashboard();
         } catch (err) {
             console.error("Error cancelling appointment:", err);
@@ -414,7 +421,7 @@ export default function DashboardPage() {
                                                                  onClick={(e) => {
                                                                      e.preventDefault();
                                                                      e.stopPropagation();
-                                                                     handleCancelAppointment(car.appointment.id);
+                                                                     handleCancelAppointment(car.appointment.id, car.id);
                                                                  }}
                                                                  className="p-2 text-zinc-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all"
                                                                  title="Cancelar Cita"
