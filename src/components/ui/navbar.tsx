@@ -93,7 +93,7 @@ export function Navbar({
 
                     {/* Left Section: Logo */}
                     <div className="flex items-center shrink-0 pr-4">
-                        <StarterKarLogo size="lg" showMonogram={false} href="/" hideSubmark={true} />
+                        <StarterKarLogo size="lg" showMonogram={false} href={user ? "/dashboard" : "/"} hideSubmark={true} />
                     </div>
 
                     {/* Center Section: Navigation Links */}
