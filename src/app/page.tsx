@@ -67,8 +67,8 @@ export default function Home() {
                 <span className="text-indigo-600 italic uppercase">Y síguelo manejando.</span>
               </h1>
 
-              <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed font-medium animate-in fade-in slide-in-from-bottom-6 duration-1000 delay-200">
-                No malbarates tu vehículo en lotes ni agencias. Conectamos compradores y vendedores reales, blindando el pago y la legalidad. <span className="text-foreground font-bold">Tú no sueltas tu auto hasta que el dinero esté en tu cuenta.</span>
+              <p className="text-lg md:text-xl text-muted-foreground max-w-4xl mx-auto leading-relaxed font-medium animate-in fade-in slide-in-from-bottom-6 duration-1000 delay-200">
+                No malbarates tu vehículo en lotes ni compres autos a ciegas. Te llevamos de la mano con <span className="text-foreground font-bold">acompañamiento personal</span> paso a paso para lograr un trato justo. Certificamos la mecánica, blindamos el pago y aseguramos la legalidad <span className="text-foreground font-bold">para ambas partes</span>.
               </p>
 
               <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto animate-in fade-in slide-in-from-bottom-4 duration-1000 delay-300">
