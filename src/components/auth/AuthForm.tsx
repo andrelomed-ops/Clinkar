@@ -11,6 +11,14 @@ import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { ReferralService } from "@/services/ReferralService";
 
+const translateAuthError = (message: string) => {
+    if (message.includes("Email rate limit exceeded")) return "Límite de correos excedido. Intenta más tarde.";
+    if (message.includes("Invalid login credentials")) return "Credenciales incorrectas.";
+    if (message.includes("User already registered")) return "Este correo ya está registrado.";
+    if (message.includes("Password should be at least")) return "La contraseña debe tener al menos 6 caracteres.";
+    return message;
+};
+
 interface AuthFormProps {
     initialMode?: "login" | "register";
 }
@@ -61,7 +69,7 @@ export function AuthForm({ initialMode = "login" }: AuthFormProps) {
                 const { data, error } = await Promise.race([signInPromise, timeoutPromise]) as any;
 
                 if (error) {
-                    setError(error.message);
+                    setError(translateAuthError(error.message));
                     setLoading(false);
                     return;
                 } 
@@ -111,7 +119,7 @@ export function AuthForm({ initialMode = "login" }: AuthFormProps) {
                 });
 
                 if (error) {
-                    setError(error.message);
+                    setError(translateAuthError(error.message));
                     setLoading(false);
                 } else {
                     // Assign Referral if code exists
@@ -133,7 +141,7 @@ export function AuthForm({ initialMode = "login" }: AuthFormProps) {
                 }
             }
         } catch (err: any) {
-            setError(err.message || "Algo salió mal. Intenta de nuevo.");
+            setError(translateAuthError(err.message || "Algo salió mal. Intenta de nuevo."));
             setLoading(false);
         }
     };
@@ -153,12 +161,12 @@ export function AuthForm({ initialMode = "login" }: AuthFormProps) {
             });
             
             if (error) {
-                setError(error.message);
+                setError(translateAuthError(error.message));
                 setLoading(false);
             }
         } catch (err: any) {
             console.error("Google Login Error:", err);
-            setError(err.message || "Error al conectar con Google");
+            setError(translateAuthError(err.message || "Error al conectar con Google"));
             setLoading(false);
         }
     };
