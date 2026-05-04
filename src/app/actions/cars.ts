@@ -1,7 +1,7 @@
 
 "use server";
 
-import { createClient } from "@/lib/supabase/server";
+import { createClient, createAdminClient } from "@/lib/supabase/server";
 import { CarService } from "@/services/CarService";
 import { revalidatePath } from "next/cache";
 
@@ -96,6 +96,7 @@ export async function updateCarAction(id: string, carData: any) {
 
 export async function deleteCarAction(id: string) {
     const supabase = await createClient();
+    const adminSupabase = await createAdminClient();
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) throw new Error("Unauthorized");
 
@@ -103,18 +104,22 @@ export async function deleteCarAction(id: string) {
         const { data: profile } = await supabase.from("profiles").select("role").eq("id", user.id).single();
         const userEmail = user.email?.toLowerCase();
         
-        if (profile?.role !== 'admin' && userEmail !== 'starterkar@hotmail.com') {
-            console.error(`[Action] Forbidden: User ${userEmail} is not an admin.`);
-            return { success: false, message: "No tienes permisos para eliminar vehículos." };
+        // Fetch car to check ownership
+        const { data: car } = await supabase.from("cars").select("seller_id").eq("id", id).single();
+        const isOwner = car?.seller_id === user.id;
+
+        if (profile?.role !== 'admin' && userEmail !== 'starterkar@hotmail.com' && !isOwner) {
+            console.error(`[Action] Forbidden: User ${userEmail} is not an admin and not the owner.`);
+            return { success: false, message: "No tienes permisos para eliminar este vehículo." };
         }
 
-        console.log(`[Action] START DELETION: Car ${id} by ${userEmail} (v4.7.7-SERVER)`);
+        console.log(`[Action] START DELETION: Car ${id} by ${userEmail} (v4.8.7-ADMIN-BYPASS)`);
 
         // 0. Resolve full UUID (Robust JS-side resolution)
         let targetId = id;
         if (id.length < 36) {
             console.log(`[Action] Short ID detected: ${id}. Resolving via inventory scan...`);
-            const { data: allCars } = await supabase.from('cars').select('id');
+            const { data: allCars } = await adminSupabase.from('cars').select('id');
             const match = allCars?.find(c => c.id.toLowerCase().startsWith(id.toLowerCase()));
             
             if (!match) {
@@ -126,16 +131,14 @@ export async function deleteCarAction(id: string) {
         }
 
         // 1. Collect all transaction IDs for this car
-        const { data: txs } = await supabase.from("transactions").select("id").eq("car_id", targetId);
+        const { data: txs } = await adminSupabase.from("transactions").select("id").eq("car_id", targetId);
         const txIds = (txs || []).map(t => t.id);
 
-
-
-        // 2. Robust Sequential Deletion
+        // 2. Robust Sequential Deletion using Admin Client
         const safeDelete = async (table: string, column: string, values: any[]) => {
             if (!values || values.length === 0) return;
             try {
-                const { error } = await supabase.from(table as any).delete().in(column, values);
+                const { error } = await adminSupabase.from(table as any).delete().in(column, values);
                 if (error) {
                     console.warn(`[Action] Non-fatal error deleting from ${table}:`, error.message);
                     return false;
@@ -179,7 +182,7 @@ export async function deleteCarAction(id: string) {
 
         // 3. FINAL STEP: Delete the car itself with row count verification
         console.log(`[Action] EXECUTING FINAL DELETE for Car ${targetId}`);
-        const { error: carDeleteError, count } = await supabase
+        const { error: carDeleteError, count } = await adminSupabase
             .from("cars")
             .delete({ count: 'exact' })
             .eq("id", targetId);
