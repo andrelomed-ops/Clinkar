@@ -159,7 +159,7 @@ export function CarDetailClient({
                                             onClick={() => { setGalleryIndex(idx); setShowGallery(true); }}
                                             className={cn(
                                                 "relative shrink-0 snap-center cursor-pointer transition-all duration-700 ease-out hover:z-10",
-                                                idx === 0 ? "w-[85vw] md:w-[45rem] h-[35vh] sm:h-[45vh] md:h-[35rem] rounded-[2.5rem] shadow-2xl" : "w-[65vw] md:w-[25rem] h-[35vh] sm:h-[45vh] md:h-[35rem] rounded-[2rem] opacity-70 hover:opacity-100 shadow-xl"
+                                                idx === 0 ? "w-[80vw] md:w-[50rem] h-[35vh] sm:h-[45vh] md:h-[40rem] rounded-[2.5rem] shadow-2xl" : "w-[60vw] md:w-[30rem] h-[35vh] sm:h-[45vh] md:h-[40rem] rounded-[2rem] opacity-70 hover:opacity-100 shadow-xl"
                                             )}
                                         >
                                             <Image
@@ -194,14 +194,17 @@ export function CarDetailClient({
                             {car.images && car.images.length > 1 && (
                                 <>
                                     <div className="absolute right-0 top-1/2 -translate-y-1/2 w-32 h-full bg-gradient-to-l from-background to-transparent pointer-events-none hidden md:block" />
-                                    <div className="absolute bottom-10 left-1/2 -translate-x-1/2 flex items-center gap-2 px-4 py-2 bg-black/40 backdrop-blur-md rounded-full border border-white/10">
-                                        <span className="text-[9px] font-black text-white uppercase tracking-widest animate-pulse">Desliza para explorar</span>
-                                        <div className="flex gap-1.5 ml-2">
-                                            {car.images.slice(0, Math.min(car.images.length, 5)).map((_, i) => (
-                                                <div key={i} className="h-1.5 w-1.5 rounded-full bg-white/40" />
-                                            ))}
-                                            {car.images.length > 5 && <div className="h-1.5 w-1.5 rounded-full bg-white/40 opacity-50" />}
+                                    <div className="absolute bottom-10 left-1/2 -translate-x-1/2 flex items-center gap-4 px-6 py-2.5 bg-black/60 backdrop-blur-xl rounded-full border border-white/10 shadow-2xl">
+                                        <div className="flex items-center gap-2 pr-4 border-r border-white/10">
+                                            <CameraIcon className="h-4 w-4 text-white" />
+                                            <span className="text-[10px] font-black text-white uppercase tracking-widest">{car.images.length} FOTOS</span>
                                         </div>
+                                        <button 
+                                            onClick={() => setShowGallery(true)}
+                                            className="text-[10px] font-black text-indigo-400 hover:text-indigo-300 uppercase tracking-widest transition-colors"
+                                        >
+                                            Ver Todo
+                                        </button>
                                     </div>
                                 </>
                             )}
@@ -390,22 +393,56 @@ export function CarDetailClient({
             </main>
 
             {showGallery && car.images && (
-                <div className="fixed inset-0 z-[200] bg-black/95 backdrop-blur-xl flex flex-col animate-in fade-in duration-300">
-                    <div className="flex items-center justify-between p-6">
-                        <button onClick={() => setShowGallery(false)} className="h-12 w-12 rounded-full bg-white/10 text-white flex items-center justify-center transition-all group">
+                <div className="fixed inset-0 z-[200] bg-zinc-950/98 backdrop-blur-2xl flex flex-col animate-in fade-in duration-300">
+                    {/* Premium Gallery Header */}
+                    <div className="flex items-center justify-between p-8">
+                        <div className="flex flex-col">
+                            <h3 className="text-xl font-black text-white uppercase italic tracking-tighter">Galería Premium</h3>
+                            <p className="text-zinc-500 text-[10px] font-bold uppercase tracking-widest">{car.make} {car.model} • {car.images.length} Capturas de Alta Resolución</p>
+                        </div>
+                        <button 
+                            onClick={() => setShowGallery(false)} 
+                            className="h-14 w-14 rounded-2xl bg-white/5 text-white flex items-center justify-center transition-all hover:bg-white/10 hover:scale-110 active:scale-95 border border-white/10"
+                        >
                             <X className="h-6 w-6" />
                         </button>
                     </div>
-                    <div className="flex-1 relative flex items-center justify-center p-4">
-                        <button onClick={() => setGalleryIndex(prev => (prev === 0 ? car.images!.length - 1 : prev - 1))} className="absolute left-6 z-10 h-14 w-14 rounded-full bg-black/50 text-white flex items-center justify-center hover:bg-indigo-600 transition-all">
-                            <ChevronLeft className="h-8 w-8" />
-                        </button>
-                        <div className="relative w-full h-full flex items-center justify-center">
-                            <Image src={car.images[galleryIndex]} alt="Gallery View" fill className="object-contain" priority />
+
+                    <div className="flex-1 overflow-y-auto px-8 pb-12 custom-scrollbar">
+                        {/* Selected Feature View */}
+                        <div className="relative aspect-[16/9] md:aspect-[21/9] w-full rounded-[3rem] overflow-hidden mb-12 bg-zinc-900 border border-white/5 group shadow-2xl">
+                            <Image src={car.images[galleryIndex]} alt="Main Gallery View" fill className="object-contain" priority />
+                            
+                            <button onClick={(e) => { e.stopPropagation(); setGalleryIndex(prev => (prev === 0 ? car.images!.length - 1 : prev - 1))}} className="absolute left-6 top-1/2 -translate-y-1/2 h-16 w-16 rounded-full bg-black/40 text-white flex items-center justify-center hover:bg-indigo-600 transition-all opacity-0 group-hover:opacity-100 backdrop-blur-md">
+                                <ChevronLeft className="h-8 w-8" />
+                            </button>
+                            <button onClick={(e) => { e.stopPropagation(); setGalleryIndex(prev => (prev === car.images!.length - 1 ? 0 : prev + 1))}} className="absolute right-6 top-1/2 -translate-y-1/2 h-16 w-16 rounded-full bg-black/40 text-white flex items-center justify-center hover:bg-indigo-600 transition-all opacity-0 group-hover:opacity-100 backdrop-blur-md">
+                                <ChevronRight className="h-8 w-8" />
+                            </button>
                         </div>
-                        <button onClick={() => setGalleryIndex(prev => (prev === car.images!.length - 1 ? 0 : prev + 1))} className="absolute right-6 z-10 h-14 w-14 rounded-full bg-black/50 text-white flex items-center justify-center hover:bg-indigo-600 transition-all">
-                            <ChevronRight className="h-8 w-8" />
-                        </button>
+
+                        {/* Complete Grid Mosaic */}
+                        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-6">
+                            {car.images.map((img, idx) => (
+                                <button
+                                    key={idx}
+                                    onClick={() => setGalleryIndex(idx)}
+                                    className={cn(
+                                        "relative aspect-square rounded-2xl overflow-hidden transition-all duration-500 hover:scale-[1.02] active:scale-95 border-2",
+                                        galleryIndex === idx ? "border-indigo-500 shadow-lg shadow-indigo-500/20" : "border-transparent opacity-60 hover:opacity-100"
+                                    )}
+                                >
+                                    <Image src={img} alt={`Thumbnail ${idx}`} fill className="object-cover" />
+                                    {galleryIndex === idx && (
+                                        <div className="absolute inset-0 bg-indigo-600/10 flex items-center justify-center">
+                                            <div className="h-8 w-8 bg-indigo-600 rounded-full flex items-center justify-center shadow-lg">
+                                                <div className="h-2 w-2 bg-white rounded-full animate-pulse" />
+                                            </div>
+                                        </div>
+                                    )}
+                                </button>
+                            ))}
+                        </div>
                     </div>
                 </div>
             )}
