@@ -210,7 +210,7 @@ export function CarDetailClient({
                             )}
 
                             {/* Mobile Horizontal Scroll */}
-                            <div className="md:hidden flex gap-4 overflow-x-auto pb-6 pt-2 px-6 -ml-6 pr-6 snap-x snap-mandatory no-scrollbar scroll-smooth">
+                            <div className="md:hidden flex gap-4 overflow-x-auto pb-6 pt-2 px-6 -mx-6 w-[calc(100%+3rem)] snap-x snap-mandatory no-scrollbar scroll-smooth">
                                 {car.images?.map((img, idx) => (
                                     <div 
                                         key={idx}

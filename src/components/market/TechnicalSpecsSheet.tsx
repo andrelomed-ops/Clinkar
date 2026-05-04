@@ -103,7 +103,7 @@ function SpecCategory({ title, icon, items }: { title: string, icon: React.React
     if (validItems.length === 0) return null;
 
     return (
-        <div className="bg-white dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 rounded-[2rem] p-8 shadow-sm">
+        <div className="bg-white dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-800 rounded-[2rem] p-4 md:p-8 shadow-sm">
             <div className="flex items-center gap-3 mb-6">
                 <div className="p-2 bg-indigo-500/5 rounded-xl">
                     {icon}
@@ -112,9 +112,9 @@ function SpecCategory({ title, icon, items }: { title: string, icon: React.React
             </div>
             <div className="space-y-4">
                 {validItems.map((item, i) => (
-                    <div key={i} className="flex justify-between items-center py-3 border-b border-zinc-100 dark:border-zinc-800 last:border-0">
-                        <span className="text-xs font-bold text-zinc-500 uppercase tracking-wider">{item.label}</span>
-                        <span className="text-sm font-black text-zinc-900 dark:text-white">{item.value}</span>
+                    <div key={i} className="flex justify-between items-center py-3 border-b border-zinc-100 dark:border-zinc-800 last:border-0 gap-4">
+                        <span className="text-[10px] md:text-xs font-bold text-zinc-500 uppercase tracking-wider shrink-0">{item.label}</span>
+                        <span className="text-xs md:text-sm font-black text-zinc-900 dark:text-white text-right truncate">{item.value}</span>
                     </div>
                 ))}
             </div>
