@@ -123,7 +123,15 @@ export function CarDetailClient({
             <Navbar variant="market" />
 
             <main className="pt-24 pb-20 px-6 max-w-7xl mx-auto">
-                <div className="flex justify-end items-center mb-8">
+                <div className="flex justify-between items-center mb-8">
+                    <Link 
+                        href="/buy" 
+                        className="flex items-center gap-2 text-sm font-bold text-muted-foreground hover:text-foreground transition-colors px-3 py-2 rounded-xl hover:bg-secondary"
+                    >
+                        <ArrowLeft className="h-4 w-4" />
+                        <span className="hidden sm:inline">Volver al Inventario</span>
+                    </Link>
+
                     <div className="flex gap-2">
                         <button 
                             onClick={async () => {
