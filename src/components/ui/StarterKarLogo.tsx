@@ -90,7 +90,7 @@ export function StarterKarLogo({
                 )}>
                     <span
                         className={cn(
-                            "font-black tracking-tighter text-zinc-900 dark:text-white transition-all duration-300",
+                            "font-black tracking-tighter text-foreground transition-all duration-300",
                             size === "lg" ? "text-2xl sm:text-4xl" : wordmarkSizes[size].title
                         )}
                         style={{ fontFamily: "'Outfit', sans-serif" }}
