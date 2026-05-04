@@ -135,14 +135,20 @@ export function Navbar({
 
                         <div className="flex items-center gap-2">
                             {!user ? (
-                                <StarterKarLogo 
-                                    size="sm" 
-                                    showWordmark={false} 
-                                    orientation="horizontal"
-                                    label="Entrar" 
-                                    href="/login" 
-                                    className="hover:translate-y-[-2px] transition-all"
-                                />
+                                <Link 
+                                    href="/login"
+                                    className="flex items-center gap-2 px-3 py-1.5 rounded-full hover:bg-zinc-100 dark:hover:bg-zinc-900 transition-all group"
+                                >
+                                    <StarterKarLogo 
+                                        size="sm" 
+                                        showWordmark={false} 
+                                        orientation="horizontal"
+                                        label="" 
+                                    />
+                                    <span className="text-[10px] font-black uppercase tracking-widest text-zinc-600 dark:text-zinc-400 group-hover:text-indigo-600 transition-colors">
+                                        Entrar
+                                    </span>
+                                </Link>
                             ) : (
                                 <StarterKarLogo 
                                     size="sm" 
