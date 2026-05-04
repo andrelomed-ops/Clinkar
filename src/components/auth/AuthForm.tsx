@@ -27,7 +27,10 @@ export function AuthForm({ initialMode = "login" }: AuthFormProps) {
     const message = searchParams.get("message");
     const refCode = searchParams.get("ref");
     const supabase = createBrowserClient();
+    const [isMounted, setIsMounted] = useState(false);
+
     useEffect(() => {
+        setIsMounted(true);
         const checkSession = async () => {
             const { data: { session } } = await supabase.auth.getSession();
             if (session?.user) {
@@ -195,7 +198,7 @@ export function AuthForm({ initialMode = "login" }: AuthFormProps) {
                             : "Únete a la plataforma de intermediación segura para autos."}
                     </p>
                     
-                    {refCode && mode === "register" && (
+                    {isMounted && refCode && mode === "register" && (
                         <div className="mt-4 flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-emerald-600 bg-emerald-500/10 px-4 py-2 rounded-full border border-emerald-500/20">
                             <Gift className="h-3 w-3" />
                             <span>Código de referido aplicado</span>
@@ -203,7 +206,7 @@ export function AuthForm({ initialMode = "login" }: AuthFormProps) {
                     )}
                 </div>
 
-                {message && (
+                {isMounted && message && (
                     <div className="rounded-2xl bg-indigo-50 dark:bg-indigo-900/20 border border-indigo-100 dark:border-indigo-900/30 p-4 text-xs font-bold text-indigo-600 dark:text-indigo-400 text-center animate-in fade-in zoom-in-95">
                         {message}
                     </div>
