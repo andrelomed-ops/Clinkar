@@ -76,6 +76,24 @@ export function CarDetailClient({
         return () => subscription.unsubscribe();
     }, [id, supabaseBrowser]);
 
+    // Keyboard navigation for Premium Gallery
+    useEffect(() => {
+        if (!showGallery || !car?.images) return;
+        
+        const handleKeyDown = (e: KeyboardEvent) => {
+            if (e.key === 'Escape') setShowGallery(false);
+            if (e.key === 'ArrowRight') {
+                setGalleryIndex(prev => (prev === car.images!.length - 1 ? 0 : prev + 1));
+            }
+            if (e.key === 'ArrowLeft') {
+                setGalleryIndex(prev => (prev === 0 ? car.images!.length - 1 : prev - 1));
+            }
+        };
+        
+        window.addEventListener('keydown', handleKeyDown);
+        return () => window.removeEventListener('keydown', handleKeyDown);
+    }, [showGallery, car?.images]);
+
     if (loading && !car) {
         return (
             <div className="min-h-screen bg-background flex flex-col items-center justify-center">
@@ -410,7 +428,7 @@ export function CarDetailClient({
 
                     <div className="flex-1 overflow-y-auto px-8 pb-12 custom-scrollbar">
                         {/* Selected Feature View */}
-                        <div className="relative aspect-[16/9] md:aspect-[21/9] w-full rounded-[3rem] overflow-hidden mb-12 bg-zinc-900 border border-white/5 group shadow-2xl">
+                        <div className="relative w-full h-[50vh] md:h-[60vh] rounded-[3rem] overflow-hidden mb-12 bg-zinc-900 border border-white/5 group shadow-2xl">
                             <Image src={car.images[galleryIndex]} alt="Main Gallery View" fill className="object-contain" priority />
                             
                             <button onClick={(e) => { e.stopPropagation(); setGalleryIndex(prev => (prev === 0 ? car.images!.length - 1 : prev - 1))}} className="absolute left-6 top-1/2 -translate-y-1/2 h-16 w-16 rounded-full bg-black/40 text-white flex items-center justify-center hover:bg-indigo-600 transition-all opacity-0 group-hover:opacity-100 backdrop-blur-md">

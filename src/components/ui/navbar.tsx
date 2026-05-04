@@ -1,7 +1,7 @@
 "use client";
 
 import Link from 'next/link';
-import { Menu, Heart, ArrowLeft, ArrowDownWideNarrow } from 'lucide-react';
+import { Menu, Heart, ArrowLeft, ArrowDownWideNarrow, User } from 'lucide-react';
 import { StarterKarLogo } from '@/components/ui/StarterKarLogo';
 import { ThemeToggle } from '@/components/layout/ThemeToggle';
 import { cn } from '@/lib/utils';
