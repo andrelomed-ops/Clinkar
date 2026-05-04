@@ -23,7 +23,9 @@ export async function GET(
       return new Response('Car not found', { status: 404 });
     }
 
-    const mainImage = car.images?.[0] || 'https://clinkar.vercel.app/placeholder-car.jpg';
+    const host = request.headers.get('host') || 'clinkar.vercel.app';
+    const protocol = host.includes('localhost') ? 'http' : 'https';
+    const mainImage = car.images?.[0] || 'https://images.unsplash.com/photo-1494976388531-d1058494cdd8?w=1200&h=630&fit=crop';
     const formattedPrice = new Intl.NumberFormat('es-MX', {
       style: 'currency',
       currency: 'MXN',

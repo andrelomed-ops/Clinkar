@@ -4,6 +4,7 @@ import { createClient } from '@/lib/supabase/server';
 import { CarDetailClient } from '@/components/market/CarDetailClient';
 import { FavoriteService } from '@/services/FavoriteService';
 import { notFound } from 'next/navigation';
+import { headers } from 'next/headers';
 
 interface Props {
   params: Promise<{ id: string }>;
@@ -32,7 +33,9 @@ export async function generateMetadata(
   const description = `Mira este ${car.make} ${car.model} por $${(car.price || 0).toLocaleString()} MXN en StarterKar. Bóveda Digital Segura y Certificación de 150 puntos.`;
   
   // Point to our new dynamic OG image generator
-  const ogImageUrl = `https://clinkar.vercel.app/api/og/car/${id}`;
+  const host = (await headers()).get('host') || 'clinkar.vercel.app';
+  const protocol = host.includes('localhost') ? 'http' : 'https';
+  const ogImageUrl = `${protocol}://${host}/api/og/car/${id}`;
 
   return {
     title,
