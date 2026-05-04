@@ -1,7 +1,7 @@
 "use client";
 
 import { 
-    Search, Filter, Plus, Printer, Trash2, FileText, Loader2, ShieldCheck, MapPin, Calendar, Clock
+    Search, Filter, Plus, Printer, Trash2, FileText, Loader2, ShieldCheck, MapPin, Calendar, Clock, FileSpreadsheet
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { STATUS_MAP } from "@/lib/status-map";
@@ -12,6 +12,7 @@ interface AdminInventoryViewProps {
     onEdit: (car: any) => void;
     onDelete: (id: string) => void;
     onCreate: () => void;
+    onBulkToggle: () => void;
     onPrintCedula: (id: string) => void;
 }
 
@@ -21,6 +22,7 @@ export function AdminInventoryView({
     onEdit, 
     onDelete, 
     onCreate,
+    onBulkToggle,
     onPrintCedula
 }: AdminInventoryViewProps) {
     return (
@@ -30,13 +32,22 @@ export function AdminInventoryView({
                     <h3 className="text-3xl font-black uppercase italic tracking-tighter">Inventario Activo</h3>
                     <p className="text-xs font-bold text-zinc-500 mt-2 uppercase tracking-widest">Gestión de unidades publicadas y reservadas.</p>
                 </div>
-                <button 
-                    onClick={onCreate}
-                    className="h-14 px-8 bg-white text-black font-black rounded-2xl text-[10px] uppercase tracking-widest hover:bg-indigo-600 hover:text-white transition-all flex items-center gap-3 shadow-xl shadow-white/5 active:scale-95"
-                >
-                    <Plus className="h-5 w-5" />
-                    Nueva Publicación
-                </button>
+                <div className="flex gap-4">
+                    <button 
+                        onClick={onBulkToggle}
+                        className="h-14 px-8 bg-zinc-800 text-zinc-400 font-black rounded-2xl text-[10px] uppercase tracking-widest hover:bg-zinc-700 hover:text-white transition-all flex items-center gap-3 shadow-xl active:scale-95 border border-zinc-700"
+                    >
+                        <FileSpreadsheet className="h-5 w-5" />
+                        Carga Masiva
+                    </button>
+                    <button 
+                        onClick={onCreate}
+                        className="h-14 px-8 bg-white text-black font-black rounded-2xl text-[10px] uppercase tracking-widest hover:bg-indigo-600 hover:text-white transition-all flex items-center gap-3 shadow-xl shadow-white/5 active:scale-95"
+                    >
+                        <Plus className="h-5 w-5" />
+                        Nueva Publicación
+                    </button>
+                </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 2xl:grid-cols-3 gap-6">

@@ -356,3 +356,24 @@ export async function getRecentUsersAction() {
     if (error) return [];
     return data || [];
 }
+export async function getAdminAnalyticsAction() {
+    const supabase = await createClient();
+    
+    // 1. Fetch Weekly Inspection Trends (Service Tickets)
+    const { data: tickets } = await supabase
+        .from("service_tickets")
+        .select("created_at")
+        .order("created_at", { ascending: true });
+
+    // 2. Fetch Inventory Growth (Cars)
+    const { data: cars } = await supabase
+        .from("cars")
+        .select("created_at, price")
+        .order("created_at", { ascending: true });
+
+    // Group by month/week logic would happen here or in component
+    return {
+        tickets: tickets || [],
+        cars: cars || []
+    };
+}

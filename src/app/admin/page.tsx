@@ -20,9 +20,11 @@ import {
     approveInvestorApplicationAction, rejectInvestorApplicationAction, 
     getInvestorApplicationsAction, getPendingReferralPayouts, 
     processReferralPayout, updateUserRole, searchUsersAction,
-    matchDemandAction, getGlobalConcurrencyStatsAction, getRecentUsersAction
+    matchDemandAction, getGlobalConcurrencyStatsAction, getRecentUsersAction,
+    getAdminAnalyticsAction
 } from "@/app/actions/admin";
 import { TemplateDownloads } from "@/components/admin/TemplateDownloads";
+import { AdminTrendsDashboard } from "@/components/admin/AdminTrendsDashboard";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { createBrowserClient } from "@/lib/supabase/client";
@@ -34,6 +36,7 @@ import { AdminInventoryView } from "@/components/admin/AdminInventoryView";
 import { AdminUserManagement } from "@/components/admin/AdminUserManagement";
 import { AdminBillingView } from "@/components/admin/AdminBillingView";
 import { AdminCommercialView } from "@/components/admin/AdminCommercialView";
+import { AdminBulkUpload } from "@/components/admin/AdminBulkUpload";
 
 type AdminView = 'CONTROL' | 'INVENTORY' | 'ARCHIVE' | 'INVESTORS' | 'USERS' | 'BILLING' | 'UPSELLS' | 'REFERRALS' | 'DEMANDS' | 'INSPECTOR' | 'LEGAL' | 'STRATEGY';
 
@@ -75,6 +78,8 @@ export default function AdminDashboardV6() {
     const [users, setUsers] = useState<any[]>([]);
     const [userSearchQuery, setUserSearchQuery] = useState("");
     const [debugError, setDebugError] = useState<string | null>(null);
+    const [showBulkUpload, setShowBulkUpload] = useState(false);
+    const [analyticsData, setAnalyticsData] = useState<{tickets: any[], cars: any[]}>({ tickets: [], cars: [] });
     
     const [stats, setStats] = useState({
         gmv: 0,
@@ -154,6 +159,10 @@ export default function AdminDashboardV6() {
             const activeHO = txList.filter((tx: any) => tx.status === 'HANDOVER_SCHEDULED').length;
 
             setStats({ gmv, pendingCommissions: pendingComm, activeHandovers: activeHO, conversionRate: 84, totalDemands: demands?.length || 0 });
+
+            // Fetch Analytics
+            const trends = await getAdminAnalyticsAction();
+            setAnalyticsData(trends);
         } catch (err: any) {
             setDebugError(`Error: ${err.message}`);
         } finally {
@@ -304,26 +313,35 @@ export default function AdminDashboardV6() {
                     )}
 
                     {view === 'CONTROL' && (
-                        <AdminControlTower 
-                            stats={stats} 
-                            transactions={transactions} 
-                            onOverrideStatus={handleOverrideStatus}
-                            onValidateCEP={handleValidateCEP}
-                            onRegisterCommission={handleRegisterPayment}
-                            onDeleteTransaction={handleDeleteTransaction}
-                            cepLoading={cepLoading}
-                        />
+                        <div className="space-y-12">
+                            <AdminTrendsDashboard data={analyticsData} />
+                            <AdminControlTower 
+                                stats={stats} 
+                                transactions={transactions} 
+                                onOverrideStatus={handleOverrideStatus}
+                                onValidateCEP={handleValidateCEP}
+                                onRegisterCommission={handleRegisterPayment}
+                                onDeleteTransaction={handleDeleteTransaction}
+                                cepLoading={cepLoading}
+                            />
+                        </div>
                     )}
 
                     {view === 'INVENTORY' && (
-                        <AdminInventoryView 
-                            inventory={inventory} 
-                            actionLoading={actionLoading}
-                            onEdit={setEditingCar}
-                            onDelete={handleDeleteCar}
-                            onCreate={() => setIsCreateModalOpen(true)}
-                            onPrintCedula={(id) => window.open(`/admin/print/cedula/${id}`, '_blank')}
-                        />
+                        <div className="space-y-8">
+                            {showBulkUpload && (
+                                <AdminBulkUpload onComplete={() => { setShowBulkUpload(false); loadData(); }} />
+                            )}
+                            <AdminInventoryView 
+                                inventory={inventory} 
+                                actionLoading={actionLoading}
+                                onEdit={setEditingCar}
+                                onDelete={handleDeleteCar}
+                                onCreate={() => setIsCreateModalOpen(true)}
+                                onBulkToggle={() => setShowBulkUpload(!showBulkUpload)}
+                                onPrintCedula={(id) => window.open(`/admin/print/cedula/${id}`, '_blank')}
+                            />
+                        </div>
                     )}
 
                     {view === 'USERS' && (
