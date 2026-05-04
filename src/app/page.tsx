@@ -62,7 +62,7 @@ export default function Home() {
                 <span className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em]">De particular a particular, sin riesgos</span>
               </div>
 
-              <h1 className="text-6xl md:text-8xl font-black tracking-tighter leading-[0.85] text-foreground animate-in fade-in slide-in-from-bottom-8 duration-1000">
+              <h1 className="text-5xl sm:text-6xl md:text-8xl font-black tracking-tighter leading-none md:leading-[0.85] text-foreground animate-in fade-in slide-in-from-bottom-8 duration-1000 py-2">
                 Pon tu auto a la venta.<br />
                 <span className="text-indigo-600 italic uppercase">Y sigue usándolo.</span>
               </h1>
@@ -81,11 +81,31 @@ export default function Home() {
                 </Link>
               </div>
 
+              {/* Trust Metrics */}
+              <div className="pt-12 md:pt-16 grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-16 w-full max-w-4xl animate-in fade-in duration-1000 delay-500">
+                <div className="space-y-1">
+                  <p className="text-2xl font-black tracking-tighter">150</p>
+                  <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Pts Inspección</p>
+                </div>
+                <div className="space-y-1">
+                  <p className="text-2xl font-black tracking-tighter">0%</p>
+                  <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Comisión</p>
+                </div>
+                <div className="space-y-1">
+                  <p className="text-2xl font-black tracking-tighter">100%</p>
+                  <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Pago Seguro</p>
+                </div>
+                <div className="space-y-1">
+                  <p className="text-2xl font-black tracking-tighter">24/7</p>
+                  <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Soporte IA</p>
+                </div>
+              </div>
+
               {/* THE VERSUS SECTION */}
-              <div className="w-full max-w-5xl pt-16 md:pt-24 animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-500">
-                <div className="grid md:grid-cols-2 gap-8 text-left">
+              <div className="w-full max-w-5xl pt-16 md:pt-24 animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-700">
+                <div className="grid md:grid-cols-2 gap-6 md:gap-8 text-left">
                   {/* The Bad Guys */}
-                  <div className="bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-900/50 rounded-[2.5rem] p-8 md:p-10 relative overflow-hidden group">
+                  <div className="bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-900/50 rounded-[2rem] md:rounded-[2.5rem] p-6 sm:p-8 md:p-10 relative overflow-hidden group">
                     <div className="absolute top-0 right-0 w-32 h-32 bg-red-500/10 rounded-full blur-3xl" />
                     <h3 className="text-xl md:text-2xl font-black text-red-600 dark:text-red-500 tracking-tight mb-6 flex items-center gap-3">
                       El Modelo Tradicional
@@ -113,7 +133,7 @@ export default function Home() {
                   </div>
 
                   {/* The Good Guys */}
-                  <div className="bg-indigo-600 dark:bg-indigo-900/40 border border-indigo-500/30 rounded-[2.5rem] p-8 md:p-10 relative overflow-hidden text-white shadow-2xl shadow-indigo-500/20">
+                  <div className="bg-indigo-600 dark:bg-indigo-900/40 border border-indigo-500/30 rounded-[2rem] md:rounded-[2.5rem] p-6 sm:p-8 md:p-10 relative overflow-hidden text-white shadow-2xl shadow-indigo-500/20">
                     <div className="absolute top-0 right-0 w-48 h-48 bg-white/10 rounded-full blur-3xl" />
                     <h3 className="text-xl md:text-2xl font-black text-white tracking-tight mb-6 flex items-center gap-3">
                       <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse shrink-0" />
@@ -140,26 +160,6 @@ export default function Home() {
                       </li>
                     </ul>
                   </div>
-                </div>
-              </div>
-
-              {/* Trust Metrics */}
-              <div className="pt-16 grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-16 border-t border-border w-full max-w-4xl animate-in fade-in duration-1000 delay-700">
-                <div className="space-y-1">
-                  <p className="text-2xl font-black tracking-tighter">150</p>
-                  <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Pts Inspección</p>
-                </div>
-                <div className="space-y-1">
-                  <p className="text-2xl font-black tracking-tighter">0%</p>
-                  <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Comisión</p>
-                </div>
-                <div className="space-y-1">
-                  <p className="text-2xl font-black tracking-tighter">100%</p>
-                  <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Pago Seguro</p>
-                </div>
-                <div className="space-y-1">
-                  <p className="text-2xl font-black tracking-tighter">24/7</p>
-                  <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Soporte IA</p>
                 </div>
               </div>
             </div>
