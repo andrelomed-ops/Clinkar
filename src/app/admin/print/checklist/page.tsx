@@ -4,6 +4,7 @@ import React, { useRef } from "react";
 import { Printer, Download, ArrowLeft, ShieldCheck, CheckSquare, Car, FileText } from "lucide-react";
 import { CAR_INSPECTION_SECTIONS } from "@/lib/inspection-data";
 import Link from "next/link";
+import { cn } from "@/lib/utils";
 
 import { useSearchParams } from "next/navigation";
 
