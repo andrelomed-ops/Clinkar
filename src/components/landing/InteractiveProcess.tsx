@@ -34,7 +34,7 @@ const STEPS = [
     {
         id: "03",
         title: "TRATO SEGURO",
-        description: "Validamos que los pagos se realicen correctamente (SPEI, CoDi o Stripe). Tu dinero no se mueve hasta que confirmas que el auto está en tus manos.",
+        description: "Validamos que los pagos se realicen correctamente (SPEI, CoDi o Conekta). Tu dinero no se mueve hasta que confirmas que el auto está en tus manos.",
         icon: FileCheck,
         color: "bg-emerald-600",
         shadow: "shadow-emerald-600/20",
