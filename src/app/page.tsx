@@ -101,108 +101,108 @@ export default function Home() {
                   <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Soporte IA</p>
                 </div>
               </div>
-
               {/* THE VERSUS SECTION */}
               <div className="w-full max-w-5xl pt-16 md:pt-24 animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-700">
-                <div className="grid md:grid-cols-2 gap-6 md:gap-8 text-left">
+                <style>{
+                  Array.from({ length: 10 }).map((_, i) => `
+                    @keyframes autoLight${i} {
+                      0%, ${i * 8}% { transform: translateX(0); opacity: 0.5; color: #a5b4fc; } /* indigo-300 */
+                      ${i * 8 + 4}%, 96% { transform: translateX(4px); opacity: 1; color: #ffffff; }
+                      100% { transform: translateX(0); opacity: 0.5; color: #a5b4fc; }
+                    }
+                    @keyframes autoCheck${i} {
+                      0%, ${i * 8}% { transform: scale(1); color: rgba(52, 211, 153, 0.3); }
+                      ${i * 8 + 4}%, 96% { transform: scale(1.3); color: rgba(52, 211, 153, 1); filter: drop-shadow(0 0 4px rgba(52,211,153,0.5)); }
+                      100% { transform: scale(1); color: rgba(52, 211, 153, 0.3); filter: none; }
+                    }
+                    @keyframes autoCrossOpacity${i} {
+                      0%, ${i * 8}% { opacity: 0.15; }
+                      ${i * 8 + 4}%, ${i * 8 + 6}% { opacity: 1; }
+                      ${i * 8 + 10}%, 96% { opacity: 0.15; }
+                      100% { opacity: 0.15; }
+                    }
+                    @keyframes autoCrossStrike${i} {
+                      0%, ${i * 8}% { text-decoration: none; color: #a1a1aa; } /* zinc-400 */
+                      ${i * 8 + 4}%, ${i * 8 + 6}% { text-decoration: line-through; text-decoration-color: rgba(239, 68, 68, 1); color: #52525b; } /* zinc-600 */
+                      ${i * 8 + 10}%, 96% { text-decoration: line-through; text-decoration-color: rgba(239, 68, 68, 0.5); color: #a1a1aa; }
+                      100% { text-decoration: none; color: #a1a1aa; }
+                    }
+                  `).join('\n')
+                }</style>
+                <div className="grid grid-cols-2 gap-3 sm:gap-8 lg:gap-12 relative items-stretch">
                   {/* The Bad Guys */}
-                  <div className="bg-white dark:bg-zinc-900 border-2 border-red-100 dark:border-red-900/50 rounded-[2rem] md:rounded-[2.5rem] p-6 sm:p-8 md:p-10 relative overflow-hidden group shadow-sm">
-                    <div className="absolute top-0 right-0 w-32 h-32 bg-red-500/10 rounded-full blur-3xl" />
-                    <h3 className="text-xl md:text-2xl font-black text-red-600 dark:text-red-500 tracking-tight mb-6 flex items-center gap-3">
+                  <div className="bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-[1.5rem] md:rounded-[2.5rem] p-4 sm:p-6 md:p-10 shadow-xl relative overflow-hidden flex flex-col justify-center">
+                    <div className="absolute top-0 right-0 w-32 h-32 bg-red-500/5 rounded-full blur-3xl" />
+                    <h3 className="text-sm sm:text-xl md:text-2xl font-black text-zinc-400 dark:text-zinc-600 tracking-tight mb-4 sm:mb-6 flex items-center gap-2">
                       El Modelo Tradicional
                     </h3>
-                    <ul className="space-y-4">
-                      <li className="flex items-center gap-3">
-                        <span className="text-red-500/70 font-bold text-sm shrink-0">✖</span>
-                        <span className="text-zinc-600 dark:text-zinc-400 font-medium text-sm">Compran para revender</span>
-                      </li>
-                      <li className="flex items-center gap-3">
-                        <span className="text-red-500/70 font-bold text-sm shrink-0">✖</span>
-                        <span className="text-zinc-600 dark:text-zinc-400 font-medium text-sm">Auto inmovilizado</span>
-                      </li>
-                      <li className="flex items-center gap-3">
-                        <span className="text-red-500/70 font-bold text-sm shrink-0">✖</span>
-                        <span className="text-zinc-600 dark:text-zinc-400 font-medium text-sm">Operaciones inseguras</span>
-                      </li>
-                      <li className="flex items-center gap-3">
-                        <span className="text-red-500/70 font-bold text-sm shrink-0">✖</span>
-                        <span className="text-zinc-600 dark:text-zinc-400 font-medium text-sm">Revisión superficial</span>
-                      </li>
-                      <li className="flex items-center gap-3">
-                        <span className="text-red-500/70 font-bold text-sm shrink-0">✖</span>
-                        <span className="text-zinc-600 dark:text-zinc-400 font-medium text-sm">Precio por apreciación</span>
-                      </li>
-                      <li className="flex items-center gap-3">
-                        <span className="text-red-500/70 font-bold text-sm shrink-0">✖</span>
-                        <span className="text-zinc-600 dark:text-zinc-400 font-medium text-sm">Cheques sin fondos</span>
-                      </li>
-                      <li className="flex items-center gap-3">
-                        <span className="text-red-500/70 font-bold text-sm shrink-0">✖</span>
-                        <span className="text-zinc-600 dark:text-zinc-400 font-medium text-sm">Intermediarios dudosos</span>
-                      </li>
-                      <li className="flex items-center gap-3">
-                        <span className="text-red-500/70 font-bold text-sm shrink-0">✖</span>
-                        <span className="text-zinc-600 dark:text-zinc-400 font-medium text-sm">Inventario limitado</span>
-                      </li>
-                      <li className="flex items-center gap-3">
-                        <span className="text-red-500/70 font-bold text-sm shrink-0">✖</span>
-                        <span className="text-zinc-600 dark:text-zinc-400 font-medium text-sm">Búsqueda a ciegas</span>
-                      </li>
-                      <li className="flex items-center gap-3">
-                        <span className="text-red-500/70 font-bold text-sm shrink-0">✖</span>
-                        <span className="text-zinc-600 dark:text-zinc-400 font-medium text-sm">Costos ocultos sorpresa</span>
-                      </li>
+                    <ul className="space-y-3 sm:space-y-4">
+                      {[
+                        "Compran para revender",
+                        "Auto inmovilizado",
+                        "Operaciones inseguras",
+                        "Revisión superficial",
+                        "Precio por apreciación",
+                        "Cheques sin fondos",
+                        "Intermediarios dudosos",
+                        "Inventario limitado",
+                        "Búsqueda a ciegas",
+                        "Costos ocultos sorpresa"
+                      ].map((text, i) => (
+                        <li 
+                          key={i} 
+                          className="flex items-start sm:items-center gap-2 sm:gap-3 cursor-default"
+                          style={{ animation: `autoCrossOpacity${i} 12s infinite` }}
+                        >
+                          <span className="font-bold text-[10px] sm:text-sm shrink-0 mt-0.5 sm:mt-0 text-red-500">
+                            ✖
+                          </span>
+                          <span 
+                            className="font-medium text-[9px] sm:text-[11px] md:text-sm leading-tight sm:leading-normal"
+                            style={{ animation: `autoCrossStrike${i} 12s infinite` }}
+                          >
+                            {text}
+                          </span>
+                        </li>
+                      ))}
                     </ul>
                   </div>
 
                   {/* The Good Guys */}
-                  <div className="bg-indigo-600 dark:bg-indigo-900/40 border border-indigo-500/30 rounded-[2rem] md:rounded-[2.5rem] p-6 sm:p-8 md:p-10 relative overflow-hidden text-white shadow-2xl shadow-indigo-500/20">
+                  <div className="bg-indigo-600 dark:bg-indigo-900/40 border border-indigo-500/30 rounded-[1.5rem] md:rounded-[2.5rem] p-4 sm:p-6 md:p-10 relative overflow-hidden shadow-2xl shadow-indigo-500/20 flex flex-col justify-center">
                     <div className="absolute top-0 right-0 w-48 h-48 bg-white/10 rounded-full blur-3xl" />
-                    <h3 className="text-xl md:text-2xl font-black text-white tracking-tight mb-6 flex items-center gap-3">
-                      <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse shrink-0" />
+                    <h3 className="text-sm sm:text-xl md:text-2xl font-black text-white tracking-tight mb-4 sm:mb-6 flex items-center gap-2">
+                      <span className="h-1.5 w-1.5 sm:h-2 sm:w-2 rounded-full bg-emerald-400 animate-pulse shrink-0" />
                       La Revolución StarterKar
                     </h3>
-                    <ul className="space-y-4 relative z-10">
-                      <li className="flex items-center gap-3">
-                        <CheckCircle2 className="h-4 w-4 text-emerald-400 shrink-0" />
-                        <span className="text-white font-bold text-sm tracking-wide">Encontramos mejor oferta</span>
-                      </li>
-                      <li className="flex items-center gap-3">
-                        <CheckCircle2 className="h-4 w-4 text-emerald-400 shrink-0" />
-                        <span className="text-white font-bold text-sm tracking-wide">Conserva tus llaves</span>
-                      </li>
-                      <li className="flex items-center gap-3">
-                        <CheckCircle2 className="h-4 w-4 text-emerald-400 shrink-0" />
-                        <span className="text-white font-bold text-sm tracking-wide">Cero riesgo fraude</span>
-                      </li>
-                      <li className="flex items-center gap-3">
-                        <CheckCircle2 className="h-4 w-4 text-emerald-400 shrink-0" />
-                        <span className="text-white font-bold text-sm tracking-wide">Inspección 150 puntos</span>
-                      </li>
-                      <li className="flex items-center gap-3">
-                        <CheckCircle2 className="h-4 w-4 text-emerald-400 shrink-0" />
-                        <span className="text-white font-bold text-sm tracking-wide">Precio real</span>
-                      </li>
-                      <li className="flex items-center gap-3">
-                        <CheckCircle2 className="h-4 w-4 text-emerald-400 shrink-0" />
-                        <span className="text-white font-bold text-sm tracking-wide">Pagos validados Banxico <span className="opacity-70 font-medium ml-1">(SPEI, QR, Conekta)</span></span>
-                      </li>
-                      <li className="flex items-center gap-3">
-                        <CheckCircle2 className="h-4 w-4 text-emerald-400 shrink-0" />
-                        <span className="text-white font-bold text-sm tracking-wide">Asesores 100% neutrales</span>
-                      </li>
-                      <li className="flex items-center gap-3">
-                        <CheckCircle2 className="h-4 w-4 text-emerald-400 shrink-0" />
-                        <span className="text-white font-bold text-sm tracking-wide">Autos bajo pedido</span>
-                      </li>
-                      <li className="flex items-center gap-3">
-                        <CheckCircle2 className="h-4 w-4 text-emerald-400 shrink-0" />
-                        <span className="text-white font-bold text-sm tracking-wide">Asistente IA predictivo</span>
-                      </li>
-                      <li className="flex items-center gap-3">
-                        <CheckCircle2 className="h-4 w-4 text-emerald-400 shrink-0" />
-                        <span className="text-white font-bold text-sm tracking-wide">Costos transparentes</span>
-                      </li>
+                    <ul className="space-y-3 sm:space-y-4 relative z-10">
+                      {[
+                        { title: "Encontramos mejor oferta" },
+                        { title: "Conserva tus llaves" },
+                        { title: "Cero riesgo fraude" },
+                        { title: "Inspección 150 puntos" },
+                        { title: "Precio real" },
+                        { title: "Pagos validados Banxico", sub: "(SPEI, QR)" },
+                        { title: "Asesores 100% neutrales" },
+                        { title: "Autos bajo pedido" },
+                        { title: "Asistente IA predictivo" },
+                        { title: "Costos transparentes" }
+                      ].map((item, i) => (
+                        <li key={i} className="flex items-start sm:items-center gap-2 sm:gap-3 cursor-default">
+                          <div className="relative flex items-center justify-center h-3 w-3 sm:h-5 sm:w-5 shrink-0 mt-0.5 sm:mt-0">
+                            <CheckCircle2 
+                              className="h-3 w-3 sm:h-4 sm:w-4 relative z-10" 
+                              style={{ animation: `autoCheck${i} 12s infinite` }}
+                            />
+                          </div>
+                          <span 
+                            className="font-bold text-[9px] sm:text-[11px] md:text-sm tracking-wide leading-tight sm:leading-normal inline-block"
+                            style={{ animation: `autoLight${i} 12s infinite` }}
+                          >
+                            {item.title} {item.sub && <span className="opacity-70 font-medium ml-1 hidden sm:inline">{item.sub}</span>}
+                          </span>
+                        </li>
+                      ))}
                     </ul>
                   </div>
                 </div>
