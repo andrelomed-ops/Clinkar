@@ -1,4 +1,5 @@
-import { ShieldCheck, ArrowRight, Lock, FileCheck, Wrench, CheckCircle2 } from "lucide-react";
+import { ShieldCheck, ArrowRight, Lock, FileCheck, Wrench, CheckCircle2, TrendingUp, Zap, Settings, Users } from "lucide-react";
+import Image from "next/image";
 import { StarterKarSeal } from "@/components/market/StarterKarSeal";
 import Link from "next/link";
 import { HeroTrackerDemo } from "@/components/landing/HeroTrackerDemo";
@@ -110,23 +111,65 @@ export default function Home() {
                     <h3 className="text-xl md:text-2xl font-black text-red-600 dark:text-red-500 tracking-tight mb-6 flex items-center gap-3">
                       El Modelo Tradicional
                     </h3>
-                    <ul className="space-y-6">
+                    <ul className="space-y-3">
                       <li className="flex items-start gap-3">
                         <span className="text-red-500 font-bold mt-0.5">✖</span>
-                        <span className="text-zinc-900 dark:text-zinc-300 font-medium leading-relaxed">
-                          <strong className="text-red-600 dark:text-red-400">Devaluación Forzada:</strong> Se inventan "fallas" para pagarte hasta 30% menos de su valor real.
+                        <span className="text-zinc-900 dark:text-zinc-300 font-medium leading-relaxed text-sm">
+                          <strong className="text-red-600 dark:text-red-400">Precio por apreciación</strong>
                         </span>
                       </li>
                       <li className="flex items-start gap-3">
                         <span className="text-red-500 font-bold mt-0.5">✖</span>
-                        <span className="text-zinc-900 dark:text-zinc-300 font-medium leading-relaxed">
-                          <strong className="text-red-600 dark:text-red-400">Te dejan a pie:</strong> Te obligan a dejar tu auto inmovilizado en sus bodegas por semanas o meses.
+                        <span className="text-zinc-900 dark:text-zinc-300 font-medium leading-relaxed text-sm">
+                          <strong className="text-red-600 dark:text-red-400">Costos ocultos sorpresa</strong>
                         </span>
                       </li>
                       <li className="flex items-start gap-3">
                         <span className="text-red-500 font-bold mt-0.5">✖</span>
-                        <span className="text-zinc-900 dark:text-zinc-300 font-medium leading-relaxed">
-                          <strong className="text-red-600 dark:text-red-400">Riesgo Constante:</strong> Peligro de cheques sin fondos, estafas y autos "remarcados".
+                        <span className="text-zinc-900 dark:text-zinc-300 font-medium leading-relaxed text-sm">
+                          <strong className="text-red-600 dark:text-red-400">Auto inmovilizado</strong>
+                        </span>
+                      </li>
+                      <li className="flex items-start gap-3">
+                        <span className="text-red-500 font-bold mt-0.5">✖</span>
+                        <span className="text-zinc-900 dark:text-zinc-300 font-medium leading-relaxed text-sm">
+                          <strong className="text-red-600 dark:text-red-400">Operaciones inseguras</strong>
+                        </span>
+                      </li>
+                      <li className="flex items-start gap-3">
+                        <span className="text-red-500 font-bold mt-0.5">✖</span>
+                        <span className="text-zinc-900 dark:text-zinc-300 font-medium leading-relaxed text-sm">
+                          <strong className="text-red-600 dark:text-red-400">Revisión superficial</strong>
+                        </span>
+                      </li>
+                      <li className="flex items-start gap-3">
+                        <span className="text-red-500 font-bold mt-0.5">✖</span>
+                        <span className="text-zinc-900 dark:text-zinc-300 font-medium leading-relaxed text-sm">
+                          <strong className="text-red-600 dark:text-red-400">Búsqueda a ciegas</strong>
+                        </span>
+                      </li>
+                      <li className="flex items-start gap-3">
+                        <span className="text-red-500 font-bold mt-0.5">✖</span>
+                        <span className="text-zinc-900 dark:text-zinc-300 font-medium leading-relaxed text-sm">
+                          <strong className="text-red-600 dark:text-red-400">Inventario limitado</strong>
+                        </span>
+                      </li>
+                      <li className="flex items-start gap-3">
+                        <span className="text-red-500 font-bold mt-0.5">✖</span>
+                        <span className="text-zinc-900 dark:text-zinc-300 font-medium leading-relaxed text-sm">
+                          <strong className="text-red-600 dark:text-red-400">Intermediarios dudosos</strong>
+                        </span>
+                      </li>
+                      <li className="flex items-start gap-3">
+                        <span className="text-red-500 font-bold mt-0.5">✖</span>
+                        <span className="text-zinc-900 dark:text-zinc-300 font-medium leading-relaxed text-sm">
+                          <strong className="text-red-600 dark:text-red-400">Solo pago contado</strong>
+                        </span>
+                      </li>
+                      <li className="flex items-start gap-3">
+                        <span className="text-red-500 font-bold mt-0.5">✖</span>
+                        <span className="text-zinc-900 dark:text-zinc-300 font-medium leading-relaxed text-sm">
+                          <strong className="text-red-600 dark:text-red-400">Cheques sin fondos</strong>
                         </span>
                       </li>
                     </ul>
@@ -139,23 +182,65 @@ export default function Home() {
                       <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse shrink-0" />
                       La Revolución StarterKar
                     </h3>
-                    <ul className="space-y-6 relative z-10">
+                    <ul className="space-y-3 relative z-10">
                       <li className="flex items-start gap-3">
-                        <CheckCircle2 className="h-6 w-6 text-emerald-400 shrink-0 mt-0.5" />
-                        <span className="text-indigo-50 dark:text-indigo-100 font-medium leading-relaxed">
-                          <strong className="text-white">Tu auto, tu precio:</strong> Ganas el 100% del valor de mercado. Tu inversión inicial se te reembolsa al vender.
+                        <CheckCircle2 className="h-5 w-5 text-emerald-400 shrink-0 mt-0.5" />
+                        <span className="text-indigo-50 dark:text-indigo-100 font-medium leading-relaxed text-sm">
+                          <strong className="text-white">Precio real</strong>
                         </span>
                       </li>
                       <li className="flex items-start gap-3">
-                        <CheckCircle2 className="h-6 w-6 text-emerald-400 shrink-0 mt-0.5" />
-                        <span className="text-indigo-50 dark:text-indigo-100 font-medium leading-relaxed">
-                          <strong className="text-white">No sueltas las llaves:</strong> Síguelo usando todos los días. Solo entregas el auto cuando tu dinero esté 100% firme.
+                        <CheckCircle2 className="h-5 w-5 text-emerald-400 shrink-0 mt-0.5" />
+                        <span className="text-indigo-50 dark:text-indigo-100 font-medium leading-relaxed text-sm">
+                          <strong className="text-white">Costos transparentes</strong>
                         </span>
                       </li>
                       <li className="flex items-start gap-3">
-                        <CheckCircle2 className="h-6 w-6 text-emerald-400 shrink-0 mt-0.5" />
-                        <span className="text-indigo-50 dark:text-indigo-100 font-medium leading-relaxed">
-                          <strong className="text-white">Escudo Protector:</strong> Somos tu respaldo. Blindamos el dinero y revisamos la legalidad para un trato seguro e imparcial.
+                        <CheckCircle2 className="h-5 w-5 text-emerald-400 shrink-0 mt-0.5" />
+                        <span className="text-indigo-50 dark:text-indigo-100 font-medium leading-relaxed text-sm">
+                          <strong className="text-white">Conserva tus llaves</strong>
+                        </span>
+                      </li>
+                      <li className="flex items-start gap-3">
+                        <CheckCircle2 className="h-5 w-5 text-emerald-400 shrink-0 mt-0.5" />
+                        <span className="text-indigo-50 dark:text-indigo-100 font-medium leading-relaxed text-sm">
+                          <strong className="text-white">Cero riesgo fraude</strong>
+                        </span>
+                      </li>
+                      <li className="flex items-start gap-3">
+                        <CheckCircle2 className="h-5 w-5 text-emerald-400 shrink-0 mt-0.5" />
+                        <span className="text-indigo-50 dark:text-indigo-100 font-medium leading-relaxed text-sm">
+                          <strong className="text-white">Inspección 150 puntos</strong>
+                        </span>
+                      </li>
+                      <li className="flex items-start gap-3">
+                        <CheckCircle2 className="h-5 w-5 text-emerald-400 shrink-0 mt-0.5" />
+                        <span className="text-indigo-50 dark:text-indigo-100 font-medium leading-relaxed text-sm">
+                          <strong className="text-emerald-200 font-bold">Asistente IA predictivo</strong>
+                        </span>
+                      </li>
+                      <li className="flex items-start gap-3">
+                        <CheckCircle2 className="h-5 w-5 text-emerald-400 shrink-0 mt-0.5" />
+                        <span className="text-indigo-50 dark:text-indigo-100 font-medium leading-relaxed text-sm">
+                          <strong className="text-emerald-200 font-bold">Autos bajo pedido</strong>
+                        </span>
+                      </li>
+                      <li className="flex items-start gap-3">
+                        <CheckCircle2 className="h-5 w-5 text-emerald-400 shrink-0 mt-0.5" />
+                        <span className="text-indigo-50 dark:text-indigo-100 font-medium leading-relaxed text-sm">
+                          <strong className="text-emerald-200 font-bold">Asesores 100% neutrales</strong>
+                        </span>
+                      </li>
+                      <li className="flex items-start gap-3">
+                        <CheckCircle2 className="h-5 w-5 text-emerald-400 shrink-0 mt-0.5" />
+                        <span className="text-indigo-50 dark:text-indigo-100 font-medium leading-relaxed text-sm">
+                          <strong className="text-emerald-200 font-bold">Pago a convenir</strong> <span className="opacity-80">(Transferencia, QR, Conekta)</span>
+                        </span>
+                      </li>
+                      <li className="flex items-start gap-3">
+                        <CheckCircle2 className="h-5 w-5 text-emerald-400 shrink-0 mt-0.5" />
+                        <span className="text-indigo-50 dark:text-indigo-100 font-medium leading-relaxed text-sm">
+                          <strong className="text-emerald-200 font-bold">Pagos validados Banxico</strong>
                         </span>
                       </li>
                     </ul>

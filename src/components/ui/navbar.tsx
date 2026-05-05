@@ -149,6 +149,7 @@ export function Navbar({
                                         showWordmark={false} 
                                         orientation="horizontal"
                                         label="" 
+                                        href=""
                                     />
                                     <span className="text-[10px] font-black uppercase tracking-widest text-zinc-600 dark:text-zinc-400 group-hover:text-indigo-600 transition-colors">
                                         Entrar
