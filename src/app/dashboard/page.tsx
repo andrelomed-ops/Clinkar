@@ -269,22 +269,28 @@ export default function DashboardPage() {
 
     return (
         <div className="flex h-screen flex-col bg-background overflow-x-hidden">
-            <nav className="border-b border-border bg-background/80 backdrop-blur-md px-6 h-16 shrink-0 flex items-center justify-between z-50">
-                <div className="flex items-center gap-4">
+            <nav className="border-b border-border bg-background/80 backdrop-blur-md px-3 md:px-6 h-16 shrink-0 flex items-center justify-between z-50">
+                <div className="flex items-center gap-2 md:gap-4">
                     <StarterKarLogo size="xs" showWordmark={false} href="/" />
-                    <span className="font-bold text-lg">Mi Garage</span>
+                    <span className="font-black text-sm md:text-xl uppercase italic tracking-tighter whitespace-nowrap">Mi Garage</span>
                 </div>
-                <div className="flex items-center gap-4">
+                <div className="flex items-center gap-1.5 md:gap-4">
                     <NotificationCenter />
                     {userProfile?.role?.toLowerCase() !== 'investor' && (
                         <Link 
                             href="/investor/apply"
-                            className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-amber-500/10 text-amber-600 border border-amber-500/20 text-[10px] font-black uppercase tracking-widest hover:bg-amber-500/20 transition-all whitespace-nowrap"
+                            className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-full bg-amber-500/10 text-amber-600 border border-amber-500/20 text-[10px] font-black uppercase tracking-widest hover:bg-amber-500/20 transition-all whitespace-nowrap"
                         >
                             Inversionistas
                         </Link>
                     )}
-                    <button onClick={() => { supabase.auth.signOut(); window.location.href="/"; }} className="text-[10px] font-black uppercase tracking-widest text-zinc-500 border border-zinc-200 dark:border-zinc-800 px-3 py-1.5 rounded-full hover:bg-red-50 hover:text-red-600 transition-all">Cerrar Sesion</button>
+                    <button 
+                        onClick={() => { supabase.auth.signOut(); window.location.href="/"; }} 
+                        className="text-[9px] md:text-[10px] font-black uppercase tracking-widest text-zinc-500 border border-zinc-200 dark:border-zinc-800 px-2 md:px-3 py-1.5 rounded-full hover:bg-red-50 hover:text-red-600 transition-all whitespace-nowrap"
+                    >
+                        <span className="hidden sm:inline">Cerrar Sesión</span>
+                        <span className="sm:hidden">Cerrar</span>
+                    </button>
                     <EvolvedShield 
                         role={userProfile?.role} 
                         tier={userProfile?.investor_tier}
