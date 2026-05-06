@@ -426,6 +426,44 @@ export default function SellOnboardingPage() {
                                     </p>
                                 </div>
 
+                                {/* Workshop Selection - ONLY for GO Plan */}
+                                {selectedPlan === 'GO' && (
+                                    <div className="space-y-6 animate-in fade-in slide-in-from-top-4 duration-500">
+                                        <Label className="px-1 text-[10px] font-black uppercase tracking-[0.4em] text-zinc-400 flex items-center gap-2">
+                                            <MapPin className="h-3 w-3" /> Selecciona un Taller Aliado
+                                        </Label>
+                                        <div className="space-y-3">
+                                            {partners.map((partner) => (
+                                                <div 
+                                                    key={partner.id}
+                                                    onClick={() => setSelectedPartner(partner)}
+                                                    className={`p-6 rounded-2xl border-2 cursor-pointer transition-all ${
+                                                        selectedPartner?.id === partner.id 
+                                                        ? 'border-indigo-500 bg-indigo-50/30 dark:bg-indigo-900/10' 
+                                                        : 'border-zinc-100 dark:border-zinc-800 hover:border-indigo-200'
+                                                    }`}
+                                                >
+                                                    <div className="flex justify-between items-center">
+                                                        <div className="space-y-1">
+                                                            <p className="font-black text-sm uppercase italic tracking-tight text-zinc-950 dark:text-white">
+                                                                {partner.name}
+                                                            </p>
+                                                            <p className="text-[10px] font-bold text-zinc-400 uppercase truncate">
+                                                                {partner.address}, {partner.city}
+                                                            </p>
+                                                        </div>
+                                                        <div className={`h-5 w-5 rounded-full border-2 flex items-center justify-center ${
+                                                            selectedPartner?.id === partner.id ? 'border-indigo-500' : 'border-zinc-200 dark:border-zinc-800'
+                                                        }`}>
+                                                            {selectedPartner?.id === partner.id && <div className="h-2.5 w-2.5 rounded-full bg-indigo-500" />}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
+
                                 {/* Premium Invoice-style Cost Summary */}
                                 <div className="p-10 bg-zinc-950 dark:bg-white text-white dark:text-zinc-950 rounded-[2.5rem] space-y-6 shadow-2xl">
                                     <div className="flex justify-between items-end border-b border-white/10 dark:border-zinc-200 pb-6">
