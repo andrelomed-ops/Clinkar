@@ -112,9 +112,9 @@ function SpecCategory({ title, icon, items }: { title: string, icon: React.React
             </div>
             <div className="space-y-1">
                 {validItems.map((item, i) => (
-                    <div key={i} className="flex justify-between items-center py-3 border-b border-border/50 last:border-0 gap-2">
-                        <span className="text-[9px] md:text-xs font-bold text-muted-foreground uppercase tracking-wider shrink-0 w-[45%] md:w-[40%] break-words leading-tight">{item.label}</span>
-                        <span className="text-[10px] md:text-sm font-black text-foreground text-right break-words flex-1 min-w-0 leading-tight">{item.value}</span>
+                    <div key={i} className="grid grid-cols-2 py-3 border-b border-border/50 last:border-0 gap-4 items-center">
+                        <span className="text-[9px] md:text-xs font-bold text-muted-foreground uppercase tracking-wider break-words leading-tight">{item.label}</span>
+                        <span className="text-[10px] md:text-sm font-black text-foreground text-right break-words leading-tight">{item.value}</span>
                     </div>
                 ))}
             </div>
