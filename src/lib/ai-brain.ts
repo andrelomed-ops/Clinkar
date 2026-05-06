@@ -451,6 +451,7 @@ export const generateAIBrainResponse = async (text: string, inventory: Vehicle[]
             make: c.make,
             model: c.model,
             price: c.price,
+            image: c.images[0], // Crucial for displaying real links in the chat
             reason
         };
     });

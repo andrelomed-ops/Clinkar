@@ -49,6 +49,7 @@ export default async function BuyPage() {
             is_investor_only: !!(marketData.is_investor_only || dbCar.is_investor_only),
             is_imported: !!(marketData.is_imported || dbCar.is_imported),
             flashSale: !!(dbCar.flash_sale || marketData.flash_sale),
+            is_credit_eligible: Number(dbCar.price) > 180000 && Number(dbCar.year) >= 2018,
             has_starterkar_seal: !!(dbCar.has_clinkar_seal || marketData.certified)
         };
     });

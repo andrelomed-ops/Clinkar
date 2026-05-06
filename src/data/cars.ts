@@ -37,6 +37,7 @@ export interface Vehicle {
     inspection_fee_paid?: boolean;
     success_fee_pending_amount?: number;
     financing_required?: boolean;
+    is_credit_eligible?: boolean;
     has_starterkar_seal?: boolean; // Real backend status for 150-point inspection
     has_clinkar_seal?: boolean;
     
@@ -118,6 +119,7 @@ export const ALL_CARS: Vehicle[] = [
             'tire_tread': 'https://images.unsplash.com/photo-1578844540643-e391519a864d?q=80&w=400&auto=format&fit=crop',
             'paint_scratches': 'https://images.unsplash.com/photo-1605515298946-d062f2e9da53?q=80&w=400&auto=format&fit=crop'
         },
+        is_credit_eligible: true,
         digitalPassport: {
             blockchainHash: "0xMockHashForVerification",
             events: []
@@ -406,6 +408,7 @@ export const ALL_CARS: Vehicle[] = [
         condition: 'Seminuevo',
         tags: ['Familiar', 'Seguro', 'Espacioso'],
         capabilities: ['Carretera', 'Ciudad'],
+        is_credit_eligible: true,
         passengers: 5
     },
     {
@@ -425,6 +428,7 @@ export const ALL_CARS: Vehicle[] = [
         condition: 'Nuevo',
         tags: ['Familiar', 'Tecnología', 'Eco-Friendly'],
         capabilities: ['Ciudad', 'Carretera'],
+        is_credit_eligible: true,
         passengers: 7
     },
     {
@@ -514,6 +518,7 @@ export const ALL_CARS: Vehicle[] = [
                 { date: "2024-01-28", type: "Importación Definitiva", verifiedBy: "Aduana MX" }
             ]
         },
+        is_credit_eligible: true,
         priceEquation: {
             marketValue: 950000,
             deductions: [

@@ -211,6 +211,15 @@ export function CheckoutAction({ carId, carPrice, carLocation, category }: { car
                         </>
                     )}
                 </button>
+
+                <div className="mt-8 flex items-start gap-3 p-4 bg-zinc-100 dark:bg-zinc-900/50 rounded-2xl border border-zinc-200 dark:border-zinc-800">
+                    <div className="h-6 w-6 rounded-lg bg-zinc-200 dark:bg-zinc-800 flex items-center justify-center shrink-0">
+                        <img src="https://conekta.com/favicon.ico" alt="Conekta" className="h-3 w-3 grayscale opacity-50" />
+                    </div>
+                    <p className="text-[9px] text-zinc-500 font-medium leading-relaxed italic">
+                        <b className="text-zinc-700 dark:text-zinc-300 uppercase">Transparencia Operativa:</b> StarterKar utiliza la infraestructura de <b>Conekta</b> para facilitar la transacción segura directamente entre particulares. Tu dinero viaja de forma protegida de comprador a vendedor; nosotros no intervenimos ni custodiamos los fondos del vehículo en nuestras cuentas.
+                    </p>
+                </div>
             </div>
             <style jsx>{`
                 .text-justify {

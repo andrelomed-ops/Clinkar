@@ -16,13 +16,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { Footer } from "@/components/layout/Footer";
 
-const StarterKarAIBot = dynamic(
-    () => import("@/components/market/StarterKarAIBot").then((mod) => mod.StarterKarAIBot),
-    { 
-        loading: () => <div className="h-96 animate-pulse bg-muted/20 backdrop-blur-sm rounded-xl" />,
-        ssr: false 
-    }
-);
+
 
 const ITEMS_PER_PAGE = 24;
 
@@ -58,7 +52,7 @@ export function MarketClient({
     });
 
     const [showMobileFilters, setShowMobileFilters] = useState(false);
-    const [showAI, setShowAI] = useState(false);
+
     const [sortBy, setSortBy] = useState<'newest' | 'price_asc' | 'price_desc' | 'distance'>('newest');
     const [searchTerm, setSearchTerm] = useState("");
     const [favorites, setFavorites] = useState<string[]>(initialFavorites);
@@ -206,7 +200,7 @@ export function MarketClient({
                                 </div>
 
                                 <button
-                                    onClick={() => setShowAI(true)}
+                                    onClick={() => window.dispatchEvent(new Event('open-elite-advisor'))}
                                     className="relative flex-1 min-w-[260px] mx-0 md:mx-4 h-14 glass-card border-indigo-200/50 dark:border-indigo-500/30 rounded-2xl flex items-center justify-between px-4 group transition-all duration-500 shadow-lg shadow-indigo-500/10 hover:shadow-indigo-500/20 hover:border-indigo-400/50 overflow-hidden"
                                 >
                                     <div className="absolute inset-0 bg-gradient-to-r from-transparent via-indigo-500/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-in-out" />
@@ -363,15 +357,6 @@ export function MarketClient({
                     </div>
                 )}
 
-                <StarterKarAIBot
-                    isOpen={showAI}
-                    onClose={() => setShowAI(false)}
-                    inventory={cars}
-                    onSelectCar={(carId) => {
-                        setShowAI(false);
-                        window.location.href = `/buy/${carId}`;
-                    }}
-                />
             </div>
         </SafeHydration>
     );

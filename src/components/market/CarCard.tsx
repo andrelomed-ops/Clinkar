@@ -79,6 +79,12 @@ export function CarCard({ car, isFavorite = false, onToggleFavorite }: CarCardPr
                                 <Zap className="h-3 w-3 fill-current" /> Nuevo
                             </div>
                         )}
+                        {car.is_credit_eligible && (
+                            <div className="px-2.5 py-1 bg-zinc-900/90 backdrop-blur-md text-blue-400 text-[10px] font-black rounded-lg uppercase tracking-widest flex items-center gap-1.5 shadow-xl border border-blue-500/30 whitespace-nowrap">
+                                <BadgeCheck className="h-3.5 w-3.5" />
+                                Crédito
+                            </div>
+                        )}
                         {priceLabel && (
                             <div className={cn("px-2.5 py-1 text-white text-[10px] font-bold rounded-lg uppercase tracking-wide flex items-center gap-1 shadow-sm whitespace-nowrap", priceLabel.color)}>
                                 {priceLabel.icon}

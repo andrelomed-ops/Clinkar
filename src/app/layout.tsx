@@ -8,7 +8,7 @@ import { GlobalErrorBoundary } from "@/components/GlobalErrorBoundary";
 // import { Navbar } from "@/components/ui/navbar";
 import { Footer } from "@/components/layout/Footer";
 import { PageTransition } from "@/components/layout/PageTransition";
-import { SmartSupport } from "@/components/layout/SmartSupport";
+import { EliteAdvisor } from "@/components/layout/EliteAdvisor";
 import { SafeHydration } from "@/components/ui/SafeHydration";
 import { ReferralTracker } from "@/components/layout/ReferralTracker";
 import { PostHogProvider } from "@/components/providers/PostHogProvider";
@@ -180,7 +180,7 @@ export default function RootLayout({
               </SafeHydration>
             </GlobalErrorBoundary>
             <Footer />
-            <SmartSupport />
+            <EliteAdvisor />
             <Toaster richColors position="top-right" closeButton />
           </PostHogProvider>
         </ThemeProvider>
