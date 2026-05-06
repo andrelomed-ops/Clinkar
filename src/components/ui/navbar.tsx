@@ -92,12 +92,12 @@ export function Navbar({
                 <div className="mx-auto flex h-16 w-full max-w-7xl items-center justify-between px-4 sm:px-6 overflow-hidden min-w-0">
 
                     {/* Left Section: Logo */}
-                    <div className="flex items-center shrink-0 pr-2 sm:pr-4">
+                    <div className="flex items-center shrink-0 pr-1 sm:pr-4">
                         <div className="hidden sm:block">
                             <StarterKarLogo size="lg" showMonogram={false} href={user ? "/dashboard" : "/"} hideSubmark={true} />
                         </div>
                         <div className="block sm:hidden">
-                            <StarterKarLogo size="md" showMonogram={false} href={user ? "/dashboard" : "/"} hideSubmark={true} />
+                            <StarterKarLogo size="sm" showMonogram={false} href={user ? "/dashboard" : "/"} hideSubmark={true} />
                         </div>
                     </div>
 

@@ -73,8 +73,8 @@ export default function RootLayout({
             </PageTransition>
             <Footer />
             <MobileBottomNav />
-            <EliteAdvisor />
           </div>
+          <EliteAdvisor />
           <Toaster richColors position="top-right" closeButton />
         </ThemeProvider>
       </body>
