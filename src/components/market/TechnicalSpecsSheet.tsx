@@ -89,11 +89,11 @@ export function TechnicalSpecsSheet({ specs, category }: TechnicalSpecsProps) {
 
 function HighlightBadge({ icon, label }: { icon: React.ReactNode, label: string }) {
     return (
-        <div className="flex flex-col items-center justify-center p-4 rounded-3xl bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 hover:border-indigo-500/30 transition-all group">
-            <div className="h-10 w-10 bg-indigo-500/10 rounded-2xl flex items-center justify-center text-indigo-600 dark:text-indigo-400 mb-2 group-hover:scale-110 transition-transform">
+        <div className="flex flex-col items-center justify-center p-3 md:p-4 rounded-3xl bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 hover:border-indigo-500/30 transition-all group overflow-hidden">
+            <div className="h-10 w-10 bg-indigo-500/10 rounded-2xl flex items-center justify-center text-indigo-600 dark:text-indigo-400 mb-2 group-hover:scale-110 transition-transform shrink-0">
                 {icon}
             </div>
-            <span className="text-[10px] font-black uppercase tracking-widest text-zinc-500 dark:text-zinc-400">{label}</span>
+            <span className="text-[9px] md:text-[10px] font-black uppercase tracking-widest text-zinc-500 dark:text-zinc-400 text-center leading-tight break-words w-full">{label}</span>
         </div>
     );
 }
