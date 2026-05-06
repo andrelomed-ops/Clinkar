@@ -103,7 +103,7 @@ function SpecCategory({ title, icon, items }: { title: string, icon: React.React
     if (validItems.length === 0) return null;
 
     return (
-        <div className="bg-card border border-border rounded-[2rem] p-3 md:p-8 shadow-sm w-full max-w-full overflow-hidden">
+        <div className="bg-card border border-border rounded-[2rem] p-2 md:p-8 shadow-sm w-full max-w-full overflow-hidden">
             <div className="flex items-center gap-3 mb-6">
                 <div className="p-2 bg-indigo-500/10 rounded-xl shrink-0">
                     {icon}
@@ -113,8 +113,8 @@ function SpecCategory({ title, icon, items }: { title: string, icon: React.React
             <div className="space-y-1">
                 {validItems.map((item, i) => (
                     <div key={i} className="flex justify-between items-center py-3 border-b border-border/50 last:border-0 gap-2">
-                        <span className="text-[9px] md:text-xs font-bold text-muted-foreground uppercase tracking-wider shrink-0 w-[40%] break-words">{item.label}</span>
-                        <span className="text-[10px] md:text-sm font-black text-foreground text-right break-words flex-1 min-w-0">{item.value}</span>
+                        <span className="text-[9px] md:text-xs font-bold text-muted-foreground uppercase tracking-wider shrink-0 w-[45%] md:w-[40%] break-words leading-tight">{item.label}</span>
+                        <span className="text-[10px] md:text-sm font-black text-foreground text-right break-words flex-1 min-w-0 leading-tight">{item.value}</span>
                     </div>
                 ))}
             </div>
