@@ -146,9 +146,9 @@ export function RecommendedSection({ favoriteIds = [], onToggleFavorite }: Recom
 
     return (
         <section className="mt-16 animate-reveal stagger-4">
-            <div className="flex items-center justify-between mb-8">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
                 <div className="flex items-center gap-3">
-                    <div className="h-10 w-10 bg-zinc-100 dark:bg-zinc-800 rounded-full flex items-center justify-center border border-zinc-200 dark:border-zinc-700">
+                    <div className="h-10 w-10 bg-zinc-100 dark:bg-zinc-800 rounded-full flex items-center justify-center border border-zinc-200 dark:border-zinc-700 shrink-0">
                         {favoriteIds.length > 0 
                             ? <Brain className="h-5 w-5 text-indigo-600/70" />
                             : <CarFront className="h-5 w-5 text-zinc-500" />
@@ -159,20 +159,21 @@ export function RecommendedSection({ favoriteIds = [], onToggleFavorite }: Recom
                             Recomendaciones IA
                             <Sparkles className="h-3 w-3 text-indigo-500/40" />
                         </h2>
-                        <p className="text-xs text-muted-foreground uppercase font-bold tracking-widest">{reasonLabel}</p>
+                        <p className="text-[10px] sm:text-xs text-muted-foreground uppercase font-bold tracking-widest leading-none mt-1">{reasonLabel}</p>
                     </div>
                 </div>
-                <Button variant="ghost" asChild className="text-indigo-600 hover:text-indigo-700 font-bold">
-                    <Link href="/buy" className="flex items-center gap-2">
-                        Ver todo el inventario <ArrowRight className="h-4 w-4" />
-                    </Link>
-                </Button>
+                <Link 
+                    href="/buy" 
+                    className="flex items-center gap-2 text-[11px] font-black uppercase tracking-widest text-indigo-600 hover:text-indigo-700 transition-colors bg-indigo-50 dark:bg-indigo-900/20 px-4 py-2 rounded-full w-fit"
+                >
+                    Ver inventario <ArrowRight className="h-3 w-3" />
+                </Link>
             </div>
 
             {isLoading ? (
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div className="flex md:grid md:grid-cols-3 gap-6 overflow-x-auto pb-4 no-scrollbar">
                     {[1, 2, 3].map(i => (
-                        <div key={i} className="space-y-4">
+                        <div key={i} className="min-w-[280px] md:min-w-0 space-y-4">
                             <Skeleton className="aspect-[4/3] w-full rounded-2xl" />
                             <Skeleton className="h-5 w-2/3 rounded-lg" />
                             <Skeleton className="h-4 w-1/2 rounded-lg" />
@@ -180,14 +181,15 @@ export function RecommendedSection({ favoriteIds = [], onToggleFavorite }: Recom
                     ))}
                 </div>
             ) : (
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div className="flex md:grid md:grid-cols-3 gap-6 overflow-x-auto pb-6 -mx-6 px-6 md:mx-0 md:px-0 snap-x snap-mandatory no-scrollbar">
                     {recommendedCars.map((car) => (
-                        <CarCard 
-                            key={car.id} 
-                            car={car} 
-                            isFavorite={favoriteIds.includes(car.id)}
-                            onToggleFavorite={(e) => onToggleFavorite?.(e, car.id)}
-                        />
+                        <div key={car.id} className="min-w-[85vw] md:min-w-0 snap-center">
+                            <CarCard 
+                                car={car} 
+                                isFavorite={favoriteIds.includes(car.id)}
+                                onToggleFavorite={(e) => onToggleFavorite?.(e, car.id)}
+                            />
+                        </div>
                     ))}
                 </div>
             )}
