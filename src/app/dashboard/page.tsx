@@ -268,7 +268,7 @@ export default function DashboardPage() {
     if (!mounted) return <div className="p-12"><Skeleton className="h-20 w-full" /></div>;
 
     return (
-        <div className="flex h-screen flex-col bg-background overflow-hidden">
+        <div className="flex h-screen flex-col bg-background overflow-x-hidden">
             <nav className="border-b border-border bg-background/80 backdrop-blur-md px-6 h-16 shrink-0 flex items-center justify-between z-50">
                 <div className="flex items-center gap-4">
                     <StarterKarLogo size="xs" showWordmark={false} href="/" />
@@ -294,7 +294,7 @@ export default function DashboardPage() {
                 </div>
             </nav>
 
-            <main className="flex-1 overflow-y-auto custom-scrollbar">
+            <main className="flex-1 overflow-y-auto overflow-x-hidden custom-scrollbar">
                 <EcosystemHub userProfile={userProfile} activeInspections={activeInspections} investorApp={investorApp} />
                 
                 <div className="max-w-5xl mx-auto w-full p-6 md:p-12">

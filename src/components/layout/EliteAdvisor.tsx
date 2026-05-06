@@ -85,7 +85,7 @@ export function EliteAdvisor() {
     };
 
     return (
-        <div className="fixed bottom-8 right-8 z-[100] flex flex-col items-end gap-4">
+        <div className="fixed bottom-24 md:bottom-8 right-2 md:right-8 z-[100] flex flex-col items-end gap-4 pointer-events-none">
             {/* Premium Permanent Bubble */}
             <AnimatePresence>
                 {!isOpen && (
@@ -94,7 +94,7 @@ export function EliteAdvisor() {
                         animate={{ opacity: 1, scale: 1, y: 0 }}
                         exit={{ opacity: 0, scale: 0.9, y: 10 }}
                         transition={{ duration: 0.2 }}
-                        className="absolute bottom-[160px] md:bottom-[210px] right-4 md:right-8 z-50 cursor-pointer"
+                        className="absolute bottom-[180px] md:bottom-[210px] right-2 md:right-8 z-50 cursor-pointer pointer-events-auto"
                         onClick={() => setIsOpen(true)}
                     >
                         {/* Clean Dialogue Bubble */}
@@ -117,7 +117,7 @@ export function EliteAdvisor() {
                         initial={{ opacity: 0, scale: 0.9, y: 20 }}
                         animate={{ opacity: 1, scale: 1, y: 0 }}
                         exit={{ opacity: 0, scale: 0.9, y: 20 }}
-                        className="w-80 md:w-96 h-[600px] bg-white/20 dark:bg-zinc-900/40 backdrop-blur-[40px] border border-white/40 dark:border-white/10 rounded-[2.5rem] shadow-[0_40px_100px_rgba(0,0,0,0.4)] flex flex-col overflow-hidden relative mb-4"
+                        className="w-80 md:w-96 h-[600px] bg-white/20 dark:bg-zinc-900/40 backdrop-blur-[40px] border border-white/40 dark:border-white/10 rounded-[2.5rem] shadow-[0_40px_100px_rgba(0,0,0,0.4)] flex flex-col overflow-hidden relative mb-4 pointer-events-auto"
                     >
                         {/* Header */}
                         <div className="bg-indigo-600/60 backdrop-blur-xl p-6 flex justify-between items-center relative overflow-hidden border-b border-white/20">
@@ -233,7 +233,9 @@ export function EliteAdvisor() {
             </AnimatePresence>
 
             {/* 3D Bot Trigger */}
-            <BotCar3D onClick={() => setIsOpen(true)} isOpen={isOpen} />
+            <div className="pointer-events-auto">
+                <BotCar3D onClick={() => setIsOpen(true)} isOpen={isOpen} />
+            </div>
 
             {/* Toggle Close Button (when chat is open) */}
             <AnimatePresence>
@@ -245,7 +247,7 @@ export function EliteAdvisor() {
                         whileHover={{ scale: 1.1 }}
                         whileTap={{ scale: 0.9 }}
                         onClick={() => setIsOpen(false)}
-                        className="absolute bottom-4 right-4 h-16 w-16 rounded-[2rem] bg-indigo-600/90 text-white shadow-2xl flex items-center justify-center border-2 border-white/30 backdrop-blur-md z-[101]"
+                        className="absolute bottom-4 right-4 h-16 w-16 rounded-[2rem] bg-indigo-600/90 text-white shadow-2xl flex items-center justify-center border-2 border-white/30 backdrop-blur-md z-[101] pointer-events-auto"
                     >
                         <X className="h-8 w-8" />
                     </motion.button>

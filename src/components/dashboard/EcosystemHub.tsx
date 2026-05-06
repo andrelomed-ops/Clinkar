@@ -29,7 +29,7 @@ export function EcosystemHub({ userProfile, activeInspections, investorApp }: Ec
             <div className="absolute inset-0 bg-zinc-50/50 dark:bg-zinc-950/40 backdrop-blur-xl -z-10" />
             <div className="absolute inset-y-0 left-0 w-1/4 bg-gradient-to-r from-indigo-500/5 to-transparent blur-3xl -z-10" />
             
-            <div className="max-w-7xl mx-auto px-6 py-5 flex items-center justify-between gap-4 border-b border-zinc-200/60 dark:border-zinc-800/50 overflow-x-auto custom-scrollbar no-scrollbar">
+            <div className="max-w-7xl mx-auto w-full px-6 py-5 flex items-center justify-between gap-4 border-b border-zinc-200/60 dark:border-zinc-800/50 overflow-x-auto custom-scrollbar no-scrollbar">
                 
                 {/* 1. OPERATIONAL INTELLIGENCE NODE */}
                 <div className="flex items-center gap-4 pr-10 border-r border-zinc-200/80 dark:border-zinc-800/80 shrink-0 group cursor-default">

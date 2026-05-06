@@ -237,12 +237,12 @@ export function CarDetailClient({
                             )}
 
                             {/* Mobile Horizontal Scroll */}
-                            <div className="md:hidden flex gap-4 overflow-x-auto pb-6 pt-2 px-6 -mx-6 w-[calc(100%+3rem)] snap-x snap-mandatory no-scrollbar scroll-smooth">
+                            <div className="md:hidden flex gap-4 overflow-x-auto pb-6 pt-2 snap-x snap-mandatory no-scrollbar scroll-smooth">
                                 {car.images?.map((img, idx) => (
                                     <div 
                                         key={idx}
                                         onClick={() => { setGalleryIndex(idx); setShowGallery(true); }}
-                                        className="relative shrink-0 snap-center cursor-pointer transition-all w-[85vw] h-[40vh] rounded-[2rem] overflow-hidden shadow-xl"
+                                        className="relative shrink-0 snap-center cursor-pointer transition-all w-[90vw] h-[35vh] rounded-[2rem] overflow-hidden shadow-xl"
                                     >
                                         <Image src={img} fill className="object-cover" alt={`Vista ${idx + 1}`} priority={idx === 0} />
                                         {idx === 0 && car.status === 'CERTIFIED' && (

@@ -171,7 +171,7 @@ export default function RootLayout({
             {/* <Navbar /> removed to fix double-nav issue */}
             <GlobalErrorBoundary>
               <SafeHydration fallback={<div className="min-h-screen bg-zinc-950 animate-pulse" />}>
-                <main className="min-h-screen">
+                <main className="min-h-screen overflow-x-hidden">
                   <PageTransition>
                     <ReferralTracker />
                     <InstallPrompt />
