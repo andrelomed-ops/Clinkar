@@ -192,7 +192,7 @@ export function Navbar({
                                     Cerrar Sesión
                                 </button>
                             )}
-                            <div className="flex items-center gap-1">
+                            <div className="flex items-center gap-0.5 md:gap-1">
                                 <NotificationCenter />
                                 <ThemeToggle />
                             </div>
