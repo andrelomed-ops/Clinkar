@@ -66,7 +66,7 @@ export default function RootLayout({
           disableTransitionOnChange
           storageKey="starterkar-theme"
         >
-          <div className="min-h-screen w-full max-w-full flex flex-col min-w-0" style={{ overflowX: 'clip' }}>
+          <div id="root-container" className="min-h-screen w-full max-w-full flex flex-col min-w-0" style={{ overflowX: 'clip' }}>
             <PageTransition>
               <ReferralTracker />
               {children}
