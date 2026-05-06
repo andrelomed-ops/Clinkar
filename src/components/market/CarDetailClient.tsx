@@ -301,7 +301,7 @@ export function CarDetailClient({
 
                         <div className="space-y-10" id="checklist">
                             {/* Cédula de Certeza StarterKar */}
-                            <div className="bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-[2.5rem] p-10 relative overflow-hidden group shadow-xl">
+                            <div className="bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-[2rem] md:rounded-[2.5rem] p-5 md:p-10 relative overflow-hidden group shadow-xl">
                                 <div className="absolute -right-20 -top-20 h-64 w-64 bg-indigo-600/5 blur-[100px] rounded-full group-hover:bg-indigo-600/10 transition-all duration-700" />
                                 
                                 <div className="relative z-10 flex flex-col md:flex-row items-center gap-12">
@@ -332,8 +332,8 @@ export function CarDetailClient({
                                     <div className="flex-1 space-y-4">
                                         <div className="flex items-center justify-between">
                                             <div className="flex items-center gap-3">
-                                                <ShieldCheck className="h-6 w-6 text-indigo-500" />
-                                                <h3 className="text-2xl font-black uppercase italic tracking-tighter text-zinc-900 dark:text-white">Cédula de Certeza StarterKar</h3>
+                                                <ShieldCheck className="h-6 w-6 text-indigo-500 shrink-0" />
+                                                <h3 className="text-xl sm:text-2xl font-black uppercase italic tracking-tighter text-zinc-900 dark:text-white break-words">Cédula de Certeza StarterKar</h3>
                                             </div>
                                         </div>
                                         <p className="text-sm font-medium text-zinc-500 dark:text-zinc-400 leading-relaxed">
@@ -399,7 +399,7 @@ export function CarDetailClient({
 
                     <div className="lg:col-span-5">
                         <div className="sticky top-24 space-y-6">
-                            <div className="glass-card border-indigo-500/20 rounded-[2.5rem] p-8 shadow-2xl space-y-8 relative overflow-hidden">
+                            <div className="glass-card border-indigo-500/20 rounded-[2rem] md:rounded-[2.5rem] p-5 md:p-8 shadow-2xl space-y-8 relative overflow-hidden">
                                 <header className="flex justify-between items-baseline mb-2">
                                     <div className="space-y-1">
                                         <span className="text-xs font-bold text-muted-foreground uppercase tracking-widest">Precio Final Garantizado</span>
