@@ -28,7 +28,7 @@ export function TechnicalSpecsSheet({ specs, category }: TechnicalSpecsProps) {
                 {security?.abs && <HighlightBadge icon={<ShieldCheck className="h-5 w-5" />} label="Frenos ABS" />}
             </div>
 
-            <div className="grid md:grid-cols-2 gap-x-2 gap-y-4 md:gap-8">
+            <div className="grid lg:grid-cols-2 gap-x-2 gap-y-4 md:gap-8">
                 {/* Performance & Mechanics */}
                 <SpecCategory 
                     title={category === 'Air' || category === 'Marine' ? "Planta de Poder" : "Motor y Desempeño"} 

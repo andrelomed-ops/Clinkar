@@ -227,7 +227,7 @@ export function CarDetailClient({
                                     <div 
                                         key={idx}
                                         onClick={() => { setGalleryIndex(idx); setShowGallery(true); }}
-                                        className="relative shrink-0 snap-center cursor-pointer transition-all w-[85%] max-w-[320px] h-[35vh] rounded-[2rem] overflow-hidden shadow-xl"
+                                        className="w-[85%] flex-shrink-0 snap-center cursor-pointer transition-all h-[35vh] rounded-[2rem] overflow-hidden shadow-xl"
                                     >
                                         <Image src={img} fill className="object-cover" alt={`Vista ${idx + 1}`} priority={idx === 0} />
                                         {idx === 0 && car.status === 'CERTIFIED' && (
