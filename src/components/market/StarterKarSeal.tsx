@@ -60,7 +60,7 @@ export function StarterKarSeal({ variant = "compact", className, score }: Starte
             <StarterKarLogo size="sm" hideSubmark={true} href="" />
             <div>
                 <h4 className="text-sm md:text-base font-black uppercase tracking-wider md:tracking-widest text-zinc-900 dark:text-white">Sello StarterKar</h4>
-                <p className="text-[8px] md:text-[10px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-widest md:tracking-[0.2em]">Sello Único de Confianza Digital</p>
+                <p className="text-[8px] md:text-[10px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider md:tracking-[0.2em]">Sello Único de Confianza Digital</p>
             </div>
         </div>
     );

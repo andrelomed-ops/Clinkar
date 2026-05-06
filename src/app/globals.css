@@ -54,10 +54,9 @@
 
 html,
 body {
-  overflow-x: clip;
+  overflow-x: hidden !important;
   position: relative;
   width: 100%;
-  max-width: 100%;
   margin: 0;
   padding: 0 !important;
   box-sizing: border-box;
