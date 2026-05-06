@@ -13,6 +13,7 @@ import { SafeHydration } from "@/components/ui/SafeHydration";
 import { ReferralTracker } from "@/components/layout/ReferralTracker";
 import { PostHogProvider } from "@/components/providers/PostHogProvider";
 import { Toaster } from "sonner";
+import { MobileBottomNav } from "@/components/layout/MobileBottomNav";
 
 
 
@@ -180,6 +181,7 @@ export default function RootLayout({
               </SafeHydration>
             </GlobalErrorBoundary>
             <Footer />
+            <MobileBottomNav />
             <EliteAdvisor />
             <Toaster richColors position="top-right" closeButton />
           </PostHogProvider>
