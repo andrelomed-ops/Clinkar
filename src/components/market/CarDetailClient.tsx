@@ -176,7 +176,7 @@ export function CarDetailClient({
                     </div>
                 </div>
 
-                <div className="grid lg:grid-cols-12 gap-12 min-w-0">
+                <div className="grid lg:grid-cols-12 gap-4 lg:gap-12 min-w-0">
                     <div className="lg:col-span-7 space-y-8 min-w-0 overflow-hidden">
                         {/* StarterKar Cinematic Showcase */}
                         <div className="relative w-full mb-8 group">

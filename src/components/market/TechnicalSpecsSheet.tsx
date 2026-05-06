@@ -103,12 +103,12 @@ function SpecCategory({ title, icon, items }: { title: string, icon: React.React
     if (validItems.length === 0) return null;
 
     return (
-        <div className="bg-card border border-border rounded-[2rem] p-4 md:p-8 shadow-sm w-full overflow-hidden">
+        <div className="bg-card border border-border rounded-[2rem] p-4 md:p-8 shadow-sm w-full max-w-full overflow-hidden">
             <div className="flex items-center gap-3 mb-6">
                 <div className="p-2 bg-indigo-500/10 rounded-xl shrink-0">
                     {icon}
                 </div>
-                <h4 className="text-[11px] md:text-sm font-black uppercase tracking-wider md:tracking-[0.2em] text-foreground flex-1 min-w-0 break-words leading-tight">{title}</h4>
+                <h4 className="text-[11px] md:text-sm font-black uppercase tracking-tight md:tracking-[0.2em] text-foreground flex-1 min-w-0 break-words leading-tight">{title}</h4>
             </div>
             <div className="space-y-1">
                 {validItems.map((item, i) => (

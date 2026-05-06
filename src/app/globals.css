@@ -63,6 +63,7 @@ body {
   box-sizing: border-box;
   -webkit-overflow-scrolling: touch;
   touch-action: pan-y;
+  -webkit-text-size-adjust: 100%;
   /* Disable standard tap highlight on mobile for custom feel */
   -webkit-tap-highlight-color: transparent;
 }

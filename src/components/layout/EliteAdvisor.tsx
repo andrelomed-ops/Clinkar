@@ -85,7 +85,7 @@ export function EliteAdvisor() {
     };
 
     return (
-        <div className="fixed bottom-24 md:bottom-8 right-2 md:right-8 z-[100] flex flex-col items-end gap-4 pointer-events-none">
+        <div className="fixed bottom-24 md:bottom-8 right-4 md:right-8 z-[100] flex flex-col items-end gap-4 pointer-events-none">
             {/* Premium Permanent Bubble */}
             <AnimatePresence>
                 {!isOpen && (
