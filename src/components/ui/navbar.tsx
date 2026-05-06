@@ -83,7 +83,7 @@ export function Navbar({
     return (
         <>
             <nav className={cn(
-                "fixed top-0 z-50 w-full transition-all duration-300 border-b",
+                "fixed top-0 z-50 w-full transition-all duration-300 border-b max-w-[100vw] overflow-hidden",
                 isScrolled || isMenuOpen
                     ? "bg-background/80 backdrop-blur-md border-border py-2"
                     : "bg-background/0 border-transparent py-4",
