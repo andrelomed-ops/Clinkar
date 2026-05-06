@@ -49,8 +49,12 @@ export default function SellOnboardingPage() {
     const [needsPhone, setNeedsPhone] = useState(false);
 
     // Luxury Brand Detection
-    const PREMIUM_BRANDS = ['BMW', 'AUDI', 'MERCEDES-BENZ', 'MERCEDES BENZ', 'PORSCHE', 'LAND ROVER', 'JAGUAR', 'VOLVO', 'MINI', 'TESLA', 'LEXUS'];
-    const isPremium = PREMIUM_BRANDS.includes(make.toUpperCase());
+    const PREMIUM_BRANDS = [
+        'BMW', 'AUDI', 'MERCEDES-BENZ', 'MERCEDES BENZ', 'PORSCHE', 
+        'LAND ROVER', 'JAGUAR', 'VOLVO', 'MINI', 'TESLA', 'LEXUS',
+        'ALFA ROMEO', 'ALFA-ROMEO', 'MASERATI', 'FERRARI', 'LAMBORGHINI', 'ASTON MARTIN'
+    ];
+    const isPremium = PREMIUM_BRANDS.includes(make.toUpperCase().trim());
 
     const totalCost = isPremium 
         ? (selectedPlan === 'VIP' ? 3500 : 2500)
