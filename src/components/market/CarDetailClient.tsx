@@ -58,6 +58,23 @@ export function CarDetailClient({
     const [negotiatedPrice, setNegotiatedPrice] = useState<number | null>(null);
     
     const supabaseBrowser = useMemo(() => createBrowserClient(), []);
+    const [recommendations, setRecommendations] = useState<any[]>([]);
+
+    useEffect(() => {
+        if (!car) return;
+        const fetchRecommendations = async () => {
+            const { data } = await supabaseBrowser
+                .from('cars')
+                .select('*')
+                .eq('category', car.category)
+                .neq('id', id)
+                .in('status', ['available', 'PUBLISHED', 'CERTIFIED', 'AVAILABLE', 'certified', 'published'])
+                .limit(3);
+            
+            if (data) setRecommendations(data);
+        };
+        fetchRecommendations();
+    }, [car, id, supabaseBrowser]);
 
     // Handle authentication state changes to sync profile/favorites if user logs in/out
     useEffect(() => {
@@ -441,54 +458,46 @@ export function CarDetailClient({
                             </div>
 
                             {/* Smart Recommendations Section */}
-                            {(() => {
-                                const recommendations = ALL_CARS
-                                    .filter(c => c.id !== id && c.category === car.category && (c.status === 'CERTIFIED' || c.status === 'published'))
-                                    .slice(0, 3);
-                                
-                                if (recommendations.length === 0) return null;
-
-                                return (
-                                    <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-1000 delay-500">
-                                        <div className="flex items-center justify-between px-2">
-                                            <h4 className="text-[10px] font-black uppercase tracking-[0.4em] text-zinc-400">Opciones Recomendadas</h4>
-                                            <div className="h-px flex-1 bg-zinc-100 dark:bg-zinc-800 ml-4" />
-                                        </div>
-                                        
-                                        <div className="space-y-3">
-                                            {recommendations.map((rec) => (
-                                                <Link 
-                                                    key={rec.id} 
-                                                    href={`/buy/${rec.id}`}
-                                                    className="group flex gap-4 p-4 rounded-3xl bg-white dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-800 hover:border-indigo-500/30 hover:shadow-xl hover:shadow-indigo-500/5 transition-all duration-500"
-                                                >
-                                                    <div className="relative h-20 w-24 shrink-0 rounded-2xl overflow-hidden bg-zinc-100 dark:bg-zinc-800">
-                                                        <Image 
-                                                            src={rec.images?.[0] || '/placeholder-car.jpg'} 
-                                                            alt={rec.model} 
-                                                            fill 
-                                                            className="object-cover group-hover:scale-110 transition-transform duration-700" 
-                                                        />
-                                                    </div>
-                                                    <div className="flex flex-col justify-center min-w-0">
-                                                        <h5 className="font-black text-[11px] uppercase italic tracking-tight text-zinc-950 dark:text-white truncate">
-                                                            {rec.make} {rec.model}
-                                                        </h5>
-                                                        <div className="flex items-center gap-2 mt-1">
-                                                            <span className="text-[9px] font-bold text-zinc-400 uppercase tracking-widest">{rec.year}</span>
-                                                            <span className="h-1 w-1 rounded-full bg-zinc-300 dark:bg-zinc-700" />
-                                                            <span className="text-[9px] font-black text-indigo-500 uppercase tracking-widest">${rec.price.toLocaleString()}</span>
-                                                        </div>
-                                                        <div className="mt-2 flex items-center gap-1 text-[8px] font-black text-emerald-500 uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-opacity">
-                                                            Ver Detalles <ChevronRight className="h-2 w-2" />
-                                                        </div>
-                                                    </div>
-                                                </Link>
-                                            ))}
-                                        </div>
+                            {recommendations.length > 0 && (
+                                <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-1000 delay-500">
+                                    <div className="flex items-center justify-between px-2">
+                                        <h4 className="text-[10px] font-black uppercase tracking-[0.4em] text-zinc-400">Opciones Recomendadas</h4>
+                                        <div className="h-px flex-1 bg-zinc-100 dark:bg-zinc-800 ml-4" />
                                     </div>
-                                );
-                            })()}
+                                    
+                                    <div className="space-y-3">
+                                        {recommendations.map((rec) => (
+                                            <Link 
+                                                key={rec.id} 
+                                                href={`/buy/${rec.id}`}
+                                                className="group flex gap-4 p-4 rounded-3xl bg-white dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-800 hover:border-indigo-500/30 hover:shadow-xl hover:shadow-indigo-500/5 transition-all duration-500"
+                                            >
+                                                <div className="relative h-20 w-24 shrink-0 rounded-2xl overflow-hidden bg-zinc-100 dark:bg-zinc-800">
+                                                    <Image 
+                                                        src={rec.images?.[0] || '/placeholder-car.jpg'} 
+                                                        alt={rec.model} 
+                                                        fill 
+                                                        className="object-cover group-hover:scale-110 transition-transform duration-700" 
+                                                    />
+                                                </div>
+                                                <div className="flex flex-col justify-center min-w-0">
+                                                    <h5 className="font-black text-[11px] uppercase italic tracking-tight text-zinc-950 dark:text-white truncate">
+                                                        {rec.make} {rec.model}
+                                                    </h5>
+                                                    <div className="flex items-center gap-2 mt-1">
+                                                        <span className="text-[9px] font-bold text-zinc-400 uppercase tracking-widest">{rec.year}</span>
+                                                        <span className="h-1 w-1 rounded-full bg-zinc-300 dark:bg-zinc-700" />
+                                                        <span className="text-[9px] font-black text-indigo-500 uppercase tracking-widest">${Number(rec.price).toLocaleString()}</span>
+                                                    </div>
+                                                    <div className="mt-2 flex items-center gap-1 text-[8px] font-black text-emerald-500 uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-opacity">
+                                                        Ver Detalles <ChevronRight className="h-2 w-2" />
+                                                    </div>
+                                                </div>
+                                            </Link>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
                         </div>
                     </div>
                 </div>
