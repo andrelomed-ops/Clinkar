@@ -39,11 +39,12 @@ export function MobileBottomNav() {
             "fixed bottom-0 left-0 w-full z-50 transition-transform duration-300 md:hidden bg-background/95 backdrop-blur-2xl border-t border-border shadow-[0_-10px_40px_-10px_rgba(0,0,0,0.1)] pb-[env(safe-area-inset-bottom)]",
             isVisible ? "translate-y-0" : "translate-y-[calc(100%+env(safe-area-inset-bottom))]"
         )}>
-            {/* Global Floating Back Button for nested pages */}
+            {/* Global Floating Back Button - separate fixed position, won't cause overflow */}
             {isDeepPage && (
                 <button
                     onClick={() => router.back()}
-                    className="absolute -top-16 right-4 h-12 w-12 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-full flex items-center justify-center shadow-2xl text-zinc-900 dark:text-white transition-transform active:scale-95"
+                    className="fixed bottom-20 left-4 h-12 w-12 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-full flex items-center justify-center shadow-2xl text-zinc-900 dark:text-white transition-transform active:scale-95 z-50"
+                    style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}
                 >
                     <ArrowLeft className="h-6 w-6" />
                 </button>
