@@ -279,9 +279,10 @@ export default function DashboardPage() {
                     {userProfile?.role?.toLowerCase() !== 'investor' && (
                         <Link 
                             href="/investor/apply"
-                            className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-full bg-amber-500/10 text-amber-600 border border-amber-500/20 text-[10px] font-black uppercase tracking-widest hover:bg-amber-500/20 transition-all whitespace-nowrap"
+                            className="flex items-center gap-1 md:gap-2 px-2 md:px-3 py-1 md:py-1.5 rounded-full bg-amber-500/10 text-amber-600 border border-amber-500/20 text-[9px] md:text-[10px] font-black uppercase tracking-widest hover:bg-amber-500/20 transition-all whitespace-nowrap"
                         >
-                            Inversionistas
+                            <span className="hidden sm:inline">Inversionistas</span>
+                            <span className="sm:hidden">Invertir</span>
                         </Link>
                     )}
                     <button 
