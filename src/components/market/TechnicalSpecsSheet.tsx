@@ -28,7 +28,7 @@ export function TechnicalSpecsSheet({ specs, category }: TechnicalSpecsProps) {
                 {security?.abs && <HighlightBadge icon={<ShieldCheck className="h-5 w-5" />} label="Frenos ABS" />}
             </div>
 
-            <div className="grid md:grid-cols-2 gap-8">
+            <div className="grid md:grid-cols-2 gap-4 md:gap-8">
                 {/* Performance & Mechanics */}
                 <SpecCategory 
                     title={category === 'Air' || category === 'Marine' ? "Planta de Poder" : "Motor y Desempeño"} 
@@ -108,7 +108,7 @@ function SpecCategory({ title, icon, items }: { title: string, icon: React.React
                 <div className="p-2 bg-indigo-500/10 rounded-xl shrink-0">
                     {icon}
                 </div>
-                <h4 className="text-xs md:text-sm font-black uppercase tracking-widest md:tracking-[0.2em] text-foreground flex-1 min-w-0 break-words leading-tight">{title}</h4>
+                <h4 className="text-[11px] md:text-sm font-black uppercase tracking-wider md:tracking-[0.2em] text-foreground flex-1 min-w-0 break-words leading-tight">{title}</h4>
             </div>
             <div className="space-y-1">
                 {validItems.map((item, i) => (
