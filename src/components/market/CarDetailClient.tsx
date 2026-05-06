@@ -122,7 +122,7 @@ export function CarDetailClient({
     }
 
     return (
-        <div className="min-h-screen bg-background">
+        <div className="min-h-screen bg-background overflow-x-hidden relative">
             <Navbar variant="market" />
 
             <main className="pt-24 pb-20 px-6 max-w-7xl mx-auto">
