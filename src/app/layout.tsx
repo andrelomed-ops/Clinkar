@@ -178,12 +178,10 @@ export default function RootLayout({
                     <InstallPrompt />
                     {children}
                   </PageTransition>
+                  <Footer />
+                  <MobileBottomNav />
+                  <EliteAdvisor />
                 </div>
-              </SafeHydration>
-            </GlobalErrorBoundary>
-            <Footer />
-            <MobileBottomNav />
-            <EliteAdvisor />
             <Toaster richColors position="top-right" closeButton />
           </PostHogProvider>
         </ThemeProvider>
