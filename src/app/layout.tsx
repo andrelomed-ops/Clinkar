@@ -107,12 +107,12 @@ export default function RootLayout({
     <html lang="es" suppressHydrationWarning>
       <head>
         {/* Cache Buster: v1.1.2 - Force refresh and provide AlertCircle fallback */}
-        <meta name="version" content="1.3.0" />
+        <meta name="version" content="1.3.1" />
         <script dangerouslySetInnerHTML={{ __html: `
           // 🚨 NUCLEAR CACHE CLEARING - EMERGENCY FIX v4.7
           (function() {
             if (typeof window !== 'undefined') {
-              const VERSION = '5.3.0';
+              const VERSION = '5.3.1';
               const dummy = function() { return null; };
               
               // Immediate Fallbacks for phantom references
@@ -171,13 +171,13 @@ export default function RootLayout({
             {/* <Navbar /> removed to fix double-nav issue */}
             <GlobalErrorBoundary>
               <SafeHydration fallback={<div className="min-h-screen bg-zinc-950 animate-pulse" />}>
-                <main className="min-h-screen overflow-x-hidden">
+                <div className="min-h-screen overflow-x-hidden relative w-full max-w-[100vw]">
                   <PageTransition>
                     <ReferralTracker />
                     <InstallPrompt />
                     {children}
                   </PageTransition>
-                </main>
+                </div>
               </SafeHydration>
             </GlobalErrorBoundary>
             <Footer />

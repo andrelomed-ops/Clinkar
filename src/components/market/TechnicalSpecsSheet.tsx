@@ -19,9 +19,9 @@ export function TechnicalSpecsSheet({ specs, category }: TechnicalSpecsProps) {
     const { performance, architecture, features, security } = specs;
 
     return (
-        <div className="space-y-12 animate-in fade-in slide-in-from-bottom-6 duration-700">
+        <div className="space-y-12 animate-in fade-in slide-in-from-bottom-6 duration-700 w-full max-w-full overflow-hidden">
             {/* Highlights Section */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 w-full">
                 {features?.carPlay && <HighlightBadge icon={<Smartphone className="h-5 w-5" />} label="Apple CarPlay" />}
                 {features?.sunroof && <HighlightBadge icon={<Sun className="h-5 w-5" />} label="Quemacocos" />}
                 {security?.reverseCamera && <HighlightBadge icon={<CameraIcon className="h-5 w-5" />} label="Cámara Reversa" />}

@@ -125,7 +125,7 @@ export function CarDetailClient({
         <div className="min-h-screen bg-background overflow-x-hidden relative">
             <Navbar variant="market" />
 
-            <main className="pt-24 pb-20 px-4 sm:px-6 max-w-full lg:max-w-7xl mx-auto block overflow-hidden">
+            <div className="pt-24 pb-20 px-4 sm:px-6 max-w-full lg:max-w-7xl mx-auto block overflow-hidden relative">
                 <div className="flex justify-between items-center mb-8">
                     <Link 
                         href="/buy" 
@@ -448,7 +448,7 @@ export function CarDetailClient({
                 <div className="mt-12 pt-8 border-t border-border/50">
                     <RecommendedSection />
                 </div>
-            </main>
+            </div>
 
             {showGallery && car.images && (
                 <div className="fixed inset-0 z-[200] bg-zinc-950/98 backdrop-blur-2xl flex flex-col animate-in fade-in duration-300">
