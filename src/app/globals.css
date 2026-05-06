@@ -63,13 +63,12 @@ body {
   box-sizing: border-box;
   -webkit-overflow-scrolling: touch;
   touch-action: pan-y;
+  /* Disable standard tap highlight on mobile for custom feel */
+  -webkit-tap-highlight-color: transparent;
 }
 
 *, *::before, *::after {
   box-sizing: border-box;
-}
-  /* Disable standard tap highlight on mobile for custom feel */
-  -webkit-tap-highlight-color: transparent;
 }
 
 body {
