@@ -89,7 +89,7 @@ export function Navbar({
                     : "bg-background/0 border-transparent py-4",
                 variant === 'market' && "bg-background/80 backdrop-blur-md border-border/40"
             )}>
-                <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6">
+                <div className="mx-auto flex h-16 w-full max-w-7xl items-center justify-between px-4 sm:px-6 overflow-hidden min-w-0">
 
                     {/* Left Section: Logo */}
                     <div className="flex items-center shrink-0 pr-2 sm:pr-4">
@@ -118,7 +118,7 @@ export function Navbar({
                     </div>
 
                     {/* Right Section: Actions */}
-                    <div className="flex items-center gap-3 shrink-0 pl-4">
+                    <div className="flex items-center gap-2 shrink-0 min-w-0 overflow-hidden">
                         {showFavorites && (
                             <button
                                 onClick={onToggleFavorites}
