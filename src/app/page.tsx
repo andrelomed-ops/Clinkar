@@ -64,12 +64,12 @@ export default function Home() {
               </div>
 
               <h1 className="text-5xl sm:text-6xl md:text-8xl font-black tracking-tighter leading-none md:leading-[0.85] text-foreground animate-in fade-in slide-in-from-bottom-8 duration-1000 py-2">
-                Pon tu auto a la venta.<br />
-                <span className="text-indigo-600 italic uppercase">Y sigue usándolo.</span>
+                La libertad del trato directo,<br />
+                <span className="text-indigo-600 italic uppercase">con el respaldo de expertos.</span>
               </h1>
-
+              
               <p className="text-lg md:text-xl text-muted-foreground max-w-4xl mx-auto leading-relaxed font-medium animate-in fade-in slide-in-from-bottom-6 duration-1000 delay-200">
-                Cuidamos tu esfuerzo. Disfruta la tranquilidad de comprar o vender tu vehículo de forma segura; nosotros te acompañamos en cada paso para asegurar el mejor trato.
+                StarterKar resuelve los riesgos del mercado en operaciones vehiculares con certificación mecánica y validación legal para proteger tu patrimonio, garantizando la mejor compra y venta.
               </p>
 
               <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto animate-in fade-in slide-in-from-bottom-4 duration-1000 delay-300">
@@ -104,27 +104,27 @@ export default function Home() {
               {/* THE VERSUS SECTION */}
               <div className="w-full max-w-5xl pt-16 md:pt-24 animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-700">
                 <style>{
-                  Array.from({ length: 10 }).map((_, i) => `
+                  Array.from({ length: 11 }).map((_, i) => `
                     @keyframes autoLight${i} {
-                      0%, ${i * 8}% { transform: translateX(0); opacity: 0.5; color: #a5b4fc; } /* indigo-300 */
-                      ${i * 8 + 4}%, 96% { transform: translateX(4px); opacity: 1; color: #ffffff; }
-                      100% { transform: translateX(0); opacity: 0.5; color: #a5b4fc; }
+                      0%, ${i * 9}% { transform: translateX(0); opacity: 0.4; color: #a5b4fc; } /* indigo-300 */
+                      ${i * 9 + 3}%, 96% { transform: translateX(4px); opacity: 1; color: #ffffff; }
+                      100% { transform: translateX(0); opacity: 0.4; color: #a5b4fc; }
                     }
                     @keyframes autoCheck${i} {
-                      0%, ${i * 8}% { transform: scale(1); color: rgba(52, 211, 153, 0.3); }
-                      ${i * 8 + 4}%, 96% { transform: scale(1.3); color: rgba(52, 211, 153, 1); filter: drop-shadow(0 0 4px rgba(52,211,153,0.5)); }
-                      100% { transform: scale(1); color: rgba(52, 211, 153, 0.3); filter: none; }
+                      0%, ${i * 9}% { transform: scale(1); color: rgba(52, 211, 153, 0.2); }
+                      ${i * 9 + 3}%, 96% { transform: scale(1.3); color: rgba(52, 211, 153, 1); filter: drop-shadow(0 0 4px rgba(52,211,153,0.5)); }
+                      100% { transform: scale(1); color: rgba(52, 211, 153, 0.2); filter: none; }
                     }
                     @keyframes autoCrossOpacity${i} {
-                      0%, ${i * 8}% { opacity: 0.15; }
-                      ${i * 8 + 4}%, ${i * 8 + 6}% { opacity: 1; }
-                      ${i * 8 + 10}%, 96% { opacity: 0.15; }
-                      100% { opacity: 0.15; }
+                      0%, ${i * 9}% { opacity: 0.4; }
+                      ${i * 9 + 3}%, ${i * 9 + 7}% { opacity: 1; }
+                      ${i * 9 + 9}%, 96% { opacity: 0.4; }
+                      100% { opacity: 0.4; }
                     }
                     @keyframes autoCrossStrike${i} {
-                      0%, ${i * 8}% { text-decoration: none; color: #a1a1aa; } /* zinc-400 */
-                      ${i * 8 + 4}%, ${i * 8 + 6}% { text-decoration: line-through; text-decoration-color: rgba(239, 68, 68, 1); color: #52525b; } /* zinc-600 */
-                      ${i * 8 + 10}%, 96% { text-decoration: line-through; text-decoration-color: rgba(239, 68, 68, 0.5); color: #a1a1aa; }
+                      0%, ${i * 9}% { text-decoration: none; color: #a1a1aa; } /* zinc-400 */
+                      ${i * 9 + 3}%, ${i * 9 + 7}% { text-decoration: line-through; text-decoration-color: rgba(239, 68, 68, 1); color: #ef4444; } /* red-500 */
+                      ${i * 9 + 9}%, 96% { text-decoration: line-through; text-decoration-color: rgba(239, 68, 68, 0.4); color: #71717a; } /* zinc-500 */
                       100% { text-decoration: none; color: #a1a1aa; }
                     }
                   `).join('\n')
@@ -137,33 +137,33 @@ export default function Home() {
                       El Modelo Tradicional
                     </h3>
                     <ul className="space-y-3 sm:space-y-4">
-                      {[
-                        "Compran para revender",
-                        "Auto inmovilizado",
-                        "Operaciones inseguras",
-                        "Revisión superficial",
-                        "Precio por apreciación",
-                        "Cheques sin fondos",
-                        "Intermediarios dudosos",
-                        "Inventario limitado",
-                        "Búsqueda a ciegas",
-                        "Costos ocultos sorpresa"
-                      ].map((text, i) => (
-                        <li 
-                          key={i} 
-                          className="flex items-start sm:items-center gap-2 sm:gap-3 cursor-default"
-                          style={{ animation: `autoCrossOpacity${i} 12s infinite` }}
-                        >
-                          <span className="font-bold text-[10px] sm:text-sm shrink-0 mt-0.5 sm:mt-0 text-red-500">
-                            ✖
-                          </span>
-                          <span 
-                            className="font-medium text-[9px] sm:text-[11px] md:text-sm leading-tight sm:leading-normal"
-                            style={{ animation: `autoCrossStrike${i} 12s infinite` }}
+                        {[
+                          "Compran para revender",
+                          "Auto inmovilizado",
+                          "Efectivo con riesgo",
+                          "Revisión muy superficial",
+                          "Gastos ocultos sorpresa",
+                          "Cheques sin fondos",
+                          "Créditos tasas altas",
+                          "Tratos con coyotes",
+                          "Sin ayuda post-venta",
+                          "Papeles con riesgo"
+                        ].map((text, i) => (
+                          <li 
+                            key={i} 
+                            className="flex items-start sm:items-center gap-2 sm:gap-3 cursor-default"
+                            style={{ animation: `autoCrossOpacity${i} 22s infinite` }}
                           >
-                            {text}
-                          </span>
-                        </li>
+                            <span className="font-bold text-[10px] sm:text-sm shrink-0 mt-0.5 sm:mt-0 text-red-500">
+                              ✖
+                            </span>
+                            <span 
+                              className="font-medium text-[9px] sm:text-[11px] md:text-sm leading-tight sm:leading-normal"
+                              style={{ animation: `autoCrossStrike${i} 22s infinite` }}
+                            >
+                              {text}
+                            </span>
+                          </li>
                       ))}
                     </ul>
                   </div>
@@ -177,27 +177,28 @@ export default function Home() {
                     </h3>
                     <ul className="space-y-3 sm:space-y-4 relative z-10">
                       {[
-                        { title: "Encontramos mejor oferta" },
-                        { title: "Conserva tus llaves" },
-                        { title: "Cero riesgo fraude" },
-                        { title: "Inspección 150 puntos" },
-                        { title: "Precio real" },
-                        { title: "Pagos validados Banxico", sub: "(SPEI, QR)" },
-                        { title: "Asesores 100% neutrales" },
-                        { title: "Autos bajo pedido" },
-                        { title: "Asistente IA predictivo" },
-                        { title: "Costos transparentes" }
+                        { title: "Encontramos mejor comprador" },
+                        { title: "Llaves Siempre Contigo" },
+                        { title: "Bóveda Pago Seguro" },
+                        { title: "Inspección 150 Puntos" },
+                        { title: "Inspección Total Reembolsable" },
+                        { title: "Pagos SPEI Validados" },
+                        { title: "Mejor Crédito Garantizado" },
+                        { title: "Asistencia Permanente Elite" },
+                        { title: "Reparaciones Precio Flotilla" },
+                        { title: "Blindaje Legal Absoluto" },
+                        { title: "Muchos beneficios más...", sub: "Pregunta a tu Asesor" }
                       ].map((item, i) => (
                         <li key={i} className="flex items-start sm:items-center gap-2 sm:gap-3 cursor-default">
                           <div className="relative flex items-center justify-center h-3 w-3 sm:h-5 sm:w-5 shrink-0 mt-0.5 sm:mt-0">
                             <CheckCircle2 
                               className="h-3 w-3 sm:h-4 sm:w-4 relative z-10" 
-                              style={{ animation: `autoCheck${i} 12s infinite` }}
+                              style={{ animation: `autoCheck${Math.min(i, 10)} 22s infinite` }}
                             />
                           </div>
                           <span 
                             className="font-bold text-[9px] sm:text-[11px] md:text-sm tracking-wide leading-tight sm:leading-normal inline-block"
-                            style={{ animation: `autoLight${i} 12s infinite` }}
+                            style={{ animation: `autoLight${Math.min(i, 10)} 22s infinite` }}
                           >
                             {item.title} {item.sub && <span className="opacity-70 font-medium ml-1 hidden sm:inline">{item.sub}</span>}
                           </span>
@@ -221,7 +222,7 @@ export default function Home() {
                 </div>
                 <h3 className="text-2xl font-black tracking-tight italic">01. REVISIÓN TÉCNICA</h3>
                 <p className="text-muted-foreground text-sm leading-relaxed font-medium">
-                  Inspección profunda de 150 puntos. Si el auto no es perfecto mecánicamente, no entra a nuestra bóveda. Transparencia absoluta.
+                  Inspección profunda de 150 puntos. Si el vehículo no es perfecto mecánicamente, no entra a nuestra bóveda. Transparencia absoluta.
                 </p>
               </div>
 
@@ -262,7 +263,7 @@ export default function Home() {
               </p>
               <Button asChild size="lg" className="h-16 px-12 rounded-2xl bg-white text-zinc-950 font-black hover:bg-zinc-200 transition-all">
                 <Link href="/buy">
-                  Ver Autos Certificados
+                  Ver Vehículos Certificados
                   <ArrowRight className="ml-3 h-5 w-5" />
                 </Link>
               </Button>

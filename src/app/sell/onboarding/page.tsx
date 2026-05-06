@@ -44,12 +44,17 @@ export default function SellOnboardingPage() {
     const agencyName = searchParams.get('agency') || '';
     const bonusText = searchParams.get('bonus') || '';
     
-    const [date, setDate] = useState("");
+    const [selectedPlan, setSelectedPlan] = useState<'GO' | 'VIP'>('GO');
     const [phone, setPhone] = useState("");
     const [needsPhone, setNeedsPhone] = useState(false);
 
-    const INSPECTION_BASE_COST = 1500;
-    const totalCost = INSPECTION_BASE_COST;
+    // Luxury Brand Detection
+    const PREMIUM_BRANDS = ['BMW', 'AUDI', 'MERCEDES-BENZ', 'MERCEDES BENZ', 'PORSCHE', 'LAND ROVER', 'JAGUAR', 'VOLVO', 'MINI', 'TESLA', 'LEXUS'];
+    const isPremium = PREMIUM_BRANDS.includes(make.toUpperCase());
+
+    const totalCost = isPremium 
+        ? (selectedPlan === 'VIP' ? 3500 : 2500)
+        : (selectedPlan === 'VIP' ? 1500 : 800);
 
     useEffect(() => {
         const timer = setTimeout(() => setIsMounted(true), 0);
@@ -127,7 +132,7 @@ export default function SellOnboardingPage() {
                     const tempStateStr = localStorage.getItem('starterkar_onboarding_temp');
                     if (tempStateStr) {
                         const state = JSON.parse(tempStateStr);
-                        if (state.date) setDate(state.date);
+                        if (state.selectedPlan) setSelectedPlan(state.selectedPlan);
                         if (state.partnerId) (window as any).starterkar_recovered_partnerId = state.partnerId;
                         const newUrl = new URL(window.location.href);
                         Object.entries(state).forEach(([k, v]) => { if(v && k!=='timestamp') newUrl.searchParams.set(k, v as string); });
@@ -154,9 +159,9 @@ export default function SellOnboardingPage() {
 
     // Keep global variables in sync for the Auth Modal to capture
     useEffect(() => {
-        (window as any).starterkar_temp_date = date;
+        (window as any).starterkar_temp_selectedPlan = selectedPlan;
         (window as any).starterkar_temp_partnerId = selectedPartner?.id;
-    }, [date, selectedPartner]);
+    }, [selectedPlan, selectedPartner]);
 
     // StarterKar Administration WhatsApp
     const ADMIN_PHONE = "525522120249"; 
@@ -194,21 +199,8 @@ export default function SellOnboardingPage() {
     const handleSubmit = async (e?: React.FormEvent) => {
         if (e) e.preventDefault();
         
-        if (!selectedPartner) {
+        if (!selectedPartner && selectedPlan === 'GO') {
             toast.error("Por favor selecciona un Taller Aliado para la revisión.");
-            return;
-        }
-
-        if (!date) {
-            toast.error("Por favor selecciona una fecha y hora.");
-            return;
-        }
-
-        const selectedDate = new Date(date);
-        const hours = selectedDate.getHours();
-        
-        if (hours < 10 || hours >= 17) {
-            toast.warning("El horario de inspección es de 10:00 a 17:00 hrs.");
             return;
         }
 
@@ -223,7 +215,7 @@ export default function SellOnboardingPage() {
             }
 
             const activeUser = user || currentUser;
-            const finalAddress = `${selectedPartner?.name} - ${selectedPartner?.address}, ${selectedPartner?.city}`;
+            const finalAddress = selectedPlan === 'VIP' ? 'Servicio Concierge a Domicilio' : `${selectedPartner?.name} - ${selectedPartner?.address}, ${selectedPartner?.city}`;
 
             const { data: carData, error: carError } = await supabase.from('cars').insert({
                 seller_id: activeUser?.id || '00000000-0000-0000-0000-000000000000',
@@ -251,9 +243,9 @@ export default function SellOnboardingPage() {
             const { error: ticketError } = await supabase.from('service_tickets').insert({
                 car_id: carData.id,
                 type: '150_point_inspection',
-                status: 'SCHEDULED',
-                scheduled_at: new Date(date).toISOString(),
-                partner_id: selectedPartner?.id
+                status: 'SCHEDULED', // Fallback to SCHEDULED to satisfy DB check constraint
+                scheduled_at: new Date(new Date().getTime() + 24 * 60 * 60 * 1000).toISOString(), // Default 24h
+                partner_id: selectedPlan === 'GO' ? selectedPartner?.id : null
             });
 
             if (ticketError) throw new Error("Error agendando inspección.");
@@ -269,7 +261,9 @@ export default function SellOnboardingPage() {
                     vehicleCategory: categoryId,
                     make, model, year, 
                     isAdminAction: isAdmin,
-                    total_to_pay: totalCost
+                    total_to_pay: totalCost,
+                    plan: selectedPlan,
+                    isPremium
                 }
             });
 
@@ -295,17 +289,14 @@ export default function SellOnboardingPage() {
                             <CheckCircle2 className="h-12 w-12" />
                         </div>
                         <div className="space-y-4">
-                            <h2 className="text-4xl font-black text-zinc-950 dark:text-white uppercase italic tracking-tighter">¡Agenda Confirmada!</h2>
+                            <h2 className="text-4xl font-black text-zinc-950 dark:text-white uppercase italic tracking-tighter">¡Paso Final!</h2>
                             <p className="text-zinc-500 dark:text-zinc-400 text-sm font-medium leading-relaxed max-w-sm mx-auto">
-                                Tu certificación física de 150 puntos ha sido programada en <span className="text-zinc-950 dark:text-white font-black">{selectedPartner?.name}</span>.
+                                Tu solicitud está lista. Contáctanos por WhatsApp para coordinar tu cita, realizar el pago y **conocer tu pool de 11+ beneficios exclusivos**.
                             </p>
                         </div>
                         
                         {(() => {
-                            const appointmentDate = new Date(date);
-                            const dateStr = appointmentDate.toLocaleDateString('es-MX', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
-                            const timeStr = appointmentDate.toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit' });
-                            const message = `¡Hola! Acabo de agendar la certificación física para mi ${make} ${model} ${year} en ${selectedPartner?.name} para el día ${dateStr} a las ${timeStr} hrs. Quisiera confirmar mi asistencia.`;
+                            const message = `¡Hola! Acabo de registrar la solicitud de certificación física para mi ${make} ${model} ${year} bajo el plan ${selectedPlan === 'VIP' ? 'StarterKar VIP (Servicio Concierge)' : 'StarterKar GO (Yo lo llevo)'}. Quisiera recibir el link de Mercado Pago por $${totalCost} para confirmar mi cita.`;
                             const encodedMessage = encodeURIComponent(message);
 
                             return (
@@ -317,7 +308,7 @@ export default function SellOnboardingPage() {
                                         className="inline-flex items-center justify-center gap-3 px-10 py-7 bg-emerald-600 hover:bg-emerald-500 text-white rounded-[2.5rem] font-black text-xs uppercase tracking-[0.4em] transition-all shadow-2xl shadow-emerald-600/30 active:scale-95 group"
                                     >
                                         <MessageSquare className="h-5 w-5" />
-                                        Confirmar por WhatsApp
+                                        Completar Pago por WhatsApp
                                     </a>
                                     
                                     <button 
@@ -342,61 +333,96 @@ export default function SellOnboardingPage() {
                                 <span className="text-indigo-600 dark:text-indigo-500">Inspección.</span>
                             </h1>
                             <p className="text-zinc-400 text-[10px] font-bold uppercase tracking-[0.3em] max-w-xs mx-auto opacity-70">
-                                Selecciona el punto de certificación física para tu {make} {model}.
+                                {isPremium 
+                                    ? `Certificación Especializada para tu ${make} ${model}`
+                                    : `Selecciona el punto de certificación física para tu ${make} ${model}`
+                                }
                             </p>
                         </div>
 
                         <form onSubmit={handleSubmit} className="bg-white dark:bg-zinc-900/50 border border-zinc-100 dark:border-zinc-800 rounded-[3rem] p-12 shadow-[0_40px_80px_-20px_rgba(0,0,0,0.05)] space-y-12">
                             
                             <div className="space-y-10">
-                                {/* Workshop Selector */}
+                                {/* Plan Selector */}
                                 <div className="space-y-4">
                                     <Label className="px-1 text-[10px] font-black uppercase tracking-[0.4em] text-zinc-400 flex items-center gap-2">
-                                        <div className="h-1.5 w-1.5 rounded-full bg-indigo-500" /> Taller de Certificación
+                                        <div className="h-1.5 w-1.5 rounded-full bg-indigo-500" /> Plan de Certificación
                                     </Label>
-                                    <div className="relative group">
-                                        <select
-                                            required
-                                            onChange={(e) => {
-                                                const partner = partners.find(p => p.id === e.target.value);
-                                                if (partner) setSelectedPartner(partner);
-                                            }}
-                                            className="w-full h-18 appearance-none bg-zinc-50 dark:bg-zinc-950 border border-zinc-100 dark:border-zinc-800 rounded-2xl px-8 font-black text-xs outline-none focus:ring-2 focus:ring-indigo-500/10 transition-all cursor-pointer"
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        {/* Plan GO */}
+                                        <div 
+                                            onClick={() => setSelectedPlan('GO')}
+                                            className={`relative p-6 rounded-[2rem] border-2 cursor-pointer transition-all duration-300 ${
+                                                selectedPlan === 'GO' 
+                                                ? 'border-indigo-500 bg-indigo-50/50 dark:bg-indigo-900/20 shadow-xl shadow-indigo-500/10 scale-[1.02]' 
+                                                : 'border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/50 hover:border-indigo-200'
+                                            }`}
                                         >
-                                            <option value="">Selecciona Ubicación...</option>
-                                            {partners.map(p => (
-                                                <option key={p.id} value={p.id}>{p.name} ({p.city})</option>
-                                            ))}
-                                        </select>
-                                        <ChevronDown className="absolute right-6 top-1/2 -translate-y-1/2 h-5 w-5 text-zinc-400 pointer-events-none group-hover:text-indigo-500 transition-colors" />
-                                    </div>
-                                    {selectedPartner && (
-                                        <div className="px-8 py-5 bg-zinc-50 dark:bg-zinc-950/50 rounded-2xl border border-zinc-100 dark:border-zinc-800 flex items-start gap-4">
-                                            <MapPin className="h-5 w-5 text-indigo-500 shrink-0 mt-0.5" />
-                                            <p className="text-[11px] font-bold text-zinc-500 dark:text-zinc-400 leading-relaxed uppercase tracking-wider">
-                                                {selectedPartner.address}, {selectedPartner.city}
-                                            </p>
+                                            <div className="flex justify-between items-start mb-4">
+                                                <div>
+                                                    <h3 className="text-xl font-black italic uppercase tracking-tighter text-zinc-950 dark:text-white">StarterKar GO</h3>
+                                                    <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest mt-1">Tú llevas el auto</p>
+                                                    <div className="mt-2 inline-flex items-center px-2 py-0.5 rounded-md bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-[8px] font-black uppercase tracking-tighter border border-emerald-500/20">
+                                                        100% Reembolsable al vender
+                                                    </div>
+                                                </div>
+                                                <div className="h-6 w-6 rounded-full border-2 border-indigo-500 flex items-center justify-center">
+                                                    {selectedPlan === 'GO' && <div className="h-3 w-3 rounded-full bg-indigo-500" />}
+                                                </div>
+                                            </div>
+                                            <ul className="space-y-3 mt-6">
+                                                <li className="flex items-center gap-2 text-xs font-bold text-zinc-500 dark:text-zinc-400">
+                                                    <CheckCircle2 className="h-4 w-4 text-emerald-500" /> Inspección en nuestro Hub Central
+                                                </li>
+                                                <li className="flex items-center gap-2 text-xs font-bold text-zinc-500 dark:text-zinc-400">
+                                                    <CheckCircle2 className="h-4 w-4 text-emerald-500" /> Cédula de Certeza Digital
+                                                </li>
+                                                {selectedPartner && (
+                                                    <li className="flex items-center gap-2 text-xs font-bold text-zinc-500 dark:text-zinc-400">
+                                                        <MapPin className="h-4 w-4 text-indigo-400" /> {selectedPartner.city}
+                                                    </li>
+                                                )}
+                                            </ul>
                                         </div>
-                                    )}
-                                </div>
 
-                                {/* Date Selector */}
-                                <div className="space-y-4">
-                                    <Label className="px-1 text-[10px] font-black uppercase tracking-[0.4em] text-zinc-400 flex items-center gap-2">
-                                        <div className="h-1.5 w-1.5 rounded-full bg-indigo-500" /> Fecha y Hora
-                                    </Label>
-                                    <div className="relative group">
-                                        <input 
-                                            type="datetime-local" 
-                                            required
-                                            value={date}
-                                            onChange={(e) => setDate(e.target.value)}
-                                            className="w-full h-18 bg-zinc-50 dark:bg-zinc-950 border border-zinc-100 dark:border-zinc-800 rounded-2xl px-8 font-black text-xs outline-none focus:ring-2 focus:ring-indigo-500/10 transition-all"
-                                        />
-                                        <Calendar className="absolute right-6 top-1/2 -translate-y-1/2 h-5 w-5 text-zinc-400 pointer-events-none group-hover:text-indigo-500 transition-colors" />
+                                        {/* Plan VIP */}
+                                        <div 
+                                            onClick={() => setSelectedPlan('VIP')}
+                                            className={`relative p-6 rounded-[2rem] border-2 cursor-pointer transition-all duration-300 ${
+                                                selectedPlan === 'VIP' 
+                                                ? 'border-indigo-500 bg-indigo-50/50 dark:bg-indigo-900/20 shadow-xl shadow-indigo-500/10 scale-[1.02]' 
+                                                : 'border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/50 hover:border-indigo-200'
+                                            }`}
+                                        >
+                                            <div className="flex justify-between items-start mb-4">
+                                                <div>
+                                                    <h3 className="text-xl font-black italic uppercase tracking-tighter text-zinc-950 dark:text-white">StarterKar VIP</h3>
+                                                    <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest mt-1">Servicio Concierge</p>
+                                                    <div className="mt-2 inline-flex items-center px-2 py-0.5 rounded-md bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-[8px] font-black uppercase tracking-tighter border border-emerald-500/20">
+                                                        100% Reembolsable al vender
+                                                    </div>
+                                                </div>
+                                                <div className="h-6 w-6 rounded-full border-2 border-indigo-500 flex items-center justify-center">
+                                                    {selectedPlan === 'VIP' && <div className="h-3 w-3 rounded-full bg-indigo-500" />}
+                                                </div>
+                                            </div>
+                                            <ul className="space-y-3 mt-6">
+                                                <li className="flex items-center gap-2 text-xs font-bold text-zinc-500 dark:text-zinc-400">
+                                                    <CheckCircle2 className="h-4 w-4 text-emerald-500" /> Recolección a domicilio
+                                                </li>
+                                                <li className="flex items-center gap-2 text-xs font-bold text-zinc-500 dark:text-zinc-400">
+                                                    <CheckCircle2 className="h-4 w-4 text-emerald-500" /> Chofer con identidad validada
+                                                </li>
+                                                <li className="flex items-center gap-2 text-xs font-bold text-zinc-500 dark:text-zinc-400">
+                                                    <ShieldCheck className="h-4 w-4 text-indigo-400" /> Seguro Flotante de Traslado
+                                                </li>
+                                            </ul>
+                                        </div>
                                     </div>
-                                    <p className="px-1 text-[8px] font-black text-zinc-400 uppercase tracking-widest">
-                                        * Atención Lunes a Sábado: 10:00 AM - 05:00 PM
+                                    <p className="px-1 text-[9px] font-black text-zinc-400 uppercase tracking-widest leading-relaxed pt-2">
+                                        * Horario coordinado vía WhatsApp (pago previo 24h). <br/>
+                                        * Costo de inspección 100% reembolsable al vender. <br/>
+                                        * Tu registro desbloquea el **Pool de 11+ Beneficios Exclusivos**.
                                     </p>
                                 </div>
 
@@ -404,23 +430,26 @@ export default function SellOnboardingPage() {
                                 <div className="p-10 bg-zinc-950 dark:bg-white text-white dark:text-zinc-950 rounded-[2.5rem] space-y-6 shadow-2xl">
                                     <div className="flex justify-between items-end border-b border-white/10 dark:border-zinc-200 pb-6">
                                         <div className="space-y-1">
-                                            <span className="text-[9px] font-black uppercase tracking-[0.4em] opacity-60">Certificación Elite</span>
-                                            <h4 className="text-xl font-black italic uppercase tracking-tighter">150 Puntos de Control</h4>
+                                            <span className="text-[9px] font-black uppercase tracking-[0.4em] opacity-60">
+                                                {isPremium ? 'Certificación High-End' : 'Certificación Elite'}
+                                            </span>
+                                            <h4 className="text-xl font-black italic uppercase tracking-tighter">
+                                                {isPremium ? 'Diagnóstico Avanzado de Marca' : '150 Puntos de Control'}
+                                            </h4>
                                         </div>
                                     </div>
                                     
                                     <div className="flex justify-between items-center pt-2">
                                         <div className="flex flex-col">
-                                            <span className="text-[10px] font-black uppercase tracking-[0.5em]">Total de la Inversión</span>
-                                            <span className="text-[8px] font-bold text-indigo-400 dark:text-indigo-600 uppercase tracking-widest mt-1 italic">* Inversión estratégica para maximizar el valor de tu activo</span>
+                                            <span className="text-[10px] font-black uppercase tracking-[0.5em]">Inversión Total</span>
+                                            <span className="text-[8px] font-bold text-indigo-400 dark:text-indigo-600 uppercase tracking-widest mt-1 italic">
+                                                * Inversión estratégica para garantizar el 100% del valor de mercado en tu venta.
+                                            </span>
                                         </div>
                                             <span className="text-3xl font-black tracking-tighter text-white dark:text-zinc-950">
                                                 ${totalCost.toLocaleString()}
                                             </span>
                                     </div>
-                                    <p className="mt-6 text-[10px] text-indigo-600 dark:text-indigo-400 leading-tight font-black uppercase tracking-widest italic">
-                                        * Esta no es un gasto, es tu inversión para garantizar el 100% del valor de mercado en tu venta.
-                                    </p>
                                 </div>
                             </div>
 
