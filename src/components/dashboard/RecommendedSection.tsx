@@ -182,7 +182,6 @@ export function RecommendedSection({ favoriteIds = [], onToggleFavorite }: Recom
                     ))}
                 </div>
                 </div>
-                </div>
             ) : (
                 <div className="w-full overflow-hidden min-w-0">
                 <div className="flex md:grid md:grid-cols-3 gap-6 overflow-x-auto pb-6 snap-x snap-mandatory no-scrollbar" style={{ WebkitOverflowScrolling: 'touch' }}>
