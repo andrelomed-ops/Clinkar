@@ -20,7 +20,14 @@ export function CarCard({ car, isFavorite = false, onToggleFavorite }: CarCardPr
     const carModel = car.model || '';
     const carYear = car.year || '';
     const carLocation = car.location || 'México';
-    const carFuel = car.fuel || (car as any).fuel_type || 'Gasolina';
+    const fuelMap: Record<string, string> = {
+        'Electric': 'Eléctrico',
+        'Hybrid': 'Híbrido',
+        'Gasoline': 'Gasolina',
+        'Diesel': 'Diésel'
+    };
+    const rawFuel = car.fuel || (car as any).fuel_type || 'Gasolina';
+    const carFuel = fuelMap[rawFuel] || rawFuel;
     const carDistance = car.distance ?? (car as any).mileage ?? 0;
     const carCondition = car.condition || 'Seminuevo';
     const carImages = Array.isArray(car.images) ? car.images : [];
@@ -185,7 +192,7 @@ export function CarCard({ car, isFavorite = false, onToggleFavorite }: CarCardPr
                     {/* Price Footer */}
                     <div className="mt-auto flex items-end justify-between">
                         <div>
-                            {car.marketValue && (
+                            {car.marketValue && car.price && car.marketValue > car.price && (
                                 <p className="text-xs text-zinc-400 line-through mb-0.5">
                                     ${(car.marketValue || 0).toLocaleString()}
                                 </p>
