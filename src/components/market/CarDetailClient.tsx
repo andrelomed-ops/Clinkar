@@ -122,10 +122,10 @@ export function CarDetailClient({
     }
 
     return (
-        <div className="min-h-screen bg-background overflow-x-hidden relative">
+        <div className="min-h-screen bg-background overflow-x-hidden relative w-full min-w-0">
             <Navbar variant="market" />
 
-            <div className="pt-24 pb-20 px-4 sm:px-6 max-w-full lg:max-w-7xl mx-auto block overflow-hidden relative">
+            <div className="pt-24 pb-20 px-4 sm:px-6 w-full max-w-7xl mx-auto block overflow-hidden relative min-w-0">
                 <div className="flex justify-between items-center mb-8">
                     <Link 
                         href="/buy" 
@@ -179,7 +179,7 @@ export function CarDetailClient({
                 <div className="grid lg:grid-cols-12 gap-4 lg:gap-12 min-w-0">
                     <div className="lg:col-span-7 space-y-8 min-w-0 overflow-hidden">
                         {/* StarterKar Cinematic Showcase */}
-                        <div className="relative w-full mb-8 group">
+                        <div className="relative w-full mb-8 group overflow-hidden">
                             {/* Desktop 3-Photo Grid */}
                             {car.images && car.images.length > 0 && (
                                 <div className="hidden md:grid grid-cols-4 grid-rows-2 gap-4 h-[35rem] rounded-[2.5rem] overflow-hidden">
@@ -221,7 +221,8 @@ export function CarDetailClient({
                             )}
 
                             {/* Mobile Horizontal Scroll */}
-                            <div className="md:hidden flex gap-4 overflow-x-auto pb-6 pt-2 snap-x snap-mandatory no-scrollbar scroll-smooth w-full">
+                            <div className="md:hidden w-full overflow-hidden min-w-0">
+                            <div className="flex gap-4 overflow-x-auto pb-6 pt-2 snap-x snap-mandatory no-scrollbar scroll-smooth" style={{ WebkitOverflowScrolling: 'touch', maxWidth: '100%' }}>
                                 {car.images?.map((img, idx) => (
                                     <div 
                                         key={idx}
@@ -237,6 +238,7 @@ export function CarDetailClient({
                                         )}
                                     </div>
                                 ))}
+                            </div>
                             </div>
                             
                             {/* Mobile Image Count Pill */}
