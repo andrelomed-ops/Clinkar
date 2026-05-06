@@ -145,7 +145,7 @@ export function RecommendedSection({ favoriteIds = [], onToggleFavorite }: Recom
     if (!isLoading && recommendedCars.length === 0) return null;
 
     return (
-        <section className="mt-16 animate-reveal stagger-4">
+        <section className="mt-16 animate-reveal stagger-4 w-full min-w-0 overflow-hidden">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
                 <div className="flex items-center gap-3">
                     <div className="h-10 w-10 bg-zinc-100 dark:bg-zinc-800 rounded-full flex items-center justify-center border border-zinc-200 dark:border-zinc-700 shrink-0">
@@ -171,19 +171,23 @@ export function RecommendedSection({ favoriteIds = [], onToggleFavorite }: Recom
             </div>
 
             {isLoading ? (
-                <div className="flex md:grid md:grid-cols-3 gap-6 overflow-x-auto pb-4 no-scrollbar">
+                <div className="w-full overflow-hidden min-w-0">
+                <div className="flex md:grid md:grid-cols-3 gap-6 overflow-x-auto pb-4 no-scrollbar" style={{ WebkitOverflowScrolling: 'touch' }}>
                     {[1, 2, 3].map(i => (
-                        <div key={i} className="min-w-[280px] md:min-w-0 space-y-4">
+                        <div key={i} className="min-w-[85%] md:min-w-0 space-y-4 shrink-0">
                             <Skeleton className="aspect-[4/3] w-full rounded-2xl" />
                             <Skeleton className="h-5 w-2/3 rounded-lg" />
                             <Skeleton className="h-4 w-1/2 rounded-lg" />
                         </div>
                     ))}
                 </div>
+                </div>
+                </div>
             ) : (
-                <div className="flex md:grid md:grid-cols-3 gap-6 overflow-x-auto pb-6 w-full snap-x snap-mandatory no-scrollbar">
+                <div className="w-full overflow-hidden min-w-0">
+                <div className="flex md:grid md:grid-cols-3 gap-6 overflow-x-auto pb-6 snap-x snap-mandatory no-scrollbar" style={{ WebkitOverflowScrolling: 'touch' }}>
                     {recommendedCars.map((car) => (
-                        <div key={car.id} className="min-w-[85%] md:min-w-0 snap-center">
+                        <div key={car.id} className="min-w-[85%] md:min-w-0 snap-center shrink-0">
                             <CarCard 
                                 car={car} 
                                 isFavorite={favoriteIds.includes(car.id)}
@@ -191,6 +195,7 @@ export function RecommendedSection({ favoriteIds = [], onToggleFavorite }: Recom
                             />
                         </div>
                     ))}
+                </div>
                 </div>
             )}
         </section>

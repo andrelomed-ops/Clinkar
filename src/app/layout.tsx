@@ -157,7 +157,8 @@ export default function RootLayout({
 
       </head>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} ${outfit.variable} antialiased overflow-x-hidden w-full`}
+        className={`${geistSans.variable} ${geistMono.variable} ${outfit.variable} antialiased w-full max-w-full`}
+        style={{ overflowX: 'clip' }}
         suppressHydrationWarning
       >
         <ThemeProvider
@@ -171,7 +172,7 @@ export default function RootLayout({
             {/* <Navbar /> removed to fix double-nav issue */}
             <GlobalErrorBoundary>
               <SafeHydration fallback={<div className="min-h-screen bg-zinc-950 animate-pulse" />}>
-                <div className="min-h-screen overflow-x-hidden relative w-full flex flex-col min-w-0">
+                <div className="min-h-screen w-full max-w-full flex flex-col min-w-0" style={{ overflowX: 'clip' }}>
                   <PageTransition>
                     <ReferralTracker />
                     <InstallPrompt />
