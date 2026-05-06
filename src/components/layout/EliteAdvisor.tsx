@@ -98,8 +98,8 @@ export function EliteAdvisor() {
                         onClick={() => setIsOpen(true)}
                     >
                         {/* Clean Dialogue Bubble */}
-                        <div className="relative bg-white dark:bg-zinc-900 px-5 py-3 rounded-2xl shadow-xl border border-zinc-200 dark:border-zinc-800">
-                            <span className="text-[12px] md:text-[13px] font-bold text-zinc-900 dark:text-white uppercase tracking-wider">
+                        <div className="relative bg-white dark:bg-zinc-900 px-4 py-2 rounded-xl shadow-lg border border-zinc-200 dark:border-zinc-800">
+                            <span className="text-[10px] md:text-[12px] font-bold text-zinc-900 dark:text-white uppercase tracking-widest">
                                 Pídeme lo que buscas
                             </span>
                         </div>

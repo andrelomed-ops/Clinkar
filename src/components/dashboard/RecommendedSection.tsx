@@ -181,9 +181,9 @@ export function RecommendedSection({ favoriteIds = [], onToggleFavorite }: Recom
                     ))}
                 </div>
             ) : (
-                <div className="flex md:grid md:grid-cols-3 gap-6 overflow-x-auto pb-6 -mx-6 px-6 md:mx-0 md:px-0 snap-x snap-mandatory no-scrollbar">
+                <div className="flex md:grid md:grid-cols-3 gap-6 overflow-x-auto pb-6 w-full snap-x snap-mandatory no-scrollbar">
                     {recommendedCars.map((car) => (
-                        <div key={car.id} className="min-w-[85vw] md:min-w-0 snap-center">
+                        <div key={car.id} className="min-w-[85%] md:min-w-0 snap-center">
                             <CarCard 
                                 car={car} 
                                 isFavorite={favoriteIds.includes(car.id)}

@@ -260,7 +260,7 @@ export function CarDetailClient({
                             <div className="flex items-center gap-2 mb-2">
                                 <span className="text-sm font-bold text-primary uppercase tracking-widest">{car.year} • {car.condition}</span>
                             </div>
-                            <h1 className="text-3xl sm:text-4xl md:text-5xl font-black tracking-tight text-zinc-900 dark:text-white mb-6">
+                            <h1 className="text-2xl sm:text-4xl md:text-5xl font-black tracking-tight text-zinc-900 dark:text-white mb-6 break-words leading-[1.1]">
                                 {car.make} {car.model}
                             </h1>
 
@@ -269,28 +269,28 @@ export function CarDetailClient({
                                     <span className="text-xs font-bold text-muted-foreground uppercase mb-1">
                                         {car.category === 'Marine' || car.category === 'Air' || car.category === 'Heavy' ? 'Uso Acumulado' : 'Recorrido'}
                                     </span>
-                                    <div className="flex items-center gap-2 font-black text-lg">
+                                    <div className="flex items-center gap-2 font-black text-sm sm:text-lg">
                                         <Gauge className="h-4 w-4 text-primary" />
                                         {(car.distance || 0).toLocaleString()} {car.category === 'Marine' || car.category === 'Air' || car.category === 'Heavy' ? 'h' : 'km'}
                                     </div>
                                 </div>
                                 <div className="p-4 rounded-2xl bg-secondary/50 border border-border flex flex-col">
                                     <span className="text-xs font-bold text-muted-foreground uppercase mb-1">Transmisión</span>
-                                    <div className="flex items-center gap-2 font-black text-lg">
+                                    <div className="flex items-center gap-2 font-black text-sm sm:text-lg">
                                         <Activity className="h-4 w-4 text-primary" />
                                         {car.transmission}
                                     </div>
                                 </div>
                                 <div className="p-4 rounded-2xl bg-secondary/50 border border-border flex flex-col">
                                     <span className="text-xs font-bold text-muted-foreground uppercase mb-1">Combustible</span>
-                                    <div className="flex items-center gap-2 font-black text-lg">
+                                    <div className="flex items-center gap-2 font-black text-sm sm:text-lg">
                                         <Fuel className="h-4 w-4 text-primary" />
                                         {car.fuel}
                                     </div>
                                 </div>
                                 <div className="p-4 rounded-2xl bg-secondary/50 border border-border flex flex-col">
                                     <span className="text-xs font-bold text-muted-foreground uppercase mb-1">Ubicación</span>
-                                    <div className="flex items-center gap-2 font-black text-lg text-emerald-600 dark:text-emerald-400">
+                                    <div className="flex items-center gap-2 font-black text-sm sm:text-lg text-emerald-600 dark:text-emerald-400">
                                         <MapPin className="h-4 w-4" />
                                         {car.location}
                                     </div>
