@@ -122,10 +122,10 @@ export function CarDetailClient({
     }
 
     return (
-        <div className="min-h-screen bg-background relative w-full min-w-0" style={{ overflowX: 'clip' }}>
+        <div className="min-h-screen bg-background relative w-full min-w-0 overflow-x-hidden" style={{ position: 'relative' }}>
             <Navbar variant="market" />
 
-            <div className="pt-24 pb-20 px-4 sm:px-6 w-full max-w-7xl mx-auto block relative min-w-0">
+            <div className="pt-24 pb-20 px-4 sm:px-6 w-full max-w-7xl mx-auto block relative min-w-0 overflow-hidden">
                 <div className="flex justify-between items-center mb-8">
                     <Link 
                         href="/buy" 

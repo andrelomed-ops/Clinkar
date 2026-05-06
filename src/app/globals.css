@@ -56,19 +56,27 @@
   
   html, body {
     overflow-x: hidden;
-    overflow-x: clip;
-    max-width: 100vw;
     width: 100%;
+    max-width: 100%;
     position: relative;
     -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
+    -moz-osx-content-smoothing: grayscale;
+    -webkit-tap-highlight-color: transparent;
+    -webkit-overflow-scrolling: touch;
   }
 
   /* Stable Mobile Containment */
   @media (max-width: 768px) {
-    body {
-      max-width: 100vw;
+    html, body {
       overflow-x: hidden;
+      width: 100%;
+      max-width: 100%;
+      position: relative;
+    }
+    
+    /* Force internal scrolling elements to stay within bounds */
+    * {
+      max-width: 100vw;
     }
   }
 
@@ -109,5 +117,28 @@
   .dark .glass-card {
     background: rgba(24, 24, 27, 0.4);
     border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+}
+
+/* NUCLEAR MOBILE STABILIZATION */
+@media (max-width: 768px) {
+  html, body {
+    overflow-x: hidden !important;
+    position: relative !important;
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  #root-container {
+    overflow-x: hidden !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+  }
+
+  /* Prevent text from pushing containers */
+  h1, h2, h3, h4, p, span {
+    overflow-wrap: break-word;
+    word-wrap: break-word;
   }
 }

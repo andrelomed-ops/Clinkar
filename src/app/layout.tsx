@@ -31,7 +31,7 @@ export default function RootLayout({
     <html lang="es" suppressHydrationWarning>
       <head>
         <title>StarterKar | Bóveda Digital para Compraventa de Autos</title>
-        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0, viewport-fit=cover" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0, viewport-fit=cover, shrink-to-fit=no" />
         <Script id="nuclear-cache-reset" strategy="beforeInteractive" dangerouslySetInnerHTML={{ __html: `
           (function() {
             const VERSION = "${VERSION}";
@@ -55,8 +55,8 @@ export default function RootLayout({
         ` }} />
       </head>
       <body
-        className={`${geistSans.variable} ${outfit.variable} antialiased w-full max-w-full`}
-        style={{ overflowX: 'clip' }}
+        className={`${geistSans.variable} ${outfit.variable} antialiased w-full max-w-full overflow-x-hidden`}
+        style={{ position: 'relative' }}
         suppressHydrationWarning
       >
         <ThemeProvider
@@ -66,7 +66,7 @@ export default function RootLayout({
           disableTransitionOnChange
           storageKey="starterkar-theme"
         >
-          <div id="root-container" className="min-h-screen w-full max-w-full flex flex-col min-w-0" style={{ overflowX: 'clip' }}>
+          <div id="root-container" className="min-h-screen w-full max-w-full flex flex-col min-w-0 overflow-x-hidden relative">
             <PageTransition>
               <ReferralTracker />
               {children}
