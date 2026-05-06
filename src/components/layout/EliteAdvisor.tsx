@@ -118,7 +118,7 @@ export function EliteAdvisor() {
                         style={{ width: 'min(360px, calc(100vw - 2rem))' }}
                     >
                         {/* Header */}
-                        <div className="bg-indigo-600/60 backdrop-blur-xl p-6 flex justify-between items-center relative overflow-hidden border-b border-white/20">
+                        <div className="bg-indigo-600 p-6 flex justify-between items-center relative overflow-hidden border-b border-white/10">
                             <div className="absolute top-0 right-0 w-32 h-32 bg-white/20 blur-3xl -translate-y-16 translate-x-16 animate-pulse" />
                             <div className="flex items-center gap-3 relative z-10">
                                 {messages.length > 1 && (
