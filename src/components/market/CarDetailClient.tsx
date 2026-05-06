@@ -260,39 +260,40 @@ export function CarDetailClient({
                             <div className="flex items-center gap-2 mb-2">
                                 <span className="text-sm font-bold text-primary uppercase tracking-widest">{car.year} • {car.condition}</span>
                             </div>
+                            
                             <h1 className="text-2xl sm:text-4xl md:text-5xl font-black tracking-tight text-zinc-900 dark:text-white mb-6 break-words leading-[1.1]">
                                 {car.make} {car.model}
                             </h1>
 
-                            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                                <div className="p-4 rounded-2xl bg-secondary/50 border border-border flex flex-col">
-                                    <span className="text-xs font-bold text-muted-foreground uppercase mb-1">
+                            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 min-w-0">
+                                <div className="p-4 rounded-2xl bg-secondary/50 border border-border flex flex-col min-w-0">
+                                    <span className="text-xs font-bold text-muted-foreground uppercase mb-1 min-w-0 break-words">
                                         {car.category === 'Marine' || car.category === 'Air' || car.category === 'Heavy' ? 'Uso Acumulado' : 'Recorrido'}
                                     </span>
-                                    <div className="flex items-center gap-2 font-black text-sm sm:text-lg">
-                                        <Gauge className="h-4 w-4 text-primary" />
-                                        {(car.distance || 0).toLocaleString()} {car.category === 'Marine' || car.category === 'Air' || car.category === 'Heavy' ? 'h' : 'km'}
+                                    <div className="flex items-center gap-2 font-black text-sm sm:text-lg min-w-0 break-words">
+                                        <Gauge className="h-4 w-4 text-primary shrink-0" />
+                                        <span className="min-w-0 break-words">{(car.distance || 0).toLocaleString()} {car.category === 'Marine' || car.category === 'Air' || car.category === 'Heavy' ? 'h' : 'km'}</span>
                                     </div>
                                 </div>
-                                <div className="p-4 rounded-2xl bg-secondary/50 border border-border flex flex-col">
-                                    <span className="text-xs font-bold text-muted-foreground uppercase mb-1">Transmisión</span>
-                                    <div className="flex items-center gap-2 font-black text-sm sm:text-lg">
-                                        <Activity className="h-4 w-4 text-primary" />
-                                        {car.transmission}
+                                <div className="p-4 rounded-2xl bg-secondary/50 border border-border flex flex-col min-w-0">
+                                    <span className="text-xs font-bold text-muted-foreground uppercase mb-1 min-w-0 break-words">Transmisión</span>
+                                    <div className="flex items-center gap-2 font-black text-sm sm:text-lg min-w-0 break-words">
+                                        <Activity className="h-4 w-4 text-primary shrink-0" />
+                                        <span className="min-w-0 break-words">{car.transmission}</span>
                                     </div>
                                 </div>
-                                <div className="p-4 rounded-2xl bg-secondary/50 border border-border flex flex-col">
-                                    <span className="text-xs font-bold text-muted-foreground uppercase mb-1">Combustible</span>
-                                    <div className="flex items-center gap-2 font-black text-sm sm:text-lg">
-                                        <Fuel className="h-4 w-4 text-primary" />
-                                        {car.fuel}
+                                <div className="p-4 rounded-2xl bg-secondary/50 border border-border flex flex-col min-w-0">
+                                    <span className="text-xs font-bold text-muted-foreground uppercase mb-1 min-w-0 break-words">Combustible</span>
+                                    <div className="flex items-center gap-2 font-black text-sm sm:text-lg min-w-0 break-words">
+                                        <Fuel className="h-4 w-4 text-primary shrink-0" />
+                                        <span className="min-w-0 break-words">{car.fuel}</span>
                                     </div>
                                 </div>
-                                <div className="p-4 rounded-2xl bg-secondary/50 border border-border flex flex-col">
-                                    <span className="text-xs font-bold text-muted-foreground uppercase mb-1">Ubicación</span>
-                                    <div className="flex items-center gap-2 font-black text-sm sm:text-lg text-emerald-600 dark:text-emerald-400">
-                                        <MapPin className="h-4 w-4" />
-                                        {car.location}
+                                <div className="p-4 rounded-2xl bg-secondary/50 border border-border flex flex-col min-w-0">
+                                    <span className="text-xs font-bold text-muted-foreground uppercase mb-1 min-w-0 break-words">Ubicación</span>
+                                    <div className="flex items-center gap-2 font-black text-sm sm:text-lg text-emerald-600 dark:text-emerald-400 min-w-0 break-words">
+                                        <MapPin className="h-4 w-4 shrink-0" />
+                                        <span className="min-w-0 break-words">{car.location}</span>
                                     </div>
                                 </div>
                             </div>
