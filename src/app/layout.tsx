@@ -20,7 +20,7 @@ const outfit = Outfit({
   variable: "--font-heading",
 });
 
-const VERSION = "4.7.2";
+const VERSION = "4.7.3";
 
 export default function RootLayout({
   children,
