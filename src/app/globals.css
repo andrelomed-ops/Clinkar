@@ -52,17 +52,22 @@
   --ring: #d4d4d4;
 }
 
-html {
-  scroll-behavior: smooth;
-}
-
 html,
 body {
   overflow-x: hidden;
   position: relative;
   width: 100%;
   max-width: 100%;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
   -webkit-overflow-scrolling: touch;
+  touch-action: pan-y;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+}
   /* Disable standard tap highlight on mobile for custom feel */
   -webkit-tap-highlight-color: transparent;
 }
