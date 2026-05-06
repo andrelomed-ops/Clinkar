@@ -85,7 +85,7 @@ export function EliteAdvisor() {
     };
 
     return (
-        <div className="fixed bottom-24 md:bottom-8 right-4 md:right-6 z-[100] flex flex-col-reverse items-end gap-2 pointer-events-none">
+        <div className="fixed bottom-24 md:bottom-8 right-0 md:right-6 z-[100] flex flex-col-reverse items-end gap-2 pointer-events-none pr-4 md:pr-0">
             {/* Chat Bubble - shown above the 3D bot when closed */}
             <AnimatePresence>
                 {!isOpen && (

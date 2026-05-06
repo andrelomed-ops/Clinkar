@@ -89,7 +89,7 @@ export function Navbar({
                     : "bg-background/0 border-transparent py-4",
                 variant === 'market' && "bg-background/80 backdrop-blur-md border-border/40"
             )}>
-                <div className="mx-auto flex h-16 w-full lg:max-w-7xl items-center justify-between px-4 sm:px-6 overflow-hidden min-w-0">
+                <div className="mx-auto flex h-16 w-full lg:max-w-7xl items-center justify-between px-4 sm:px-6 overflow-hidden min-w-0" style={{ maxWidth: '100vw' }}>
 
                     {/* Left Section: Logo */}
                     <div className="flex items-center shrink-0 pr-1 sm:pr-4">

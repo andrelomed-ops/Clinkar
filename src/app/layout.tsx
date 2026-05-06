@@ -20,7 +20,7 @@ const outfit = Outfit({
   variable: "--font-heading",
 });
 
-const VERSION = "4.7.7";
+const VERSION = "4.7.9";
 
 export default function RootLayout({
   children,
@@ -66,16 +66,16 @@ export default function RootLayout({
           disableTransitionOnChange
           storageKey="starterkar-theme"
         >
-          <div id="root-container" className="min-h-screen w-full max-w-full flex flex-col min-w-0 overflow-x-hidden relative">
+        <div id="root-container" className="min-h-screen flex flex-col relative" style={{ width: '100vw', maxWidth: '100vw', overflowX: 'hidden' }}>
             <PageTransition>
               <ReferralTracker />
               {children}
             </PageTransition>
             <Footer />
             <MobileBottomNav />
+            <EliteAdvisor />
+            <Toaster richColors position="top-right" closeButton />
           </div>
-          <EliteAdvisor />
-          <Toaster richColors position="top-right" closeButton />
         </ThemeProvider>
       </body>
     </html>
