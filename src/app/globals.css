@@ -49,31 +49,34 @@
 }
 
 @layer base {
-  /* Fix for Tailwind v4 border issue */
   * {
     border-color: var(--border);
     box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
   }
   
-  html, body {
+  html {
     overflow-x: hidden;
     width: 100%;
-    max-width: 100%;
-    position: relative;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-content-smoothing: grayscale;
-    -webkit-tap-highlight-color: transparent;
-    -webkit-overflow-scrolling: touch;
     height: 100%;
     margin: 0;
     padding: 0;
+    -webkit-text-size-adjust: 100%;
   }
 
   body {
     background-color: var(--background);
     color: var(--foreground);
+    overflow-x: hidden;
+    width: 100%;
+    max-width: 100%;
     min-height: 100vh;
     min-height: -webkit-fill-available;
+    position: relative;
+    margin: 0;
+    padding: 0;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-content-smoothing: grayscale;
   }
 
   /* CRITICAL: Force SVG icon sizes to prevent them from becoming giant */
@@ -99,35 +102,30 @@
     box-shadow: 0 10px 20px -5px rgba(0, 0, 0, 0.1);
   }
 
-  @media (min-width: 768px) {
-    .glass-card {
-      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-    }
-  }
-
   .dark .glass-card {
     background: rgba(24, 24, 27, 0.4);
     border: 1px solid rgba(255, 255, 255, 0.1);
   }
 }
 
-/* MOBILE VIEWPORT FIX */
+/* MOBILE VIEWPORT HARDENING */
 @media (max-width: 768px) {
   #root-container {
-    width: 100%;
-    max-width: 100%;
-    overflow-x: hidden;
-    position: relative;
-    min-width: 0;
+    width: 100% !important;
+    max-width: 100% !important;
+    overflow-x: hidden !important;
+    position: relative !important;
+    min-width: 0 !important;
   }
 
-  /* Prevent elements from pushing the width */
-  .grid, .flex {
-    min-width: 0;
+  /* Prevent any nested flex/grid from expanding beyond the viewport */
+  .flex, .grid {
+    min-width: 0 !important;
   }
-  
-  img {
-    max-width: 100%;
-    height: auto;
+
+  /* Force wrap on all text that could overflow */
+  h1, h2, h3, h4, p, span, div {
+    overflow-wrap: break-word;
+    word-wrap: break-word;
   }
 }

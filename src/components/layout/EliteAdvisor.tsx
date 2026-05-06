@@ -114,8 +114,8 @@ export function EliteAdvisor() {
                         initial={{ opacity: 0, scale: 0.9, y: 20 }}
                         animate={{ opacity: 1, scale: 1, y: 0 }}
                         exit={{ opacity: 0, scale: 0.9, y: 20 }}
-                        className="h-[540px] bg-white/20 dark:bg-zinc-900/40 backdrop-blur-[40px] border border-white/40 dark:border-white/10 rounded-[2.5rem] shadow-[0_40px_100px_rgba(0,0,0,0.4)] flex flex-col overflow-hidden relative mb-3 pointer-events-auto"
-                        style={{ width: 'min(320px, calc(100vw - 2rem))' }}
+                        className="h-[70vh] md:h-[540px] bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-[2.5rem] shadow-2xl flex flex-col overflow-hidden relative mb-3 pointer-events-auto"
+                        style={{ width: 'min(360px, calc(100vw - 2rem))' }}
                     >
                         {/* Header */}
                         <div className="bg-indigo-600/60 backdrop-blur-xl p-6 flex justify-between items-center relative overflow-hidden border-b border-white/20">

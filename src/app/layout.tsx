@@ -20,7 +20,7 @@ const outfit = Outfit({
   variable: "--font-heading",
 });
 
-const VERSION = "4.7.3";
+const VERSION = "4.7.4";
 
 export default function RootLayout({
   children,
@@ -31,7 +31,7 @@ export default function RootLayout({
     <html lang="es" suppressHydrationWarning>
       <head>
         <title>StarterKar | Bóveda Digital para Compraventa de Autos</title>
-        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0, viewport-fit=cover, shrink-to-fit=no" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
         <Script id="nuclear-cache-reset" strategy="beforeInteractive" dangerouslySetInnerHTML={{ __html: `
           (function() {
             const VERSION = "${VERSION}";
