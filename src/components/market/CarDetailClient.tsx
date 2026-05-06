@@ -432,6 +432,7 @@ export function CarDetailClient({
                                     />
                                 </div>
 
+                                 {car.year >= 2018 && car.price > 180000 && (
                                     <p className="text-[10px] text-zinc-400 font-bold uppercase tracking-widest text-center mt-6 px-4 leading-relaxed">
                                         ¿Interesado en financiamiento? <br />
                                         <span className="text-zinc-500">Tu Asesor StarterKar te guiará en la gestión bancaria tras validar tu intención de compra.</span>
