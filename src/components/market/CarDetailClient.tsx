@@ -30,6 +30,7 @@ import {
 import { FavoriteService } from "@/services/FavoriteService";
 import { createBrowserClient } from "@/lib/supabase/client";
 import { TechnicalSpecsSheet } from "@/components/market/TechnicalSpecsSheet";
+import { RecommendedSection } from "@/components/dashboard/RecommendedSection";
 
 import Link from "next/link";
 import Image from "next/image";
@@ -58,23 +59,6 @@ export function CarDetailClient({
     const [negotiatedPrice, setNegotiatedPrice] = useState<number | null>(null);
     
     const supabaseBrowser = useMemo(() => createBrowserClient(), []);
-    const [recommendations, setRecommendations] = useState<any[]>([]);
-
-    useEffect(() => {
-        if (!car) return;
-        const fetchRecommendations = async () => {
-            const { data } = await supabaseBrowser
-                .from('cars')
-                .select('*')
-                .eq('category', car.category)
-                .neq('id', id)
-                .in('status', ['available', 'PUBLISHED', 'CERTIFIED', 'AVAILABLE', 'certified', 'published'])
-                .limit(3);
-            
-            if (data) setRecommendations(data);
-        };
-        fetchRecommendations();
-    }, [car, id, supabaseBrowser]);
 
     // Handle authentication state changes to sync profile/favorites if user logs in/out
     useEffect(() => {
@@ -237,12 +221,12 @@ export function CarDetailClient({
                             )}
 
                             {/* Mobile Horizontal Scroll */}
-                            <div className="md:hidden flex gap-4 overflow-x-auto pb-6 pt-2 snap-x snap-mandatory no-scrollbar scroll-smooth">
+                            <div className="md:hidden flex gap-4 overflow-x-auto pb-6 pt-2 snap-x snap-mandatory no-scrollbar scroll-smooth -mx-6 px-6">
                                 {car.images?.map((img, idx) => (
                                     <div 
                                         key={idx}
                                         onClick={() => { setGalleryIndex(idx); setShowGallery(true); }}
-                                        className="relative shrink-0 snap-center cursor-pointer transition-all w-[90vw] h-[35vh] rounded-[2rem] overflow-hidden shadow-xl"
+                                        className="relative shrink-0 snap-center cursor-pointer transition-all w-[85vw] max-w-[320px] h-[35vh] rounded-[2rem] overflow-hidden shadow-xl"
                                     >
                                         <Image src={img} fill className="object-cover" alt={`Vista ${idx + 1}`} priority={idx === 0} />
                                         {idx === 0 && car.status === 'CERTIFIED' && (
@@ -457,49 +441,12 @@ export function CarDetailClient({
                                 )}
                             </div>
 
-                            {/* Smart Recommendations Section */}
-                            {recommendations.length > 0 && (
-                                <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-1000 delay-500">
-                                    <div className="flex items-center justify-between px-2">
-                                        <h4 className="text-[10px] font-black uppercase tracking-[0.4em] text-zinc-400">Opciones Recomendadas</h4>
-                                        <div className="h-px flex-1 bg-zinc-100 dark:bg-zinc-800 ml-4" />
-                                    </div>
-                                    
-                                    <div className="space-y-3">
-                                        {recommendations.map((rec) => (
-                                            <Link 
-                                                key={rec.id} 
-                                                href={`/buy/${rec.id}`}
-                                                className="group flex gap-4 p-4 rounded-3xl bg-white dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-800 hover:border-indigo-500/30 hover:shadow-xl hover:shadow-indigo-500/5 transition-all duration-500"
-                                            >
-                                                <div className="relative h-20 w-24 shrink-0 rounded-2xl overflow-hidden bg-zinc-100 dark:bg-zinc-800">
-                                                    <Image 
-                                                        src={rec.images?.[0] || '/placeholder-car.jpg'} 
-                                                        alt={rec.model} 
-                                                        fill 
-                                                        className="object-cover group-hover:scale-110 transition-transform duration-700" 
-                                                    />
-                                                </div>
-                                                <div className="flex flex-col justify-center min-w-0">
-                                                    <h5 className="font-black text-[11px] uppercase italic tracking-tight text-zinc-950 dark:text-white truncate">
-                                                        {rec.make} {rec.model}
-                                                    </h5>
-                                                    <div className="flex items-center gap-2 mt-1">
-                                                        <span className="text-[9px] font-bold text-zinc-400 uppercase tracking-widest">{rec.year}</span>
-                                                        <span className="h-1 w-1 rounded-full bg-zinc-300 dark:bg-zinc-700" />
-                                                        <span className="text-[9px] font-black text-indigo-500 uppercase tracking-widest">${Number(rec.price).toLocaleString()}</span>
-                                                    </div>
-                                                    <div className="mt-2 flex items-center gap-1 text-[8px] font-black text-emerald-500 uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-opacity">
-                                                        Ver Detalles <ChevronRight className="h-2 w-2" />
-                                                    </div>
-                                                </div>
-                                            </Link>
-                                        ))}
-                                    </div>
-                                </div>
-                            )}
                         </div>
                     </div>
+                </div>
+
+                <div className="mt-12 pt-8 border-t border-border/50">
+                    <RecommendedSection />
                 </div>
             </main>
 
