@@ -151,7 +151,7 @@ export function Navbar({
                                         label="" 
                                         href=""
                                     />
-                                    <span className="text-[10px] font-black uppercase tracking-widest text-zinc-600 dark:text-zinc-400 group-hover:text-indigo-600 transition-colors">
+                                    <span className="hidden sm:inline text-[10px] font-black uppercase tracking-widest text-zinc-600 dark:text-zinc-400 group-hover:text-indigo-600 transition-colors">
                                         Entrar
                                     </span>
                                 </Link>
@@ -192,7 +192,7 @@ export function Navbar({
                                     Cerrar Sesión
                                 </button>
                             )}
-                            <div className="flex items-center gap-0.5 md:gap-1">
+                            <div className="hidden sm:flex items-center gap-0.5 md:gap-1">
                                 <NotificationCenter />
                                 <ThemeToggle />
                             </div>
