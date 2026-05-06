@@ -320,8 +320,8 @@ export function BotCar3D({ onClick, isOpen }: BotCar3DProps) {
         <div 
             ref={containerRef}
             className={cn(
-                "w-[180px] h-[180px] md:w-[240px] md:h-[240px] cursor-pointer relative z-10",
-                isOpen && "opacity-0 pointer-events-none" // Hide 3D car when chat is open since we use X button
+                "w-[140px] h-[140px] md:w-[200px] md:h-[200px] cursor-pointer relative z-10",
+                isOpen && "opacity-0 pointer-events-none"
             )}
             onMouseEnter={handleMouseEnter}
             onMouseLeave={handleMouseLeave}

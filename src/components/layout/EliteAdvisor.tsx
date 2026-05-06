@@ -85,27 +85,24 @@ export function EliteAdvisor() {
     };
 
     return (
-        <div className="fixed bottom-24 md:bottom-8 right-4 md:right-8 z-[100] flex flex-col items-end gap-4 pointer-events-none" style={{ maxWidth: 'calc(100vw - 2rem)' }}>
-            {/* Premium Permanent Bubble */}
+        <div className="fixed bottom-24 md:bottom-8 right-4 md:right-6 z-[100] flex flex-col items-end gap-3 pointer-events-none">
+            {/* Chat Bubble - shown above the 3D bot when closed */}
             <AnimatePresence>
                 {!isOpen && (
                     <motion.div
-                        initial={{ opacity: 0, scale: 0.9, y: 10 }}
+                        initial={{ opacity: 0, scale: 0.9, y: 8 }}
                         animate={{ opacity: 1, scale: 1, y: 0 }}
-                        exit={{ opacity: 0, scale: 0.9, y: 10 }}
+                        exit={{ opacity: 0, scale: 0.9, y: 8 }}
                         transition={{ duration: 0.2 }}
-                        className="absolute bottom-[180px] md:bottom-[210px] right-2 md:right-8 z-50 cursor-pointer pointer-events-auto"
+                        className="relative cursor-pointer pointer-events-auto mr-2"
                         onClick={() => setIsOpen(true)}
                     >
-                        {/* Clean Dialogue Bubble */}
-                        <div className="relative bg-white dark:bg-zinc-900 px-4 py-2 rounded-xl shadow-lg border border-zinc-200 dark:border-zinc-800">
-                            <span className="text-[10px] md:text-[12px] font-bold text-zinc-900 dark:text-white uppercase tracking-widest">
+                        <div className="bg-white dark:bg-zinc-900 px-3 py-1.5 rounded-xl shadow-lg border border-zinc-200 dark:border-zinc-800 whitespace-nowrap">
+                            <span className="text-[10px] font-bold text-zinc-900 dark:text-white uppercase tracking-widest">
                                 Pídeme lo que buscas
                             </span>
                         </div>
-
-                        {/* Speech Bubble Tail */}
-                        <div className="absolute -bottom-2 right-1/2 translate-x-1/2 w-4 h-4 bg-white dark:bg-zinc-900 border-b border-r border-zinc-200 dark:border-zinc-800 rotate-45 transform origin-top-left -z-10" />
+                        <div className="absolute -bottom-2 right-6 w-4 h-4 bg-white dark:bg-zinc-900 border-b border-r border-zinc-200 dark:border-zinc-800 rotate-45 transform origin-top-left -z-10" />
                     </motion.div>
                 )}
             </AnimatePresence>
@@ -117,7 +114,8 @@ export function EliteAdvisor() {
                         initial={{ opacity: 0, scale: 0.9, y: 20 }}
                         animate={{ opacity: 1, scale: 1, y: 0 }}
                         exit={{ opacity: 0, scale: 0.9, y: 20 }}
-                        className="w-80 md:w-96 h-[600px] bg-white/20 dark:bg-zinc-900/40 backdrop-blur-[40px] border border-white/40 dark:border-white/10 rounded-[2.5rem] shadow-[0_40px_100px_rgba(0,0,0,0.4)] flex flex-col overflow-hidden relative mb-4 pointer-events-auto"
+                        className="h-[540px] bg-white/20 dark:bg-zinc-900/40 backdrop-blur-[40px] border border-white/40 dark:border-white/10 rounded-[2.5rem] shadow-[0_40px_100px_rgba(0,0,0,0.4)] flex flex-col overflow-hidden relative mb-3 pointer-events-auto"
+                        style={{ width: 'min(320px, calc(100vw - 2rem))' }}
                     >
                         {/* Header */}
                         <div className="bg-indigo-600/60 backdrop-blur-xl p-6 flex justify-between items-center relative overflow-hidden border-b border-white/20">
@@ -236,23 +234,6 @@ export function EliteAdvisor() {
             <div className="pointer-events-auto">
                 <BotCar3D onClick={() => setIsOpen(true)} isOpen={isOpen} />
             </div>
-
-            {/* Toggle Close Button (when chat is open) */}
-            <AnimatePresence>
-                {isOpen && (
-                    <motion.button
-                        initial={{ scale: 0, opacity: 0, rotate: -90 }}
-                        animate={{ scale: 1, opacity: 1, rotate: 0 }}
-                        exit={{ scale: 0, opacity: 0, rotate: 90 }}
-                        whileHover={{ scale: 1.1 }}
-                        whileTap={{ scale: 0.9 }}
-                        onClick={() => setIsOpen(false)}
-                        className="absolute bottom-4 right-4 h-16 w-16 rounded-[2rem] bg-indigo-600/90 text-white shadow-2xl flex items-center justify-center border-2 border-white/30 backdrop-blur-md z-[101] pointer-events-auto"
-                    >
-                        <X className="h-8 w-8" />
-                    </motion.button>
-                )}
-            </AnimatePresence>
         </div>
     );
 }

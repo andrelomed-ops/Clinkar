@@ -53,16 +53,19 @@
 }
 
 html {
-  overflow-x: clip;
+  overflow-x: hidden; /* fallback for Safari iOS 15- */
+  overflow-x: clip;   /* preferred: works with position:fixed unlike hidden */
   max-width: 100%;
   width: 100%;
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+  -webkit-text-size-adjust: 100%;
 }
 
 body {
-  overflow-x: clip;
+  overflow-x: hidden; /* fallback */
+  overflow-x: clip;   /* preferred */
   position: relative;
   width: 100%;
   max-width: 100%;
