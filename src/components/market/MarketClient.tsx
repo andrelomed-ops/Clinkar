@@ -268,12 +268,13 @@ export function MarketClient({
                                         </div>
                                     ))
                                 ) : paginatedCars.length > 0 ? (
-                                    paginatedCars.map((car) => (
+                                    paginatedCars.map((car, idx) => (
                                         <CarCard
                                             key={car.id}
                                             car={car}
                                             isFavorite={favorites.includes(car.id)}
                                             onToggleFavorite={() => toggleFavorite(car.id)}
+                                            priority={idx < 6}
                                         />
                                     ))
                                 ) : (

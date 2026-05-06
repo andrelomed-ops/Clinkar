@@ -11,9 +11,10 @@ interface CarCardProps {
     car: Vehicle;
     isFavorite?: boolean;
     onToggleFavorite?: (e: React.MouseEvent) => void;
+    priority?: boolean;
 }
 
-export function CarCard({ car, isFavorite = false, onToggleFavorite }: CarCardProps) {
+export function CarCard({ car, isFavorite = false, onToggleFavorite, priority = false }: CarCardProps) {
     const priceDiff = (car.marketValue && car.price) ? car.marketValue - car.price : 0;
     const savingsPercent = (car.marketValue && car.price) ? (priceDiff / car.marketValue) * 100 : 0;
     const carMake = car.make || 'Auto';
@@ -53,7 +54,7 @@ export function CarCard({ car, isFavorite = false, onToggleFavorite }: CarCardPr
                             fill
                             className="object-cover transform group-hover:scale-105 transition-transform duration-500"
                             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                            priority={false}
+                            priority={priority}
                         />
                     ) : (
                         <div className="w-full h-full flex items-center justify-center text-zinc-400">
