@@ -17,6 +17,7 @@ export function CheckoutAction({ carId, carPrice, carLocation, category }: { car
     const [scheduledDate, setScheduledDate] = useState("");
     const [scheduledTime, setScheduledTime] = useState("");
     const [buyerPhone, setBuyerPhone] = useState("");
+    const [isAccepted, setIsAccepted] = useState(false);
 
     useEffect(() => {
         async function fetchWorkshops() {
@@ -49,6 +50,11 @@ export function CheckoutAction({ carId, carPrice, carLocation, category }: { car
         }
         if (partners.length > 0 && !selectedWorkshop) {
             toast.error("Por favor, selecciona un taller");
+            return;
+        }
+
+        if (!isAccepted) {
+            toast.error("Debes aceptar el protocolo de garantía para continuar");
             return;
         }
 
@@ -194,6 +200,33 @@ export function CheckoutAction({ carId, carPrice, carLocation, category }: { car
                     <b className="text-indigo-600 dark:text-indigo-400 uppercase font-black">Próximo Paso:</b> Al confirmar, bloquearemos el activo y notificaremos a logística para tu cita el día <span className="text-zinc-900 dark:text-white font-black">{dateFormatted}</span> a las <span className="text-zinc-900 dark:text-white font-black">{scheduledTime || '---'}</span>.
                 </div>
 
+                <div className="bg-amber-500/5 border border-amber-500/20 p-6 rounded-3xl space-y-4">
+                    <div className="flex items-center gap-3">
+                        <div className="h-10 w-10 rounded-full bg-amber-500/10 flex items-center justify-center">
+                            <ShieldCheck className="h-6 w-6 text-amber-600" />
+                        </div>
+                        <div>
+                            <h4 className="font-black text-[10px] uppercase tracking-widest text-amber-700">Garantía de Apartado Reembolsable</h4>
+                            <p className="text-[11px] font-bold text-zinc-900 dark:text-white">$2,500.00 MXN</p>
+                        </div>
+                    </div>
+                    <p className="text-[9px] text-amber-800/70 dark:text-amber-400/70 leading-relaxed italic font-medium">
+                        Este monto protege tu prioridad de compra y cubre la logística de inspección. Es **100% reembolsable** si el auto no cumple con la certificación física.
+                    </p>
+                    
+                    <label className="flex items-start gap-3 cursor-pointer group">
+                        <input 
+                            type="checkbox" 
+                            checked={isAccepted}
+                            onChange={(e) => setIsAccepted(e.target.checked)}
+                            className="mt-0.5 h-4 w-4 rounded border-amber-500/50 text-amber-600 focus:ring-amber-500 bg-white dark:bg-zinc-900" 
+                        />
+                        <span className="text-[9px] text-zinc-500 dark:text-zinc-400 leading-tight group-hover:text-zinc-900 dark:group-hover:text-zinc-100 transition-colors">
+                            Acepto el protocolo de garantía y entiendo que la inasistencia a la cita sin previo aviso genera una penalidad administrativa.
+                        </span>
+                    </label>
+                </div>
+
                 <button
                     onClick={handleAction}
                     disabled={loading}
@@ -202,11 +235,11 @@ export function CheckoutAction({ carId, carPrice, carLocation, category }: { car
                     {loading ? (
                         <div className="flex items-center gap-3">
                             <Loader2 className="animate-spin h-5 w-5" />
-                            <span>Sincronizando...</span>
+                            <span>Procesando Pago...</span>
                         </div>
                     ) : (
                         <>
-                            <span>Bloquear y Agendar Entrega</span>
+                            <span>Pagar Garantía y Agendar</span>
                             <ArrowRight className="h-5 w-5 group-hover:translate-x-2 transition-transform" />
                         </>
                     )}
