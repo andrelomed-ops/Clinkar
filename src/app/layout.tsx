@@ -20,7 +20,7 @@ const outfit = Outfit({
   variable: "--font-heading",
 });
 
-const VERSION = "4.7.9";
+const VERSION = "4.8.0";
 
 export default function RootLayout({
   children,
@@ -66,7 +66,7 @@ export default function RootLayout({
           disableTransitionOnChange
           storageKey="starterkar-theme"
         >
-        <div id="root-container" className="min-h-screen flex flex-col relative" style={{ width: '100vw', maxWidth: '100vw', overflowX: 'hidden' }}>
+          <div id="root-container" className="min-h-screen flex flex-col relative" style={{ width: '100vw', maxWidth: '100vw', overflowX: 'hidden' }}>
             <PageTransition>
               <ReferralTracker />
               {children}
