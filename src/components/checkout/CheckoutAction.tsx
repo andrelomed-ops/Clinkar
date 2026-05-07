@@ -70,12 +70,25 @@ export function CheckoutAction({ carId, carPrice, carLocation, category }: { car
                 buyerPhone
             });
 
-            console.log("[StarterKar] Resultado del servidor:", result);
-
             if (result.success && result.transactionId) {
-                toast.success("¡Auto Bloqueado!");
-                // Force jump to handover
-                window.location.assign(`/dashboard/handover/${result.transactionId}`);
+                toast.success("¡Intención de Compra Registrada!");
+                
+                // Construct WhatsApp message
+                const message = `*ORDEN DE APARTADO CLINKAR* \n\n` +
+                                `Hola StarterKar, acabo de reservar el siguiente vehículo:\n` +
+                                `🚗 *Auto:* ${carLocation} \n` +
+                                `💰 *Precio:* $${carPrice.toLocaleString()} \n` +
+                                `📅 *Cita:* ${dateFormatted} a las ${scheduledTime} \n` +
+                                `🆔 *Folio:* ${result.transactionId.substring(0, 8).toUpperCase()} \n\n` +
+                                `*SOLICITO DATOS DE TRANSFERENCIA PARA MI GARANTÍA DE $2,500 MXN.*`;
+                
+                const whatsappUrl = `https://wa.me/525512345678?text=${encodeURIComponent(message)}`;
+                
+                // Open WhatsApp and redirect to handover
+                setTimeout(() => {
+                    window.open(whatsappUrl, '_blank');
+                    window.location.assign(`/dashboard/handover/${result.transactionId}`);
+                }, 1500);
             } else {
                 toast.error(result.error || "Error al procesar el bloqueo");
                 setLoading(false);
