@@ -97,12 +97,21 @@ export function EliteAdvisor() {
                         className="relative cursor-pointer pointer-events-auto mr-2"
                         onClick={() => setIsOpen(true)}
                     >
-                        <div className="bg-white dark:bg-zinc-900 px-3 py-1.5 rounded-xl shadow-lg border border-zinc-200 dark:border-zinc-800 whitespace-nowrap">
-                            <span className="text-[10px] font-bold text-zinc-900 dark:text-white uppercase tracking-widest">
-                                Pídeme lo que buscas
-                            </span>
+                        <div className="bg-indigo-600 dark:bg-indigo-500 px-4 py-2 rounded-2xl rounded-br-none shadow-2xl relative group">
+                            {/* Speech bubble tail */}
+                            <div className="absolute -bottom-2 right-0 w-4 h-4 bg-indigo-600 dark:bg-indigo-500" style={{ clipPath: 'polygon(0 0, 100% 0, 100% 100%)' }}></div>
+                            
+                            <div className="flex items-center gap-2">
+                                <div className="flex gap-1">
+                                    <div className="w-1 h-1 bg-white rounded-full animate-bounce [animation-duration:1s]" />
+                                    <div className="w-1 h-1 bg-white rounded-full animate-bounce [animation-duration:1s] [animation-delay:0.2s]" />
+                                    <div className="w-1 h-1 bg-white rounded-full animate-bounce [animation-duration:1s] [animation-delay:0.4s]" />
+                                </div>
+                                <span className="text-[10px] font-black uppercase tracking-wider text-white italic">
+                                    ¿Hablamos de este auto?
+                                </span>
+                            </div>
                         </div>
-                        <div className="absolute -bottom-2 right-6 w-4 h-4 bg-white dark:bg-zinc-900 border-b border-r border-zinc-200 dark:border-zinc-800 rotate-45 transform origin-top-left -z-10" />
                     </motion.div>
                 )}
             </AnimatePresence>
