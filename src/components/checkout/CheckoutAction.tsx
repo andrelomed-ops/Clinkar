@@ -182,12 +182,12 @@ export function CheckoutAction({ carId, carPrice, carLocation, category }: { car
             <div className="bg-zinc-50 dark:bg-zinc-950 p-10 rounded-[3rem] shadow-xl border border-zinc-200 dark:border-zinc-800 overflow-hidden relative">
                 <div className="flex justify-between items-center mb-6">
                     <span className="text-zinc-400 dark:text-zinc-500 text-[10px] font-black uppercase tracking-[0.2em]">Valor del Vehículo</span>
-                    <span className="font-black text-xl italic text-zinc-900 dark:text-white">${carPrice.toLocaleString()}</span>
+                    <span className="font-black text-lg md:text-xl italic text-zinc-900 dark:text-white">${carPrice.toLocaleString()}</span>
                 </div>
                 
                 <div className="flex justify-between items-baseline mb-10 pt-8 border-t border-zinc-200 dark:border-zinc-800">
                     <span className="font-black text-[10px] uppercase tracking-[0.3em] text-indigo-600 dark:text-indigo-400 italic">Monto de Bloqueo</span>
-                    <span className="font-black text-5xl tracking-tighter italic text-zinc-900 dark:text-white">${carPrice.toLocaleString()}</span>
+                    <span className="font-black text-3xl md:text-5xl tracking-tighter italic text-zinc-900 dark:text-white">${carPrice.toLocaleString()}</span>
                 </div>
 
                 <div className="text-[10px] text-zinc-500 dark:text-zinc-400 mb-10 text-justify leading-relaxed bg-white dark:bg-zinc-900 p-6 rounded-[1.5rem] border border-zinc-100 dark:border-zinc-800 italic font-medium" style={{ textAlign: 'justify', textJustify: 'inter-word' }}>
