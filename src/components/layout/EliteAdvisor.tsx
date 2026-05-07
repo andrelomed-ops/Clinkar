@@ -85,7 +85,7 @@ export function EliteAdvisor() {
     };
 
     return (
-        <div className="fixed bottom-24 md:bottom-8 right-0 md:right-6 z-[100] flex flex-col-reverse items-end gap-2 pointer-events-none pr-4 md:pr-0">
+        <div className="fixed bottom-20 md:bottom-8 right-2 md:right-6 z-[100] flex flex-col items-start gap-2 pointer-events-none">
             {/* Chat Bubble - shown above the 3D bot when closed */}
             <AnimatePresence>
                 {!isOpen && (
@@ -97,18 +97,17 @@ export function EliteAdvisor() {
                         className="relative cursor-pointer pointer-events-auto mr-2"
                         onClick={() => setIsOpen(true)}
                     >
-                        <div className="bg-indigo-600 dark:bg-indigo-500 px-4 py-2 rounded-2xl rounded-br-none shadow-2xl relative group">
-                            {/* Speech bubble tail */}
-                            <div className="absolute -bottom-2 right-0 w-4 h-4 bg-indigo-600 dark:bg-indigo-500" style={{ clipPath: 'polygon(0 0, 100% 0, 100% 100%)' }}></div>
+                        <div className="bg-indigo-600 dark:bg-indigo-500 px-3 py-1.5 rounded-2xl rounded-bl-none shadow-2xl relative group">
+                            {/* Speech bubble tail pointing DOWN */}
+                            <div className="absolute -bottom-2 left-0 w-4 h-4 bg-indigo-600 dark:bg-indigo-500" style={{ clipPath: 'polygon(0 0, 100% 0, 0 100%)' }}></div>
                             
                             <div className="flex items-center gap-2">
                                 <div className="flex gap-1">
                                     <div className="w-1 h-1 bg-white rounded-full animate-bounce [animation-duration:1s]" />
                                     <div className="w-1 h-1 bg-white rounded-full animate-bounce [animation-duration:1s] [animation-delay:0.2s]" />
-                                    <div className="w-1 h-1 bg-white rounded-full animate-bounce [animation-duration:1s] [animation-delay:0.4s]" />
                                 </div>
                                 <span className="text-[10px] font-black uppercase tracking-wider text-white italic">
-                                    ¿Hablamos de este auto?
+                                    SK IA
                                 </span>
                             </div>
                         </div>

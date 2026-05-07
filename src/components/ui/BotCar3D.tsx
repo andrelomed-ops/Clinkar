@@ -327,8 +327,7 @@ export function BotCar3D({ onClick, isOpen }: BotCar3DProps) {
             onMouseLeave={handleMouseLeave}
             onClick={handleClick}
             style={{ 
-                // Create a subtle glow effect behind the 3D canvas
-                background: 'radial-gradient(circle, rgba(79,70,229,0.15) 0%, rgba(0,0,0,0) 70%)'
+                // Pure floating car effect
             }}
         />
     );
