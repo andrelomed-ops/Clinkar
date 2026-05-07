@@ -97,7 +97,7 @@ export function EliteAdvisor() {
                         className="relative cursor-pointer pointer-events-auto mr-2"
                         onClick={() => setIsOpen(true)}
                     >
-                        <div className="flex items-center gap-0.5 px-2 py-1 select-none">
+                        <div className="flex items-center gap-0.5 px-2 py-1 select-none -mb-12 relative z-20">
                             <span className="text-sm font-black text-zinc-900 dark:text-white animate-bounce [animation-duration:1.2s]">S</span>
                             <span className="text-sm font-black text-indigo-600 animate-bounce [animation-duration:1.2s] [animation-delay:0.2s]">K</span>
                             <span className="text-[10px] font-black text-zinc-400 ml-1 tracking-tighter animate-pulse">IA</span>

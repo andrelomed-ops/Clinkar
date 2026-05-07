@@ -58,7 +58,7 @@ export function BotCar3D({ onClick, isOpen }: BotCar3DProps) {
         // 2. Camera
         const camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 100);
         camera.position.set(8, 5, 9);
-        camera.lookAt(0, 0.5, 0);
+        camera.lookAt(0, -1.0, 0); // Moved target down to push car UP in the canvas
         state.camera = camera;
 
         // 3. Renderer
