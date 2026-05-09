@@ -44,9 +44,12 @@ export default function SellOnboardingPage() {
     const agencyName = searchParams.get('agency') || '';
     const bonusText = searchParams.get('bonus') || '';
     
-    const [selectedPlan, setSelectedPlan] = useState<'GO' | 'VIP'>('GO');
+    const [selectedPlan, setSelectedPlan] = useState<'GO' | 'VIP' | 'TUNING'>('GO');
     const [phone, setPhone] = useState("");
     const [needsPhone, setNeedsPhone] = useState(false);
+
+    const suggestedPrice = parseInt(searchParams.get('price') || '0');
+    const isHighValue = suggestedPrice >= 150000;
 
     // Luxury Brand Detection
     const PREMIUM_BRANDS = [
@@ -56,9 +59,11 @@ export default function SellOnboardingPage() {
     ];
     const isPremium = PREMIUM_BRANDS.includes(make.toUpperCase().trim());
 
-    const totalCost = isPremium 
-        ? (selectedPlan === 'VIP' ? 3500 : 2500)
-        : (selectedPlan === 'VIP' ? 1500 : 800);
+    const totalCost = selectedPlan === 'TUNING'
+        ? isHighValue ? 0 : 1500 // 0 if financed, 1500 if paid upfront
+        : isPremium 
+            ? (selectedPlan === 'VIP' ? 3500 : 2500)
+            : (selectedPlan === 'VIP' ? 1500 : 850);
 
     useEffect(() => {
         const timer = setTimeout(() => setIsMounted(true), 0);
@@ -203,8 +208,8 @@ export default function SellOnboardingPage() {
     const handleSubmit = async (e?: React.FormEvent) => {
         if (e) e.preventDefault();
         
-        if (!selectedPartner && selectedPlan === 'GO') {
-            toast.error("Por favor selecciona un Taller Aliado para la revisión.");
+        if (!selectedPartner && (selectedPlan === 'GO' || selectedPlan === 'TUNING')) {
+            toast.error("Por favor selecciona un Taller Aliado para el servicio.");
             return;
         }
 
@@ -219,7 +224,11 @@ export default function SellOnboardingPage() {
             }
 
             const activeUser = user || currentUser;
-            const finalAddress = selectedPlan === 'VIP' ? 'Servicio Concierge a Domicilio' : `${selectedPartner?.name} - ${selectedPartner?.address}, ${selectedPartner?.city}`;
+            const finalAddress = selectedPlan === 'VIP' 
+                ? 'Inspección en Domicilio del Vendedor' 
+                : `${selectedPartner?.name} - ${selectedPartner?.address}, ${selectedPartner?.city}`;
+
+            const serviceTypeLabel = selectedPlan === 'TUNING' ? 'Afinación + Revisión' : (selectedPlan === 'VIP' ? 'Inspección a Domicilio' : 'Inspección 150 Puntos');
 
             const { data: carData, error: carError } = await supabase.from('cars').insert({
                 seller_id: activeUser?.id || '00000000-0000-0000-0000-000000000000',
@@ -239,17 +248,17 @@ export default function SellOnboardingPage() {
                     bonus: bonusText,
                     original_category: categoryId
                 },
-                description: `Registro vía Wizard. Mercado: ${mktCat}. Ubicación: ${finalAddress}`
+                description: `Registro vía Wizard. Mercado: ${mktCat}. Servicio: ${serviceTypeLabel}. Ubicación: ${finalAddress}`
             }).select('id').single();
 
             if (carError || !carData) throw new Error("Error creando pre-registro del auto.");
 
             const { error: ticketError } = await supabase.from('service_tickets').insert({
                 car_id: carData.id,
-                type: '150_point_inspection',
+                type: selectedPlan === 'TUNING' ? 'tuning_and_inspection' : '150_point_inspection',
                 status: 'SCHEDULED', // Fallback to SCHEDULED to satisfy DB check constraint
                 scheduled_at: new Date(new Date().getTime() + 24 * 60 * 60 * 1000).toISOString(), // Default 24h
-                partner_id: selectedPlan === 'GO' ? selectedPartner?.id : null
+                partner_id: (selectedPlan === 'GO' || selectedPlan === 'TUNING') ? selectedPartner?.id : null
             });
 
             if (ticketError) throw new Error("Error agendando inspección.");
@@ -300,7 +309,9 @@ export default function SellOnboardingPage() {
                         </div>
                         
                         {(() => {
-                            const message = `¡Hola! Acabo de registrar la solicitud de certificación física para mi ${make} ${model} ${year} bajo el plan ${selectedPlan === 'VIP' ? 'StarterKar VIP (Servicio Concierge)' : 'StarterKar GO (Yo lo llevo)'}. Quisiera recibir el link de Mercado Pago por $${totalCost} para confirmar mi cita.`;
+                            const serviceName = selectedPlan === 'TUNING' ? 'StarterKar Performance (Afinación + Revisión)' : (selectedPlan === 'VIP' ? 'StarterKar VIP (Inspección a Domicilio)' : 'StarterKar GO (Yo lo llevo)');
+                            const costText = selectedPlan === 'TUNING' ? 'cotización personalizada' : `$${totalCost}`;
+                            const message = `¡Hola! Acabo de registrar la solicitud de certificación física para mi ${make} ${model} ${year} bajo el plan ${serviceName}. Quisiera recibir ${selectedPlan === 'TUNING' ? 'una cotización personalizada' : `el link de Mercado Pago por ${costText}`} para confirmar mi cita.`;
                             const encodedMessage = encodeURIComponent(message);
 
                             return (
@@ -352,7 +363,7 @@ export default function SellOnboardingPage() {
                                     <Label className="px-1 text-[10px] font-black uppercase tracking-[0.4em] text-zinc-400 flex items-center gap-2">
                                         <div className="h-1.5 w-1.5 rounded-full bg-indigo-500" /> Plan de Certificación
                                     </Label>
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                                         {/* Plan GO */}
                                         <div 
                                             onClick={() => setSelectedPlan('GO')}
@@ -401,7 +412,7 @@ export default function SellOnboardingPage() {
                                             <div className="flex justify-between items-start mb-4">
                                                 <div>
                                                     <h3 className="text-xl font-black italic uppercase tracking-tighter text-zinc-950 dark:text-white">StarterKar VIP</h3>
-                                                    <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest mt-1">Servicio Concierge</p>
+                                                    <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest mt-1">A Domicilio</p>
                                                     <div className="mt-2 inline-flex items-center px-2 py-0.5 rounded-md bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-[8px] font-black uppercase tracking-tighter border border-emerald-500/20">
                                                         100% Reembolsable al vender
                                                     </div>
@@ -412,26 +423,83 @@ export default function SellOnboardingPage() {
                                             </div>
                                             <ul className="space-y-3 mt-6">
                                                 <li className="flex items-center gap-2 text-xs font-bold text-zinc-500 dark:text-zinc-400">
-                                                    <CheckCircle2 className="h-4 w-4 text-emerald-500" /> Recolección a domicilio
+                                                    <CheckCircle2 className="h-4 w-4 text-emerald-500" /> Inspección en tu domicilio
                                                 </li>
                                                 <li className="flex items-center gap-2 text-xs font-bold text-zinc-500 dark:text-zinc-400">
-                                                    <CheckCircle2 className="h-4 w-4 text-emerald-500" /> Chofer con identidad validada
+                                                    <CheckCircle2 className="h-4 w-4 text-emerald-500" /> Inspector certificado Clinkar
                                                 </li>
                                                 <li className="flex items-center gap-2 text-xs font-bold text-zinc-500 dark:text-zinc-400">
-                                                    <ShieldCheck className="h-4 w-4 text-indigo-400" /> Seguro Flotante de Traslado
+                                                    <ShieldCheck className="h-4 w-4 text-indigo-400" /> Sin traslados, mayor comodidad
                                                 </li>
+                                            </ul>
+                                        </div>
+
+                                        {/* Plan PERFORMANCE (Tuning) */}
+                                        <div 
+                                            onClick={() => setSelectedPlan('TUNING')}
+                                            className={`relative p-6 rounded-[2rem] border-2 cursor-pointer transition-all duration-300 ${
+                                                selectedPlan === 'TUNING' 
+                                                ? 'border-emerald-500 bg-emerald-50/50 dark:bg-emerald-900/20 shadow-xl shadow-emerald-500/10 scale-[1.02]' 
+                                                : 'border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900/50 hover:border-emerald-200'
+                                            }`}
+                                        >
+                                            <div className="flex justify-between items-start mb-4">
+                                                <div>
+                                                    <h3 className="text-xl font-black italic uppercase tracking-tighter text-zinc-950 dark:text-white">
+                                                        {isHighValue ? 'Financed Elite' : 'Performance'}
+                                                    </h3>
+                                                    <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest mt-1">
+                                                        {isHighValue ? 'Inversión StarterKar' : 'Afinación + Inspección'}
+                                                    </p>
+                                                    <div className="mt-2 inline-flex items-center px-2 py-0.5 rounded-md bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-[8px] font-black uppercase tracking-tighter border border-emerald-500/20">
+                                                        {isHighValue ? '0 Inversión Inicial' : 'Mantenimiento + Certificación'}
+                                                    </div>
+                                                </div>
+                                                <div className="h-6 w-6 rounded-full border-2 border-emerald-500 flex items-center justify-center">
+                                                    {selectedPlan === 'TUNING' && <div className="h-3 w-3 rounded-full bg-emerald-500" />}
+                                                </div>
+                                            </div>
+                                            <ul className="space-y-3 mt-6">
+                                                <li className="flex items-center gap-2 text-xs font-bold text-zinc-500 dark:text-zinc-400">
+                                                    <CheckCircle2 className="h-4 w-4 text-emerald-500" /> Cambio de Aceite y Filtros
+                                                </li>
+                                                <li className="flex items-center gap-2 text-xs font-bold text-zinc-500 dark:text-zinc-400">
+                                                    <CheckCircle2 className="h-4 w-4 text-emerald-500" /> Inspección 150 Puntos (GRATIS)
+                                                </li>
+                                                {isHighValue ? (
+                                                    <li className="flex items-center gap-2 text-xs font-bold text-zinc-500 dark:text-zinc-400">
+                                                        <ShieldCheck className="h-4 w-4 text-indigo-400" /> Firma de Pagaré y Exclusividad
+                                                    </li>
+                                                ) : (
+                                                    <li className="flex items-center gap-2 text-xs font-bold text-zinc-500 dark:text-zinc-400">
+                                                        <Zap className="h-4 w-4 text-amber-500" /> Mejor valor de reventa
+                                                    </li>
+                                                )}
                                             </ul>
                                         </div>
                                     </div>
                                     <p className="px-1 text-[9px] font-black text-zinc-400 uppercase tracking-widest leading-relaxed pt-2">
-                                        * Horario coordinado vía WhatsApp (pago previo 24h). <br/>
-                                        * Costo de inspección 100% reembolsable al vender. <br/>
-                                        * Tu registro desbloquea el **Pool de 11+ Beneficios Exclusivos**.
+                                        {isHighValue && selectedPlan === 'TUNING' ? (
+                                            <>
+                                                * **Costo $0 solo si se vende con StarterKar.** <br/>
+                                                * Ciclo de Venta Acelerada (30-60 días). <br/>
+                                                * Si retiras el auto antes del cierre, cubres el costo del servicio. <br/>
+                                                * Firma de Pagaré por 60 días como garantía de inversión.
+                                            </>
+                                        ) : (
+                                            <>
+                                                * Horario coordinado vía WhatsApp (pago previo 24h). <br/>
+                                                * Costo de inspección 100% reembolsable al vender. <br/>
+                                                * Tu registro desbloquea el **Pool de 11+ Beneficios Exclusivos**.
+                                            </>
+                                        )}
+
+
                                     </p>
                                 </div>
 
                                 {/* Workshop Selection - ONLY for GO Plan */}
-                                {selectedPlan === 'GO' && (
+                                {selectedPlan !== 'VIP' && (
                                     <div className="space-y-6 animate-in fade-in slide-in-from-top-4 duration-500">
                                         <Label className="px-1 text-[10px] font-black uppercase tracking-[0.4em] text-zinc-400 flex items-center gap-2">
                                             <MapPin className="h-3 w-3" /> Selecciona un Taller Aliado
@@ -476,24 +544,30 @@ export default function SellOnboardingPage() {
                                                 {isPremium ? 'Certificación High-End' : 'Certificación Elite'}
                                             </span>
                                             <h4 className="text-xl font-black italic uppercase tracking-tighter">
-                                                {isPremium ? 'Diagnóstico Avanzado de Marca' : '150 Puntos de Control'}
+                                                {selectedPlan === 'TUNING' 
+                                                    ? 'Afinación + Inspección GRATIS' 
+                                                    : (isPremium ? 'Diagnóstico Avanzado de Marca' : '150 Puntos de Control')
+                                                }
                                             </h4>
                                         </div>
                                     </div>
                                     
                                     <div className="flex justify-between items-center pt-2">
                                         <div className="flex flex-col">
-                                            <span className="text-[10px] font-black uppercase tracking-[0.5em]">Inversión Total</span>
+                                            <span className="text-[10px] font-black uppercase tracking-[0.5em]">Inversión Inicial</span>
                                             <span className="text-[8px] font-bold text-indigo-400 dark:text-indigo-600 uppercase tracking-widest mt-1 italic">
-                                                * Inversión estratégica para garantizar el 100% del valor de mercado en tu venta.
+                                                {isHighValue && selectedPlan === 'TUNING' 
+                                                    ? "* StarterKar invierte en tu auto. Recuperamos el costo al vender."
+                                                    : "* Inversión estratégica para garantizar el 100% del valor de mercado."}
                                             </span>
                                         </div>
                                             <span className="text-3xl font-black tracking-tighter text-white dark:text-zinc-950">
-                                                ${totalCost.toLocaleString()}
+                                                {isHighValue && selectedPlan === 'TUNING' ? '$0 (Financiado)' : (selectedPlan === 'TUNING' ? '$1,500' : `$${totalCost.toLocaleString()}`)}
                                             </span>
                                     </div>
                                 </div>
                             </div>
+
 
                                 <div className="pt-6">
                                     <Button 

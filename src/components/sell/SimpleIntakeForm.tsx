@@ -47,6 +47,7 @@ export function SimpleIntakeForm() {
             make: formData.make,
             model: formData.model,
             year: formData.year,
+            price: (formData as any).price || '0',
             category: 'REGULAR'
         });
         
@@ -166,24 +167,43 @@ export function SimpleIntakeForm() {
                             )}
 
                             {/* Año */}
-                            <div className="space-y-3">
-                                <Label className="px-1 text-[9px] font-black uppercase tracking-[0.4em] text-zinc-400 flex items-center gap-2">
-                                    <span className="h-1 w-1 bg-indigo-500 rounded-full" /> Año
-                                </Label>
-                                <div className="relative group">
-                                    <select 
-                                        value={formData.year}
-                                        onChange={(e) => setFormData({...formData, year: e.target.value})}
-                                        className="w-full h-16 appearance-none rounded-2xl border border-zinc-100 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-950 px-8 font-black text-xs focus:ring-2 focus:ring-indigo-500/10 outline-none transition-all cursor-pointer hover:border-zinc-200 dark:hover:border-zinc-700"
-                                    >
-                                        <option value="">AÑO</option>
-                                        {Array.from({length: 40}, (_, i) => new Date().getFullYear() - i).map(year => (
-                                            <option key={year} value={year}>{year}</option>
-                                        ))}
-                                    </select>
-                                    <Calendar className="absolute right-6 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400 pointer-events-none group-hover:text-indigo-500 transition-colors" />
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                <div className="space-y-3">
+                                    <Label className="px-1 text-[9px] font-black uppercase tracking-[0.4em] text-zinc-400 flex items-center gap-2">
+                                        <span className="h-1 w-1 bg-indigo-500 rounded-full" /> Año
+                                    </Label>
+                                    <div className="relative group">
+                                        <select 
+                                            value={formData.year}
+                                            onChange={(e) => setFormData({...formData, year: e.target.value})}
+                                            className="w-full h-16 appearance-none rounded-2xl border border-zinc-100 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-950 px-8 font-black text-xs focus:ring-2 focus:ring-indigo-500/10 outline-none transition-all cursor-pointer hover:border-zinc-200 dark:hover:border-zinc-700"
+                                        >
+                                            <option value="">AÑO</option>
+                                            {Array.from({length: 40}, (_, i) => new Date().getFullYear() - i).map(year => (
+                                                <option key={year} value={year}>{year}</option>
+                                            ))}
+                                        </select>
+                                        <Calendar className="absolute right-6 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400 pointer-events-none group-hover:text-indigo-500 transition-colors" />
+                                    </div>
+                                </div>
+
+                                <div className="space-y-3">
+                                    <Label className="px-1 text-[9px] font-black uppercase tracking-[0.4em] text-zinc-400 flex items-center gap-2">
+                                        <span className="h-1 w-1 bg-emerald-500 rounded-full" /> Precio Sugerido
+                                    </Label>
+                                    <div className="relative group">
+                                        <Input 
+                                            type="number"
+                                            value={(formData as any).price || ""}
+                                            onChange={(e) => setFormData({...formData, price: e.target.value} as any)}
+                                            placeholder="VALOR ESTIMADO..."
+                                            className="h-16 rounded-2xl border-zinc-100 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-950 px-8 font-black focus:ring-2 focus:ring-emerald-500/10 text-xs transition-all"
+                                        />
+                                        <Banknote className="absolute right-6 top-1/2 -translate-y-1/2 h-4 w-4 text-emerald-500 pointer-events-none" />
+                                    </div>
                                 </div>
                             </div>
+
                         </div>
 
                         <div className="pt-4">

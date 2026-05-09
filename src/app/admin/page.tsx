@@ -286,6 +286,10 @@ export default function AdminDashboardV6() {
                 <aside className="w-80 border-r border-zinc-900 p-8 hidden lg:block space-y-2 sticky top-16 h-[calc(100vh-4rem)] overflow-y-auto custom-scrollbar">
                     <p className="text-[9px] font-black text-zinc-600 uppercase tracking-[0.2em] mb-6 px-4">Operaciones Core</p>
                     <SidebarItem icon={LayoutDashboard} label="Monitor Live" active={view === 'CONTROL'} onClick={() => setView('CONTROL')} />
+                    <Link href="/admin/control" className="flex items-center gap-3 px-4 py-3 rounded-xl text-zinc-500 hover:text-white hover:bg-zinc-900 transition-all group">
+                        <ShieldCheck className="h-4 w-4 group-hover:text-indigo-500 transition-colors" />
+                        <span className="text-[10px] font-black uppercase tracking-widest">Gestión Operativa</span>
+                    </Link>
                     <SidebarItem icon={CarFront} label="Inventario" active={view === 'INVENTORY'} onClick={() => setView('INVENTORY')} />
                     <SidebarItem icon={Users} label="Usuarios" active={view === 'USERS'} onClick={() => setView('USERS')} />
                     <SidebarItem icon={DollarSign} label="Cobranza" active={view === 'BILLING'} onClick={() => setView('BILLING')} badge={transactions.filter(t => t.status === 'RELEASED' && !t.commission_paid).length} />

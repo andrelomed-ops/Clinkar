@@ -20,22 +20,19 @@ const SIMULATION_CONFIG = {
 };
 
 export default function CheckoutSimulationPage() {
-    // Single step flow now: DETAILS -> PROCESSING -> SUCCESS
     const [step, setStep] = useState<'DETAILS' | 'PAYMENT' | 'PROCESSING' | 'SUCCESS'>('DETAILS');
     const [selectedMethod, setSelectedMethod] = useState<'STP' | 'STRIPE'>('STP');
     const [deliveryMethod, setDeliveryMethod] = useState<'PICKUP' | 'HOME'>('PICKUP');
     const [isMounted, setIsMounted] = useState(false);
     const [agreedToTerms, setAgreedToTerms] = useState(false);
     const [agreedToPrivacy, setAgreedToPrivacy] = useState(false);
-    const [warrantyType, setWarrantyType] = useState<'STANDARD' | 'EXTENDED'>('STANDARD');
-    const [isPldChecking, setIsPldChecking] = useState(false);
-    const [pldStatus, setPldStatus] = useState<'PENDING' | 'CLEAN' | 'WARNING' | 'BLOCKED'>('PENDING');
+
+    const DEPOSIT_AMOUNT = 2500;
 
     // Concurrency Lock Timer
-    const [timeLeft, setTimeLeft] = useState(15 * 60); // 15 minutes in seconds
+    const [timeLeft, setTimeLeft] = useState(15 * 60);
 
     useEffect(() => {
-        // eslint-disable-next-line react-hooks/set-state-in-effect
         setIsMounted(true);
     }, []);
 
@@ -44,8 +41,7 @@ export default function CheckoutSimulationPage() {
         const timer = setInterval(() => {
             setTimeLeft(prev => {
                 if (prev <= 1) {
-                    // Lock Expired
-                    alert("Tu tiempo para procesar el pago ha expirado. El vehículo ha sido liberado para otros compradores.");
+                    alert("Tu tiempo de apartado ha expirado. El vehículo ha sido liberado.");
                     window.location.href = "/buy";
                     return 0;
                 }
@@ -63,283 +59,233 @@ export default function CheckoutSimulationPage() {
 
     const formatCurrency = (val: number) => isMounted ? val.toLocaleString() : "...";
 
-    // Get Quotes from WarrantyService
-    const warrantyQuotes = WarrantyService.getQuotes(SIMULATION_CONFIG.CAR_PRICE, "00000000-0000-0000-0000-000000000003");
-    const selectedQuote = warrantyQuotes.find(q => q.type === warrantyType);
-
-    // Dynamic Total Calculation
-    const deliveryCost = deliveryMethod === 'HOME' ? SIMULATION_CONFIG.DELIVERY_COST : 0;
-    const warrantyCost = selectedQuote?.cost || 0;
-    
-    const totalAmount = SIMULATION_CONFIG.CAR_PRICE + deliveryCost + warrantyCost;
-
-    const handleProcessPayment = async () => {
-        setIsPldChecking(true);
+    const handleProcessDeposit = async () => {
         setStep('PROCESSING');
-
         try {
-            // 1. Simulación de PLD (Security First)
-            // Usamos un nombre "seguro" para la demo, o uno "bloqueado" para probar errores
-            const screeningName = "Comprador de Prueba"; 
-            
-            // Simulación de delay de API de Cumplimiento
-            await new Promise(resolve => setTimeout(resolve, 1500));
-            
-            // En una implementación real, aquí llamaríamos a PldService.screenPerson
-            setPldStatus('CLEAN');
-            setIsPldChecking(false);
-
-            // 2. Iniciar Transacción
+            await new Promise(resolve => setTimeout(resolve, 2000));
+            // Inicia la transacción con el depósito
             await startTransaction("00000000-0000-0000-0000-000000000003", {
-                logistics: deliveryMethod === 'HOME' ? { type: 'HOME', cost: SIMULATION_CONFIG.DELIVERY_COST } : undefined,
-                warranty: { type: warrantyType, cost: warrantyCost }
-            });
-            
+                deliveryType: deliveryMethod === 'HOME' ? 'home' : 'workshop',
+                metadata: {
+                    is_deposit_only: true,
+                    deposit_amount: DEPOSIT_AMOUNT
+                }
+            } as any);
             setStep('SUCCESS');
         } catch (error: any) {
-            console.error("Payment failed", error);
+            console.error("Deposit failed", error);
             alert("Error en la operación: " + error.message);
             setStep('DETAILS');
-            setIsPldChecking(false);
         }
     };
 
     return (
-        <div className="min-h-screen bg-black text-zinc-100 font-sans selection:bg-blue-500/30">
-
+        <div className="min-h-screen bg-black text-zinc-100 font-sans selection:bg-emerald-500/30">
             {/* UNIFIED HEADER */}
             <header className="fixed top-0 left-0 right-0 h-16 bg-black/80 backdrop-blur-md border-b border-zinc-800 z-50 flex items-center justify-between px-6">
                 <div className="flex items-center gap-2">
                     <ShieldCheck className="h-4 w-4 text-emerald-500" />
-                    <span className="text-xs font-bold tracking-widest uppercase text-emerald-500">Checkout Seguro</span>
+                    <span className="text-xs font-bold tracking-widest uppercase text-emerald-500">Apartado Seguro StarterKar</span>
                 </div>
-
-                <Link href="/buy" className="flex items-center gap-2 text-red-500/80 hover:text-red-400 transition-colors">
-                    <span className="text-sm font-medium">Cancelar Operación</span>
+                <Link href="/buy" className="flex items-center gap-2 text-zinc-500 hover:text-white transition-colors">
+                    <span className="text-sm font-medium">Cancelar</span>
                     <X className="h-5 w-5" />
                 </Link>
             </header>
 
             <div className="pt-24 pb-12 px-6 max-w-7xl mx-auto">
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-
-                    {/* COLUMNA IZQUIERDA: PERFIL COMPRADOR */}
+                    {/* COLUMNA IZQUIERDA: FLUJO DE APARTADO */}
                     <div className="lg:col-span-7 space-y-6">
-                        <div className="flex items-center justify-between mb-2">
-                            <h2 className="text-xl font-bold text-white">Tu Compra</h2>
-                            <span className="px-3 py-1 rounded-full bg-blue-500/10 text-blue-400 text-xs font-bold border border-blue-500/20">
-                                VISTA COMPRADOR
-                            </span>
-                        </div>
-
                         {step === 'SUCCESS' ? (
                             <div className="bg-zinc-900 rounded-[2rem] p-10 text-center border border-zinc-800 shadow-2xl space-y-6 animate-in zoom-in duration-500">
                                 <div className="h-24 w-24 bg-emerald-500/10 text-emerald-500 rounded-full mx-auto flex items-center justify-center border border-emerald-500/20">
-                                    <span className="text-4xl">🎉</span>
+                                    <ShieldCheck className="h-12 w-12" />
                                 </div>
                                 <div>
-                                    <h2 className="text-2xl font-black text-white">¡Todo Listo!</h2>
-                                    <p className="text-zinc-400 mt-2">
-                                        Pago recibido y tu auto está en camino.
+                                    <h2 className="text-3xl font-black text-white">¡Apartado Confirmado!</h2>
+                                    <p className="text-zinc-400 mt-2 max-w-md mx-auto">
+                                        Tu depósito de <strong>$2,500 MXN</strong> ha sido recibido correctamente. El vehículo ha sido bloqueado exclusivamente para ti.
                                     </p>
                                 </div>
-                                <div className="bg-zinc-950 p-6 rounded-2xl text-left text-sm space-y-3 border border-zinc-800">
-                                    <div className="flex justify-between">
-                                        <span className="text-zinc-500">Método de Entrega</span>
-                                        <span className="font-medium text-white">
-                                            {deliveryMethod === 'HOME' ? 'Envío a Domicilio' : 'Pick-up en Hub'}
-                                        </span>
-                                    </div>
-                                    <div className="flex justify-between border-t border-zinc-800 pt-3 mt-3">
-                                        <span className="text-zinc-500">Monto Total Pagado</span>
-                                        <span className="font-bold text-white">${formatCurrency(totalAmount)} MXN</span>
-                                    </div>
-                                    <div className="flex justify-between">
-                                        <span className="text-zinc-500">Referencia</span>
-                                        <span className="font-mono text-zinc-300">#CLK-SUCCESS-001</span>
-                                    </div>
+                                
+                                <div className="bg-emerald-500/5 border border-emerald-500/20 p-6 rounded-2xl text-left space-y-4">
+                                    <h3 className="font-bold text-emerald-400 flex items-center gap-2">
+                                        <Truck className="h-4 w-4" />
+                                        Próximos Pasos (Torre de Control)
+                                    </h3>
+                                    <p className="text-sm text-zinc-300 leading-relaxed">
+                                        Nuestra <strong>Torre de Control Central</strong> ha recibido tu solicitud. En un plazo máximo de 2 horas, un administrador te asignará un <strong>Árbitro StarterKar</strong> para coordinar la inspección y entrega física.
+                                    </p>
+                                    <ul className="text-xs text-zinc-500 space-y-2 list-disc ml-4">
+                                        <li>No necesitas contactar al vendedor directamente.</li>
+                                        <li>El Árbitro StarterKar será tu único punto de contacto.</li>
+                                        <li>Ten lista tu identificación oficial para la cita.</li>
+                                    </ul>
                                 </div>
-                                <p className="text-xs text-zinc-600 px-4">
-                                    {LEGAL_TEXTS.FINANCING_DISCLAIMER}
-                                </p>
+
+                                <Link 
+                                    href="/dashboard"
+                                    className="inline-flex h-14 items-center justify-center px-8 bg-white text-black rounded-xl font-bold hover:scale-105 transition-transform"
+                                >
+                                    Ir a mi Dashboard
+                                </Link>
                             </div>
                         ) : (
-                            // PAYMENT FORM (Details, Payment, Processing)
-                            (step === 'DETAILS' || step === 'PAYMENT' || step === 'PROCESSING') && (
-                                <div className="bg-zinc-900 rounded-[2rem] p-8 border border-zinc-800 shadow-2xl space-y-8">
-                                    {/* Header del Auto */}
-                                    <div className="flex items-start justify-between pb-6 border-b border-zinc-800">
-                                        <div>
-                                            <h1 className="text-2xl font-black text-white">Tesla Model 3</h1>
-                                            <p className="text-zinc-400">2022 • 25,000 km</p>
-                                            <div className="mt-2 inline-flex flex-col">
-                                                <span className="text-[10px] uppercase font-bold text-amber-500 tracking-wider">Tiempo Exclusivo de Compra</span>
-                                                <span className="text-lg font-black text-amber-400 font-mono flex items-center gap-2">
-                                                    ⏱ {formatTime(timeLeft)}
-                                                </span>
-                                            </div>
-                                        </div>
-                                        <div className="text-right">
-                                            <p className="text-sm text-zinc-500 uppercase tracking-widest">Total a Pagar</p>
-                                            <p className="text-3xl font-black text-emerald-400 tracking-tight transition-all duration-300">
-                                                ${formatCurrency(totalAmount)}
-                                            </p>
-                                            {deliveryMethod === 'HOME' && (
-                                                <p className="text-xs text-emerald-500 mt-1 animate-in fade-in font-medium">
-                                                    + Envío (${formatCurrency(SIMULATION_CONFIG.DELIVERY_COST)}) incluido
-                                                </p>
-                                            )}
+                            <div className="bg-zinc-900 rounded-[2rem] p-8 border border-zinc-800 shadow-2xl space-y-8">
+                                <div className="flex items-start justify-between pb-6 border-b border-zinc-800">
+                                    <div>
+                                        <h1 className="text-2xl font-black text-white">Tesla Model 3</h1>
+                                        <p className="text-zinc-400">2022 • 25,000 km</p>
+                                        <div className="mt-2 inline-flex flex-col">
+                                            <span className="text-[10px] uppercase font-bold text-amber-500 tracking-wider">Tiempo para Apartar</span>
+                                            <span className="text-lg font-black text-amber-400 font-mono">
+                                                ⏱ {formatTime(timeLeft)}
+                                            </span>
                                         </div>
                                     </div>
-                                    {/* Legal Consent Checkboxes */}
-                                    <div className="bg-zinc-950 p-6 rounded-2xl border border-zinc-800 space-y-4">
-                                        <div className="flex items-start gap-3">
-                                            <input
-                                                type="checkbox"
-                                                id="terms-check"
-                                                className="mt-1 h-5 w-5 rounded border-zinc-700 text-emerald-500 focus:ring-emerald-500 bg-zinc-800 transition-all cursor-pointer"
-                                                checked={agreedToTerms}
-                                                onChange={(e) => setAgreedToTerms(e.target.checked)}
-                                                aria-label="Aceptar términos y condiciones"
-                                                required
-                                            />
-                                            <label htmlFor="terms-check" className="text-xs text-zinc-300 leading-relaxed cursor-pointer select-none">
-                                                He leído y acepto los <Link href="/terms" className="text-emerald-500 hover:text-emerald-400 font-bold transition-colors underline decoration-emerald-500/30 underline-offset-4">Términos y Condiciones de Uso</Link>, incluyendo la validez de la Firma Electrónica mediante Código QR.
-                                            </label>
-                                        </div>
-                                        <div className="flex items-start gap-3">
-                                            <input
-                                                type="checkbox"
-                                                id="privacy-check"
-                                                className="mt-1 h-5 w-5 rounded border-zinc-700 text-emerald-500 focus:ring-emerald-500 bg-zinc-800 transition-all cursor-pointer"
-                                                checked={agreedToPrivacy}
-                                                onChange={(e) => setAgreedToPrivacy(e.target.checked)}
-                                                aria-label="Aceptar aviso de privacidad"
-                                                required
-                                            />
-                                            <label htmlFor="privacy-check" className="text-xs text-zinc-300 leading-relaxed cursor-pointer select-none">
-                                                Consiento el tratamiento de mis datos personales conforme al <Link href="/privacy" className="text-emerald-500 hover:text-emerald-400 font-bold transition-colors underline decoration-emerald-500/30 underline-offset-4">Aviso de Privacidad Integral</Link> (LFPDPPP).
-                                            </label>
-                                        </div>
+                                    <div className="text-right">
+                                        <p className="text-sm text-zinc-500 uppercase tracking-widest">Monto de Apartado</p>
+                                        <p className="text-3xl font-black text-emerald-400 tracking-tight">
+                                            ${formatCurrency(DEPOSIT_AMOUNT)}
+                                        </p>
+                                        <p className="text-[10px] text-zinc-500 mt-1 uppercase font-bold">
+                                            Abonable al precio total
+                                        </p>
                                     </div>
-
-                                    {/* DELIVERY SELECTION SECTION */}
-                                    <div className="space-y-4">
-                                        <h3 className="text-sm font-bold text-zinc-400 uppercase tracking-widest">Método de Entrega</h3>
-                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                            <button
-                                                onClick={() => setDeliveryMethod('PICKUP')}
-                                                className={`group relative p-4 rounded-xl border-2 text-left transition-all ${deliveryMethod === 'PICKUP'
-                                                    ? 'border-emerald-500 bg-emerald-500/5'
-                                                    : 'border-zinc-800 bg-zinc-950 hover:border-zinc-700'
-                                                    }`}
-                                            >
-                                                <div className="flex items-start gap-3">
-                                                    <div className={`p-2 rounded-lg ${deliveryMethod === 'PICKUP' ? 'bg-emerald-500 text-black' : 'bg-zinc-800 text-zinc-400'}`}>
-                                                        <MapPin className="h-5 w-5" />
-                                                    </div>
-                                                    <div>
-                                                        <p className={`font-bold ${deliveryMethod === 'PICKUP' ? 'text-white' : 'text-zinc-300'}`}>Pick-up en Hub</p>
-                                                        <p className="text-xs text-emerald-500 font-bold mt-0.5">Gratis</p>
-                                                    </div>
-                                                </div>
-                                            </button>
-
-                                            <button
-                                                onClick={() => setDeliveryMethod('HOME')}
-                                                className={`group relative p-4 rounded-xl border-2 text-left transition-all ${deliveryMethod === 'HOME'
-                                                    ? 'border-emerald-500 bg-emerald-500/5'
-                                                    : 'border-zinc-800 bg-zinc-950 hover:border-zinc-700'
-                                                    }`}
-                                            >
-                                                <div className="flex items-start gap-3">
-                                                    <div className={`p-2 rounded-lg ${deliveryMethod === 'HOME' ? 'bg-emerald-500 text-black' : 'bg-zinc-800 text-zinc-400'}`}>
-                                                        <Truck className="h-5 w-5" />
-                                                    </div>
-                                                    <div>
-                                                        <p className={`font-bold ${deliveryMethod === 'HOME' ? 'text-white' : 'text-zinc-300'}`}>Envío a Domicilio</p>
-                                                        <p className="text-xs text-emerald-500 font-bold mt-0.5">+${formatCurrency(SIMULATION_CONFIG.DELIVERY_COST)}</p>
-                                                    </div>
-                                                </div>
-                                            </button>
-                                        </div>
-                                    </div>
-
-                                    {/* WARRANTY SELECTION SECTION */}
-                                    <div className="space-y-4">
-                                        <h3 className="text-sm font-bold text-zinc-400 uppercase tracking-widest">Protección StarterKar</h3>
-                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                            <button
-                                                onClick={() => setWarrantyType('STANDARD')}
-                                                className={`group relative p-4 rounded-xl border-2 text-left transition-all ${warrantyType === 'STANDARD'
-                                                    ? 'border-blue-500 bg-blue-500/5'
-                                                    : 'border-zinc-800 bg-zinc-950 hover:border-zinc-700'
-                                                    }`}
-                                            >
-                                                <div className="flex items-start gap-3">
-                                                    <div className={`p-2 rounded-lg ${warrantyType === 'STANDARD' ? 'bg-blue-500 text-black' : 'bg-zinc-800 text-zinc-400'}`}>
-                                                        <ShieldCheck className="h-5 w-5" />
-                                                    </div>
-                                                    <div>
-                                                        <p className={`font-bold ${warrantyType === 'STANDARD' ? 'text-white' : 'text-zinc-300'}`}>Garantía Básica</p>
-                                                        <p className="text-xs text-blue-400 font-bold mt-0.5">Incluida (90 días)</p>
-                                                    </div>
-                                                </div>
-                                            </button>
-
-                                            <button
-                                                onClick={() => setWarrantyType('EXTENDED')}
-                                                className={`group relative p-4 rounded-xl border-2 text-left transition-all ${warrantyType === 'EXTENDED'
-                                                    ? 'border-indigo-500 bg-indigo-500/5'
-                                                    : 'border-zinc-800 bg-zinc-950 hover:border-zinc-700'
-                                                    }`}
-                                            >
-                                                <div className="flex items-start gap-3">
-                                                    <div className={`p-2 rounded-lg ${warrantyType === 'EXTENDED' ? 'bg-indigo-500 text-white' : 'bg-zinc-800 text-zinc-400'}`}>
-                                                        <ShieldCheck className={`h-5 w-5 ${pldStatus === 'CLEAN' ? 'text-emerald-500' : 'text-amber-500'}`} />
-                                                    </div>
-                                                    <div>
-                                                        <p className={`font-bold ${warrantyType === 'EXTENDED' ? 'text-white' : 'text-zinc-300'}`}>Garantía Extendida</p>
-                                                        <p className="text-xs text-indigo-400 font-bold mt-0.5">+${formatCurrency(warrantyCost)} (12 meses)</p>
-                                                    </div>
-                                                </div>
-                                            </button>
-                                        </div>
-                                    </div>
-
-                                    <div className="border-t border-zinc-800 my-6"></div>
-
-                                    <SmartPaymentSelector
-                                        amount={totalAmount}
-                                        onPaymentMethodSelect={(m) => {
-                                            setSelectedMethod(m);
-                                        }}
-                                    />
-
-                                    <TrustSeal />
-
-                                    <button
-                                        onClick={handleProcessPayment}
-                                        disabled={step === 'PROCESSING' || !agreedToTerms || !agreedToPrivacy}
-                                        className="w-full h-16 bg-white text-black rounded-2xl font-bold text-lg hover:scale-[1.02] active:scale-[0.98] transition-all shadow-[0_0_20px_rgba(255,255,255,0.1)] hover:shadow-[0_0_30px_rgba(255,255,255,0.2)] flex items-center justify-center gap-3 disabled:opacity-50 disabled:pointer-events-none"
-                                    >
-                                        {step === 'PROCESSING' ? (
-                                            <>
-                                                <Loader2 className="h-6 w-6 animate-spin" />
-                                                {isPldChecking ? "Ejecutando Screening PLD..." : "Procesando Pago Total..."}
-                                            </>
-                                        ) : (
-                                            `Pagar $${formatCurrency(totalAmount)}`
-                                        )}
-                                    </button>
-
-                                    <p className="text-center text-[10px] text-zinc-600 uppercase tracking-widest">
-                                        Encriptación SSL de 256-bits • Transacción Segura
-                                    </p>
                                 </div>
-                            )
+
+                                <div className="bg-amber-500/5 border border-amber-500/20 p-4 rounded-xl flex gap-4 items-start">
+                                    <AlertTriangle className="h-5 w-5 text-amber-500 shrink-0 mt-0.5" />
+                                    <div className="text-xs text-amber-200/70 leading-relaxed">
+                                        <strong>Política de Apartado:</strong> Este monto de $2,500 MXN es <strong>no reembolsable</strong>, ya que cubre los costos logísticos de movilización del Árbitro StarterKar y personal mecánico a la ubicación de entrega. Si decides no concretar la compra por causas ajenas a la unidad, el monto se retiene por gastos de gestión.
+                                    </div>
+                                </div>
+
+                                <div className="bg-zinc-950 p-6 rounded-2xl border border-zinc-800 space-y-4">
+                                    <div className="flex items-start gap-3">
+                                        <input
+                                            type="checkbox"
+                                            id="terms-check"
+                                            className="mt-1 h-5 w-5 rounded border-zinc-700 text-emerald-500 focus:ring-emerald-500 bg-zinc-800 cursor-pointer"
+                                            checked={agreedToTerms}
+                                            onChange={(e) => setAgreedToTerms(e.target.checked)}
+                                        />
+                                        <label htmlFor="terms-check" className="text-xs text-zinc-300 leading-relaxed cursor-pointer select-none">
+                                            Acepto que el depósito es no reembolsable y autorizo a la <strong>Torre de Control StarterKar</strong> para gestionar mi cita de entrega.
+                                        </label>
+                                    </div>
+                                    <div className="flex items-start gap-3">
+                                        <input
+                                            type="checkbox"
+                                            id="privacy-check"
+                                            className="mt-1 h-5 w-5 rounded border-zinc-700 text-emerald-500 focus:ring-emerald-500 bg-zinc-800 cursor-pointer"
+                                            checked={agreedToPrivacy}
+                                            onChange={(e) => setAgreedToPrivacy(e.target.checked)}
+                                        />
+                                        <label htmlFor="privacy-check" className="text-xs text-zinc-300 leading-relaxed cursor-pointer select-none">
+                                            Consiento el tratamiento de mis datos personales para la asignación del Árbitro StarterKar conforme al Aviso de Privacidad.
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <div className="space-y-4">
+                                    <h3 className="text-sm font-bold text-zinc-400 uppercase tracking-widest">¿Dónde quieres recibir el auto?</h3>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <button
+                                            onClick={() => setDeliveryMethod('PICKUP')}
+                                            className={`p-4 rounded-xl border-2 text-left transition-all ${deliveryMethod === 'PICKUP' ? 'border-emerald-500 bg-emerald-500/5' : 'border-zinc-800 bg-zinc-950'}`}
+                                        >
+                                            <div className="flex items-start gap-3">
+                                                <MapPin className="h-5 w-5 text-zinc-400" />
+                                                <div>
+                                                    <p className="font-bold">Hub StarterKar</p>
+                                                    <p className="text-xs text-emerald-500">Sin costo extra</p>
+                                                </div>
+                                            </div>
+                                        </button>
+                                        <button
+                                            onClick={() => setDeliveryMethod('HOME')}
+                                            className={`p-4 rounded-xl border-2 text-left transition-all ${deliveryMethod === 'HOME' ? 'border-emerald-500 bg-emerald-500/5' : 'border-zinc-800 bg-zinc-950'}`}
+                                        >
+                                            <div className="flex items-start gap-3">
+                                                <Truck className="h-5 w-5 text-zinc-400" />
+                                                <div>
+                                                    <p className="font-bold">A Domicilio</p>
+                                                    <p className="text-xs text-emerald-500">Sujeto a cobertura</p>
+                                                </div>
+                                            </div>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <button
+                                    onClick={handleProcessDeposit}
+                                    disabled={step === 'PROCESSING' || !agreedToTerms || !agreedToPrivacy}
+                                    className="w-full h-16 bg-emerald-500 text-black rounded-2xl font-bold text-lg hover:bg-emerald-400 active:scale-[0.98] transition-all shadow-[0_0_20px_rgba(16,185,129,0.2)] flex items-center justify-center gap-3 disabled:opacity-50 disabled:pointer-events-none"
+                                >
+                                    {step === 'PROCESSING' ? (
+                                        <>
+                                            <Loader2 className="h-6 w-6 animate-spin" />
+                                            Procesando Apartado...
+                                        </>
+                                    ) : (
+                                        `Apartar con $${formatCurrency(DEPOSIT_AMOUNT)}`
+                                    )}
+                                </button>
+
+                                <TrustSeal />
+                            </div>
                         )}
                     </div>
+
+                    {/* COLUMNA DERECHA: INFO DE SEGURIDAD */}
+                    <div className="lg:col-span-5 space-y-6">
+                        <div className="bg-zinc-900/50 rounded-3xl p-6 border border-zinc-800 space-y-6">
+                            <h3 className="text-sm font-bold text-zinc-400 uppercase tracking-widest flex items-center gap-2">
+                                <ShieldCheck className="h-4 w-4 text-emerald-500" />
+                                Garantía StarterKar
+                            </h3>
+                            <div className="space-y-4">
+                                <div className="flex gap-4">
+                                    <div className="h-10 w-10 rounded-full bg-zinc-800 flex items-center justify-center shrink-0">
+                                        <span className="text-lg">⚖️</span>
+                                    </div>
+                                    <div>
+                                        <p className="text-sm font-bold">Arbitraje Neutral</p>
+                                        <p className="text-xs text-zinc-500 mt-1">Un profesional independiente supervisará la entrega para evitar fraudes y asegurar legalidad.</p>
+                                    </div>
+                                </div>
+                                <div className="flex gap-4">
+                                    <div className="h-10 w-10 rounded-full bg-zinc-800 flex items-center justify-center shrink-0">
+                                        <span className="text-lg">💰</span>
+                                    </div>
+                                    <div>
+                                        <p className="text-sm font-bold">Escrow Blindado</p>
+                                        <p className="text-xs text-zinc-500 mt-1">El resto del pago solo se libera al vendedor cuando tú confirmas la recepción del auto ante el Árbitro.</p>
+                                    </div>
+                                </div>
+                                <div className="flex gap-4">
+                                    <div className="h-10 w-10 rounded-full bg-zinc-800 flex items-center justify-center shrink-0">
+                                        <span className="text-lg">📋</span>
+                                    </div>
+                                    <div>
+                                        <p className="text-sm font-bold">Cero Contacto Directo</p>
+                                        <p className="text-xs text-zinc-500 mt-1">Protegemos tu privacidad. La Torre de Control gestiona todo para evitar negociaciones fuera de protocolo.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+}
+
+// Ensure AlertTriangle is imported
+import { AlertTriangle } from "lucide-react";
+
 
                     {/* COLUMNA DERECHA: PERFIL VENDEDOR */}
                     <div className="lg:col-span-5 space-y-6">

@@ -19,25 +19,21 @@ export async function startTransaction(carId: string, addOns?: {
     scheduledTime?: string;
     workshopId?: string;
     buyerPhone?: string;
+    metadata?: any;
 }) {
     const supabase = await createClient();
 
     // 1. Check Auth (Real or Demo)
-    // We try getUser() first as it's more secure, but fallback to getSession() for speed/resilience
     const { data: { user } } = await supabase.auth.getUser();
     const { data: { session } } = !user ? await supabase.auth.getSession() : { data: { session: null } };
     
-    // Check for Demo Cookie (Next.js 15+ async cookies)
     const { cookies } = await import('next/headers');
     const cookieStore = await cookies();
     const demoRole = cookieStore.get('starterkar_role')?.value;
 
     const buyerId = user?.id || session?.user?.id || (demoRole ? 'demo-user-123' : null);
 
-    console.log(`[startTransaction] Auth Check: UserID:${buyerId} (Auth:${!!user}, Session:${!!session}, Demo:${!!demoRole})`);
-
     if (!buyerId) {
-        console.warn(`[startTransaction] No Auth Found. Redirecting to login for Car:${carId}`);
         redirect(`/login?next=/buy/${carId}`);
     }
 
@@ -47,22 +43,12 @@ export async function startTransaction(carId: string, addOns?: {
 
     if (!car) throw new Error("Car not found");
 
-    if (dbCar) {
-        if (dbCar.status === 'SOLD' || dbCar.status === 'RESERVED') {
-            console.warn(`[Security] Attempt to buy unavailable car ${carId}. Status: ${dbCar.status}`);
-            redirect(`/buy/${carId}?error=unavailable`);
-        }
+    if (dbCar && (dbCar.status === 'SOLD' || dbCar.status === 'RESERVED')) {
+        redirect(`/buy/${carId}?error=unavailable`);
     }
 
-    // 3. SELLER RESOLUTION
-    // [FIX V4.8.8] Use Admin as fallback for system/mock cars to avoid FK violations
     const MASTER_ADMIN_ID = '964831ea-da63-414f-a65a-47444a295e03';
     const sellerId = car.seller_id || MASTER_ADMIN_ID;
-
-    if (sellerId === buyerId && sellerId !== MASTER_ADMIN_ID) {
-        console.warn(`[Security] Buyer ${buyerId} is trying to buy their own car.`);
-    }
-
 
     const mockStripeSessionId = `sess_${crypto.randomUUID()}`;
 
@@ -71,7 +57,6 @@ export async function startTransaction(carId: string, addOns?: {
     try {
         if (demoRole || !dbCar) {
             transactionId = dbCar ? "demo-tx-123" : `mock-tx-${car.id}`;
-            console.log(`[startTransaction] SIMULATION MODE: ${transactionId}`);
         } else {
             const transaction = await TransactionService.createTransaction(supabase, {
                 carId: car.id,
@@ -81,18 +66,16 @@ export async function startTransaction(carId: string, addOns?: {
                 stripeSessionId: mockStripeSessionId,
                 logisticsQuote: addOns?.logistics,
                 warrantyQuote: addOns?.warranty,
-                gestoriaQuote: addOns?.gestoria,
-                insuranceQuote: addOns?.insurance,
-                buyerPhone: addOns?.buyerPhone,
-                // Pass scheduling in metadata
                 metadata: {
+                    ...addOns?.metadata,
                     scheduled_delivery_date: addOns?.scheduledDate,
                     scheduled_delivery_time: addOns?.scheduledTime,
                     delivery_type: addOns?.deliveryType || 'workshop',
                     workshop_id: addOns?.workshopId,
-                    category: car.category
+                    category: (car as any).category
                 }
             });
+
 
             if (!transaction) throw new Error("Failed to create transaction record");
             transactionId = transaction.id;

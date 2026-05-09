@@ -22,64 +22,20 @@ export class TransactionService extends BaseService {
         // Optional Services
         logisticsQuote?: { cost: number; distance: number; origin: string; dest: string };
         warrantyQuote?: { cost: number; type: 'STANDARD' | 'EXTENDED' };
-        gestoriaQuote?: { active: boolean, cost: number };
-        insuranceQuote?: { provider: string, cost: number };
-        appliedPerkId?: string;
-        buyerPhone?: string;
         metadata?: any;
     }): Promise<Transaction | null> {
-        Logger.info(`[GATEKEEPER] Iniciando creación de transacción para ${data.sellerId} (Monto: $${data.amount})`);
+        const isDepositOnly = data.metadata?.is_deposit_only || false;
+        const depositAmount = data.metadata?.deposit_amount || 2500;
+
+        Logger.info(`[TORRE-CONTROL] Creando transacción (${isDepositOnly ? 'DEPOSITO' : 'TOTAL'}) para auto ${data.carId}`);
 
         // 0. Concurrency Control lock
         const lockResult = await LockService.acquireLock(supabase, data.carId, data.buyerId, 15);
         if (!lockResult.success) {
-            throw new Error(`RESOURCE_LOCKED: Vehículo temporalmente reservado y en proceso de pago por otro usuario. Por favor, espera e intenta de nuevo más tarde. Únete a la fila de este auto para ser el primero en fila.`);
+            throw new Error(`RESOURCE_LOCKED: Vehículo temporalmente apartado.`);
         }
 
-        // 1. Mediator Only: No KYC/AML enforcement required as funds do not pass through StarterKar.
-        // PLD & AML thresholds removed per business pivot to P2P Mediation.
-
-        // 3. Calculate Commissions
-        // 3.1 Buyer Commission (Free on 1st purchase)
-        const { count: previousPurchases } = await (supabase
-            .from('transactions') as any)
-            .select('*', { count: 'exact', head: true })
-            .eq('buyer_id', data.buyerId)
-            .eq('status', 'RELEASED');
-        
-        const isFirstPurchase = (previousPurchases || 0) === 0;
-        const buyerCommission = isFirstPurchase ? PRICING_CONFIG.BUYER_FIRST_PURCHASE_FEE : PRICING_CONFIG.BUYER_STANDARD_SERVICE_FEE;
-
-        // 3.2 Seller Fee (3.5% standard, check for discounts)
-        let sellerFeePercent = PRICING_CONFIG.SELLER_SUCCESS_FEE_PERCENT;
-        const { data: feeDiscount } = await (supabase
-            .from('user_perks') as any)
-            .select('id')
-            .eq('user_id', data.sellerId)
-            .eq('perk_type', 'FEE_DISCOUNT')
-            .eq('status', 'AVAILABLE')
-        
-        // 3.3 Optional Discount Perks (Referrals)
-        let appliedPerk = null;
-        if (data.appliedPerkId) {
-            const { data: perk } = await (supabase.from('user_perks') as any).select('*').eq('id', data.appliedPerkId).single();
-            if (perk && perk.status === 'AVAILABLE') {
-                appliedPerk = perk;
-                sellerFeePercent = sellerFeePercent * (PRICING_CONFIG.REFERRAL_REWARD_FEE_DISCOUNT_PERCENT / 100);
-                Logger.info(`[PRICING] Applying ${PRICING_CONFIG.REFERRAL_REWARD_FEE_DISCOUNT_PERCENT}% discount to seller ${data.sellerId}`);
-            }
-        }
-
-        const sellerSuccessFee = (data.amount * sellerFeePercent) / 100;
-        const totalAmount = data.amount + 
-            (data.logisticsQuote?.cost || 0) + 
-            (data.warrantyQuote?.cost || 0) + 
-            (data.gestoriaQuote?.cost || 0) + 
-            (data.insuranceQuote?.cost || 0);
-
-        // Fetch emails for identification (Goal #2: Email-based tracking)
-        const { data: buyerProfile } = await (supabase.from('profiles').select('email').eq('id', data.buyerId).single() as any);
-        const { data: sellerProfile } = await (supabase.from('profiles').select('email').eq('id', data.sellerId).single() as any);
+        const totalAmount = isDepositOnly ? depositAmount : (data.amount + (data.logisticsQuote?.cost || 0));
 
         // 4. Create Transaction
         const { data: transaction, error } = await (supabase
@@ -88,76 +44,67 @@ export class TransactionService extends BaseService {
                 car_id: data.carId,
                 buyer_id: data.buyerId,
                 seller_id: data.sellerId,
-                buyer_email: (buyerProfile as any)?.email || null,
-                seller_email: (sellerProfile as any)?.email || null,
-                buyer_phone: data.buyerPhone || null,
                 car_price: data.amount,
                 total_amount: totalAmount,
-                status: 'PENDING'
+                status: isDepositOnly ? 'DEPOSIT_PAID' : 'PENDING',
+                metadata: {
+                    ...data.metadata,
+                    is_non_refundable: true,
+                    coordination_status: 'WAITING_ADMIN_ASSIGNMENT'
+                }
             })
             .select()
             .single();
 
-        if (error) {
-            if (error.code === '42501') {
-                Logger.error('[TransactionService] RLS Error: El usuario no tiene permisos para insertar en la tabla "transactions".');
-                throw new Error("ERROR DE PERMISOS (RLS): No tienes permiso para registrar esta transacción en la base de datos. Por favor verifica las políticas de Supabase.");
-            }
-            Logger.error('Error creating transaction:', error);
-            throw new Error(error?.message || 'Transaction creation failed');
-        }
+        if (error) throw new Error(error.message);
 
-        if (!transaction) throw new Error('No se pudo crear el registro de la transacción.');
-
-        const typedTransaction = transaction as any;
-
-        // 4.1 Side Orders
-        if (data.logisticsQuote) {
-            await (supabase.from('logistics_orders') as any).insert({
-                transaction_id: transaction.id,
-                origin_address: data.logisticsQuote.origin,
-                destination_address: data.logisticsQuote.dest,
-                distance_km: data.logisticsQuote.distance,
-                cost: data.logisticsQuote.cost,
-                status: 'PENDING'
-            });
-        }
-
-        if (data.warrantyQuote) {
-            const endDate = new Date();
-            endDate.setMonth(endDate.getMonth() + (data.warrantyQuote.type === 'STANDARD' ? 3 : 12));
-            await (supabase.from('warranty_policies') as any).insert({
+        // 5. NOTIFICACIÓN CENTRALIZADA (TORRE DE CONTROL)
+        // Simulamos el envío al número maestro de WhatsApp
+        const MASTER_ADMIN_WHATSAPP = "5215500000000"; // Número maestro configurado
+        
+        await NotificationService.notifyAdmin(supabase, {
+            action: 'NUEVO_APARTADO_RECIBIDO',
+            entityType: 'TRANSACTION',
+            entityId: transaction.id,
+            metadata: {
+                master_phone: MASTER_ADMIN_WHATSAPP,
+                deposit: depositAmount,
                 car_id: data.carId,
-                transaction_id: transaction.id,
-                type: data.warrantyQuote.type,
-                status: 'PENDING',
-                start_date: new Date().toISOString(),
-                end_date: endDate.toISOString(),
-                coverage_cap_amount: data.warrantyQuote.cost * 10,
-                coverage_details: {}
-            });
-        }
-
-        // 5. Audit & Notif
-        await (supabase.from('audit_logs') as any).insert({
-            actor_id: data.sellerId,
-            action: 'CREATE_TRANSACTION',
-            entity_type: 'TRANSACTION',
-            entity_id: transaction.id,
-            metadata: { totalAmount, buyerCommission, sellerSuccessFee },
-            ip_address: '127.0.0.1'
-        });
-
-        await NotificationService.notify(supabase, {
-            userId: data.sellerId,
-            title: "Nueva Oferta Recibida",
-            message: `Oferta por $${data.amount.toLocaleString()}. Comisión: $${sellerSuccessFee.toLocaleString()}.`,
-            type: 'INFO',
-            link: `/dashboard/transactions/${transaction.id}`
+                buyer_id: data.buyerId,
+                message: `[ALERTA] Apartado de $${depositAmount} recibido para Auto ID:${data.carId}. Asignar Árbitro.`
+            }
         });
 
         return transaction;
     }
+
+    static async assignArbitrator(supabase: SupabaseClient<Database>, transactionId: string, arbitratorId: string) {
+        Logger.info(`[TORRE-CONTROL] Asignando Árbitro ${arbitratorId} a TX ${transactionId}`);
+        
+        const { error } = await (supabase.from('transactions') as any)
+            .update({ 
+                status: 'ARBITRATOR_ASSIGNED',
+                metadata: {
+                    arbitrator_assigned_at: new Date().toISOString(),
+                    coordination_status: 'ARBITRATOR_NOTIFIED'
+                }
+            })
+            .eq('id', transactionId);
+
+        if (error) throw error;
+
+        // El Árbitro solo recibe los datos de la cita, NO los del cliente.
+        await NotificationService.notify(supabase, {
+            userId: arbitratorId,
+            title: "Nueva Misión: Arbitraje Asignado",
+            message: "Se te ha asignado una inspección/entrega. Revisa tu panel para ver ubicación y hora. (Contactos bloqueados por Torre de Control)",
+            type: 'INFO',
+            link: `/dashboard/arbitrator/${transactionId}`
+        });
+
+        return { success: true };
+    }
+
 
     static async updateTransactionStatusBySessionId(
         supabase: SupabaseClient<Database>,
