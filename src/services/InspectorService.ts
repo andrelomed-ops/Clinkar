@@ -37,9 +37,8 @@ export class InspectorService {
 
         // If Approved, Seal the Car (Auto-magic)
         if (overallResult === 'APROBADO') {
-            await supabase
-                .from('cars')
-                .update({ has_starterkar_seal: true } as any)
+            await (supabase.from('cars') as any)
+                .update({ has_starterkar_seal: true })
                 .eq('id', carId);
         }
 
