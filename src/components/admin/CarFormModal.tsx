@@ -40,7 +40,6 @@ export function CarFormModal({ isOpen, onClose, onSubmit, initialData, isLoading
         is_imported: false,
         has_clinkar_seal: true,
         provenance: "original",
-        provenance: "original",
         reconditioning_budget: 0,
         performance_score: 85,
         reconditioning_notes: [],
@@ -89,7 +88,7 @@ export function CarFormModal({ isOpen, onClose, onSubmit, initialData, isLoading
             if (result.success && result.specs) {
                 setFormData((prev: any) => ({
                     ...prev,
-                    technical_specs: result.specs
+                    technical_specs: result.specs as any
                 }));
                 toast.success("¡Ficha técnica auto-completada!", {
                     description: `Se cargaron especificaciones para ${formData.make} ${formData.model}`,

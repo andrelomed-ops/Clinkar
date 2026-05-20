@@ -43,7 +43,7 @@ export default function DemandRequestPage() {
                 user_id: user?.id || null,
                 user_email: profile?.email || null,
                 brand: formData.brand,
-                model: formData.model || null,
+                model: formData.model || '',
                 year_min: formData.yearMin ? parseInt(formData.yearMin) : null,
                 year_max: formData.yearMax ? parseInt(formData.yearMax) : null,
                 budget_min: formData.budgetMin ? parseFloat(formData.budgetMin) : null,

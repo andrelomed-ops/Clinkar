@@ -3,7 +3,7 @@
 import { useState, useEffect, Suspense, useCallback } from "react";
 import { createBrowserClient } from "@/lib/supabase/client";
 import { Database } from "@/lib/database.types";
-import { Users, Gift, Share2, Copy, Check, ArrowRight, Zap, TrendingUp, DollarSign, UserPlus, Clock, CheckCircle2, XCircle } from "lucide-react";
+import { Users, Gift, Share2, Copy, Check, ArrowRight, Zap, TrendingUp, DollarSign, UserPlus, Clock, CheckCircle2, XCircle, CarFront, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -34,6 +34,16 @@ type Referral = {
     };
 };
 
+type PuenteLead = {
+    id: string;
+    current_brand: string;
+    current_model: string;
+    looking_for: string;
+    status: string;
+    created_at: string;
+    user_id: string;
+};
+
 export default function ReferralsPage() {
     return (
         <Suspense fallback={<div className="p-8"><Skeleton className="h-96" /></div>}>
@@ -48,6 +58,7 @@ function ReferralsContent() {
     const [user, setUser] = useState<any>(null);
     const [referralLink, setReferralLink] = useState<ReferralLink | null>(null);
     const [referrals, setReferrals] = useState<Referral[]>([]);
+    const [puenteLeads, setPuenteLeads] = useState<PuenteLead[]>([]);
     const [copied, setCopied] = useState(false);
     const searchParams = useSearchParams();
     const refCode = searchParams.get("ref");
@@ -139,6 +150,19 @@ function ReferralsContent() {
                 .order("created_at", { ascending: false });
 
             if (refs) setReferrals(refs);
+
+            // Fetch leads from referred users
+            if (refs && refs.length > 0) {
+                const referredUserIds = refs.map(r => r.referred_user_id);
+                const { data: leads } = await supabase
+                    .from('seller_leads')
+                    .select('*')
+                    .in('user_id', referredUserIds)
+                    .order('created_at', { ascending: false });
+                
+                if (leads) setPuenteLeads(leads);
+            }
+
             setLoading(false);
         }
 
@@ -357,6 +381,44 @@ function ReferralsContent() {
                     )}
                 </CardContent>
             </Card>
+
+            {puenteLeads.length > 0 && (
+                <Card>
+                    <CardHeader>
+                        <CardTitle className="flex items-center gap-2">
+                            <CarFront className="h-5 w-5" />
+                            Certificados Puente Generados
+                        </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        <div className="space-y-3">
+                            {puenteLeads.map((lead) => (
+                                <div
+                                    key={lead.id}
+                                    className="flex items-center justify-between p-4 rounded-xl bg-emerald-500/5 border border-emerald-500/10"
+                                >
+                                    <div className="flex items-center gap-3">
+                                        <div className="h-10 w-10 rounded-full bg-emerald-500/10 flex items-center justify-center">
+                                            <ShieldCheck className="h-5 w-5 text-emerald-600" />
+                                        </div>
+                                        <div>
+                                            <p className="font-medium text-sm">
+                                                Interés en: <span className="font-black italic">{lead.looking_for}</span>
+                                            </p>
+                                            <p className="text-[10px] text-muted-foreground uppercase font-bold tracking-widest">
+                                                {new Date(lead.created_at).toLocaleDateString("es-MX")} • {lead.status}
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <div className="bg-emerald-500/10 px-3 py-1 rounded-full text-[10px] font-black text-emerald-600 uppercase tracking-widest">
+                                        Activo
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </CardContent>
+                </Card>
+            )}
         </div>
     );
 }

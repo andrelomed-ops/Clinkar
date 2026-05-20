@@ -1,31 +1,67 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Shield, Send, CheckCircle2, Info, CarFront, Car } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { ReferralCertificate } from "./ReferralCertificate";
+import { createPuenteLead } from "@/app/actions/leads";
+import { toast } from "sonner";
+import { createBrowserClient } from "@/lib/supabase/client";
 
 interface LeadCaptureModalProps {
+    carId: string;
     carName: string;
     agency: string;
     isOpen: boolean;
     onClose: () => void;
 }
 
-export function LeadCaptureModal({ carName, agency, isOpen, onClose }: LeadCaptureModalProps) {
+export function LeadCaptureModal({ carId, carName, agency, isOpen, onClose }: LeadCaptureModalProps) {
     const [step, setStep] = useState(1);
     const [hasUsedCar, setHasUsedCar] = useState<boolean | null>(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [showCertificate, setShowCertificate] = useState(false);
+    const [user, setUser] = useState<any>(null);
     const [folio] = useState(() => `CLK-${Math.random().toString(36).substring(7).toUpperCase()}`);
+    const [referrerId, setReferrerId] = useState<string | null>(null);
 
-    const handleSubmit = () => {
+    useEffect(() => {
+        const supabase = createBrowserClient();
+        supabase.auth.getUser().then(({ data: { user } }) => setUser(user));
+
+        // Check if user was referred (from cookies or local storage if we had a persistent referral system)
+        // For now, we'll just check if there's a referrer associated with the current user in the DB
+        if (user) {
+            supabase.from('referrals')
+                .select('referrer_id')
+                .eq('referred_user_id', user.id)
+                .maybeSingle()
+                .then(({ data }) => {
+                    if (data) setReferrerId(data.referrer_id);
+                });
+        }
+    }, [user?.id]);
+
+    const handleSubmit = async () => {
         setIsSubmitting(true);
-        // Simulate API call
-        setTimeout(() => {
-            setIsSubmitting(false);
+        try {
+            await createPuenteLead({
+                carId,
+                carName,
+                agency,
+                hasUsedCar: !!hasUsedCar,
+                customerName: user?.user_metadata?.full_name || "Usuario Verificado",
+                referrerId: referrerId || undefined
+            });
+            
+            toast.success("¡Certificado generado con éxito!");
             setStep(3);
-        }, 1500);
+        } catch (error) {
+            toast.error("Error al generar el certificado. Intenta de nuevo.");
+            console.error(error);
+        } finally {
+            setIsSubmitting(false);
+        }
     };
 
     if (!isOpen) return null;

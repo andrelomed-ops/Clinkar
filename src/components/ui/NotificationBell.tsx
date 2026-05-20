@@ -210,7 +210,7 @@ export function NotificationBell() {
                                             <div className="flex items-start justify-between gap-2">
                                                 <p className="text-sm font-black leading-snug truncate flex-1">{notification.title}</p>
                                                 <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-tighter shrink-0">
-                                                    {formatDistanceCustom(notification.created_at)}
+                                                    {formatDistanceCustom(notification.created_at || '')}
                                                 </p>
                                             </div>
                                             <p className="text-xs text-muted-foreground font-medium leading-relaxed">

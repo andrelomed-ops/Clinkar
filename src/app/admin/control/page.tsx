@@ -79,7 +79,7 @@ export default function MasterAdminControl() {
 
     return (
         <div className="min-h-screen bg-zinc-50 dark:bg-zinc-950">
-            <Navbar variant="admin" />
+            <Navbar variant="default" />
             
             <main className="pt-32 pb-20 px-6 max-w-7xl mx-auto space-y-10">
                 {/* Header Section */}

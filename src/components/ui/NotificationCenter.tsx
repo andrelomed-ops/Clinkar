@@ -206,7 +206,7 @@ export function NotificationCenter() {
                                             <p className="text-xs text-zinc-500 dark:text-zinc-400 leading-relaxed font-medium">
                                                 {notification.message}
                                             </p>
-                                            <span className="text-[10px] font-bold text-zinc-400 block pt-1 uppercase tracking-tighter">{formatTime(notification.created_at)}</span>
+                                            <span className="text-[10px] font-bold text-zinc-400 block pt-1 uppercase tracking-tighter">{formatTime(notification.created_at || '')}</span>
                                         </div>
                                     </div>
                                 </div>

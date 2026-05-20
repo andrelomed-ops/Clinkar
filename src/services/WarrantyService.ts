@@ -47,7 +47,6 @@ export class WarrantyService extends BaseService {
 
         const { data: policy, error } = await supabase
             .from('warranty_policies' as any)
-            // @ts-expect-error - Tabla no definida en tipos
             .insert({
                 car_id: data.carId,
                 transaction_id: data.transactionId,

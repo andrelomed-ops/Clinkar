@@ -92,7 +92,6 @@ export class LogisticsService extends BaseService {
     }) {
         const { error } = await supabase
             .from('logistics_orders' as any)
-            // @ts-expect-error - Tabla no definida en tipos
             .insert({
                 transaction_id: data.transactionId,
                 origin_address: data.origin,

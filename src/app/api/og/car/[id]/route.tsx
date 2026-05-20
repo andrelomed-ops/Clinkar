@@ -136,7 +136,7 @@ export async function GET(
                 <span style={{ fontSize: '48px', fontWeight: 900, color: 'white', letterSpacing: '-2px', marginBottom: '10px', lineHeight: 1.1 }}>
                   {car.make}
                 </span>
-                <span style={{ fontSize: '36px', fontWeight: 700, color: '#6366f1', italic: 'true', letterSpacing: '-1px', marginBottom: '30px' }}>
+                <span style={{ fontSize: '36px', fontWeight: 700, color: '#6366f1', fontStyle: 'italic', letterSpacing: '-1px', marginBottom: '30px' }}>
                   {car.model}
                 </span>
               </div>

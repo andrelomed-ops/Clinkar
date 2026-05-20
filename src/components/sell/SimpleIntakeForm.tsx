@@ -15,7 +15,8 @@ import {
     Zap, 
     Warehouse, 
     ShieldCheck,
-    Cpu
+    Cpu,
+    Banknote
 } from "lucide-react";
 import { toast } from "sonner";
 import { CAR_BRANDS_MODELS } from "@/lib/car-data";

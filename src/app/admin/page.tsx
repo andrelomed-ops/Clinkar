@@ -113,15 +113,13 @@ export default function AdminDashboardV6() {
                 supabase.from('demand_registry')
                     .select('*')
                     .order('created_at', { ascending: false })
-                    .then(res => res.data || [])
-                    .catch(() => []),
+                    .then(res => res.data || [], () => []),
                 getRecentUsersAction().catch(() => []),
                 supabase.from('service_tickets')
                     .select('*, car:cars(make, model, year, seller:profiles(full_name, phone))')
                     .eq('type', '150_point_inspection')
                     .order('scheduled_at', { ascending: true })
-                    .then(res => res.data || [])
-                    .catch(() => [])
+                    .then(res => res.data || [], () => [])
             ]);
             
             setInventory(cars || []);
@@ -334,7 +332,7 @@ export default function AdminDashboardV6() {
                                 transactions={transactions} 
                                 onOverrideStatus={handleOverrideStatus}
                                 onValidateCEP={handleValidateCEP}
-                                onRegisterCommission={handleRegisterPayment}
+                                onRegisterCommission={(id: string) => handleRegisterPayment(id, 0)}
                                 onDeleteTransaction={handleDeleteTransaction}
                                 cepLoading={cepLoading}
                             />

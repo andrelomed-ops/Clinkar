@@ -5,6 +5,7 @@ import React, { useState, useRef } from 'react';
 import { Upload, FileSpreadsheet, CheckCircle2, AlertCircle, Loader2, X, Camera } from 'lucide-react';
 import { toast } from 'sonner';
 import { createCarAction } from '@/app/actions/cars';
+import { cn } from '@/lib/utils';
 
 export function AdminBulkUpload({ onComplete }: { onComplete: () => void }) {
     const [step, setStep] = useState<'FILE' | 'MATCH' | 'FINISH'>('FILE');

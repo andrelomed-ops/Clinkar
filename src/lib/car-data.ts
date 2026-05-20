@@ -46,3 +46,7 @@ export const POPULAR_BRANDS = [
 ];
 
 export const MODEL_SUGGESTIONS: Record<string, string[]> = CAR_BRANDS_MODELS;
+
+export function getSpecsForModel(make: string, model: string): Record<string, any> | null {
+    return null;
+}

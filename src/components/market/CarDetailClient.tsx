@@ -25,12 +25,14 @@ import {
     Maximize2,
     Camera as CameraIcon,
     CheckCircle2,
+    CarFront,
     X
 } from "lucide-react";
 import { FavoriteService } from "@/services/FavoriteService";
 import { createBrowserClient } from "@/lib/supabase/client";
 import { TechnicalSpecsSheet } from "@/components/market/TechnicalSpecsSheet";
 import { RecommendedSection } from "@/components/dashboard/RecommendedSection";
+import { LeadCaptureModal } from "@/components/leads/LeadCaptureModal";
 
 import Link from "next/link";
 import Image from "next/image";
@@ -57,6 +59,7 @@ export function CarDetailClient({
     const [showGallery, setShowGallery] = useState(false);
     const [galleryIndex, setGalleryIndex] = useState(0);
     const [negotiatedPrice, setNegotiatedPrice] = useState<number | null>(null);
+    const [showLeadModal, setShowLeadModal] = useState(false);
     
     const supabaseBrowser = useMemo(() => createBrowserClient(), []);
 
@@ -416,8 +419,8 @@ export function CarDetailClient({
                                         id={car.id}
                                         carPrice={car.price}
                                         carName={`${car.make} ${car.model}`}
-                                        floorPrice={car.market_data?.minimum_price || car.price * 0.95}
-                                        reconditioningBudget={car.reconditioning_budget || (car.market_data as any)?.reconditioning_budget}
+                                        floorPrice={(car as any).market_data?.minimum_price || car.price * 0.95}
+                                        reconditioningBudget={(car as any).reconditioning_budget || (car as any).market_data?.reconditioning_budget}
                                         performanceScore={car.performance_score || 85}
                                         hasSeal={['CERTIFIED', 'published'].includes(car.status)}
                                         onSuccess={(amount) => {
@@ -436,11 +439,22 @@ export function CarDetailClient({
                                     />
                                 </div>
 
-                                 {car.year >= 2018 && car.price > 180000 && (
-                                    <p className="text-[10px] text-zinc-400 font-bold uppercase tracking-widest text-center mt-6 px-4 leading-relaxed">
-                                        ¿Interesado en financiamiento? <br />
-                                        <span className="text-zinc-500">Tu Asesor StarterKar te guiará en la gestión bancaria tras validar tu intención de compra.</span>
-                                    </p>
+                                {car.year >= 2018 && car.price > 180000 && (
+                                    <div className="space-y-4 mt-6">
+                                        <p className="text-[10px] text-zinc-400 font-bold uppercase tracking-widest text-center px-4 leading-relaxed">
+                                            ¿Interesado en financiamiento? <br />
+                                            <span className="text-zinc-500">Tu Asesor StarterKar te guiará en la gestión bancaria tras validar tu intención de compra.</span>
+                                        </p>
+                                        
+                                        <div className="pt-4 border-t border-dashed border-zinc-200 dark:border-zinc-800">
+                                            <button 
+                                                onClick={() => setShowLeadModal(true)}
+                                                className="w-full py-4 rounded-2xl bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 text-[10px] font-black uppercase tracking-widest transition-all flex items-center justify-center gap-2 border border-emerald-500/20"
+                                            >
+                                                <CarFront className="h-4 w-4" /> Liquidar mi usado para enganche
+                                            </button>
+                                        </div>
+                                    </div>
                                 )}
                             </div>
 
@@ -507,6 +521,14 @@ export function CarDetailClient({
                     </div>
                 </div>
             )}
+
+            <LeadCaptureModal 
+                carId={id}
+                carName={`${car.make} ${car.model}`}
+                agency="Agencia Aliada StarterKar"
+                isOpen={showLeadModal}
+                onClose={() => setShowLeadModal(false)}
+            />
         </div>
     );
 }

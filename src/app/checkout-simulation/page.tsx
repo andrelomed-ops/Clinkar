@@ -7,7 +7,7 @@ import TrustSeal from "@/components/checkout/TrustSeal";
 import SellerDashboardView from "@/components/dashboard/SellerDashboardView";
 import { WarrantyService } from "@/services/WarrantyService";
 import { PldService } from "@/services/PldService";
-import { ArrowLeft, X, Loader2, ShieldCheck, MapPin, Truck } from "lucide-react";
+import { ArrowLeft, X, Loader2, ShieldCheck, MapPin, Truck, AlertTriangle } from "lucide-react";
 import Link from "next/link";
 import LEGAL_TEXTS from "@/data/legal_texts.json";
 
@@ -277,29 +277,6 @@ export default function CheckoutSimulationPage() {
                             </div>
                         </div>
                     </div>
-                </div>
-            </div>
-        </div>
-    );
-}
-
-// Ensure AlertTriangle is imported
-import { AlertTriangle } from "lucide-react";
-
-
-                    {/* COLUMNA DERECHA: PERFIL VENDEDOR */}
-                    <div className="lg:col-span-5 space-y-6">
-                        <div className="flex items-center justify-between mb-2">
-                            <h2 className="text-sm font-bold text-zinc-500 uppercase tracking-widest">Monitor en Tiempo Real</h2>
-                            <span className="px-3 py-1 rounded-full bg-zinc-800 text-zinc-400 text-xs font-bold border border-zinc-700">
-                                VISTA VENDEDOR
-                            </span>
-                        </div>
-                        <div className="sticky top-24 opacity-80 hover:opacity-100 transition-opacity">
-                            <SellerDashboardView />
-                        </div>
-                    </div>
-
                 </div>
             </div>
         </div>

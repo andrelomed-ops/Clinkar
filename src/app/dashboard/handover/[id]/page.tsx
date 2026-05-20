@@ -91,7 +91,7 @@ export default function HandoverPage() {
                 setCompleted(true);
                 toast.success("¡Operación completada con éxito!");
             } else {
-                toast.error(result.error || "Error al confirmar entrega");
+                toast.error((result as any).error || "Error al confirmar entrega");
             }
         } catch {
             toast.error("Error de conexión");
