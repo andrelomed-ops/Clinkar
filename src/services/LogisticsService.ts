@@ -36,7 +36,7 @@ export class LogisticsService extends BaseService {
         // [COST-ZERO OPTIMIZATION]
         // 1. Check for EXACT route match
         const { data: exactMatch } = await supabase
-            .from('logistics_orders' as any)
+            (supabase.from('logistics_orders') as any)
             .select('distance_km, cost, provider')
             .eq('origin_address', origin)
             .eq('destination_address', destination)
@@ -63,7 +63,7 @@ export class LogisticsService extends BaseService {
             const destCity = destParts.slice(-2).join(', ');
 
             const { data: cityMatch } = await supabase
-                .from('logistics_orders' as any)
+                (supabase.from('logistics_orders') as any)
                 .select('distance_km, cost, provider')
                 .ilike('origin_address', `%${originCity}%`)
                 .ilike('destination_address', `%${destCity}%`)
@@ -91,7 +91,7 @@ export class LogisticsService extends BaseService {
         quote: ShippingQuote;
     }) {
         const { error } = await supabase
-            .from('logistics_orders' as any)
+            (supabase.from('logistics_orders') as any)
             .insert({
                 transaction_id: data.transactionId,
                 origin_address: data.origin,
@@ -109,7 +109,7 @@ export class LogisticsService extends BaseService {
 
     static async getOrder(supabase: SupabaseClient<Database>, transactionId: string) {
         const { data } = await supabase
-            .from('logistics_orders' as any)
+            (supabase.from('logistics_orders') as any)
             .select('*')
             .eq('transaction_id', transactionId)
             .single();

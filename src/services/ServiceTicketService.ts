@@ -18,7 +18,7 @@ export class ServiceTicketService {
     // Create a new ticket (Pending Payment)
     static async createTicket(supabase: SupabaseClient<Database>, carId: string, workshopId: string, workshopName: string, scheduledDate: string) {
         const { data, error } = await supabase
-            .from('service_tickets' as any)
+            (supabase.from('service_tickets') as any)
             .insert({
                 car_id: carId,
                 workshop_id: workshopId,
@@ -55,7 +55,7 @@ export class ServiceTicketService {
 
     static async getTicketByCar(supabase: SupabaseClient<Database>, carId: string) {
         const { data, error } = await supabase
-            .from('service_tickets' as any)
+            (supabase.from('service_tickets') as any)
             .select('*')
             .eq('car_id', carId)
             .maybeSingle();
@@ -66,7 +66,7 @@ export class ServiceTicketService {
 
     static async getInspectorSchedule(supabase: SupabaseClient<Database>) {
         const { data, error } = await supabase
-            .from('service_tickets' as any)
+            (supabase.from('service_tickets') as any)
             .select('*, car:cars(make, model, year)')
             .order('scheduled_at', { ascending: true });
 

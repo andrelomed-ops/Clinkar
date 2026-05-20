@@ -54,7 +54,7 @@ export class VehicleCheckService {
         result: VehicleCheckResult
     ) {
         // Guardar en Audit Log como evidencia inmutable
-        await supabase.from('audit_logs' as any).insert({
+        await (supabase.from('audit_logs') as any).insert({
             action: 'VEHICLE_THEFT_CHECK',
             entity_type: 'TRANSACTION',
             entity_id: transactionId,

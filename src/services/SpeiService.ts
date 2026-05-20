@@ -50,7 +50,7 @@ export class SpeiService {
         Logger.info(` -> $${starterkarFee.toLocaleString()} a StarterKar Revenue`);
 
         // 3. Registrar en BD (Audit Trail)
-        await supabase.from('audit_logs' as any).insert({
+        await (supabase.from('audit_logs') as any).insert({
             action: 'SPEI_RECEIVED_SPLIT',
             entity_type: 'TRANSACTION',
             entity_id: transactionId,

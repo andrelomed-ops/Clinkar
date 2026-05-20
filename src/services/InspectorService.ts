@@ -22,8 +22,7 @@ export class InspectorService {
             return { id: `mock-report-${Date.now()}`, created_at: new Date().toISOString() };
         }
 
-        const { data: report, error } = await supabase
-            .from('inspection_reports_150' as any)
+        const { data: report, error } = await (supabase.from('inspection_reports_150') as any)
             .insert({
                 car_id: carId,
                 inspector_id: inspectorId,
@@ -57,8 +56,7 @@ export class InspectorService {
     ) {
         const total = items.reduce((sum, item) => sum + item.cost, 0);
 
-        const { data: quote, error } = await supabase
-            .from('repair_quotations' as any)
+        const { data: quote, error } = await (supabase.from('repair_quotations') as any)
             .insert({
                 car_id: carId,
                 inspector_id: inspectorId,
@@ -76,8 +74,7 @@ export class InspectorService {
 
     // 3. Get Report by Car
     static async getReportByCar(supabase: SupabaseClient<Database>, carId: string) {
-        return await supabase
-            .from('inspection_reports_150' as any)
+        return await (supabase.from('inspection_reports_150') as any)
             .select('*')
             .eq('car_id', carId)
             .maybeSingle(); // Use maybeSingle as it might not exist

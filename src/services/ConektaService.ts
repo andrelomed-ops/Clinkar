@@ -126,8 +126,7 @@ export class ConektaService extends BaseService {
         supabase: SupabaseClient<Database>,
         userId: string
     ): Promise<any[]> {
-        const { data, error } = await supabase
-            .from('user_perks' as any)
+        const { data, error } = await (supabase.from('user_perks') as any)
             .select('*')
             .eq('user_id', userId)
             .eq('perk_type', 'CONEKTA_PAYMENT_LINK')

@@ -17,7 +17,7 @@ export class PaymentService extends BaseService {
         try {
             // Record in DB
             const { error, data } = await supabase
-                .from('service_payments' as any)
+                (supabase.from('service_payments') as any)
                 .insert({
                     ticket_id: ticketId,
                     amount: amount,
@@ -51,7 +51,7 @@ export class PaymentService extends BaseService {
 
         try {
             const { error, data } = await supabase
-                .from('service_payments' as any)
+                (supabase.from('service_payments') as any)
                 .insert({
                     ticket_id: ticketId,
                     amount: amount,

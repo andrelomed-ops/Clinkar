@@ -45,8 +45,7 @@ export class WarrantyService extends BaseService {
         const endDate = new Date(now);
         endDate.setMonth(now.getMonth() + durationMonths);
 
-        const { data: policy, error } = await supabase
-            .from('warranty_policies' as any)
+        const { data: policy, error } = await (supabase.from('warranty_policies') as any)
             .insert({
                 car_id: data.carId,
                 transaction_id: data.transactionId,

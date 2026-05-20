@@ -12,8 +12,7 @@ export class ReferralPayoutService extends BaseService {
         description: string
     ): Promise<{ payoutId: string; paymentUrl: string } | null> {
         try {
-            const { data, error: refError } = await supabase
-                .from('referrals' as any)
+        const { data, error: refError } = await (supabase.from('referrals') as any)
                 .select('id, referrer_id, transaction_id, actual_reward, status')
                 .eq('id', referralId)
                 .single();
@@ -50,14 +49,14 @@ export class ReferralPayoutService extends BaseService {
                 throw new Error('No se pudo crear el link de pago');
             }
 
-            await (supabase.from('referrals' as any) as any)
+            await (supabase.from('referrals') as any)
                 .update({
                     status: 'PAID',
                     updated_at: new Date().toISOString(),
                 })
                 .eq('id', referralId);
 
-            await (supabase.from('user_perks' as any) as any).insert({
+            await (supabase.from('user_perks') as any).insert({
                 user_id: referral.referrer_id,
                 perk_type: 'CONEKTA_PAYMENT_LINK',
                 status: 'AVAILABLE',
@@ -87,8 +86,7 @@ export class ReferralPayoutService extends BaseService {
     static async getPendingPayouts(
         supabase: SupabaseClient<Database>
     ): Promise<any[]> {
-        const { data: referrals, error } = await supabase
-            .from('referrals' as any)
+        const { data: referrals, error } = await (supabase.from('referrals') as any)
             .select('*, referred_profile:profiles!referrals_referred_user_id_fkey(email, full_name), referrer_profile:profiles!referrals_referrer_id_fkey(email, full_name)')
             .eq('status', 'OPERATION_CLOSED')
             .order('updated_at', { ascending: false });

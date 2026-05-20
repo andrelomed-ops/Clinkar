@@ -14,8 +14,7 @@ export class InspectionService {
         console.log(`[📝 INSPECTION] Submitting report for Ticket ${ticketId}`);
 
         // 1. Get Ticket to verify logic
-        const { data: ticket, error: ticketError } = await supabase
-            .from('service_tickets' as any)
+        const { data: ticket, error: ticketError } = await (supabase.from('service_tickets') as any)
             .select('*')
             .eq('id', ticketId)
             .single();
@@ -61,8 +60,7 @@ export class InspectionService {
     }
 
     static async getLatestReport(supabase: SupabaseClient<Database>, carId: string) {
-        const { data, error } = await supabase
-            .from('inspection_reports_150' as any)
+        const { data, error } = await (supabase.from('inspection_reports_150') as any)
             .select('*')
             .eq('car_id', carId)
             .order('created_at', { ascending: false })
